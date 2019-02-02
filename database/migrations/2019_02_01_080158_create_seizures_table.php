@@ -20,12 +20,14 @@ class CreateSeizuresTable extends Migration
             $table->string('unit_name')->nullable(false);
             $table->timestamp('date_of_seizure')->nullable(false);
             $table->string('status_of_drug')->nullable(false);
-            $table->string('case_details')->nullable(true);
+            $table->text('case_details')->nullable(true);
             $table->integer('district_id')->nullable(false);
-            $table->integer('storage_id')->nullable(true);
-            $table->integer('court_id')->nullable(true);
             $table->integer('ps_id')->nullable(true);
             $table->integer('agency_id')->nullable(true);
+            $table->integer('storage_id')->nullable(true);
+            $table->integer('court_id')->nullable(true);
+            $table->timestamp('date_of_certification');
+            $table->text('remarks')->nullable(true);
             $table->string('user_name');
             $table->timestamps();
             $table->foreign('district_id')->references('district_id')->on('districts');

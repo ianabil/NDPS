@@ -17,6 +17,9 @@ class CreateUserDetailsTable extends Migration
             $table->increments('user_id')->nullable(false);
             $table->string('user_name')->nullable(false);
             $table->string('unit')->nullable(false);
+            $table->integer('ps_id')->nullable(true);
+            $table->integer('agency_id')->nullable(true);
+            $table->integer('district_id')->nullable(true);
             $table->integer('mobile_no')->nullable(false);
             $table->timestamps();
             $table->foreign('user_id')->references('user_id')->on('users');
