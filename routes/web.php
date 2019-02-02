@@ -23,3 +23,7 @@ Route::get('/dashboard', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('/entry_form', function () {
+    return view('entry_form');
+});

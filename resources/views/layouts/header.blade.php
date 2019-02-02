@@ -7,7 +7,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <title>LIS, Calcutta High Court</title>
     <!-- Tell the browser to be responsive to screen width -->
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"> @include('layouts.css_links')
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"> 
+    @include('layouts.css_links')
 
 </head>
 <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
