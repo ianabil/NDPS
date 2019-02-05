@@ -57,9 +57,12 @@
 				<tbody>
 
 				<!--nature of drug-->
-
+ 
 					<td><select class="form-control select2" style="width:150px" name="nature_of_narcotic" id="nature_of_narcotic">
 							<option value="">Select One Option. . . </option>
+							@foreach($data['drugs']  as $data1)
+                        		<option value="{{$data1['drug_name']}}">{{$data1['drug_name']}} </option>
+                       		 @endforeach							
 						</select></td>
 					</td>
 
