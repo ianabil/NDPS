@@ -24,6 +24,9 @@
 				<div class="col-sm-4">
 						<select class="form-control select2" style="width:200px;margin-top:20px" name="district" id="district">
 							<option value="">Select One Option. . . </option>
+							@foreach($data['districts']  as $data1)
+                        		<option value="{{$data1['district_id']}}">{{$data1['district_name']}} </option>
+                       		 @endforeach
 						</select>
 				</div>
 			</div>
@@ -60,8 +63,8 @@
  
 					<td><select class="form-control select2" style="width:150px" name="nature_of_narcotic" id="nature_of_narcotic">
 							<option value="">Select One Option. . . </option>
-							@foreach($data['drugs']  as $data1)
-                        		<option value="{{$data1['drug_name']}}">{{$data1['drug_name']}} </option>
+							@foreach($data['drugs']  as $data2)
+                        		<option value="{{$data2['drug_id']}}">{{$data2['drug_name']}} </option>
                        		 @endforeach							
 						</select></td>
 					</td>
@@ -75,6 +78,7 @@
 					<td>
 						<select class="form-control select2" style="width:150px" name="narcotic_unit" id="narcotic_unit">
 							<option value="">Select One Option. . . </option>
+							
 						</select>
 					</td>
 
