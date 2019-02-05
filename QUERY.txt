@@ -1,0 +1,154 @@
+***************narcotic table*******************
+
+insert into narcotics(drug_id,drug_name)
+values(DEFAULT,'GANJA');
+
+insert into narcotics(drug_id,drug_name)
+values(DEFAULT,'LSD');
+
+insert into narcotics(drug_id,drug_name)
+values(DEFAULT,'MAGIC MASHROOM');
+
+insert into narcotics(drug_id,drug_name)
+values(DEFAULT,'MDMA');
+
+insert into narcotics(drug_id,drug_name)
+values(DEFAULT,'PHENSEDYL');
+
+insert into narcotics(drug_id,drug_name)
+values(DEFAULT,'COCAINE');
+
+insert into narcotics(drug_id,drug_name)
+values(DEFAULT,'HEROIN');
+
+
+****************************DISTRICTS*********************
+
+insert into districts(district_id,district_name)
+values(DEFAULT,'DARJEELING');
+
+insert into districts(district_id,district_name)
+values(DEFAULT,'KOLKATA');
+
+insert into districts(district_id,district_name)
+values(DEFAULT,'BANKURA');
+
+insert into districts(district_id,district_name)
+values(DEFAULT,'PURBO MEDINIPUR');
+
+insert into districts(district_id,district_name)
+values(DEFAULT,'MALDA');
+
+insert into districts(district_id,district_name)
+values(DEFAULT,'PASCHIM MEDINIPUR');
+
+insert into districts(district_id,district_name)
+values(DEFAULT,'PURULIA');
+
+insert into districts(district_id,district_name)
+values(DEFAULT,'HOOGLY');
+
+insert into districts(district_id,district_name)
+values(DEFAULT,'HOWRAH');
+
+insert into districts(district_id,district_name)
+values(DEFAULT,'NORTH 24 PARGANAS');
+
+**********************************PS_DETAILS**********************
+
+insert into ps_details(ps_id,district_id,ps_name)
+values(DEFAULT,2,'AMHERST STREET PS');
+
+insert into ps_details(ps_id,district_id,ps_name)
+values(DEFAULT,2,'NARKELDANGA PS');
+
+insert into ps_details(ps_id,district_id,ps_name)
+values(DEFAULT,10,'BIDHANNAGAR SOUTH PS');
+
+insert into ps_details(ps_id,district_id,ps_name)
+values(DEFAULT,10,'BARASAT PS');
+
+insert into ps_details(ps_id,district_id,ps_name)
+values(DEFAULT,10,'BARASAT PS');
+
+insert into ps_details(ps_id,district_id,ps_name)
+values(DEFAULT,8,'CHANDANNAGAR PS');
+
+insert into ps_details(ps_id,district_id,ps_name)
+values(DEFAULT,8,'CHINSURA PS');
+
+***********************COURT_DETAILS**********************
+
+insert into court_details(court_id,court_name,district_id)
+values(DEFAULT,'JM 1ST COURT SILIGURI',1);
+
+insert into court_details(court_id,court_name,district_id)
+values(DEFAULT,'JM,MIRIK',1);
+
+insert into court_details(court_id,court_name,district_id)
+values(DEFAULT,'METROPOLITAN MAGISTRATE,13TH COURT,CALCUTTA',2);
+
+insert into court_details(court_id,court_name,district_id)
+values(DEFAULT,'JM 1ST COURT BARRACKPUR',10);
+
+insert into court_details(court_id,court_name,district_id)
+values(DEFAULT,'JM 2ND COURT BARASAT',10);
+
+insert into court_details(court_id,court_name,district_id)
+values(DEFAULT,'JM 2ND COURT HOWRAH',9);
+
+insert into court_details(court_id,court_name,district_id)
+values(DEFAULT,'JM 2ND COURT SERAMPORE',8);
+
+insert into court_details(court_id,court_name,district_id)
+values(DEFAULT,'JM 2ND COURT CHANDANNAGAR',8);
+
+insert into court_details(court_id,court_name,district_id)
+values(DEFAULT,'JM 7TH COURT BANKURA',3);
+
+insert into court_details(court_id,court_name,district_id)
+values(DEFAULT,'JM 1ST COURT PURULIA',7);
+
+*************************************AGENCY_DETAILS***********************
+
+insert into agency_details(agency_id,agency_name)
+values(DEFAULT,'CID');
+
+insert into agency_details(agency_id,agency_name)
+values(DEFAULT,'CBI');
+
+insert into agency_details(agency_id,agency_name)
+values(DEFAULT,'NIA');
+
+insert into agency_details(agency_id,agency_name)
+values(DEFAULT,'NCB');
+
+insert into agency_details(agency_id,agency_name)
+values(DEFAULT,'KOLKATA POLICE');
+
+**************************************STROAGE_DETAILS******************
+
+insert into storage_details(storage_id,storage_name,district_id)
+values(DEFAULT,'CENTRAL MALKHANA,LALBAJAR',2);
+
+insert into storage_details(storage_id,storage_name,district_id)
+values(DEFAULT,'MALKHANA,VABANIVABAN',10);
+
+*************************************UNIT********************
+
+insert into units(unit_id,unit_name)
+values(DEFAULT,'GRAM');
+
+insert into units(unit_id,unit_name)
+values(DEFAULT,'KG');
+
+insert into units(unit_id,unit_name)
+values(DEFAULT,'LITRE');
+
+insert into units(unit_id,unit_name)
+values(DEFAULT,'KILOLITRE');
+
+
+
+
+

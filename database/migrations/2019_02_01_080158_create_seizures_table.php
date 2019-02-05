@@ -22,7 +22,6 @@ class CreateSeizuresTable extends Migration
             $table->string('status_of_drug')->nullable(false);
             $table->text('case_details')->nullable(true);
             $table->integer('district_id')->nullable(false);
-            $table->integer('ps_id')->nullable(true);
             $table->integer('agency_id')->nullable(true);
             $table->integer('storage_id')->nullable(true);
             $table->integer('court_id')->nullable(true);
