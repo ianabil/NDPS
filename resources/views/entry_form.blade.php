@@ -78,7 +78,9 @@
 					<td>
 						<select class="form-control select2" style="width:150px" name="narcotic_unit" id="narcotic_unit">
 							<option value="">Select One Option. . . </option>
-							
+							@foreach($data['units']  as $data3)
+                        		<option value="{{$data3['unit_id']}}">{{$data3['unit_name']}} </option>
+                       		 @endforeach	
 						</select>
 					</td>
 
@@ -110,6 +112,9 @@
 					<td>
 						<select class="form-control select2" style="width:150px" name="disposal_unit" id="disposal_unit">
 							<option value="">Select One Option. . . </option>
+							@foreach($data['units']  as $data4)
+                        		<option value="{{$data4['unit_id']}}">{{$data4['unit_name']}} </option>
+                       		 @endforeach	
 						</select>
 					</td>
 
@@ -120,8 +125,11 @@
 				<!--unit of quantity of narcotic drugs-->
 
 					<td>
-						<select class="form-control select2" style="width:150px" name="where" id="where">
+						<select class="form-control select2" style="width:150px" name="unit_of_undisposed_quantity" id="unit_of_undisposed_quantity">
 							<option value="">Select One Option. . . </option>
+							@foreach($data['units']  as $data5)
+                        		<option value="{{$data5['unit_id']}}">{{$data5['unit_name']}} </option>
+                       		 @endforeach
 						</select>
 					</td>
 
@@ -139,6 +147,9 @@
 					<td>
 						<select class="form-control select2" style="width:150px" name="where" id="where">
 							<option value="">Select One Option. . . </option>
+							@foreach($data['courts'] as $data5)
+                        		<option value="{{$data5['court_id']}}">{{$data5['court_name']}} </option>
+                       		 @endforeach
 						</select>
 					</td>
 
@@ -171,3 +182,8 @@
 </div>
 @endsection
 
+
+<script>
+</script>
+</body>
+</html>

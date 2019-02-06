@@ -4,8 +4,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\narcotic;
-use App\district;
+use App\Narcotic;
+use App\District;
+use App\Unit;
+use App\Agency_detail;
+use App\Court_detail;
+use App\Magistrate;
+use App\Ps_detail;
+use App\Seizure;
+use App\Storage_detail;
+use App\User;
+use App\User_detail;
+
+
+
 
 class entry_formController extends Controller
 {
@@ -18,8 +30,10 @@ class entry_formController extends Controller
     {
         $data = array();
         
-        $data['drugs'] = narcotic::select('drug_id','drug_name')->get();
-        $data['districts'] = district::select('district_id','district_name')->get();
+        $data['drugs'] = Narcotic::select('drug_id','drug_name')->get();
+        $data['districts'] = District::select('district_id','district_name')->get();
+        $data['units'] = Unit::select('unit_id','unit_name')->get();
+        $data['courts'] = Court_detail::select('court_id','court_name')->get();
 
         return view('entry_form',compact('data'));   
     }
