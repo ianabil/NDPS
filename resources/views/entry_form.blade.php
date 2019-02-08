@@ -26,7 +26,7 @@
 				<thead>
 					
 					<tr >
-						<td rowspan="2"></td>
+						<td rowspan="2" class="action"></td>
 						<td rowspan="2"><strong>Nature of Narcotic<br>Drugs/Controlled<br>Substance</strong></td>
 						<td rowspan="2"><strong>Quantity of<br>Seized<br>Contraband</strong></td>
 						<td rowspan="2"><strong>Unit of <br>Seized<br>Contraband</strong></td>
@@ -40,6 +40,7 @@
 						<td rowspan="2"><strong>Case Details</strong></td>
 						<td rowspan="2"><strong>District</strong></td>
 						<td colspan="2"><strong>Applied for Certification</strong></td>
+						<td colspan="2"><strong>Remarks</strong></td>
 
 					</tr>
 					<tr>
@@ -51,9 +52,9 @@
 				<tbody>
 					<tr class="base_tr">
 
-					<td> 
-						<div class="less_rows" style="display:none">
-							<button type="remove_rows">-</div>
+					<td class="action"> 
+					
+							<button type="remove_rows" id="delete_row" class="delete_row">-</button>
 					</td>
 
 						<!--nature of drug-->
@@ -117,9 +118,9 @@
 							</select>
 						</td>
 
-						<!--quantity of disposal drugs-->
+						<!--quantity of seizure drugs-->
 
-						<td><input type="text" class="form-control seizure_quantity" style="width:150px" name="seizure_quantity" id="seizure_quantity"></td>
+						<td><input type="text" class="form-control undisposed_quantity" style="width:150px" name="undisposed_quantity" id="undisposed_quantity"></td>
 				
 						<!--unit of quantity of narcotic drugs-->
 
@@ -141,12 +142,12 @@
 
 						<!--case details-->
 
-						<td><textarea class="form-control" rows="3" style="width:200px" name="case_details" id="case_details"></textarea></td>
+						<td><textarea class="form-control case_details" rows="3" style="width:200px" name="case_details" id="case_details"></textarea></td>
 						
 						<!--district-->	
 
 						<td>
-							<select class="form-control select2 case_details" style="width:150px" name="district" id="district">
+							<select class="form-control select2 district" style="width:150px" name="district" id="district">
 								<option value="">Select One Option. . . </option>
 									@foreach($data['districts']  as $data1)
 										<option value="{{$data1['district_id']}}">{{$data1['district_name']}} </option>
@@ -176,7 +177,9 @@
 									</div>
 							</div>
 						</td>
-
+						<td>
+						<td><textarea class="form-control remarks" rows="3" style="width:200px" name="remarks" id="remarks"></textarea></td>
+						</td>
 					</tr>
 
 				</tbody>
@@ -208,9 +211,17 @@
 <script src="{{asset('js/jquery/jquery.min.js')}}"></script>
 
 <script>
-$(document).ready(function(){
 
+	$(document).ready(function(){
 
+		$(".date").datepicker({
+                endDate:'0',
+                format: 'dd-mm-yyyy'
+            }); // Date picker initialization
+
+		$(".action").hide();
+
+	var counter=0;
 
  	/*LOADER*/
 
@@ -224,204 +235,182 @@ $(document).ready(function(){
     /*LOADER*/
 
 
+	/* add row */
+
 	$(document).on("click","#add_more", function(){	
-		$(".base_tr").clone().appendTo("tbody").find(':text').val('');
-		$(".less_rows").show();
-					
+		$(".base_tr").clone().removeClass("base_tr").appendTo("tbody").find(':text').val('');
+		$(".action").show();
+		counter++;
+						
 	})
+
+	/*delete row*/
+	
+	$(document).on("click",".delete_row", function(){	
+		$(this).closest("tr").remove();
+		counter--;
+		if(counter==0)
+		{
+			$(".action").hide();
+		}
+	});
 	
 	
-	remove_rows
+
+	var nature_of_narcotic = new Array();
+	var quantity_of_narcotics = new Array();
+	var narcotic_unit = new Array();
+	var date_of_seizure = new Array();
+	var date_of_disposal = new Array();
+	var disposal_quantity = new Array();
+	var disposal_unit = new Array();
+	var undisposed_quantity = new Array();
+	var unit_of_undisposed_quantity = new Array();
+	var place_of_storage = new Array();
+	var case_details = new Array();
+	var district = new Array();
+	var where = new Array();
+	var date_of_certification = new Array();
+	var remarks= new Array();
+
 
 	/* fetching values from nature of narcotic field*/
 
-	var nature_of_narcotic = new Array();
-
 	$(document).on("click","#submit", function(){	
-		$(".nature_of_narcotic").each(function(index){
-			nature_of_narcotic.push($(this).val());
-		})
-
-		console.log(nature_of_narcotic);
-					
-	})
+	$(".nature_of_narcotic").each(function(index){
+		nature_of_narcotic.push($(this).val());
+	});
 
 	/* fetching values from quantity_of_narcotics field*/
 
-	var quantity_of_narcotics = new Array();
-
-	$(document).on("click","#submit", function(){	
-		$(".quantity_of_narcotics").each(function(index){
-			quantity_of_narcotics.push($(this).val());
-		})
-
-		console.log(quantity_of_narcotics);
-					
-	})
+	$(".quantity_of_narcotics").each(function(index){
+		quantity_of_narcotics.push($(this).val());
+	});
 
 	/* fetching values from unit of narcotic_unit field*/
 
-	var narcotic_unit = new Array();
-
-	$(document).on("click","#submit", function(){	
-		$(".narcotic_unit").each(function(index){
-			narcotic_unit.push($(this).val());
-		})
-
-		console.log(narcotic_unit);
-					
-	})
-
+	$(".narcotic_unit").each(function(index){
+		narcotic_unit.push($(this).val());
+	});
 	/* fetching values from date_of_seizure field*/
 
-	var date_of_seizure = new Array();
-
-	$(document).on("click","#submit", function(){	
-		$(".date_of_seizure").each(function(index){
+	$(".date_of_seizure").each(function(index){
 			date_of_seizure.push($(this).val());
-		})
-
-		console.log(date_of_seizure);
-				
-	})
-
-
+	});
 
 	/* fetching values from date_of_disposal field*/
 
-
-	var date_of_disposal = new Array();
-
-	$(document).on("click","#submit", function(){	
-		$(".date_of_disposal").each(function(index){
+	$(".date_of_disposal").each(function(index){
 			date_of_disposal.push($(this).val());
-		})
-
-	console.log(date_of_disposal);
-	})
+	});
 
 	/* fetching values from disposal_quantity field*/
 
-
-	var disposal_quantity = new Array();
-
-	$(document).on("click","#submit", function(){	
-		$(".disposal_quantity").each(function(index){
+	$(".disposal_quantity").each(function(index){
 			disposal_quantity.push($(this).val());
-		})
-
-	console.log(disposal_quantity);
-	})
+	});
 
 	/* fetching values from disposal_unit field*/
 
-
-	var disposal_unit = new Array();
-
-	$(document).on("click","#submit", function(){	
-		$(".disposal_unit").each(function(index){
+	$(".disposal_unit").each(function(index){
 			disposal_unit.push($(this).val());
-	})
-
-	console.log(disposal_unit);
-	})
+	});
 
 	/* fetching values from seizure_quantity field*/
 
-	var seizure_quantity = new Array();
-
-	$(document).on("click","#submit", function(){	
-		$(".seizure_quantity").each(function(index){
-		seizure_quantity.push($(this).val());
-	})
-
-	console.log(seizure_quantity);
-	})
+	$(".undisposed_quantity").each(function(index){
+		undisposed_quantity.push($(this).val());
+	});
 
 	/* fetching values from unit_of_undisposed_quantity field*/
 
-
-	var unit_of_undisposed_quantity = new Array();
-
-	$(document).on("click","#submit", function(){	
-		$(".unit_of_undisposed_quantity").each(function(index){
+	$(".unit_of_undisposed_quantity").each(function(index){
 			unit_of_undisposed_quantity.push($(this).val());
-	})
-
-	console.log(unit_of_undisposed_quantity);
-	})
+	});
 
 	/* fetching values from place_of_storage field*/
 
-
-	var place_of_storage = new Array();
-
-	$(document).on("click","#submit", function(){	
-		$(".place_of_storage").each(function(index){
+	$(".place_of_storage").each(function(index){
 			place_of_storage.push($(this).val());
-	})
-
-	console.log(place_of_storage);
-	})
+	});
 
 	/* fetching values from case_details field*/
 
-
-	var case_details = new Array();
-
-	$(document).on("click","#submit", function(){	
-		$(".case_details").each(function(index){
-			case_details.push($(this).val());
-	})
-
-	console.log(case_details);
-	})
-
-
+	$(".case_details").each(function(index){
+			case_details.push($(this).text());
+	});
+	
 	/* fetching values from district field*/
 
-	var district = new Array();
-
-	$(document).on("click","#submit", function(){	
-		$(".district").each(function(index){
+	$(".district").each(function(index){
 			district.push($(this).val());
-	})
 
-	console.log(district);
-	})
+	});
 
 	/* fetching values from where field*/
 
-	var where = new Array();
-
-	$(document).on("click","#submit", function(){	
-		$(".where").each(function(index){
+	$(".where").each(function(index){
 			where.push($(this).val());
-	})
-
-	console.log(where);
-	})
+	});
 
 	/* fetching values from date_of_certification field*/
 
-	var date_of_certification = new Array();
+	$(".date_of_certification").each(function(index){
+		date_of_certification.push($(this).val());
+	});
 
-	$(document).on("click","#submit", function(){	
-		$(".date_of_certification").each(function(index){
-			date_of_certification.push($(this).val());
-	})
+	/* fetching values from remarks*/
 
-	console.log(date_of_certification);
-	})
+	$(".remarks").each(function(index){
+		remarks.push($(this).text());
+	});
+
+		console.log(nature_of_narcotic);
+		console.log(quantity_of_narcotics);		
+		console.log(narcotic_unit);
+		console.log(date_of_seizure);
+		console.log(date_of_disposal);	
+		console.log(disposal_quantity);	
+		console.log(disposal_unit);	
+		console.log(undisposed_quantity);
+		console.log(unit_of_undisposed_quantity);
+		console.log(place_of_storage);
+		console.log(case_details);
+		console.log(district);
+		console.log(where);
+		console.log(date_of_certification);
+		console.log(remarks);
 
 
+		$.ajax({
+                    type: "POST",
+                    url:"form", 
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        nature_of_narcotic: nature_of_narcotic,
+						quantity_of_narcotics: quantity_of_narcotics,
+						narcotic_unit: narcotic_unit,
+						date_of_seizure: date_of_seizure,
+						date_of_disposal: date_of_disposal,
+						disposal_quantity: disposal_quantity,
+						disposal_unit: disposal_unit,
+						undisposed_quantity: undisposed_quantity,
+						unit_of_undisposed_quantity: unit_of_undisposed_quantity,
+						place_of_storage: place_of_storage,
+						case_details: case_details,
+						district: district,
+						where: where,
+						date_of_certification: date_of_certification,
+						counter: counter+1,
+						remarks: remarks
+					},
 
+                    success:function(response){
+                        swal("","","success");
+					}
+				});
+		});
 });
-
-
-
- 		
-
 </script>
 </body>
 </html>

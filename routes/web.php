@@ -30,3 +30,5 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 
 Route::get('entry_form', 'entry_formController@index');
+
+Route::resource('form','entry_formController');
