@@ -59,12 +59,8 @@
 
 						<!--nature of drug-->
 				
-						<td><select class="form-control select2 nature_of_narcotic" style="width:150px" name="nature_of_narcotic" id="nature_of_narcotic">
-								<option value="">Select One Option. . . </option>
-								@foreach($data['drugs']  as $data2)
-									<option value="{{$data2['drug_id']}}">{{$data2['drug_name']}} </option>
-								@endforeach							
-							</select></td>
+						<td>
+							<textarea class="form-control nature_of_narcotic" rows="3" style="width:200px" name="nature_of_narcotic" id="nature_of_narcotic"></textarea>
 						</td>
 
 						<!--quantity of narcotic drugs-->
@@ -337,7 +333,7 @@
 	/* fetching values from case_details field*/
 
 	$(".case_details").each(function(index){
-			case_details.push($(this).text());
+			case_details.push($(this).val());
 	});
 	
 	/* fetching values from district field*/
@@ -362,8 +358,12 @@
 	/* fetching values from remarks*/
 
 	$(".remarks").each(function(index){
-		remarks.push($(this).text());
+
+		remarks.push($(this).val());    
 	});
+
+
+// var x = document.getElementById("myTextarea").value
 
 		console.log(nature_of_narcotic);
 		console.log(quantity_of_narcotics);		

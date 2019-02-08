@@ -73,12 +73,12 @@ class entry_formController extends Controller
         $date_of_certification = $request->input('date_of_certification'); 
         $counter= $request->input('counter');
         $agency_id= 1;
-       // $court_id= ;
+        /*$court_id='';*/
         $user_name="CID";
         $remarks=$request->input('remarks');
         $update_date = Carbon::today();  
         $uploaded_date = Carbon::today();  
-
+        $submit_flag='N';
 
        
         for($i=0;$i<$counter;$i++)
@@ -86,7 +86,7 @@ class entry_formController extends Controller
 
             seizure::insert(
 
-                ['drug_id'=>$nature_of_narcotic[$i],
+                ['drug_name'=>$nature_of_narcotic[$i],
                  'quantity_of_drug'=>$quantity_of_narcotics[$i],
                  'unit_name'=>$narcotic_unit[$i],
                  'date_of_seizure'=> date('Y-m-d', strtotime($date_of_seizure[$i])),
@@ -100,12 +100,13 @@ class entry_formController extends Controller
                  'district_id'=>$district[$i],
                  'date_of_certification'=>date('Y-m-d', strtotime($date_of_certification[$i])),
                  'agency_id'=>$agency_id,
-                 //'court_id'=>$court_id,
+                 //'court_id'=>$court_id;
                  'certification_court_id'=>$where[$i],
                  'remarks'=>$remarks[$i],
                  'updated_at'=>$update_date,
                  'created_at'=>$uploaded_date,
-                 'user_name'=>$user_name
+                 'user_name'=>$user_name,
+                 'submit_flag'=>$submit_flag
                  ]
 
             );

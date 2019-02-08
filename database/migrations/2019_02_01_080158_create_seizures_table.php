@@ -15,19 +15,25 @@ class CreateSeizuresTable extends Migration
     {
         Schema::create('seizures', function (Blueprint $table) {
             $table->increments('seizure_id')->nullable(false);
-            $table->integer('drug_id')->nullable(false);
+            $table->string('drug_name')->nullable(false);
             $table->double('quantity_of_drug',5,2)->nullable(false);  
             $table->string('unit_name')->nullable(false);
-            $table->timestamp('date_of_seizure')->nullable(false);
-            $table->string('status_of_drug')->nullable(false);
+            $table->date('date_of_seizure')->nullable(false);
+            $table->date('date_of_disposal')->nullable(true);
+            $table->double('disposal_quantity',5,2)->nullable(true);  
+            $table->string('unit_of_disposal_quantity')->nullable(true);
+            $table->double('undisposed_quantity',5,2)->nullable(true);  
+            $table->string('unit_of_undisposed_quantity')->nullable(true);
             $table->text('case_details')->nullable(true);
             $table->integer('district_id')->nullable(false);
             $table->integer('agency_id')->nullable(true);
-            $table->integer('storage_id')->nullable(true);
+            $table->string('storage_location')->nullable(true);
             $table->integer('court_id')->nullable(true);
-            $table->timestamp('date_of_certification');
+            $table->integer('certification_court_id')->nullable(true);
+            $table->date('date_of_certification')->nullable(true);
             $table->text('remarks')->nullable(true);
             $table->string('user_name');
+            $table->string('submit_flag');
             $table->timestamps();
             $table->foreign('district_id')->references('district_id')->on('districts');
         });
