@@ -50,133 +50,139 @@
 					
 				</thead>
 				<tbody>
+
+				@foreach($data['seizures'] as $seizures)
+
 					<tr class="base_tr">
 
 					<td class="action"> 
-					
+
 							<button type="remove_rows" id="delete_row" class="delete_row">-</button>
 					</td>
 
-						<!--nature of drug-->
-				
-						<td>
-							<textarea class="form-control nature_of_narcotic" rows="3" style="width:200px" name="nature_of_narcotic" id="nature_of_narcotic"></textarea>
-						</td>
+					<!--nature of drug-->
 
-						<!--quantity of narcotic drugs-->
+					<td>
+						<textarea class="form-control nature_of_narcotic" rows="3" style="width:200px" name="nature_of_narcotic" id="nature_of_narcotic">{{$seizures->drug_name}}</textarea>
+					</td>
 
-						<td><input type="text" class="form-control quantity_of_narcotics" style="width:150px" name="quantity_of_narcotics" id="quantity_of_narcotics"></td>
-					
-						<!--unit of the quantity of narcotic drugs-->
+					<!--quantity of narcotic drugs-->
 
-						<td>
-							<select class="form-control select2 narcotic_unit" style="width:150px" name="narcotic_unit" id="narcotic_unit">
-								<option value="">Select One Option. . . </option>
-								@foreach($data['units']  as $data3)
-									<option value="{{$data3['unit_id']}}">{{$data3['unit_name']}} </option>
-								@endforeach	
-							</select>
-						</td>
+					<td><input type="text" class="form-control quantity_of_narcotics" style="width:150px" name="quantity_of_narcotics" id="quantity_of_narcotics" value="{{$seizures->quantity_of_drug}}"></td>
 
-						<!--date of seizure-->
+					<!--unit of the quantity of narcotic drugs-->
 
-						<td>
-							<div class="input-group date" data-provide="datepicker">
-									<input type="text" class="form-control date_of_seizure" style="width:150px" name="date_of_seizure" id="date_of_seizure">
-										<div class="input-group-addon">
-											<span class="glyphicon glyphicon-th"></span>
-										</div>
-							</div>
-						</td>
+					<td>
+						<select class="form-control select2 narcotic_unit" style="width:150px" name="narcotic_unit" id="narcotic_unit">
+							<option value="{{$seizures->unit_name}}">{{$seizures->seizure_unit}} </option>
+							@foreach($data['units']  as $data3)
+								<option value="{{$data3['unit_id']}}">{{$data3['unit_name']}} </option>
+							@endforeach	
+						</select>
+					</td>
 
-						<!--disposal date-->
+					<!--date of seizure-->
 
-						<td><div class="input-group date" data-provide="datepicker">
-								<input type="text" class="form-control date_of_disposal" style="width:150px" name="date_of_disposal" id="date_of_disposal">
+					<td>
+						<div class="input-group date" data-provide="datepicker">
+								<input type="text" class="form-control date_of_seizure" style="width:150px" name="date_of_seizure" id="date_of_seizure" value="{{$seizures->date_of_seizure}}">
 									<div class="input-group-addon">
 										<span class="glyphicon glyphicon-th"></span>
 									</div>
-							</div>
-						</td>
+						</div>
+					</td>
 
-						<!--disposal quantity-->
+					<!--disposal date-->
 
-						<td><input type="text" class="form-control disposal_quantity" style="width:150px" name="disposal_quantity" id="disposal_quantity"></td>
-					
-						<!--unit of disposal quantity-->	
+					<td><div class="input-group date" data-provide="datepicker">
+							<input type="text" class="form-control date_of_disposal" style="width:150px" name="date_of_disposal" id="date_of_disposal" value="{{$seizures->date_of_disposal}}">
+								<div class="input-group-addon">
+									<span class="glyphicon glyphicon-th"></span>
+								</div>
+						</div>
+					</td>
 
-						<td>
-							<select class="form-control select2 disposal_unit" style="width:150px" name="disposal_unit" id="disposal_unit">
-								<option value="">Select One Option. . . </option>
-								@foreach($data['units']  as $data4)
-									<option value="{{$data4['unit_id']}}">{{$data4['unit_name']}} </option>
-								@endforeach	
-							</select>
-						</td>
+					<!--disposal quantity-->
 
-						<!--quantity of seizure drugs-->
+					<td><input type="text" class="form-control disposal_quantity" style="width:150px" name="disposal_quantity" id="disposal_quantity" value="{{$seizures->disposal_quantity}}"></td>
 
-						<td><input type="text" class="form-control undisposed_quantity" style="width:150px" name="undisposed_quantity" id="undisposed_quantity"></td>
-				
-						<!--unit of quantity of narcotic drugs-->
+					<!--unit of disposal quantity-->	
 
-						<td>
-							<select class="form-control select2 unit_of_undisposed_quantity" style="width:150px" name="unit_of_undisposed_quantity" id="unit_of_undisposed_quantity">
-								<option value="">Select One Option. . . </option>
-								@foreach($data['units']  as $data5)
-									<option value="{{$data5['unit_id']}}">{{$data5['unit_name']}} </option>
+					<td>
+						<select class="form-control select2 disposal_unit" style="width:150px" name="disposal_unit" id="disposal_unit">
+							<option value="{{$seizures->unit_of_disposal_quantity}}">{{$seizures->disposal_unit}}</option>
+							@foreach($data['units']  as $data4)
+								<option value="{{$data4['unit_id']}}">{{$data4['unit_name']}} </option>
+							@endforeach	
+						</select>
+					</td>
+
+					<!--quantity of seizure drugs-->
+
+					<td><input type="text" class="form-control undisposed_quantity" style="width:150px" name="undisposed_quantity" id="undisposed_quantity" value="{{$seizures->undisposed_quantity}}"></td>
+
+					<!--unit of quantity of narcotic drugs-->
+
+					<td>
+						<select class="form-control select2 unit_of_undisposed_quantity" style="width:150px" name="unit_of_undisposed_quantity" id="unit_of_undisposed_quantity" >
+							<option value="{{$seizures->undisposed_unit}}">{{$seizures->undisposed_unit_name}}</option>
+							@foreach($data['units']  as $data5)
+								<option value="{{$data5['unit_id']}}">{{$data5['unit_name']}} </option>
+							@endforeach
+						</select>
+					</td>
+
+					<!--storage location-->
+
+					<td>
+						<input type="text" class="form-control place_of_storage" style="width:150px" name="place_of_storage" id="place_of_storage" value="{{$seizures->storage_location}}">
+					</td>
+
+
+					<!--case details-->
+
+					<td><textarea class="form-control case_details" rows="3" style="width:200px" name="case_details" id="case_details">{{$seizures->case_details}}</textarea></td>
+
+					<!--district-->	
+
+					<td>
+						<select class="form-control select2 district" style="width:150px" name="district" id="district">
+							<option value="{{$seizures->district_id}}">{{$seizures->district_id}} </option>
+								@foreach($data['districts']  as $data1)
+									<option value="{{$data1['district_id']}}">{{$data1['district_name']}} </option>
 								@endforeach
-							</select>
-						</td>
+						</select>
+					</td>
 
-						<!--storage location-->
+					<!--where applied for certification-->
 
-						<td>
-							<input type="text" class="form-control place_of_storage" style="width:150px" name="place_of_storage" id="place_of_storage">
-						</td>
-					
+					<td>
+						<select class="form-control select2 where" style="width:150px" name="where" id="where">
+							<option value="{{$seizures->certification_court_id}}">{{$seizures->certification_court_id}} </option>
+								@foreach($data['courts'] as $data5)
+									<option value="{{$data5['court_id']}}">{{$data5['court_name']}} </option>
+								@endforeach
+						</select>
+					</td>
 
-						<!--case details-->
 
-						<td><textarea class="form-control case_details" rows="3" style="width:200px" name="case_details" id="case_details"></textarea></td>
-						
-						<!--district-->	
+					<!--date of certification-->
 
-						<td>
-							<select class="form-control select2 district" style="width:150px" name="district" id="district">
-								<option value="">Select One Option. . . </option>
-									@foreach($data['districts']  as $data1)
-										<option value="{{$data1['district_id']}}">{{$data1['district_name']}} </option>
-									@endforeach
-							</select>
-						</td>
-
-						<!--where applied for certification-->
-					
-						<td>
-							<select class="form-control select2 where" style="width:150px" name="where" id="where">
-								<option value="">Select One Option. . . </option>
-									@foreach($data['courts'] as $data5)
-										<option value="{{$data5['court_id']}}">{{$data5['court_name']}} </option>
-									@endforeach
-							</select>
-						</td>
-
-					 
-						<!--date of certification-->
-					
-						<td>
-							<div class="input-group date" data-provide="datepicker">
-								<input type="text" class="form-control date_of_certification" style="width:150px" name="date_of_certification" id="date_of_certification">
-									<div class="input-group-addon">
-										<span class="glyphicon glyphicon-th"></span>
-									</div>
-							</div>
-						</td>
-						<td>
-						<td><textarea class="form-control remarks" rows="3" style="width:200px" name="remarks" id="remarks"></textarea></td>
-						</td>
+					<td>
+						<div class="input-group date" data-provide="datepicker">
+							<input type="text" class="form-control date_of_certification" style="width:150px" name="date_of_certification" id="date_of_certification" value="{{$seizures->date_of_certification}}">
+								<div class="input-group-addon">
+									<span class="glyphicon glyphicon-th"></span>
+								</div>
+						</div>
+					</td>
+					<td>
+					<td><textarea class="form-control remarks" rows="3" style="width:200px" name="remarks" id="remarks">{{$seizures->remarks}}</textarea></td>
+					</td>
 					</tr>
+
+				@endforeach 
+			
 
 				</tbody>
 			</table> 
@@ -184,6 +190,7 @@
 		<br>
 		<div class="col-sm-offset-5 col-sm-4">
 			<button type="button" class="btn btn-primary" id="add_more">Add More</button>
+			<button type="button" class="btn btn-warning" id="draft">Draft</button>
 			<button type="button" class="btn btn-success" id="submit">Submit</button>
 		</div>
 		
@@ -272,7 +279,7 @@
 
 	/* fetching values from nature of narcotic field*/
 
-	$(document).on("click","#submit", function(){	
+	$(document).on("click","#draft", function(){	
 	$(".nature_of_narcotic").each(function(index){
 		nature_of_narcotic.push($(this).val());
 	});

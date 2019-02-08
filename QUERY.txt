@@ -149,6 +149,15 @@ insert into units(unit_id,unit_name)
 values(DEFAULT,'KILOLITRE');
 
 
+****************fetching unit_name******************************
+
+select s.quantity_of_drug,u1.unit_name seizure_unit, s.disposal_quantity, u2.unit_name disposal_unit,
+		s.undisposed_quantity,u3.unit_name undisposed_unit_name
+		from seizures s inner join units u1 on cast(s.unit_name as int)=u1.unit_id 
+		inner join units u2 on cast(s.unit_of_disposal_quantity as int)=u2.unit_id 
+		inner join units u3 on cast(s.undisposed_unit as int)=u3.unit_id
+
+
 
 
 

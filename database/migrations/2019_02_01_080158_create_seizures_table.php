@@ -18,7 +18,7 @@ class CreateSeizuresTable extends Migration
             $table->string('drug_name')->nullable(false);
             $table->double('quantity_of_drug',5,2)->nullable(false);  
             $table->string('unit_name')->nullable(false);
-            $table->date('date_of_seizure')->nullable(false);
+            $table->date('date_of_seizure')->nullable(true);
             $table->date('date_of_disposal')->nullable(true);
             $table->double('disposal_quantity',5,2)->nullable(true);  
             $table->string('unit_of_disposal_quantity')->nullable(true);
