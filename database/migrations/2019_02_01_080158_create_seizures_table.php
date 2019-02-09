@@ -23,7 +23,7 @@ class CreateSeizuresTable extends Migration
             $table->double('disposal_quantity',5,2)->nullable(true);  
             $table->string('unit_of_disposal_quantity')->nullable(true);
             $table->double('undisposed_quantity',5,2)->nullable(true);  
-            $table->string('unit_of_undisposed_quantity')->nullable(true);
+            $table->string('undisposed_unit')->nullable(true);
             $table->text('case_details')->nullable(true);
             $table->integer('district_id')->nullable(false);
             $table->integer('agency_id')->nullable(true);

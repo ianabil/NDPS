@@ -49,11 +49,11 @@
 					</tr>
 					
 				</thead>
-				<tbody>
+				<tbody id="tbody">
 
 				@foreach($data['seizures'] as $seizures)
 
-					<tr class="base_tr">
+					<tr>
 
 					<td class="action"> 
 
@@ -224,7 +224,10 @@
 
 		$(".action").hide();
 
-	var counter=0;
+	// counting the existing rows of the table to decide whether to show or hide the action section
+	var counter=$('#tbody tr').length; 
+	if(counter>1)
+		$(".action").show();	
 
  	/*LOADER*/
 
@@ -241,7 +244,7 @@
 	/* add row */
 
 	$(document).on("click","#add_more", function(){	
-		$(".base_tr").clone().removeClass("base_tr").appendTo("tbody").find(':text').val('');
+		$("#tbody tr:last").clone().appendTo("tbody").find(':text').val('').end().find('textarea').val('').end().find('select').val('');
 		$(".action").show();
 		counter++;
 						
@@ -252,7 +255,7 @@
 	$(document).on("click",".delete_row", function(){	
 		$(this).closest("tr").remove();
 		counter--;
-		if(counter==0)
+		if(counter==1)
 		{
 			$(".action").hide();
 		}
