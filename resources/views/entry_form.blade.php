@@ -16,7 +16,7 @@
 					<h3>Court/Agency:</h3>
 				</div>
 				<div class="col-sm-4">
-					<input type="text" class="form-control court_agency" style="width:200px;margin-top:20px" name="court_agency" id="court_agency">
+					<input type="text" class="form-control court_agency" style="width:200px;margin-top:20px" name="court_agency" id="court_agency" value="CID West Bengal" disabled>
 				</div>
 			</div>
 			<hr>				
@@ -190,8 +190,8 @@
 		<br>
 		<div class="col-sm-offset-5 col-sm-4">
 			<button type="button" class="btn btn-primary" id="add_more">Add More</button>
-			<button type="button" class="btn btn-warning" id="draft">Draft</button>
-			<button type="button" class="btn btn-success" id="submit">Submit</button>
+			<button type="button" class="btn btn-warning" id="draft">Save As Draft</button>
+			<button type="button" class="btn btn-success" id="submit">Final Submit</button>
 		</div>
 		
             
