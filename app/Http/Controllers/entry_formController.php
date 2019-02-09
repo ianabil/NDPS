@@ -36,28 +36,20 @@ class entry_formController extends Controller
         $data['districts'] = District::select('district_id','district_name')->get();
         $data['units'] = Unit::select('unit_id','unit_name')->get();
         $data['courts'] = Court_detail::select('court_id','court_name')->get();
-        // $data['seizures']= Seizure::join('units as u1','u1.unit_id','=','cast(seizures.unit_name as int)')
-        //                             ->join('units u2','u2.unit_id','=','cast(seizures.unit_of_disposal_quantity as int')
-        //                             ->join('units u3','u3.unit_id','=','cast(seizures.undisposed_unit as int)')
-        //                             ->where([
-        //                                     ['submit_flag','N'],
-        //                                     ['agency_id','1']
-        //                                     ])
-        //                             ->select('seizures.*',
-        //                                     'u1.unit_name seizure_unit',
-        //                                     'u2.unit_name disposal_unit',
-        //                                     'u3.unit_name undisposed_unit_name')
-        //                             ->get();
             
         $sql="select s.*,u1.unit_name seizure_unit, s.disposal_quantity, u2.unit_name disposal_unit,
         s.undisposed_quantity,u3.unit_name undisposed_unit_name
         from seizures s inner join units u1 on cast(s.unit_name as int)=u1.unit_id 
         inner join units u2 on cast(s.unit_of_disposal_quantity as int)=u2.unit_id 
-        inner join units u3 on cast(s.undisposed_unit as int)=u3.unit_id where s.submit_flag='N' and s.agency_id='1'";
+        inner join units u3 on cast(s.undisposed_unit as int)=u3.unit_id where s.submit_flag='N' and s.agency_id='1' order by seizure_id";
 
         $data['seizures']=DB::select($sql);
 
-
+        foreach($data['seizures'] as $seizures){
+            $seizures->date_of_seizure = Carbon::parse($seizures->date_of_seizure)->format('d-m-Y');
+            $seizures->date_of_disposal = Carbon::parse($seizures->date_of_disposal)->format('d-m-Y');
+            $seizures->date_of_certification = Carbon::parse($seizures->date_of_certification)->format('d-m-Y');
+        }
             
 
         return view('entry_form',compact('data'));   
@@ -81,6 +73,9 @@ class entry_formController extends Controller
      */
     public function store(Request $request)
     {
+
+        seizure::where('submit_flag','N')->delete();
+
         $nature_of_narcotic = $request->input('nature_of_narcotic'); 
         $quantity_of_narcotics = $request->input('quantity_of_narcotics'); 
         $narcotic_unit = $request->input('narcotic_unit'); 
@@ -102,7 +97,7 @@ class entry_formController extends Controller
         $remarks=$request->input('remarks');
         $update_date = Carbon::today();  
         $uploaded_date = Carbon::today();  
-        $submit_flag='N';
+        $submit_flag=$request->input('submit_flag');
 
        
         for($i=0;$i<$counter;$i++)
