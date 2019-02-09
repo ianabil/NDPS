@@ -98,6 +98,8 @@ class entry_formController extends Controller
         $update_date = Carbon::today();  
         $uploaded_date = Carbon::today();  
         $submit_flag=$request->input('submit_flag');
+        $month_of_report = date('Y-m-d', strtotime('01-'.$request->input('month_of_report')));
+
 
        
         for($i=0;$i<$counter;$i++)
@@ -125,7 +127,8 @@ class entry_formController extends Controller
                  'updated_at'=>$update_date,
                  'created_at'=>$uploaded_date,
                  'user_name'=>$user_name,
-                 'submit_flag'=>$submit_flag
+                 'submit_flag'=>$submit_flag,
+                 'month_of_report'=>$month_of_report
                  ]
 
             );

@@ -34,6 +34,7 @@ class CreateSeizuresTable extends Migration
             $table->text('remarks')->nullable(true);
             $table->string('user_name');
             $table->string('submit_flag');
+            $table->date('month_of_report');
             $table->timestamps();
             $table->foreign('district_id')->references('district_id')->on('districts');
         });

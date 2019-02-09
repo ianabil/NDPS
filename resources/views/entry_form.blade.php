@@ -12,14 +12,26 @@
         <!-- /.box-header -->
         <div class="box-body">
 			<div class="row">
-				<div class="col-sm-2">
-					<h3>Court/Agency:</h3>
-				</div>
-				<div class="col-sm-4">
-					<input type="text" class="form-control court_agency" style="width:200px;margin-top:20px" name="court_agency" id="court_agency" value="CID West Bengal" disabled>
-				</div>
+				<form class="form-inline">
+					<div class="col-sm-5">
+						<div class="form-group">
+							<label><h3>Court/Agency:</h3></label>
+							<input type="text" class="form-control court_agency" style="width:200px; margin-left:50px" name="court_agency" id="court_agency" value="CID West Bengal" disabled>
+						</div>
+					</div>
+					
+					<div class="cold-sm-5">
+						<div class="form-group">
+							<label><h3>Report For The Month Of:</h3></label>
+							@if(sizeof($data['seizures'])>0)
+								<input type="text" class="form-control date_only_month month_of_report" style="width:200px; margin-left:50px" name="month_of_report" id="month_of_report" value="{{date('F',strtotime($data['seizures']['0']->month_of_report)).'-'.date('Y',strtotime($data['seizures']['0']->month_of_report))}}">					
+							@else
+								<input type="text" class="form-control date_only_month month_of_report" style="width:200px; margin-left:50px" name="month_of_report" id="month_of_report" value="{{date('F',strtotime(date('d-m-Y') . '-1 month')).'-'.date('Y',strtotime(date('d-m-Y') . '-1 month'))}}">					
+							@endif
+						</div>
+				</form>					
 			</div>
-			<hr>				
+		<hr>				
 						
 		<div id="srollable" style="overflow:auto;">
 			<table class="table table-bordered">
@@ -351,7 +363,13 @@
 		$(".date").datepicker({
                 endDate:'0',
                 format: 'dd-mm-yyyy'
-            }); // Date picker initialization
+         }); // Date picker initialization For All The Form Elements
+
+		$(".date_only_month").datepicker({
+			format: "MM-yyyy",
+    		viewMode: "months", 
+    		minViewMode: "months"
+        }); // Date picker initialization For Month of Report
 
 		$(".action").hide();
 
@@ -409,10 +427,13 @@
 	var where = new Array();
 	var date_of_certification = new Array();
 	var remarks= new Array();
-
+	var month_of_report
 	// Function that will work for both Draft and Final Submit
 
 	function store(submit_flag) {
+
+		// Month Of Report
+		month_of_report = $("#month_of_report").val();
 
 		/* fetching values from nature of narcotic field*/
 		$(".nature_of_narcotic").each(function(index){
@@ -525,7 +546,8 @@
 						date_of_certification: date_of_certification,
 						counter: counter,
 						remarks: remarks,
-						submit_flag:submit_flag
+						submit_flag:submit_flag,
+						month_of_report:month_of_report
 					},
 
                     success:function(response){
