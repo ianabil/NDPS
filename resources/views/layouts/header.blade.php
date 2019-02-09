@@ -68,17 +68,12 @@
             <section class="sidebar">
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <ul class="sidebar-menu" data-widget="tree">
-                   
-
-               
                         <li class="treeview">
                             <a href="#"><i class="fa fa-search-minus"></i>
                                 <span>Reports/Enquiry</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="#">#</a></li>
-                                <li><a href="#">#</a></li>
-
+                                <li><a href="monthly_report">Monthly Report</a></li>
                             </ul>
                         </li>
                     
@@ -86,7 +81,7 @@
                         <li class="treeview">
                             <a href="#">
                                 <i class="fa fa-edit"></i>
-                                <span>Seizure Maintainance</span>
+                                <span>Master Maintainance</span>
                                 <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                             </a>
                             <ul class="treeview-menu">

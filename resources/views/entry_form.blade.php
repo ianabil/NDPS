@@ -159,7 +159,7 @@
 
 							<td>
 								<select class="form-control select2 district" style="width:150px" name="district" id="district">
-									<option value="{{$seizures->district_id}}">{{$seizures->district_id}} </option>
+									<option value="{{$seizures->district_id}}">{{$seizures->district_name}} </option>
 										@foreach($data['districts']  as $data1)
 											<option value="{{$data1['district_id']}}">{{$data1['district_name']}} </option>
 										@endforeach
@@ -170,7 +170,7 @@
 
 							<td>
 								<select class="form-control select2 where" style="width:150px" name="where" id="where">
-									<option value="{{$seizures->certification_court_id}}">{{$seizures->certification_court_id}} </option>
+									<option value="{{$seizures->certification_court_id}}">{{$seizures->court_name}} </option>
 										@foreach($data['courts'] as $data5)
 											<option value="{{$data5['court_id']}}">{{$data5['court_name']}} </option>
 										@endforeach
@@ -521,13 +521,12 @@
 		/* fetching values from remarks*/
 
 		$(".remarks").each(function(index){
-
 			remarks.push($(this).val());    
 		});
 
 		$.ajax({
                     type: "POST",
-                    url:"form", 
+                    url:"entry_form", 
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         nature_of_narcotic: nature_of_narcotic,
