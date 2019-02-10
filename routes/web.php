@@ -25,3 +25,5 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home'); 
 
 Route::resource('entry_form','entry_formController');
+
+Route::get('post_submission_preview','entry_formController@post_submission_preview');

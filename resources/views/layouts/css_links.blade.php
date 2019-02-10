@@ -33,4 +33,7 @@
     <link rel="stylesheet" href="{{asset('css/daterangepicker.css')}}">
 
     <!-- Making a field mandetory by inserting asteric-->
-    <link rel="stylesheet" href="{{asset('css/asteric.min.css')}}"
+    <link rel="stylesheet" href="{{asset('css/asteric.min.css')}}">
+
+    <!--Data Table Buttons-->
+    <link rel="stylesheet" href="{{asset('css/buttons.dataTables.min.css')}}">

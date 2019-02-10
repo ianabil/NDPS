@@ -29,6 +29,7 @@
 								<input type="text" class="form-control date_only_month month_of_report" style="width:200px; margin-left:50px" name="month_of_report" id="month_of_report" value="{{date('F',strtotime(date('d-m-Y') . '-1 month')).'-'.date('Y',strtotime(date('d-m-Y') . '-1 month'))}}">					
 							@endif
 						</div>
+					</div>
 				</form>					
 			</div>
 		<hr>				
@@ -52,7 +53,7 @@
 						<td rowspan="2"><strong>Case Details</strong></td>
 						<td rowspan="2"><strong>District</strong></td>
 						<td colspan="2"><strong>Applied for Certification</strong></td>
-						<td colspan="2"><strong>Remarks</strong></td>
+						<td rowspan="2"><strong>Remarks</strong></td>
 
 					</tr>
 					<tr>
@@ -65,7 +66,7 @@
 				@if(sizeof($data['seizures'])>0)
 						@foreach($data['seizures'] as $seizures)
 
-							<tr>
+						<tr>
 
 							<td class="action"> 
 
@@ -188,10 +189,11 @@
 										</div>
 								</div>
 							</td>
-							<td>
+							
+							<!--Remarks-->
 							<td><textarea class="form-control remarks" rows="3" style="width:200px" name="remarks" id="remarks">{{$seizures->remarks}}</textarea></td>
-							</td>
-							</tr>
+							
+						</tr>
 
 						@endforeach 
 
@@ -578,8 +580,9 @@
 					store("S");
 					swal("Report Submitted Successfully","","success");
 					setTimeout(function(){
+						window.open('post_submission_preview','_blank').focus();
 						window.location.reload();
-					},1700);
+					},1700);					
 				} else {
 					swal("Submission Cancelled","","error");
 				}

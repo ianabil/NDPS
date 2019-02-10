@@ -30,6 +30,8 @@ class entry_formController extends Controller
      */
     public function index()
     {
+        $agency_id =1;
+
         $data = array();
         
         $data['drugs'] = Narcotic::select('drug_id','drug_name')->get();
@@ -44,7 +46,7 @@ class entry_formController extends Controller
         inner join units u3 on cast(s.undisposed_unit as int)=u3.unit_id
         inner join court_details on s.certification_court_id = court_details.court_id
         inner join districts on s.district_id = districts.district_id
-        where s.submit_flag='N' and s.agency_id='1' order by seizure_id";
+        where s.submit_flag='N' and s.agency_id= ".$agency_id." order by seizure_id";
 
         $data['seizures']=DB::select($sql);
 
@@ -184,5 +186,33 @@ class entry_formController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function post_submission_preview(){
+        $agency_id = 1;
+        $data = array();
+
+        $sql="select s.*,u1.unit_name seizure_unit, s.disposal_quantity, u2.unit_name disposal_unit,
+        s.undisposed_quantity,u3.unit_name undisposed_unit_name, court_details.*, districts.*
+        from seizures s inner join units u1 on cast(s.unit_name as int)=u1.unit_id 
+        inner join units u2 on cast(s.unit_of_disposal_quantity as int)=u2.unit_id 
+        inner join units u3 on cast(s.undisposed_unit as int)=u3.unit_id
+        inner join court_details on s.certification_court_id = court_details.court_id
+        inner join districts on s.district_id = districts.district_id
+        where s.submit_flag='S' and s.agency_id= ".$agency_id." and s.month_of_report = (select max(month_of_report) from seizures where agency_id = 1)
+        order by seizure_id";
+
+        $data['seizures']=DB::select($sql);
+
+        foreach($data['seizures'] as $seizures){
+            $seizures->date_of_seizure = Carbon::parse($seizures->date_of_seizure)->format('d-m-Y');
+            $seizures->date_of_disposal = Carbon::parse($seizures->date_of_disposal)->format('d-m-Y');
+            $seizures->date_of_certification = Carbon::parse($seizures->date_of_certification)->format('d-m-Y');
+            $seizures->month_of_report = date('F',strtotime($seizures->month_of_report)).'-'.date('Y',strtotime($seizures->month_of_report));
+        }
+            
+
+        return view('post_submission_preview',compact('data'));   
+
     }
 }
