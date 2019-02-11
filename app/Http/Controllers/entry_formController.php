@@ -10,7 +10,6 @@ use App\Unit;
 use App\Agency_detail;
 use App\Court_detail;
 use App\Magistrate;
-use App\Ps_detail;
 use App\Seizure;
 use App\Storage_detail;
 use App\User;

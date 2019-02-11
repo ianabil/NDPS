@@ -27,3 +27,13 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::resource('entry_form','entry_formController');
 
 Route::get('post_submission_preview','entry_formController@post_submission_preview');
+
+Route::get('monthly_report', function(){
+    return view ('monthly_report');
+});
+
+Route::post('monthly_report/submitted_stakeholders',
+'MonthlyReportController@submitted_stakeholders');
+
+Route::post('monthly_report/show_monthly_report',
+'MonthlyReportController@show_monthly_report');

@@ -3,7 +3,7 @@
 
 <div class="box box-default">
         <div class="box-header with-border" >
-            <h3 class="box-title" text-align="center"><strong><u>Seizure/Disposal Details of Narcotic Drugs:</u></strong></h3>
+            <h3 class="box-title" text-align="center"><strong>Seizure/Disposal Details of Narcotic Drugs:</strong></h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
@@ -430,6 +430,7 @@
 	var date_of_certification = new Array();
 	var remarks= new Array();
 	var month_of_report
+
 	// Function that will work for both Draft and Final Submit
 
 	function store(submit_flag) {
@@ -580,8 +581,9 @@
 					store("S");
 					swal("Report Submitted Successfully","","success");
 					setTimeout(function(){
-						window.open('post_submission_preview','_blank').focus();
-						window.location.reload();
+						window.location.href = "post_submission_preview";
+						//window.open('post_submission_preview').focus();
+						//window.location.reload();
 					},1700);					
 				} else {
 					swal("Submission Cancelled","","error");
