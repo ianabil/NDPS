@@ -592,42 +592,29 @@
 		
 		
 		var district=$(this).val();
-		// var st=$(this).closest(".where");
-		// var obj;
-		//$("select option:not(:first)'").remove();
-		// $(this).closest('.where').find(':option=selected').remove();
+		var selector = $(this);
 
+		selector.closest("tr").find('.where').children('option:not(:first)').remove();
 
 			$.ajax({
                     type: "POST",
-                    url:"entry_form/district", 
-					async:false,
+                    url:"entry_form/district",
                     data: {
 							_token: $('meta[name="csrf-token"]').attr('content'),
 							district: district
-						  },
+					},
 
-					success:function(resonse){
-                        
-						obj=$.parseJSON(resonse)
-						 console.log(obj);
-						 
-							//console.log('<option value="'+value.court_id+'">'+value.court_name+'</option>');
-							
-						 
-					
+					success:function(resonse){                        
+						var obj=$.parseJSON(resonse)
+						$.each(obj['district_wise_court'],function(index,value){							
+							selector.closest("tr").find('.where').append('<option value="'+value.court_id+'">'+value.court_name+'</option>');
+						})
 					}
-				});
-				
+			});
 
-				$('.where').empty();
-
-				$.each(obj['district_wise_court'],function(index,value){
-					
-					$(".where").append('<option value="'+value.court_id+'">'+value.court_name+'</option>');
-			})
-		});
 	});
+
+});
 
 </script>
 </body>
