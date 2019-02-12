@@ -305,9 +305,6 @@
 						<td>
 							<select class="form-control select2 where" style="width:150px" name="where" id="where">
 								<option value="">Select an option</option>
-									@foreach($data['courts'] as $data5)
-										<option value="{{$data5['court_id']}}">{{$data5['court_name']}} </option>
-									@endforeach
 							</select>
 						</td>
 
@@ -429,7 +426,7 @@
 	var where = new Array();
 	var date_of_certification = new Array();
 	var remarks= new Array();
-	var month_of_report
+	var month_of_report;
 
 	// Function that will work for both Draft and Final Submit
 
@@ -589,9 +586,49 @@
 					swal("Submission Cancelled","","error");
 				}
 			});
-			
-	})
-});
+	});
+
+	$(document).on("change","#district", function(){	
+		
+		
+		var district=$(this).val();
+		// var st=$(this).closest(".where");
+		// var obj;
+		//$("select option:not(:first)'").remove();
+		// $(this).closest('.where').find(':option=selected').remove();
+
+
+			$.ajax({
+                    type: "POST",
+                    url:"entry_form/district", 
+					async:false,
+                    data: {
+							_token: $('meta[name="csrf-token"]').attr('content'),
+							district: district
+						  },
+
+					success:function(resonse){
+                        
+						obj=$.parseJSON(resonse)
+						 console.log(obj);
+						 
+							//console.log('<option value="'+value.court_id+'">'+value.court_name+'</option>');
+							
+						 
+					
+					}
+				});
+				
+
+				$('.where').empty();
+
+				$.each(obj['district_wise_court'],function(index,value){
+					
+					$(".where").append('<option value="'+value.court_id+'">'+value.court_name+'</option>');
+			})
+		});
+	});
+
 </script>
 </body>
 </html>
