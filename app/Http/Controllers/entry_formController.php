@@ -214,4 +214,19 @@ class entry_formController extends Controller
         return view('post_submission_preview',compact('data'));   
 
     }
+
+    public function district_wise_court(Request $request){
+
+        $district = $request->input('district'); 
+
+        $data['district_wise_court']=Court_detail::
+                                    where('district_id','=', $district )
+                                    ->get();
+
+        // return view('district_wise_court',compact('data'));   
+
+        echo json_encode($data);
+
+
+    }
 }

@@ -37,3 +37,6 @@ Route::post('monthly_report/submitted_stakeholders',
 
 Route::post('monthly_report/show_monthly_report',
 'MonthlyReportController@show_monthly_report');
+
+Route::post('entry_form/district',
+'entry_formController@district_wise_court');
