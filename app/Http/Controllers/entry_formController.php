@@ -229,4 +229,11 @@ class entry_formController extends Controller
 
 
     }
+
+    public function narcotic_suggestion(Request $request){
+        $word = $request->input('word');
+        $available_narcotics = Narcotic::select('drug_name')
+                                        ->get();
+        echo json_encode($available_narcotics);
+    }
 }

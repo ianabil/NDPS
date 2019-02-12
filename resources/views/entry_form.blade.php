@@ -372,6 +372,24 @@
 
 		$(".action").hide();
 
+
+		/*Narcotic Suggestion :: STARTS
+
+		var availableTags = new Array();
+
+		$.ajax({
+			type:"POST",
+			url:"entry_form/narcotic_suggestion",
+			data:{ _token: $('meta[name="csrf-token"]').attr('content')},
+			success:function(response){
+				var obj = $.parseJSON(response);
+				$.each(obj, function(index,value){
+					availableTags.push(value.drug_name);
+				})
+			}
+		})
+		Narcotic Suggestion :: STARTS*/
+
 	// counting the existing rows of the table to decide whether to show or hide the action section
 	var counter=$('#tbody tr').length; 
 	if(counter>1)

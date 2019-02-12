@@ -32,5 +32,3 @@
     <script src="{{asset('js/buttons.print.min.js')}}"></script>
     <script src="{{asset('js/buttons.colVis.min.js')}}"></script>
     <!-- For Data Table Buttons ENDS -->
-   
-   
