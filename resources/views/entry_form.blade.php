@@ -1,7 +1,7 @@
 @extends('layouts.app') @section('content')
 <!-- Main content -->
 
-<div class="box box-default form-group required">
+<div class="box box-default">
         <div class="box-header with-border" >
             <h3 class="box-title" text-align="center"><strong>Seizure/Disposal Details of Narcotic Drugs:</strong></h3>
             <div class="box-tools pull-right">
@@ -14,15 +14,15 @@
 			<div class="row">
 				<form class="form-inline">
 					<div class="col-sm-5">
-						<div class="form-group">
-							<label><h3>Court/Agency:</h3></label>
+						<div class="form-group required">
+							<label class="control-label" style="font-size: 20px">Court/Agency:</label>
 							<input type="text" class="form-control court_agency" style="width:200px; margin-left:50px" name="court_agency" id="court_agency" value="CID West Bengal" disabled>
 						</div>
 					</div>
 					
 					<div class="cold-sm-5">
-						<div class="form-group">
-							<label><h3>Report For The Month Of:</h3></label>
+						<div class="form-group required">
+							<label class="control-label" style="font-size: 20px">Report For The Month Of:</label>
 							@if(sizeof($data['seizures'])>0)
 								<input type="text" class="form-control date_only_month month_of_report" style="width:200px; margin-left:50px" name="month_of_report" id="month_of_report" value="{{date('F',strtotime($data['seizures']['0']->month_of_report)).'-'.date('Y',strtotime($data['seizures']['0']->month_of_report))}}">					
 							@else
@@ -39,15 +39,15 @@
 		@else
 			<div id="scrollable" class="table_tr" style="overflow:auto;display:none;">
 		@endif
-
+		<div class="form-group required">
 			<table class="table table-bordered">
 				<thead >
 					
 					<tr >
 						<td rowspan="2" class="action"></td>
-						<td rowspan="2"><strong>Nature of Narcotic<br>Drugs/Controlled<br>Substance</strong></td>
-						<td rowspan="2"><strong>Quantity of<br>Seized<br>Contraband</strong></td>
-						<td rowspan="2"><strong>Unit of <br>Seized<br>Contraband</strong></td>
+						<td rowspan="2"><label class="control-label"><strong>Nature of Narcotic<br>Drugs/Controlled<br>Substance</strong></label></td>
+						<td rowspan="2"><label class="control-label"><strong>Quantity of<br>Seized<br>Contraband</strong></label></td>
+						<td rowspan="2"><label class="control-label"><strong>Unit of <br>Seized<br>Contraband</strong></label></td>
 						<td rowspan="2"><strong>Date of Seizure</strong></td>
 						<td rowspan="2"><strong>Disposal Date</strong></td>
 						<td rowspan="2"><strong>Disposal Quantity</strong></td>
@@ -56,7 +56,7 @@
 						<td rowspan="2"><strong>Unit of <br>Undisposed<br>Quantity</strong></td>
 						<td rowspan="2"><strong>Place of Storage <br> of seized drugs</strong></td>
 						<td rowspan="2"><strong>Case Details</strong></td>
-						<td rowspan="2"><strong>District</strong></td>
+						<td rowspan="2"><label class="control-label"><strong>District</strong></label></td>
 						<td colspan="2"><strong>Applied for Certification</strong></td>
 						<td rowspan="2"><strong>Remarks</strong></td>
 
@@ -81,9 +81,11 @@
 							<!--nature of drug-->
 
 							<td>
-								<label class='control-label form-group-required'> 
-									<textarea class="form-control nature_of_narcotic" rows="3" style="width:200px" name="nature_of_narcotic" id="nature_of_narcotic" required>{{$seizures->drug_name}}</textarea>
-								</label>
+								<div class="control-label form-group required">
+									<label> 
+										<textarea class="form-control nature_of_narcotic" rows="3" style="width:200px" name="nature_of_narcotic" id="nature_of_narcotic">{{$seizures->drug_name}}</textarea>
+									</label>
+								</div>
 							</td>
 
 							<!--quantity of narcotic drugs-->
@@ -338,20 +340,21 @@
 				</tbody>
 			</table> 
 		</div>
-		<br>
+	</div>
+	<br>
 
-		@if(sizeof($data['seizures'])>0)
-			<div class="col-sm-offset-5 col-sm-4 table_tr">
-		@else
-			<div class="col-sm-offset-5 col-sm-4 table_tr" style="display:none;">
-		@endif
-			<button type="button" class="btn btn-primary" id="add_more">Add More</button>
-			<button type="button" class="btn btn-warning" id="draft">Save As Draft</button>
-			<button type="button" class="btn btn-success" id="submit">Final Submit</button>
-		</div>
+	@if(sizeof($data['seizures'])>0)
+		<div class="col-sm-offset-5 col-sm-4 table_tr">
+	@else
+		<div class="col-sm-offset-5 col-sm-4 table_tr" style="display:none;">
+	@endif
+		<button type="button" class="btn btn-primary" id="add_more">Add More</button>
+		<button type="button" class="btn btn-warning" id="draft">Save As Draft</button>
+		<button type="button" class="btn btn-success" id="submit">Final Submit</button>
+	</div>
 		
             
- 	</div>
+ </div>
 </div>
 
 <!--loader starts-->
