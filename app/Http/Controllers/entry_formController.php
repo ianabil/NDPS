@@ -223,7 +223,7 @@ class entry_formController extends Controller
                                     where('district_id','=', $district )
                                     ->get();
 
-        // return view('district_wise_court',compact('data'));   
+          
 
         echo json_encode($data);
 
@@ -235,5 +235,23 @@ class entry_formController extends Controller
         $available_narcotics = Narcotic::select('drug_name')
                                         ->get();
         echo json_encode($available_narcotics);
+    }
+
+    public function submission_validation(Request $request){
+
+       
+
+        $month_of_report = date('Y-m-d',strtotime('01-'.$request->input('month_of_report'))); 
+        $submit_flag='S';
+        $agency_id=1;
+        $month_of_report=Seizure::
+                                    where([['month_of_report','=', $month_of_report], 
+                                    ['submit_flag','=', $submit_flag ],
+                                    ['agency_id','=', $agency_id ]])
+                                    ->count();
+
+    
+        echo json_encode($month_of_report);
+
     }
 }

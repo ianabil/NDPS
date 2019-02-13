@@ -1,7 +1,7 @@
 @extends('layouts.app') @section('content')
 <!-- Main content -->
 
-<div class="box box-default">
+<div class="box box-default form-group required">
         <div class="box-header with-border" >
             <h3 class="box-title" text-align="center"><strong>Seizure/Disposal Details of Narcotic Drugs:</strong></h3>
             <div class="box-tools pull-right">
@@ -26,17 +26,22 @@
 							@if(sizeof($data['seizures'])>0)
 								<input type="text" class="form-control date_only_month month_of_report" style="width:200px; margin-left:50px" name="month_of_report" id="month_of_report" value="{{date('F',strtotime($data['seizures']['0']->month_of_report)).'-'.date('Y',strtotime($data['seizures']['0']->month_of_report))}}">					
 							@else
-								<input type="text" class="form-control date_only_month month_of_report" style="width:200px; margin-left:50px" name="month_of_report" id="month_of_report" value="{{date('F',strtotime(date('d-m-Y') . '-1 month')).'-'.date('Y',strtotime(date('d-m-Y') . '-1 month'))}}">					
+							<input type="text" class="form-control date_only_month month_of_report" style="width:200px; margin-left:50px" name="month_of_report" id="month_of_report">	
 							@endif
 						</div>
 					</div>
 				</form>					
 			</div>
-		<hr>				
+		<hr>
 						
-		<div id="srollable" style="overflow:auto;">
+		@if(sizeof($data['seizures'])>0)
+			<div id="scrollable" class="table_tr" style="overflow:auto;">
+		@else
+			<div id="scrollable" class="table_tr" style="overflow:auto;display:none;">
+		@endif
+
 			<table class="table table-bordered">
-				<thead>
+				<thead >
 					
 					<tr >
 						<td rowspan="2" class="action"></td>
@@ -76,7 +81,9 @@
 							<!--nature of drug-->
 
 							<td>
-								<textarea class="form-control nature_of_narcotic" rows="3" style="width:200px" name="nature_of_narcotic" id="nature_of_narcotic">{{$seizures->drug_name}}</textarea>
+								<label class='control-label form-group-required'> 
+									<textarea class="form-control nature_of_narcotic" rows="3" style="width:200px" name="nature_of_narcotic" id="nature_of_narcotic" required>{{$seizures->drug_name}}</textarea>
+								</label>
 							</td>
 
 							<!--quantity of narcotic drugs-->
@@ -198,6 +205,8 @@
 						@endforeach 
 
 				@else
+
+
 					
 					<tr>
 
@@ -330,7 +339,12 @@
 			</table> 
 		</div>
 		<br>
-		<div class="col-sm-offset-5 col-sm-4">
+
+		@if(sizeof($data['seizures'])>0)
+			<div class="col-sm-offset-5 col-sm-4 table_tr">
+		@else
+			<div class="col-sm-offset-5 col-sm-4 table_tr" style="display:none;">
+		@endif
 			<button type="button" class="btn btn-primary" id="add_more">Add More</button>
 			<button type="button" class="btn btn-warning" id="draft">Save As Draft</button>
 			<button type="button" class="btn btn-success" id="submit">Final Submit</button>
@@ -342,10 +356,10 @@
 
 <!--loader starts-->
 
-            <div class="col-md-offset-5 col-md-3" id="wait" style="display:none;">
-                    <img src='images/09b24e31234507.564a1d23c07b4.gif'width="15%" height="5%" />
-                        <br>Loading..
-            </div>
+<div class="col-md-offset-5 col-md-3" id="wait" style="display:none;">
+    <img src='images/09b24e31234507.564a1d23c07b4.gif'width="15%" height="5%" />
+      <br>Loading..
+</div>
    
    <!--loader starts-->
 @endsection
@@ -364,11 +378,40 @@
                 format: 'dd-mm-yyyy'
          }); // Date picker initialization For All The Form Elements
 
-		$(".date_only_month").datepicker({
+		var date=$(".date_only_month").datepicker({
 			format: "MM-yyyy",
     		viewMode: "months", 
     		minViewMode: "months"
         }); // Date picker initialization For Month of Report
+
+		
+		date.on('hide',function(e){
+		 var month_of_report=$("#month_of_report").val();
+			console.log(month_of_report);
+
+			$.ajax({
+				 type:"POST",
+				 url:"entry_form/submission_validation",
+				 data:{
+					_token: $('meta[name="csrf-token"]').attr('content'),
+                    month_of_report:month_of_report
+				 },
+				 success : function(response){
+                    var obj = $.parseJSON(response);
+					console.log(obj);
+					if(obj>0)
+					{
+						swal("Report Already Submitted"+month_of_report,"","error");
+						$(".table_tr").hide();					
+					}
+					else{
+						$(".table_tr").show();
+					}
+
+				 }
+                   
+			})
+		})
 
 		$(".action").hide();
 

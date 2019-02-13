@@ -42,3 +42,7 @@ Route::post('entry_form/district',
 'entry_formController@district_wise_court');
 
 Route::post('entry_form/narcotic_suggestion','entry_formController@narcotic_suggestion');
+
+Route::post('entry_form/submission_validation',
+'entry_formController@submission_validation');
+
