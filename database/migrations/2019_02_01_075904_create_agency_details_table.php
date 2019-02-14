@@ -16,6 +16,7 @@ class CreateAgencyDetailsTable extends Migration
         Schema::create('agency_details', function (Blueprint $table) {
             $table->increments('agency_id')->nullable(false);
             $table->string('agency_name')->nullable(false);
+            $table->string('district_for_report')->nullable(true);
             $table->timestamps();
         });
     }
