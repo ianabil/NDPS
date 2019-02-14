@@ -360,7 +360,7 @@
 <!--loader starts-->
 
 <div class="col-md-offset-5 col-md-3" id="wait" style="display:none;">
-    <img src='images/09b24e31234507.564a1d23c07b4.gif'width="15%" height="5%" />
+    <img src='images/loader.gif'width="25%" height="10%" />
       <br>Loading..
 </div>
    
@@ -390,30 +390,37 @@
 		
 		date.on('hide',function(e){
 		 var month_of_report=$("#month_of_report").val();
-			console.log(month_of_report);
+			//console.log(month_of_report);
 
-			$.ajax({
-				 type:"POST",
-				 url:"entry_form/submission_validation",
-				 data:{
-					_token: $('meta[name="csrf-token"]').attr('content'),
-                    month_of_report:month_of_report
-				 },
-				 success : function(response){
-                    var obj = $.parseJSON(response);
-					console.log(obj);
-					if(obj>0)
-					{
-						swal("Report Already Submitted"+month_of_report,"","error");
-						$(".table_tr").hide();					
-					}
-					else{
-						$(".table_tr").show();
-					}
+			if(month_of_report=="")
+			{
+				return false;
+			}
+			else
+			{
+				$.ajax({
+					type:"POST",
+					url:"entry_form/submission_validation",
+					data:{
+						_token: $('meta[name="csrf-token"]').attr('content'),
+						month_of_report:month_of_report
+					},
+					success : function(response){
+						var obj = $.parseJSON(response);
+						console.log(obj);
+						if(obj>0)
+						{
+							swal("Report Already Submitted"+month_of_report,"","error");
+							$(".table_tr").hide();					
+						}
+						else{
+							$(".table_tr").show();
+						}
 
-				 }
-                   
-			})
+					}
+					
+				})
+			}
 		})
 
 		$(".action").hide();
@@ -451,6 +458,7 @@
             });
 
     /*LOADER*/
+	
 
 
 	/* add row */
@@ -492,6 +500,9 @@
 	var remarks= new Array();
 	var month_of_report;
 
+	var valid_flag=1;
+	var counter=1;
+
 	// Function that will work for both Draft and Final Submit
 
 	function store(submit_flag) {
@@ -501,18 +512,35 @@
 
 		/* fetching values from nature of narcotic field*/
 		$(".nature_of_narcotic").each(function(index){
-			nature_of_narcotic.push($(this).val());
+			if($(this).val()=="")
+			{
+				valid_flag=0;
+			}
+			
+				nature_of_narcotic.push($(this).val());
+			
 		});
+
 
 		/* fetching values from quantity_of_narcotics field*/
 
 		$(".quantity_of_narcotics").each(function(index){
+			if($(this).val()=="")
+			{
+				
+				valid_flag=0;
+			}
 			quantity_of_narcotics.push($(this).val());
 		});
 
 		/* fetching values from unit of narcotic_unit field*/
 
 		$(".narcotic_unit").each(function(index){
+			if($(this).val()=="")
+			{
+				
+				valid_flag=0;
+			}
 			narcotic_unit.push($(this).val());
 		});
 		/* fetching values from date_of_seizure field*/
@@ -588,45 +616,83 @@
 			remarks.push($(this).val());    
 		});
 
-		$.ajax({
-                    type: "POST",
-                    url:"entry_form", 
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        nature_of_narcotic: nature_of_narcotic,
-						quantity_of_narcotics: quantity_of_narcotics,
-						narcotic_unit: narcotic_unit,
-						date_of_seizure: date_of_seizure,
-						date_of_disposal: date_of_disposal,
-						disposal_quantity: disposal_quantity,
-						disposal_unit: disposal_unit,
-						undisposed_quantity: undisposed_quantity,
-						unit_of_undisposed_quantity: unit_of_undisposed_quantity,
-						place_of_storage: place_of_storage,
-						case_details: case_details,
-						district: district,
-						where: where,
-						date_of_certification: date_of_certification,
-						counter: counter,
-						remarks: remarks,
-						submit_flag:submit_flag,
-						month_of_report:month_of_report
-					},
+		counter++;
 
-                    success:function(response){
-                        
-					}
-				});
+	if(valid_flag==0)
+	{
+		//empty all the arrays
+
+		 nature_of_narcotic = [];
+		 quantity_of_narcotics = [];
+		 narcotic_unit = [];
+		 date_of_seizure = [];
+		 date_of_disposal = [];
+		 disposal_quantity = [];
+		 disposal_unit = [];
+		 undisposed_quantity = [];
+		 unit_of_undisposed_quantity = [];
+		 place_of_storage = [];
+		 case_details = [];
+		 district = [];
+		 where = [];
+		 date_of_certification = [];
+		 remarks= [];
+		 counter=1;
+
+
+			return false;
 	}
+	else{
+
+			$.ajax({
+						type: "POST",
+						url:"entry_form", 
+						data: {
+							_token: $('meta[name="csrf-token"]').attr('content'),
+							nature_of_narcotic: nature_of_narcotic,
+							quantity_of_narcotics: quantity_of_narcotics,
+							narcotic_unit: narcotic_unit,
+							date_of_seizure: date_of_seizure,
+							date_of_disposal: date_of_disposal,
+							disposal_quantity: disposal_quantity,
+							disposal_unit: disposal_unit,
+							undisposed_quantity: undisposed_quantity,
+							unit_of_undisposed_quantity: unit_of_undisposed_quantity,
+							place_of_storage: place_of_storage,
+							case_details: case_details,
+							district: district,
+							where: where,
+							date_of_certification: date_of_certification,
+							counter: counter,
+							remarks: remarks,
+							submit_flag:submit_flag,
+							month_of_report:month_of_report
+						},
+
+						success:function(response){
+							
+						}
+					});
+			
+				
+			}
+		}
 	
 	
 
 	$(document).on("click","#draft", function(){	
 			store("N");
-			swal("Draft Saved","","success");
-			setTimeout(function(){
-				window.location.reload();
-			},1700);
+			if(valid_flag==0)
+			{
+				swal("Mandatory field(s) left blank","For row no. - "+counter,"error");
+				return false;
+			}
+			else{
+				swal("Draft Saved","","success");
+				setTimeout(function(){
+					window.location.reload();
+				},1700);
+			}
 	});
 
 	$(document).on("click","#submit", function(){
