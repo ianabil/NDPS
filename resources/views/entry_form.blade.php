@@ -500,9 +500,7 @@
 	var remarks= new Array();
 	var month_of_report;
 
-	var valid_flag=1;
-	var counter=1;
-
+	
 	// Function that will work for both Draft and Final Submit
 
 	function store(submit_flag) {
@@ -512,10 +510,7 @@
 
 		/* fetching values from nature of narcotic field*/
 		$(".nature_of_narcotic").each(function(index){
-			if($(this).val()=="")
-			{
-				valid_flag=0;
-			}
+			
 			
 				nature_of_narcotic.push($(this).val());
 			
@@ -525,22 +520,14 @@
 		/* fetching values from quantity_of_narcotics field*/
 
 		$(".quantity_of_narcotics").each(function(index){
-			if($(this).val()=="")
-			{
-				
-				valid_flag=0;
-			}
+			
 			quantity_of_narcotics.push($(this).val());
 		});
 
 		/* fetching values from unit of narcotic_unit field*/
 
 		$(".narcotic_unit").each(function(index){
-			if($(this).val()=="")
-			{
-				
-				valid_flag=0;
-			}
+			
 			narcotic_unit.push($(this).val());
 		});
 		/* fetching values from date_of_seizure field*/
@@ -594,10 +581,7 @@
 		/* fetching values from district field*/
 
 		$(".district").each(function(index){
-			if($(this).val()=="")
-			{
-				valid_flag=0;
-			}
+			
 				district.push($(this).val());
 
 		});
@@ -620,33 +604,8 @@
 			remarks.push($(this).val());    
 		});
 
-		counter++;
-
-	if(valid_flag==0)
-	{
-		//empty all the arrays
-
-		 nature_of_narcotic = [];
-		 quantity_of_narcotics = [];
-		 narcotic_unit = [];
-		 date_of_seizure = [];
-		 date_of_disposal = [];
-		 disposal_quantity = [];
-		 disposal_unit = [];
-		 undisposed_quantity = [];
-		 unit_of_undisposed_quantity = [];
-		 place_of_storage = [];
-		 case_details = [];
-		 district = [];
-		 where = [];
-		 date_of_certification = [];
-		 remarks= [];
-		 counter=1;
-
-
-			return false;
-	}
-	else{
+		
+	
 
 			$.ajax({
 						type: "POST",
@@ -679,24 +638,19 @@
 					});
 			
 				
-			}
+		
 		}
 	
 	
 
-	$(document).on("click","#draft", function(){	
+	$(document).on("click","#draft", function(){
 			store("N");
-			if(valid_flag==0)
-			{
-				swal("Mandatory field(s) left blank","For row no. - "+counter,"error");
-				return false;
-			}
-			else{
+			
 				swal("Draft Saved","","success");
 				setTimeout(function(){
 					window.location.reload();
 				},1700);
-			}
+			
 	});
 
 	$(document).on("click","#submit", function(){
