@@ -32,12 +32,6 @@ class MonthlyReportController extends Controller
                                 ->distinct()
                                 ->get();
 
-        $data['court'] = Seizure::join('court_details','seizures.court_id','=','court_details.court_id')
-                                ->where([['month_of_report',$month_of_report],['submit_flag','S']])
-                                ->select('court_details.court_id','court_details.court_name')
-                                ->distinct()
-                                ->get();
-
         echo json_encode($data);
     }
 

@@ -110,14 +110,6 @@
                         );
                         
                     })
-                    $.each(obj['court'], function(key,value){
-                        $("#stakeholder").append(
-                            $("<option></option>")
-                            .attr("value",value.court_id)
-                            .text(value.court_name)
-                        );
-                        
-                    })
                 }
             })
         })
