@@ -52,6 +52,7 @@
             <table class="table table-bordered display" style="white-space: nowrap;">
                 <thead>
                     <tr>
+                        <th rowspan="1"><strong>Sl No.</th>
                         <th rowspan="1"><strong>Nature of Narcotic<br> Drugs / Controlled<br> Substance</strong></th>
                         <th rowspan="1"><strong>Quantity of<br> Seized<br> Contraband</strong></th>
                         <th rowspan="1"><strong>Date of Seizure</strong></th>
@@ -142,7 +143,8 @@
                             month_of_report:month_of_report
                         },
                     },
-                    "columns": [                
+                    "columns": [   
+                      {"data": "Sl No"},         
                       {"data": "Narcotic Nature"},
                       {"data": "Seize Quantity"},
                       {"data": "Seizure Date"},

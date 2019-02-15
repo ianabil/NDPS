@@ -22,7 +22,7 @@
                 <div class="cold-sm-5">
                     <div class="form-group">
                         <label>
-                            <h3>Report For The Month Of: {{$data['seizures'][0]->month_of_report}}</h3>
+                            <h3>Report For The Month Of: {{$data['seizures']['0']->month_of_report}}</h3>
                         </label>
                     </div>
                 </div>
@@ -35,6 +35,7 @@
                 <table class="table table-bordered display" style="white-space: nowrap;">
                     <thead>
                         <tr>
+                            <th rowspan="1">Sl No.</th>
                             <th rowspan="1"><strong>Nature of Narcotic<br> Drugs / Controlled<br> Substance</strong></th>
                             <th rowspan="1"><strong>Quantity of<br> Seized<br> Contraband</strong></th>
                             <th rowspan="1"><strong>Date of Seizure</strong></th>
@@ -44,13 +45,19 @@
                             <th rowspan="1"><strong>Place of Storage<br> of seized drugs</strong></th>
                             <th rowspan="1"><strong>Case Details</strong></th>
                             <th rowspan="1"><strong>Applied for <br> Certification At</strong></th>
-                            <th><strong>Date of<br> Certification</strong></th>
+                            <th rowspan="1"><strong>Date of<br> Certification</strong></th>
                             <th rowspan="1"><strong>Remarks</strong></th>
                         </tr>
                     </thead>
                     <tbody id="tbody">
+                        @php 
+                            $i = 1;
+                        @endphp
+
                         @foreach($data['seizures'] as $seizures)
                         <tr>
+                            <!--Sl No.-->
+                            <td>{{$i++}}</td>
                             <!--nature of drug-->
                             <td>{{$seizures->drug_name}}</td>
                             <!--quantity of narcotic drugs-->
