@@ -413,6 +413,7 @@
 		$("#tbody tr:last").clone().appendTo("tbody").find(':text').val('').end().find('textarea').val('').end().find('select').val('');
 		$(".action").show();
 		counter++;
+		count++;
 						
 	})
 
@@ -421,6 +422,7 @@
 	$(document).on("click",".delete_row", function(){	
 		$(this).closest("tr").remove();
 		counter--;
+		count--;
 		if(counter==1)
 		{
 			$(".action").hide();
@@ -448,31 +450,77 @@
 
 	// Function that will work for both Draft and Final Submit
 
+	count=$('#tbody tr').length;
+	var submit_validation_flag;
+
 	function store(submit_flag) {
+
+		nature_of_narcotic = [];
+		quantity_of_narcotics = [];
+		narcotic_unit = [];
+		date_of_seizure = [];
+		date_of_disposal = [];
+		disposal_quantity = [];
+		disposal_unit = [];
+		undisposed_quantity = [];
+		unit_of_undisposed_quantity = [];
+		place_of_storage = [];
+		case_details = [];
+		district = [];
+		where = [];
+		date_of_certification = [];
+		remarks = [];
+		submit_validation_flag = 1
 
 		// Month Of Report
 		month_of_report = $("#month_of_report").val();
 
 		/* fetching values from nature of narcotic field*/
 		$(".nature_of_narcotic").each(function(index){
-			nature_of_narcotic.push($(this).val());
+			if($(this).val()==""){
+				submit_validation_flag = 0;
+				counter = 1;
+				return false;
+			}
+			else{
+				nature_of_narcotic.push($(this).val());
+			}
 		});
 
 		/* fetching values from quantity_of_narcotics field*/
 
 		$(".quantity_of_narcotics").each(function(index){
-			quantity_of_narcotics.push($(this).val());
+			if($(this).val()==""){
+				submit_validation_flag = 0;
+				counter = 1;
+				return false;
+			}
+			else{
+				quantity_of_narcotics.push($(this).val());
+			}
 		});
 
 		/* fetching values from unit of narcotic_unit field*/
 
 		$(".narcotic_unit").each(function(index){
+			if($(this).val()==""){
+				submit_validation_flag = 0;
+				counter = 1;
+				return false;
+			}
 			narcotic_unit.push($(this).val());
 		});
 		/* fetching values from date_of_seizure field*/
 
 		$(".date_of_seizure").each(function(index){
+			if($(this).val()==""){
+				submit_validation_flag = 0;
+				counter = 1;
+				return false;
+			}
+			else{
 				date_of_seizure.push($(this).val());
+			}
 		});
 
 		/* fetching values from date_of_disposal field*/
@@ -520,7 +568,14 @@
 		/* fetching values from district field*/
 
 		$(".district").each(function(index){
+			if($(this).val()==""){
+				submit_validation_flag = 0;
+				counter = 1;
+				return false;
+			}
+			else{
 				district.push($(this).val());
+			}
 
 		});
 
@@ -542,45 +597,55 @@
 			remarks.push($(this).val());    
 		});
 
-		$.ajax({
-                    type: "POST",
-                    url:"entry_form", 
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        nature_of_narcotic: nature_of_narcotic,
-						quantity_of_narcotics: quantity_of_narcotics,
-						narcotic_unit: narcotic_unit,
-						date_of_seizure: date_of_seizure,
-						date_of_disposal: date_of_disposal,
-						disposal_quantity: disposal_quantity,
-						disposal_unit: disposal_unit,
-						undisposed_quantity: undisposed_quantity,
-						unit_of_undisposed_quantity: unit_of_undisposed_quantity,
-						place_of_storage: place_of_storage,
-						case_details: case_details,
-						district: district,
-						where: where,
-						date_of_certification: date_of_certification,
-						counter: counter,
-						remarks: remarks,
-						submit_flag:submit_flag,
-						month_of_report:month_of_report
-					},
+		if(submit_validation_flag!=0){
 
-                    success:function(response){
-                        
-					}
-				});
+				$.ajax({
+							type: "POST",
+							url:"entry_form", 
+							data: {
+								_token: $('meta[name="csrf-token"]').attr('content'),
+								nature_of_narcotic: nature_of_narcotic,
+								quantity_of_narcotics: quantity_of_narcotics,
+								narcotic_unit: narcotic_unit,
+								date_of_seizure: date_of_seizure,
+								date_of_disposal: date_of_disposal,
+								disposal_quantity: disposal_quantity,
+								disposal_unit: disposal_unit,
+								undisposed_quantity: undisposed_quantity,
+								unit_of_undisposed_quantity: unit_of_undisposed_quantity,
+								place_of_storage: place_of_storage,
+								case_details: case_details,
+								district: district,
+								where: where,
+								date_of_certification: date_of_certification,
+								counter: counter,
+								remarks: remarks,
+								submit_flag:submit_flag,
+								month_of_report:month_of_report
+							},
+
+							success:function(response){
+								
+							}
+						});
+		}
 	}
 	
 	
 
-	$(document).on("click","#draft", function(){	
+	$(document).on("click","#draft", function(){
 			store("N");
-			swal("Draft Saved","","success");
-			setTimeout(function(){
-				window.location.reload();
-			},1700);
+			if(submit_validation_flag==0)
+			{
+				swal("Mandatory Field(s) Left Blank","In Row No. "+count,"error");
+				return false;
+			}
+			else{
+				swal("Draft Saved","","success");
+				setTimeout(function(){
+					//window.location.reload();
+				},1700);
+			}
 	});
 
 	$(document).on("click","#submit", function(){
@@ -592,14 +657,21 @@
 				dangerMode: true,
 				})
 				.then((willDelete) => {
-				if (willDelete) {
+				if (willDelete) {					
 					store("S");
-					swal("Report Submitted Successfully","","success");
-					setTimeout(function(){
-						window.location.href = "post_submission_preview";
-						//window.open('post_submission_preview').focus();
-						//window.location.reload();
-					},1700);					
+					if(submit_validation_flag==0)
+					{
+						swal("Mandatory Field(s) Left Blank","In Row No. "+count,"error");
+						return false;
+					}
+					else{
+						swal("Report Submitted Successfully","","success");
+						setTimeout(function(){
+							window.location.href = "post_submission_preview";
+							//window.open('post_submission_preview').focus();
+							//window.location.reload();
+						},1700);	
+					}				
 				} else {
 					swal("Submission Cancelled","","error");
 				}
