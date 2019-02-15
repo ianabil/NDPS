@@ -594,6 +594,10 @@
 		/* fetching values from district field*/
 
 		$(".district").each(function(index){
+			if($(this).val()=="")
+			{
+				valid_flag=0;
+			}
 				district.push($(this).val());
 
 		});
