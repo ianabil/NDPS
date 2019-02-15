@@ -81,11 +81,7 @@
 							<!--nature of drug-->
 
 							<td>
-								<div class="control-label form-group required">
-									<label> 
-										<textarea class="form-control nature_of_narcotic" rows="3" style="width:200px" name="nature_of_narcotic" id="nature_of_narcotic">{{$seizures->drug_name}}</textarea>
-									</label>
-								</div>
+								<textarea class="form-control nature_of_narcotic" rows="3" style="width:200px" name="nature_of_narcotic" id="nature_of_narcotic">{{$seizures->drug_name}}</textarea>								
 							</td>
 
 							<!--quantity of narcotic drugs-->
@@ -464,7 +460,7 @@
 	/* add row */
 
 	$(document).on("click","#add_more", function(){	
-		$("#tbody tr:last").clone().appendTo("tbody").find(':text').val('').end().find('textarea').val('').end().find('select').val('');
+		$("#tbody tr:last").clone().appendTo("tbody").find(':text').val('').end().find('textarea').val('').end().find('select').prepend('<option value="" selected>Select an option</option>');
 		$(".action").show();
 		counter++;
 		count++;
@@ -534,7 +530,7 @@
 		$(".nature_of_narcotic").each(function(index){
 			if($(this).val()==""){
 				submit_validation_flag = 0;
-				counter = 1;
+				count = counter;
 				return false;
 			}
 			else{
@@ -548,7 +544,7 @@
 		$(".quantity_of_narcotics").each(function(index){
 			if($(this).val()==""){
 				submit_validation_flag = 0;
-				counter = 1;
+				count = counter;
 				return false;
 			}
 			else{
@@ -561,17 +557,18 @@
 		$(".narcotic_unit").each(function(index){
 			if($(this).val()==""){
 				submit_validation_flag = 0;
-				counter = 1;
+				count = counter;
 				return false;
+			} else{
+				narcotic_unit.push($(this).val());
 			}
-			narcotic_unit.push($(this).val());
 		});
 		/* fetching values from date_of_seizure field*/
 
 		$(".date_of_seizure").each(function(index){
 			if($(this).val()==""){
 				submit_validation_flag = 0;
-				counter = 1;
+				count = counter;
 				return false;
 			}
 			else{
@@ -626,7 +623,7 @@
 		$(".district").each(function(index){
 			if($(this).val()==""){
 				submit_validation_flag = 0;
-				counter = 1;
+				count = counter;
 				return false;
 			}
 			else{
@@ -686,43 +683,6 @@
 						});
 		}
 	}
-	else{
-
-			$.ajax({
-						type: "POST",
-						url:"entry_form", 
-						data: {
-							_token: $('meta[name="csrf-token"]').attr('content'),
-							nature_of_narcotic: nature_of_narcotic,
-							quantity_of_narcotics: quantity_of_narcotics,
-							narcotic_unit: narcotic_unit,
-							date_of_seizure: date_of_seizure,
-							date_of_disposal: date_of_disposal,
-							disposal_quantity: disposal_quantity,
-							disposal_unit: disposal_unit,
-							undisposed_quantity: undisposed_quantity,
-							unit_of_undisposed_quantity: unit_of_undisposed_quantity,
-							place_of_storage: place_of_storage,
-							case_details: case_details,
-							district: district,
-							where: where,
-							date_of_certification: date_of_certification,
-							counter: counter,
-							remarks: remarks,
-							submit_flag:submit_flag,
-							month_of_report:month_of_report
-						},
-
-						success:function(response){
-							
-						}
-					});
-			
-				
-		
-		}
-	
-	
 
 	$(document).on("click","#draft", function(){
 			store("N");
@@ -736,6 +696,7 @@
 				setTimeout(function(){
 					//window.location.reload();
 				},1700);
+			}
 			
 	});
 
@@ -758,7 +719,7 @@
 					else{
 						swal("Report Submitted Successfully","","success");
 						setTimeout(function(){
-							window.location.href = "post_submission_preview";
+							//window.location.href = "post_submission_preview";
 							//window.open('post_submission_preview').focus();
 							//window.location.reload();
 						},1700);	
