@@ -14,35 +14,40 @@
 			<div class="row">
 				<form class="form-inline">
 					<div class="col-sm-5">
-						<div class="form-group">
-							<label><h3>Court/Agency:</h3></label>
+						<div class="form-group required">
+							<label class="control-label" style="font-size: 20px">Court/Agency:</label>
 							<input type="text" class="form-control court_agency" style="width:200px; margin-left:50px" name="court_agency" id="court_agency" value="CID West Bengal" disabled>
 						</div>
 					</div>
 					
 					<div class="cold-sm-5">
-						<div class="form-group">
-							<label><h3>Report For The Month Of:</h3></label>
+						<div class="form-group required">
+							<label class="control-label" style="font-size: 20px">Report For The Month Of:</label>
 							@if(sizeof($data['seizures'])>0)
 								<input type="text" class="form-control date_only_month month_of_report" style="width:200px; margin-left:50px" name="month_of_report" id="month_of_report" value="{{date('F',strtotime($data['seizures']['0']->month_of_report)).'-'.date('Y',strtotime($data['seizures']['0']->month_of_report))}}">					
 							@else
-								<input type="text" class="form-control date_only_month month_of_report" style="width:200px; margin-left:50px" name="month_of_report" id="month_of_report" value="{{date('F',strtotime(date('d-m-Y') . '-1 month')).'-'.date('Y',strtotime(date('d-m-Y') . '-1 month'))}}">					
+							<input type="text" class="form-control date_only_month month_of_report" style="width:200px; margin-left:50px" name="month_of_report" id="month_of_report">	
 							@endif
 						</div>
 					</div>
 				</form>					
 			</div>
-		<hr>				
+		<hr>
 						
-		<div id="srollable" style="overflow:auto;">
+		@if(sizeof($data['seizures'])>0)
+			<div id="scrollable" class="table_tr" style="overflow:auto;">
+		@else
+			<div id="scrollable" class="table_tr" style="overflow:auto;display:none;">
+		@endif
+		<div class="form-group required">
 			<table class="table table-bordered">
-				<thead>
+				<thead >
 					
 					<tr >
 						<td rowspan="2" class="action"></td>
-						<td rowspan="2"><strong>Nature of Narcotic<br>Drugs/Controlled<br>Substance</strong></td>
-						<td rowspan="2"><strong>Quantity of<br>Seized<br>Contraband</strong></td>
-						<td rowspan="2"><strong>Unit of <br>Seized<br>Contraband</strong></td>
+						<td rowspan="2"><label class="control-label"><strong>Nature of Narcotic<br>Drugs/Controlled<br>Substance</strong></label></td>
+						<td rowspan="2"><label class="control-label"><strong>Quantity of<br>Seized<br>Contraband</strong></label></td>
+						<td rowspan="2"><label class="control-label"><strong>Unit of <br>Seized<br>Contraband</strong></label></td>
 						<td rowspan="2"><strong>Date of Seizure</strong></td>
 						<td rowspan="2"><strong>Disposal Date</strong></td>
 						<td rowspan="2"><strong>Disposal Quantity</strong></td>
@@ -51,7 +56,7 @@
 						<td rowspan="2"><strong>Unit of <br>Undisposed<br>Quantity</strong></td>
 						<td rowspan="2"><strong>Place of Storage <br> of seized drugs</strong></td>
 						<td rowspan="2"><strong>Case Details</strong></td>
-						<td rowspan="2"><strong>District</strong></td>
+						<td rowspan="2"><label class="control-label"><strong>District</strong></label></td>
 						<td colspan="2"><strong>Applied for Certification</strong></td>
 						<td rowspan="2"><strong>Remarks</strong></td>
 
@@ -76,7 +81,11 @@
 							<!--nature of drug-->
 
 							<td>
-								<textarea class="form-control nature_of_narcotic" rows="3" style="width:200px" name="nature_of_narcotic" id="nature_of_narcotic">{{$seizures->drug_name}}</textarea>
+								<div class="control-label form-group required">
+									<label> 
+										<textarea class="form-control nature_of_narcotic" rows="3" style="width:200px" name="nature_of_narcotic" id="nature_of_narcotic">{{$seizures->drug_name}}</textarea>
+									</label>
+								</div>
 							</td>
 
 							<!--quantity of narcotic drugs-->
@@ -198,6 +207,8 @@
 						@endforeach 
 
 				@else
+
+
 					
 					<tr>
 
@@ -329,23 +340,29 @@
 				</tbody>
 			</table> 
 		</div>
-		<br>
-		<div class="col-sm-offset-5 col-sm-4">
-			<button type="button" class="btn btn-primary" id="add_more">Add More</button>
-			<button type="button" class="btn btn-warning" id="draft">Save As Draft</button>
-			<button type="button" class="btn btn-success" id="submit">Final Submit</button>
-		</div>
+	</div>
+	<br>
+
+	@if(sizeof($data['seizures'])>0)
+		<div class="col-sm-offset-5 col-sm-4 table_tr">
+	@else
+		<div class="col-sm-offset-5 col-sm-4 table_tr" style="display:none;">
+	@endif
+		<button type="button" class="btn btn-primary" id="add_more">Add More</button>
+		<button type="button" class="btn btn-warning" id="draft">Save As Draft</button>
+		<button type="button" class="btn btn-success" id="submit">Final Submit</button>
+	</div>
 		
             
- 	</div>
+ </div>
 </div>
 
 <!--loader starts-->
 
-            <div class="col-md-offset-5 col-md-3" id="wait" style="display:none;">
-                    <img src='images/09b24e31234507.564a1d23c07b4.gif'width="15%" height="5%" />
-                        <br>Loading..
-            </div>
+<div class="col-md-offset-5 col-md-3" id="wait" style="display:none;">
+    <img src='images/loader.gif'width="25%" height="10%" />
+      <br>Loading..
+</div>
    
    <!--loader starts-->
 @endsection
@@ -364,11 +381,47 @@
                 format: 'dd-mm-yyyy'
          }); // Date picker initialization For All The Form Elements
 
-		$(".date_only_month").datepicker({
+		var date=$(".date_only_month").datepicker({
 			format: "MM-yyyy",
     		viewMode: "months", 
     		minViewMode: "months"
         }); // Date picker initialization For Month of Report
+
+		
+		date.on('hide',function(e){
+		 var month_of_report=$("#month_of_report").val();
+			//console.log(month_of_report);
+
+			if(month_of_report=="")
+			{
+				return false;
+			}
+			else
+			{
+				$.ajax({
+					type:"POST",
+					url:"entry_form/submission_validation",
+					data:{
+						_token: $('meta[name="csrf-token"]').attr('content'),
+						month_of_report:month_of_report
+					},
+					success : function(response){
+						var obj = $.parseJSON(response);
+						console.log(obj);
+						if(obj>0)
+						{
+							swal("Report Already Submitted"+month_of_report,"","error");
+							$(".table_tr").hide();					
+						}
+						else{
+							$(".table_tr").show();
+						}
+
+					}
+					
+				})
+			}
+		})
 
 		$(".action").hide();
 
@@ -405,6 +458,7 @@
             });
 
     /*LOADER*/
+	
 
 
 	/* add row */
@@ -448,6 +502,9 @@
 	var remarks= new Array();
 	var month_of_report;
 
+	var valid_flag=1;
+	var counter=1;
+
 	// Function that will work for both Draft and Final Submit
 
 	count=$('#tbody tr').length;
@@ -486,6 +543,7 @@
 				nature_of_narcotic.push($(this).val());
 			}
 		});
+
 
 		/* fetching values from quantity_of_narcotics field*/
 
@@ -630,6 +688,41 @@
 						});
 		}
 	}
+	else{
+
+			$.ajax({
+						type: "POST",
+						url:"entry_form", 
+						data: {
+							_token: $('meta[name="csrf-token"]').attr('content'),
+							nature_of_narcotic: nature_of_narcotic,
+							quantity_of_narcotics: quantity_of_narcotics,
+							narcotic_unit: narcotic_unit,
+							date_of_seizure: date_of_seizure,
+							date_of_disposal: date_of_disposal,
+							disposal_quantity: disposal_quantity,
+							disposal_unit: disposal_unit,
+							undisposed_quantity: undisposed_quantity,
+							unit_of_undisposed_quantity: unit_of_undisposed_quantity,
+							place_of_storage: place_of_storage,
+							case_details: case_details,
+							district: district,
+							where: where,
+							date_of_certification: date_of_certification,
+							counter: counter,
+							remarks: remarks,
+							submit_flag:submit_flag,
+							month_of_report:month_of_report
+						},
+
+						success:function(response){
+							
+						}
+					});
+			
+				
+			}
+		}
 	
 	
 

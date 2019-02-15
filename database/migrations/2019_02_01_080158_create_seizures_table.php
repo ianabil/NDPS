@@ -28,7 +28,6 @@ class CreateSeizuresTable extends Migration
             $table->integer('district_id')->nullable(false);
             $table->integer('agency_id')->nullable(true);
             $table->string('storage_location')->nullable(true);
-            $table->integer('court_id')->nullable(true);
             $table->integer('certification_court_id')->nullable(true);
             $table->date('date_of_certification')->nullable(true);
             $table->text('remarks')->nullable(true);

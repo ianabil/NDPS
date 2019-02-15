@@ -48,7 +48,7 @@
     </div>
     <!-- /.box-header -->
     <div class="box-body">
-        <div id="srollable" style="overflow:auto;">
+        <div id="scrollable" style="overflow:auto;">
             <table class="table table-bordered display" style="white-space: nowrap;">
                 <thead>
                     <tr>
