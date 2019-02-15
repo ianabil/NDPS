@@ -719,9 +719,8 @@
 					else{
 						swal("Report Submitted Successfully","","success");
 						setTimeout(function(){
-							//window.location.href = "post_submission_preview";
+							window.location.href = "post_submission_preview";
 							//window.open('post_submission_preview').focus();
-							//window.location.reload();
 						},1700);	
 					}				
 				} else {
