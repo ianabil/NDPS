@@ -41,7 +41,7 @@
 		@endif
 		<div class="form-group required">
 			<table class="table table-bordered">
-				<thead >
+				<thead>
 					
 					<tr >
 						<td rowspan="2" class="action"></td>
@@ -386,7 +386,6 @@
 		
 		date.on('hide',function(e){
 		 var month_of_report=$("#month_of_report").val();
-			//console.log(month_of_report);
 
 			if(month_of_report=="")
 			{
@@ -406,7 +405,7 @@
 						console.log(obj);
 						if(obj>0)
 						{
-							swal("Report Already Submitted"+month_of_report,"","error");
+							swal("Report Already Submitted For "+month_of_report,"","error");
 							$(".table_tr").hide();					
 						}
 						else{
@@ -461,6 +460,11 @@
 
 	$(document).on("click","#add_more", function(){	
 		$("#tbody tr:last").clone().appendTo("tbody").find(':text').val('').end().find('textarea').val('').end().find('select').prepend('<option value="" selected>Select an option</option>');
+		$(".date").datepicker({
+                endDate:'0',
+                format: 'dd-mm-yyyy'
+         }); // Date picker initialization For All The Form Elements
+
 		$(".action").show();
 		counter++;
 		count++;

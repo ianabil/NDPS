@@ -23,6 +23,7 @@
                     <div class="form-group">
                         <label>
                             <h3>Report For The Month Of: {{$data['seizures']['0']->month_of_report}}</h3>
+                            <input type = "text" id="month_of_report" style="display:none" value="{{date('F',strtotime(date('d-m-Y') . '-1 month')).'-'.date('Y',strtotime(date('d-m-Y') . '-1 month'))}}">
                         </label>
                     </div>
                 </div>
@@ -96,6 +97,8 @@
 <script>
 
 	$(document).ready(function(){
+        var month_of_report = $("#month_of_report").val();
+        
         $(".table").dataTable({ 
             "searching": false,
             "paging" : false,
@@ -110,14 +113,14 @@
                                 stripNewlines: false
                             },
                             title: 'Report Regarding Seizure/Disposal of Narcotic Drugs For '+month_of_report,
-                            messageTop: 'Court/Agency: CID,West Bengal \n District: Covering All Over West Bengal',
+                            messageTop: 'Court/Agency: CID,West Bengal                                  District: Covering All Over West Bengal',
                             messageBottom: '',
                             customize: function(doc) {
 
-                                    doc.content[0].fontSize=20
-                                    doc.content[1].margin=[400,0,0,20]
-                                    doc.content[1].fontSize=14
-                             }
+                                doc.content[0].fontSize=20
+                                doc.content[1].margin=[250,0,0,20]
+                                doc.content[1].fontSize=14
+                            }
                         }
                     ]
         });
