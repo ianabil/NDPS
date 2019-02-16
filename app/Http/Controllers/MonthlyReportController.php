@@ -100,4 +100,68 @@ class MonthlyReportController extends Controller
         echo json_encode($json_data);
 
     }
+
+    public function show_previous_report(Request $request){
+
+        $month_of_report = date('Y-m-d', strtotime('01-'.$request->input('month_of_report')));
+        $stakeholder = 1;
+
+        
+        // For dataTable :: STARTS
+        $columns = array( 
+            0 =>'Narcotic Nature',
+            1 =>'Seize Quantity',
+            2 =>'Seizure Date',
+            3 =>'Disposal Date',
+            4 =>'Disposal Quantity',
+            5 =>'Not Disposed Quantity',
+            6 =>'Storage Place',
+            7 =>'Case Details',
+            8 =>'Where',
+            9 =>'Certification Date',
+            10 => 'Remarks',
+            11 => 'Sl No'
+        );
+
+        $sql="select * from seizure
+        left join districts on s.district_id = districts.district_id
+        where s.submit_flag='S' and s.user_name= '".$stakeholder."' and 
+        s.month_of_report = '".$month_of_report."' order by seizure_id";
+
+        $data['seizures']=DB::select($sql);
+
+        $record = array();
+
+        $report['Sl No'] = 0;
+        foreach($data['seizures'] as $seizures){
+            $report['Sl No'] = $report['Sl No'] + 1;
+            $report['Narcotic Nature'] = $seizures->drug_name;
+            $report['Seize Quantity'] = $seizures->quantity_of_drug. " ".$seizures->seizure_unit;
+            $report['Seizure Date'] = Carbon::parse($seizures->date_of_seizure)->format('d-m-Y');
+            $report['Disposal Date'] = Carbon::parse($seizures->date_of_disposal)->format('d-m-Y');
+            $report['Disposal Quantity'] = $seizures->disposal_quantity. " ".$seizures->disposal_unit;
+            $report['Not Disposed Quantity'] = $seizures->undisposed_quantity. " ".$seizures->undisposed_unit_name;
+            $report['Storage Place'] = $seizures->storage_location;
+            $report['Case Details'] = $seizures->case_details;
+            $report['Where'] = $seizures->court_name;
+            $report['Certification Date'] = Carbon::parse($seizures->date_of_certification)->format('d-m-Y');
+            $report['Remarks'] = $seizures->remarks;
+
+            $record[] = $report;
+
+        }
+
+        $json_data = array(
+            "draw" => intval($request->input('draw')),
+            "recordsTotal" => intval(sizeof($record)),
+            "recordsFiltered" =>intval(sizeof($record)),
+            "data" => $record
+        );
+        
+        echo json_encode($json_data);
+
+    }
+
+
+
 }

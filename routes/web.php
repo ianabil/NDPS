@@ -28,6 +28,10 @@ Route::resource('entry_form','entry_formController');
 
 Route::get('post_submission_preview','entry_formController@post_submission_preview');
 
+Route::get('monthly_report/previous_report','MonthlyReportController@show_previous_report');
+
+
+
 Route::get('monthly_report', function(){
     return view ('monthly_report');
 });

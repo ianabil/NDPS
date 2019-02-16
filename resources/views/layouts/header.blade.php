@@ -74,6 +74,7 @@
                             </a>
                             <ul class="treeview-menu">
                                 <li><a href="monthly_report">Monthly Report</a></li>
+                                <li><a href="previous_report">Previous Report</a></li>
                             </ul>
                         </li>
                     
