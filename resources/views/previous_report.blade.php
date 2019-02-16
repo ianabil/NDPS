@@ -2,7 +2,7 @@
 <!-- Main content -->
 <div class="box box-default">
     <div class="box-header with-border">
-        <h3 class="box-title" text-align="center"><strong>Search Monthly Report</strong></h3>
+        <h3 class="box-title" text-align="center"><strong>Search Previous Reports</strong></h3>
         <div class="box-tools pull-right">
             <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
             <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
@@ -20,17 +20,12 @@
                         <input type="text" class="form-control date_only_month month_of_report" style="width:150px; margin-left:30px" name="month_of_report" id="month_of_report" autocomplete="off">
                     </div>
                 </div>
-                <div class="cold-sm-6">
+                <br>
+                 <div class="cold-sm-3">
                     <div class="form-group">
-                        <label style="margin-right:30px">
-                            <h3> Stakeholder: </h3>
-                        </label>
-                        <select class="form-control select2" style="width:200px;" name="stakeholder" id="stakeholder">
-                            <option value="NULL">Select an option...</option>
-                        </select>
                         <button type="button" class="btn btn-success" style="margin-left:30px" id="search">SEARCH</button>
                     </div>
-                </div>
+                </div> 
             </form>
         </div>
     </div>
@@ -40,7 +35,7 @@
 
 <div class="box box-default" style="display:none" id="report_display_section">
     <div class="box-header with-border">
-        <h3 class="box-title" text-align="center"><strong>Download Monthly Report</strong></h3>
+        <h3 class="box-title" text-align="center"><strong>Download Previous Report</strong></h3>
         <div class="box-tools pull-right">
             <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
             <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
@@ -87,36 +82,12 @@
 
         //$(".select2").select2();
 
-        // Dynamically fetching the stakeholders' list
-        var month_of_report;
-        date.on('show',function(e){
-            month_of_report = $("#month_of_report").val();            
-            $("#stakeholder").children('option:not(:first)').remove();
-
-            $.ajax({
-                type:"POST",
-                url:"monthly_report/submitted_stakeholders",
-                data : {
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                    month_of_report:month_of_report
-                },
-                success : function(response){
-                    var obj = $.parseJSON(response);
-                    $.each(obj['agency'], function(key,value){
-                        $("#stakeholder").append(
-                            $("<option></option>")
-                            .attr("value",value.agency_id)
-                            .text(value.agency_name)
-                        );
-                        
-                    })
-                }
-            })
-        })
+        
 
         $(document).on("click","#search", function () { 
-            var stakeholder = 1;
             
+            var month_of_report= $(".date_only_month").val();
+                    
             $("#report_display_section").show();
 
             $('.table').DataTable().destroy();
@@ -126,12 +97,11 @@
                     "searching": false,
                     "paging" : false,
                     "ajax": {
-                        "url": "monthly_report/previous_report",
+                        "url": "stakeholder/previous_report",
                         "dataType": "json",
                         "type": "POST",
                         "data": {
                             _token: $('meta[name="csrf-token"]').attr('content'),
-                            stakeholder:stakeholder, 
                             month_of_report:month_of_report
                         },
                     },
@@ -159,14 +129,19 @@
                                 columns: ':visible',
                                 stripNewlines: false
                             },
-                            title: '',
-                            messageTop: '',
+                            title: 'Report Regarding Seizure/Disposal of Narcotic Drugs For '+month_of_report,
+                            messageTop: 'Court/Agency: CID,West Bengal \n District: Covering All Over West Bengal',
                             messageBottom: '',
                             customize: function(doc) {
+
+                                doc.content[0].fontSize=20
+                                doc.content[1].margin=[400,0,0,20]
+                                doc.content[1].fontSize=14
                             }
                         }
                     ]
                 });
+
 
          })
 

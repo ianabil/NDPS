@@ -64,7 +64,7 @@ class MonthlyReportController extends Controller
         left join units u3 on cast(s.undisposed_unit as int)=u3.unit_id
         left join court_details on s.certification_court_id = court_details.court_id
         left join districts on s.district_id = districts.district_id
-        where s.submit_flag='S' and s.user_name= '".$stakeholder."' and 
+        where s.submit_flag='S' and s.agency_id= ".$stakeholder." and 
         s.month_of_report = '".$month_of_report."' order by seizure_id";
 
         $data['seizures']=DB::select($sql);
@@ -101,8 +101,10 @@ class MonthlyReportController extends Controller
 
     }
 
-    public function show_previous_report(Request $request){
+    //for stakeholder's own monthwise report
 
+    public function show_previous_report(Request $request){
+         
         $month_of_report = date('Y-m-d', strtotime('01-'.$request->input('month_of_report')));
         $stakeholder = 1;
 
@@ -123,9 +125,14 @@ class MonthlyReportController extends Controller
             11 => 'Sl No'
         );
 
-        $sql="select * from seizure
+        $sql="select s.*,u1.unit_name seizure_unit, s.disposal_quantity, u2.unit_name disposal_unit,
+        s.undisposed_quantity,u3.unit_name undisposed_unit_name, court_details.*, districts.*
+        from seizures s left join units u1 on cast(s.unit_name as int)=u1.unit_id 
+        left join units u2 on cast(s.unit_of_disposal_quantity as int)=u2.unit_id 
+        left join units u3 on cast(s.undisposed_unit as int)=u3.unit_id
+        left join court_details on s.certification_court_id = court_details.court_id
         left join districts on s.district_id = districts.district_id
-        where s.submit_flag='S' and s.user_name= '".$stakeholder."' and 
+        where s.submit_flag='S' and s.agency_id= ".$stakeholder." and 
         s.month_of_report = '".$month_of_report."' order by seizure_id";
 
         $data['seizures']=DB::select($sql);

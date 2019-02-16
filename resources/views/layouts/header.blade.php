@@ -16,11 +16,15 @@
 <body class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
         <header class="main-header">
+        
             <!-- Logo -->
-            <a href="dashboard" class="logo">
-                <!-- logo for regular state and mobile devices -->
-                <span class="logo-lg"><b>NDPS</b></span>
+            <a href="entry_form" class="logo">           
+            <!-- logo for regular state and mobile devices -->
+                <span class="logo-lg"><b>NDPS</b>
             </a>
+        </span>
+            </a>
+            
             <nav class="navbar navbar-static-top">
                 <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
                     <span class="sr-only">Toggle navigation</span>
@@ -74,7 +78,7 @@
                             </a>
                             <ul class="treeview-menu">
                                 <li><a href="monthly_report">Monthly Report</a></li>
-                                <li><a href="previous_report">Previous Report</a></li>
+                                <li><a href="previous_report_view">Previous Report</a></li>
                             </ul>
                         </li>
                     
@@ -88,7 +92,6 @@
                             <ul class="treeview-menu">
                                 <li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>District Master Maintainance</span></a></li>
                                 <li><a href="#"><i class="fa fa-circle-o text-yellow"></i> <span>Court Master Maintainance</span></a></li>
-                                <li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>PS Master Maintainance</span></a></li>
                                 <li><a href="#"><i class="fa fa-circle-o text-violate"></i> <span>Agency Master Maintainance</span></a></li>
                                 <li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>Magistrate Master Maintainance</span></a></li>
                                 <li><a href="#"><i class="fa fa-circle-o text-green"></i> <span>Storage Master Maintainance</span></a></li>                                

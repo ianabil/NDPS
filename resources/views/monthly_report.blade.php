@@ -115,7 +115,7 @@
         })
 
         $(document).on("click","#search", function () { 
-            var stakeholder = $("#stakeholder option:selected").text();
+            var stakeholder = $("#stakeholder option:selected").val();
             
             $("#report_display_section").show();
 
@@ -159,11 +159,15 @@
                                 columns: ':visible',
                                 stripNewlines: false
                             },
-                            title: '',
-                            messageTop: '',
+                            title: 'Report Regarding Seizure/Disposal of Narcotic Drugs For '+month_of_report,
+                            messageTop: 'Court/Agency: CID,West Bengal \n District: Covering All Over West Bengal',
                             messageBottom: '',
                             customize: function(doc) {
-                            }
+
+                                    doc.content[0].fontSize=20
+                                    doc.content[1].margin=[400,0,0,20]
+                                    doc.content[1].fontSize=14
+                             }
                         }
                     ]
                 });
