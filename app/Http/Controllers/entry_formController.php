@@ -9,11 +9,9 @@ use App\District;
 use App\Unit;
 use App\Agency_detail;
 use App\Court_detail;
-use App\Magistrate;
 use App\Seizure;
 use App\Storage_detail;
 use App\User;
-use App\User_detail;
 use Carbon\Carbon;
 use DB;
 

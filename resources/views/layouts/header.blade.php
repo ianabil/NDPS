@@ -34,14 +34,14 @@
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 <img src="{{asset('images/FacelessMan.png')}}" class="user-image" alt="User Image">
-                                <span class="hidden-xs">&nbsp; </span>
+                                <span class="hidden-xs">{{Auth::user()->user_name}}</span>
                             </a>
                             <ul class="dropdown-menu">
                                 <!-- User image -->
                                 <li class="user-header">
                                     <img src="{{asset('images/FacelessMan.png')}}" class="img-circle" alt="User Image">
                                     <p>
-                                        &nbsp;
+                                        {{Auth::user()->user_name}}
                                     </p>
                                 </li>
 
@@ -51,9 +51,9 @@
                                         <a href="update_password" class="btn btn-primary btn-flat">Update Password</a>
                                     </div>
                                     <div class="pull-right">
-                                        <a href="#"  class="btn btn-danger btn-flat"  onclick="event.preventDefault();
+                                        <a href="{{ route('logout') }}"  class="btn btn-danger btn-flat"  onclick="event.preventDefault();
                                         document.getElementById('logout-form').submit();">Sign out</a>
-                                        <form id="logout-form" action="#" method="POST" style="display: none;">
+                                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                             @csrf
                                         </form>
                                     </div>
