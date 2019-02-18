@@ -165,7 +165,7 @@
                             customize: function(doc) {
 
                                 doc.content[0].fontSize=20
-                                doc.content[1].margin=[250,0,0,20]
+                                doc.content[1].margin=[270,0,0,20]
                                 doc.content[1].fontSize=14
                             }
                         }

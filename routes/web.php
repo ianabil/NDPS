@@ -15,42 +15,49 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Auth::routes();
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-});
+
+        Route::get('/dashboard', function () {
+            return view('dashboard');
+        });
+
+
+
+        Route::get('/home', 'HomeController@index')->name('home'); 
+
+        Route::resource('entry_form','entry_formController');
+
+        Route::get('post_submission_preview','entry_formController@post_submission_preview');
+
+        Route::get('previous_report_view', function(){
+            return view ('previous_report');
+        });
+
+        Route::post('stakeholder/previous_report','MonthlyReportController@show_previous_report');
+
+        Route::get('monthly_report', function(){
+            return view ('monthly_report');
+        });
+
+
+
+        Route::post('monthly_report/submitted_stakeholders',
+        'MonthlyReportController@submitted_stakeholders');
+
+        Route::post('monthly_report/show_monthly_report',
+        'MonthlyReportController@show_monthly_report');
+
+        Route::post('entry_form/district',
+        'entry_formController@district_wise_court');
+
+        Route::post('entry_form/narcotic_suggestion','entry_formController@narcotic_suggestion');
+
+        Route::post('entry_form/submission_validation',
+        'entry_formController@submission_validation');
+
+
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home'); 
-
-Route::resource('entry_form','entry_formController');
-
-Route::get('post_submission_preview','entry_formController@post_submission_preview');
-
-Route::get('previous_report_view', function(){
-    return view ('previous_report');
-});
-
-Route::post('stakeholder/previous_report','MonthlyReportController@show_previous_report');
-
-Route::get('monthly_report', function(){
-    return view ('monthly_report');
-});
-
-
-
-Route::post('monthly_report/submitted_stakeholders',
-'MonthlyReportController@submitted_stakeholders');
-
-Route::post('monthly_report/show_monthly_report',
-'MonthlyReportController@show_monthly_report');
-
-Route::post('entry_form/district',
-'entry_formController@district_wise_court');
-
-Route::post('entry_form/narcotic_suggestion','entry_formController@narcotic_suggestion');
-
-Route::post('entry_form/submission_validation',
-'entry_formController@submission_validation');
-
+Route::get('/home', 'HomeController@index')->name('home');

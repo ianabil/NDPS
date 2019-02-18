@@ -17,7 +17,7 @@ trait AuthenticatesUsers
      */
     public function showLoginForm()
     {
-        return view('auth.login');
+        return view('welcome');
     }
 
     /**
@@ -143,7 +143,7 @@ trait AuthenticatesUsers
      */
     public function username()
     {
-        return 'email';
+        return 'user_id';
     }
 
     /**
