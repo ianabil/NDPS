@@ -13,7 +13,7 @@
             <div class="row">                
                 <div class="col-md-3 form-group required">
                     <label class="control-label">Stakeholder's Name</label>
-                    <input type="text" class="form-control" name="stakeholder_name" id="stakeholder_name">
+                    <input type="text" class="form-control" name="stakeholder_name" id="stakeholder">
                 </div>
                 <div class="col-md-3 form-group required">
                     <label class="control-label">District</label>
@@ -33,27 +33,71 @@
         </div>
 </div>
 
+<!--loader starts-->
+
+<div class="col-md-offset-5 col-md-3" id="wait" style="display:none;">
+    <img src='images/loader.gif'width="25%" height="10%" />
+      <br>Loading..
+</div>
+   
+   <!--loader starts-->
+
 @endsection
+<script src="{{asset('js/jquery/jquery.min.js')}}"></script>
 
 <script>
+
         $(document).ready(function(){
-
-            var stakeholder= $("#stakeholder_name").val();
-            var district= $("#district").val();
-
-            ajax({
-                type:"POST"
-                url:"master_maintanance/stakeholder"
-                data: {_token: $('meta[name="csrf-token"]').attr('content'), 
-                stakeholder:stakeholder,
-                district:district,
-                },
-                success:function(response){
-                    
-                }
+            
 
 
-            });
+            /*LOADER*/
+
+                $(document).ajaxStart(function() {
+                    $("#wait").css("display", "block");
+                });
+                $(document).ajaxComplete(function() {
+                    $("#wait").css("display", "none");
+                });
+
+            /*LOADER*/
+
+
+            /*Stakeholder master maintenance */
+
+                $(document).on("click","#add",function (){
+                
+                            
+
+                            var stakeholder= $("#stakeholder").val().toUpperCase();
+                            var district= $("#district").val().toUpperCase();
+
+                            
+                        $.ajax({
+                                type:"POST",
+                                url:"master_maintenance/stakeholder",
+                                data: {_token: $('meta[name="csrf-token"]').attr('content'), 
+                                stakeholder_name:stakeholder,
+                                district:district,
+                                },
+                                success:function(response){
+                                    $("#stakeholder").val('');
+                                    $("#district").val('');
+                                    swal("Added Successfully","A new Stackholder has been added","success");
+                                    
+                                },
+                                error:function(response) {  
+                                    if(response.responseJSON.errors.hasOwnProperty('district'))
+                                        swal("Cannot create new Stakeholder", ""+response.responseJSON.errors.district['0'], "error");
+                                                         
+                                    if(response.responseJSON.errors.hasOwnProperty('stakeholder_name'))
+                                        swal("Cannot create new Stakeholder", ""+response.responseJSON.errors.stakeholder_name['0'], "error");
+                                    
+                                }
+
+
+                        });
+                });
 
         });
 </script>

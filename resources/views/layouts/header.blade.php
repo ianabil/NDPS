@@ -93,10 +93,7 @@
                                 <li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>District Master Maintainance</span></a></li>
                                 <li><a href="#"><i class="fa fa-circle-o text-yellow"></i> <span>Court Master Maintainance</span></a></li>
                                 <li><a href="stakeholder_view"><i class="fa fa-circle-o text-violate"></i> <span>Stakeholder Maintainance</span></a></li>
-                                <li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>Magistrate Master Maintainance</span></a></li>
-                                <li><a href="#"><i class="fa fa-circle-o text-green"></i> <span>Storage Master Maintainance</span></a></li>                                
-                                <li><a href="#"><i class="fa fa-circle-o text-purple"></i> <span>Drug Master Maintainance</span></a></li>
-                            </ul>
+                                </ul>
                         </li>
 
                         <li class="header"></li>

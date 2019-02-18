@@ -43,10 +43,6 @@ Route::get('stakeholder_view', function(){
 });
 
 
-
-Route::post('monthly_report/submitted_stakeholders',
-'MonthlyReportController@submitted_stakeholders');
-
 Route::post('monthly_report/show_monthly_report',
 'MonthlyReportController@show_monthly_report');
 
@@ -58,3 +54,9 @@ Route::post('entry_form/narcotic_suggestion','entry_formController@narcotic_sugg
 Route::post('entry_form/submission_validation',
 'entry_formController@submission_validation');
 
+
+Route::post('monthly_report/submitted_stakeholders',
+'MonthlyReportController@submitted_stakeholders');
+
+ Route::post('master_maintenance/stakeholder',
+'MasterMaintenanceController@store_stakeholder');
