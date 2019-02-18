@@ -38,6 +38,10 @@ Route::get('monthly_report', function(){
     return view ('monthly_report');
 });
 
+Route::get('stakeholder_view', function(){
+    return view ('stakeholder_view');
+});
+
 
 
 Route::post('monthly_report/submitted_stakeholders',
