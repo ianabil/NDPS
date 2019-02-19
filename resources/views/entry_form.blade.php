@@ -16,7 +16,7 @@
 					<div class="col-sm-5">
 						<div class="form-group required">
 							<label class="control-label" style="font-size: 20px">Court/Agency:</label>
-							<input type="text" class="form-control court_agency" style="width:200px; margin-left:50px" name="court_agency" id="court_agency" value="CID West Bengal" disabled>
+							<input type="text" class="form-control court_agency" style="width:200px; margin-left:50px" name="court_agency" id="court_agency" value=" {{ Auth::user()->user_name }}" disabled>
 						</div>
 					</div>
 					

@@ -11,18 +11,18 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Auth::routes();
-
-
-        Route::get('/dashboard', function () {
-            return view('dashboard');
+        Route::get('/', function () {
+            return view('welcome');
         });
 
+        Auth::routes();
 
+
+    Route::group(['middleware' => ['auth']], function () {
+
+        Route::get('dashboard', function () {
+            return view('dashboard');
+        });
 
         Route::get('/home', 'HomeController@index')->name('home'); 
 
@@ -36,28 +36,24 @@ Auth::routes();
 
         Route::post('stakeholder/previous_report','MonthlyReportController@show_previous_report');
 
-Route::get('stakeholder_view', function(){
-    return view ('stakeholder_view');
-});
+        Route::get('stakeholder_view', function(){
+            return view ('stakeholder_view');
+        });
 
-Route::get('court_view', 
-        'MasterMaintenanceController@index');
-
+        Route::get('court_view', 'MasterMaintenanceController@index');
 
 
-Route::post('monthly_report/show_monthly_report',
-'MonthlyReportController@show_monthly_report');
+
+        Route::post('monthly_report/show_monthly_report',
+        'MonthlyReportController@show_monthly_report');
+                
         Route::get('monthly_report', function(){
             return view ('monthly_report');
         });
 
 
-
         Route::post('monthly_report/submitted_stakeholders',
         'MonthlyReportController@submitted_stakeholders');
-
-        Route::post('monthly_report/show_monthly_report',
-        'MonthlyReportController@show_monthly_report');
 
         Route::post('entry_form/district',
         'entry_formController@district_wise_court');
@@ -67,20 +63,10 @@ Route::post('monthly_report/show_monthly_report',
         Route::post('entry_form/submission_validation',
         'entry_formController@submission_validation');
 
+        Route::post('master_maintenance/stakeholder',
+        'MasterMaintenanceController@store_stakeholder');
 
+        Route::post('master_maintenance/court_details',
+        'MasterMaintenanceController@store_court');
 
-Auth::routes();
-
-
-Route::post('monthly_report/submitted_stakeholders',
-'MonthlyReportController@submitted_stakeholders');
-
- Route::post('master_maintenance/stakeholder',
-'MasterMaintenanceController@store_stakeholder');
-
-Route::post('master_maintenance/court_details',
-'MasterMaintenanceController@store_court');
-
-
-
-Route::get('/home', 'HomeController@index')->name('home');
+    });
