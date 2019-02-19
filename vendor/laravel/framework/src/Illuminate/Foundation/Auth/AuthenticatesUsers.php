@@ -118,7 +118,11 @@ trait AuthenticatesUsers
      */
     protected function authenticated(Request $request, $user)
     {
-        //
+        if($user->user_type=='stakeholder'){
+            return redirect('entry_form') ;
+        }elseif($user->user_type=='high court'){
+            return redirect('dashboard') ;
+        }
     }
 
     /**

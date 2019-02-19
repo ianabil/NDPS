@@ -18,8 +18,11 @@
         <header class="main-header">
         
             <!-- Logo -->
-            <a href="entry_form" class="logo">           
-            <!-- logo for regular state and mobile devices -->
+            @if(Auth::user()->user_type == 'stakeholder')
+                <a href="entry_form" class="logo"> 
+            @else
+                <a href="dashboard" class="logo"> 
+            @endif  
                 <span class="logo-lg"><b>NDPS</b>
             </a>
         </span>
@@ -34,14 +37,14 @@
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 <img src="{{asset('images/FacelessMan.png')}}" class="user-image" alt="User Image">
-                                <span class="hidden-xs"></span>
+                                <span class="hidden-xs"> {{ Auth::user()->user_name }}</span>
                             </a>
                             <ul class="dropdown-menu">
                                 <!-- User image -->
                                 <li class="user-header">
                                     <img src="{{asset('images/FacelessMan.png')}}" class="img-circle" alt="User Image">
                                     <p>
-                                        
+                                       {{ Auth::user()->user_name }}
                                     </p>
                                 </li>
 

@@ -25,6 +25,7 @@ class LoginController extends Controller
      *
      * @var string
      */
+    
     protected $redirectTo = '/entry_form';
 
     /**
@@ -41,4 +42,5 @@ class LoginController extends Controller
     {
         return 'user_id';
     }
+
 }
