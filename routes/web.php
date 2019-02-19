@@ -40,6 +40,10 @@ Route::get('stakeholder_view', function(){
     return view ('stakeholder_view');
 });
 
+Route::get('court_view', 
+        'MasterMaintenanceController@index');
+
+
 
 Route::post('monthly_report/show_monthly_report',
 'MonthlyReportController@show_monthly_report');
@@ -73,4 +77,10 @@ Route::post('monthly_report/submitted_stakeholders',
 
  Route::post('master_maintenance/stakeholder',
 'MasterMaintenanceController@store_stakeholder');
+
+Route::post('master_maintenance/court_details',
+'MasterMaintenanceController@store_court');
+
+
+
 Route::get('/home', 'HomeController@index')->name('home');
