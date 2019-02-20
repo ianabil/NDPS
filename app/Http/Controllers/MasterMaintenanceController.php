@@ -63,5 +63,71 @@ class MasterMaintenanceController extends Controller
         return 1;
    
        }
+
+       // Data Table Code Starts
+    public function get_all_stakeholders_data(Request $request){
+        $columns = array( 
+            0 =>'ID', 
+            1 =>'STAKEHOLDER',
+            2 =>'DISTRICT',
+            3=>'ACTION'
+        );
+
+        $totalData = Agency_detail::count();
+
+        $totalFiltered = $totalData; 
+
+        $limit = $request->input('length');
+        $start = $request->input('start');
+        $order = $columns[$request->input('order.0.column')];
+        $dir = $request->input('order.0.dir');
+
+        if(empty($request->input('search.value'))){
+            $stakeholder = Agency_detail::offset($start)
+                            ->limit($limit)
+                            ->orderBy('agency_name',$dir)
+                            ->get();
+            $totalFiltered = Agency_detail::count();
+        }
+        else{
+            $search = strtoupper($request->input('search.value'));
+            $stakeholder = Agency_detail::where('agency_id','like',"%{$search}%")
+                                ->orWhere('agency_name','like',"%{$search}%")
+                                ->orWhere('district_for_report','like',"%{$search}%")
+                                ->offset($start)
+                                ->limit($limit)
+                                ->orderBy('agency_name',$dir)
+                                ->get();
+            $totalFiltered = Agency_detail::where('agency_id','like',"%{$search}%")
+                                    ->orWhere('agency_name','like',"%{$search}%")
+                                    ->orWhere('district_for_report','like',"%{$search}%")
+                                    ->count();
+            }
+
+            $data = array();
+
+            if($stakeholder){
+                foreach($stakeholder as $stakeholder){
+                    $nestedData['ID'] = $stakeholder->agency_id;
+                    $nestedData['STAKEHOLDER'] = $stakeholder->agency_name;
+                    $nestedData['DISTRICT'] = $stakeholder->district_for_report;
+                    $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
     
-}
+                    $data[] = $nestedData;
+                }
+                    $json_data = array(
+                        "draw" => intval($request->input('draw')),
+                        "recordsTotal" => intval($totalData),
+                        "recordFiltered" =>intval($totalFiltered),
+                        "data" => $data
+                    );
+            
+                    echo json_encode($json_data);
+                }
+    
+            }
+
+    }
+    
+
+

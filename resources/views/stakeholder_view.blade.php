@@ -33,6 +33,33 @@
         </div>
 </div>
 
+<div class="box box-default" id="show_all_data">
+    <div class="box-header with-border">
+        <h3 class="box-title">All Stakeholders' Details</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+        </div>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body">
+            <table class="table table-striped table-bordered" id="show_stakeholder_data">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>STAKEHOLDER'S NAME</th>
+                            <th>JURISDICTION</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>                    
+            </table>
+    </div>
+</div>
+
+<hr>
+         
+         <br> <br>
+
 <!--loader starts-->
 
 <div class="col-md-offset-5 col-md-3" id="wait" style="display:none;">
@@ -61,6 +88,26 @@
                 });
 
             /*LOADER*/
+
+            //Datatable Code For Showing Data :: START
+                var table = $("#show_stakeholder_data").dataTable({  
+                            "processing": true,
+                            "serverSide": true,
+                            "ajax":{
+                                    "url": "show_all_stakeholders",
+                                    "dataType": "json",
+                                    "type": "POST",
+                                    "data":{ _token: $('meta[name="csrf-token"]').attr('content')}
+                                },
+                            "columns": [                
+                                {  "data": "ID" },
+                                {"data": "STAKEHOLDER" },
+                                {"data": "DISTRICT" },
+                                {"data": "ACTION" }
+                            ]
+                        }); 
+            // DataTable initialization with Server-Processing ::END
+
 
 
             /*Stakeholder master maintenance */
