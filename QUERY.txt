@@ -159,5 +159,8 @@ select s.quantity_of_drug,u1.unit_name seizure_unit, s.disposal_quantity, u2.uni
 
 
 
+*****************************fetching the district wise court name*****************
+
+
 
 

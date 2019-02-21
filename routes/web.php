@@ -41,7 +41,7 @@
         });
 
         Route::get('court_view', 'MasterMaintenanceController@index');
-
+        Route::post('show_courts_details', 'MasterMaintenanceController@get_all_court_details');
 
 
         Route::post('monthly_report/show_monthly_report',
@@ -72,3 +72,6 @@
         Route::post('show_all_stakeholders','MasterMaintenanceController@get_all_stakeholders_data');
 
     });
+
+
+  

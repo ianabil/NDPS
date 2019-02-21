@@ -38,6 +38,33 @@
         </div>
 </div>
 
+<div class="box box-default" id="show_all_data">
+    <div class="box-header with-border">
+        <h3 class="box-title"> Courts' Details</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+        </div>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body">
+            <table class="table table-striped table-bordered" id="show_courts_details">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>COURT'S NAME</th>
+                            <th>DISTRICT</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>                    
+            </table>
+    </div>
+</div>
+
+<hr>
+         
+         <br> <br>
+
 <!--loader starts-->
 
 <div class="col-md-offset-5 col-md-3" id="wait" style="display:none;">
@@ -54,6 +81,25 @@
 <script>
 
     $(document).ready(function(){
+
+        //Datatable Code For Showing Data :: START
+        var table = $("#show_courts_details").dataTable({  
+                            "processing": true,
+                            "serverSide": true,
+                            "ajax":{
+                                    "url": "show_courts_details",
+                                    "dataType": "json",
+                                    "type": "POST",
+                                    "data":{ _token: $('meta[name="csrf-token"]').attr('content')}
+                                },
+                            "columns": [                
+                                {"data": "COURT ID" },
+                                {"data": "COURT NAME" },
+                                {"data": "DISTRICT NAME" },
+                                {"data": "ACTION" }
+                            ]
+                        }); 
+            // DataTable initialization with Server-Processing ::END
 
         //select2 initialization code
          $(".select2").select2(); 

@@ -64,7 +64,7 @@ class MasterMaintenanceController extends Controller
    
        }
 
-       // Data Table Code Starts
+       // Data Table Code for stakeholders
     public function get_all_stakeholders_data(Request $request){
         $columns = array( 
             0 =>'ID', 
@@ -127,7 +127,90 @@ class MasterMaintenanceController extends Controller
     
             }
 
+            public function get_all_court_details(Request $request){
+
+                $columns = array( 
+                    0 =>'COURT ID', 
+                    1 =>'COURT NAME',
+                    2 =>'DISTRICT NAME',
+                    3=>'ACTION'
+                );
+
+                $totalData = Court_detail::count();
+
+                $totalFiltered = $totalData; 
+
+                $limit = $request->input('length');
+                $start = $request->input('start');
+                $order = $columns[$request->input('order.0.column')];
+                $dir = $request->input('order.0.dir');
+
+
+                if(empty($request->input('search.value'))){
+
+                    $court = Court_detail::
+                                    join('districts','court_details.district_id','=','districts.district_id')                               
+                                    ->offset($start)
+                                    ->limit($limit)
+                                    ->orderBy('court_name',$dir)
+                                    ->get();
+
+                    $totalFiltered = Court_detail::count();
+                }
+                else{
+
+                    $court = Court_detail::
+                                     join('districts','court_details.district_id','=','districts.district_id')                               
+                                    ->offset($start)
+                                    ->limit($limit)
+                                    ->orderBy('court_name',$dir)
+                                    ->get();
+                        
+                    $totalFiltered = Court_detail::
+                                    join('districts','court_details.district_id','=','districts.district_id')                   
+                                    ->where('court_id','like',"%{$search}%")
+                                    ->orWhere('court_name','like',"%{$search}%")
+                                    ->orWhere('district_name','like',"%{$search}%")
+                                    ->count();
+
+
+                    }
+
+                $data = Array();
+
+                if($court){
+                    foreach($court as $court){
+                        $nestedData['COURT ID'] = $court->court_id;
+                        $nestedData['COURT NAME'] = $court->court_name;
+                        $nestedData['DISTRICT NAME'] = $court->district_name;
+                        $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
+        
+                        $data[] = $nestedData;
+                    }
+                        $json_data = array(
+                            "draw" => intval($request->input('draw')),
+                            "recordsTotal" => intval($totalData),
+                            "recordFiltered" =>intval($totalFiltered),
+                            "data" => $data
+                        );
+                
+                        echo json_encode($json_data);
+                    }
+        
+                }
+
+
+
+
+                    
+           
+
+
+
+
+
     }
+
     
 
 
