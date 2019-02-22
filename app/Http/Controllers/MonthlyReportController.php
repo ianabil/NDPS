@@ -15,6 +15,7 @@ use App\Storage_detail;
 use App\User;
 use Carbon\Carbon;
 use DB;
+use Auth;
 
 
 class MonthlyReportController extends Controller
@@ -101,10 +102,18 @@ class MonthlyReportController extends Controller
 
     //for stakeholder's own monthwise report
 
+    public function index_previous_report(){
+        
+        $agency_details = Agency_detail::where('agency_id',Auth::user()->stakeholder_id)
+                                            ->get(); 
+
+        return view('previous_report',compact('agency_details'));      
+    }
+
     public function show_previous_report(Request $request){
          
         $month_of_report = date('Y-m-d', strtotime('01-'.$request->input('month_of_report')));
-        $stakeholder = 1;
+        $stakeholder = Auth::user()->stakeholder_id;
 
         
         // For dataTable :: STARTS
@@ -142,14 +151,29 @@ class MonthlyReportController extends Controller
             $report['Sl No'] = $report['Sl No'] + 1;
             $report['Narcotic Nature'] = $seizures->drug_name;
             $report['Seize Quantity'] = $seizures->quantity_of_drug. " ".$seizures->seizure_unit;
-            $report['Seizure Date'] = Carbon::parse($seizures->date_of_seizure)->format('d-m-Y');
-            $report['Disposal Date'] = Carbon::parse($seizures->date_of_disposal)->format('d-m-Y');
+            
+            if(empty($seizures->date_of_seizure))
+                $report['Seizure Date'] ='';
+            else
+                $report['Seizure Date'] = Carbon::parse($seizures->date_of_seizure)->format('d-m-Y');
+            
+            if(empty($seizures->date_of_disposal))
+                $report['Disposal Date'] ='';
+            else
+                $report['Disposal Date'] = Carbon::parse($seizures->date_of_disposal)->format('d-m-Y');
+
             $report['Disposal Quantity'] = $seizures->disposal_quantity. " ".$seizures->disposal_unit;
             $report['Not Disposed Quantity'] = $seizures->undisposed_quantity. " ".$seizures->undisposed_unit_name;
             $report['Storage Place'] = $seizures->storage_location;
             $report['Case Details'] = $seizures->case_details;
             $report['Where'] = $seizures->court_name;
-            $report['Certification Date'] = Carbon::parse($seizures->date_of_certification)->format('d-m-Y');
+
+            if(empty($seizures->date_of_certification))
+                $report['Certification Date'] = '';
+            else
+                $report['Certification Date'] = Carbon::parse($seizures->date_of_certification)->format('d-m-Y');
+            
+            
             $report['Remarks'] = $seizures->remarks;
 
             $record[] = $report;

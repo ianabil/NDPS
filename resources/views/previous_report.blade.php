@@ -18,6 +18,8 @@
                            <h3> Month & Year: </h3>
                         </label>
                         <input type="text" class="form-control date_only_month month_of_report" style="width:150px; margin-left:30px" name="month_of_report" id="month_of_report" autocomplete="off">
+                        <input type = "text" id="agency" style="display:none" value="{{$agency_details['0']['agency_name']}}">
+                        <input type = "text" id="jurisdiction" style="display:none" value="{{$agency_details['0']['district_for_report']}}">
                     </div>
                 </div>
                 <br>
@@ -87,7 +89,9 @@
         $(document).on("click","#search", function () { 
             
             var month_of_report= $(".date_only_month").val();
-                    
+            var agency = $("#agency").val();
+            var jurisdiction = $("#jurisdiction").val();
+         
             $("#report_display_section").show();
 
             $('.table').DataTable().destroy();
@@ -130,7 +134,7 @@
                                 stripNewlines: false
                             },
                             title: 'Report Regarding Seizure/Disposal of Narcotic Drugs For '+month_of_report,
-                            messageTop: 'Court/Agency: CID,West Bengal                                  District: Covering All Over West Bengal',
+                            messageTop: 'Court/Agency: '+agency+'                                  District: '+jurisdiction,
                             messageBottom: '',
                             customize: function(doc) {
 

@@ -30,10 +30,8 @@
 
         Route::get('post_submission_preview','entry_formController@post_submission_preview');
 
-        Route::get('previous_report_view', function(){
-            return view ('previous_report');
-        });
-
+        Route::get('previous_report_view', 'MonthlyReportController@index_previous_report');
+        
         Route::post('stakeholder/previous_report','MonthlyReportController@show_previous_report');
 
         Route::get('stakeholder_view', function(){

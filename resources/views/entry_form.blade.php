@@ -402,7 +402,6 @@
 					},
 					success : function(response){
 						var obj = $.parseJSON(response);
-						console.log(obj);
 						if(obj>0)
 						{
 							swal("Report Already Submitted For "+month_of_report,"","error");
