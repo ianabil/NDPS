@@ -18,10 +18,10 @@
     <a href="#">
     <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="info-box bg-green">
-                <span class="info-box-icon"><i class="ion ion-arrow-return-right" style="margin-top:20px"></i></span>
+                <span class="info-box-icon"><i class="far fa-thumbs-down" style="margin-top:20px"></i></span>
     
                 <div class="info-box-content">
-                  <span class="info-box-text"><strong>Records WIth Disposed Details</strong></span>                  
+                  <span class="info-box-text"><strong>Seized But Undisposed</strong></span>                  
                   <span class="info-box-number"></span>
                 </div>
                 <!-- /.info-box-content -->
@@ -33,10 +33,10 @@
     <a href="#">
     <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="info-box bg-red">
-                <span class="info-box-icon"><i class="ion ion-arrow-return-left" style="margin-top:20px"></i></span>
+                <span class="info-box-icon"><i class="far fa-thumbs-up" style="margin-top:20px"></i></span>
     
                 <div class="info-box-content">
-                  <span class="info-box-text"><strong>Records With Undisposed Details</strong></span>
+                  <span class="info-box-text"><strong>Seized And Disposed</strong></span>
                   <span class="info-box-number"></span>
                 </div>
                 <!-- /.info-box-content -->
