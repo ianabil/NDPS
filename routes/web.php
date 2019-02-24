@@ -20,15 +20,17 @@
 
     Route::group(['middleware' => ['auth']], function () {
 
-        Route::get('dashboard', function () {
-            return view('dashboard');
-        });
+        Route::get('dashboard','MonthlyReportController@index_dashboard');
 
         Route::post('dashboard/monthly_report_status',
         'MonthlyReportController@monthly_report_status');
 
-        Route::get('/home', 'HomeController@index')->name('home'); 
+        Route::get('dashboard/show_monthly_report/{agency_id}/{month}',
+        'MonthlyReportController@show_monthly_report');
 
+        Route::post('dashboard/unlock_report_submission',
+        'MonthlyReportController@unlock_report_submission');
+        
         Route::resource('entry_form','entry_formController');
 
         Route::get('post_submission_preview','entry_formController@post_submission_preview');

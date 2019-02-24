@@ -7,8 +7,8 @@
             <span class="info-box-icon"><i class="ion ion-document-text" style="margin-top:20px"></i></span>
 
             <div class="info-box-content">
-              <span class="info-box-text"><strong>Total Seizure Record</strong></span>
-              <span class="info-box-number"></span>
+              <span class="info-box-text"><strong>Total Seizure</strong></span>
+            <span class="info-box-number">{{$data['total_seizure']}}</span>
             </div>
             <!-- /.info-box-content -->
         </div>
@@ -17,12 +17,12 @@
 
     <a href="#">
     <div class="col-md-4 col-sm-6 col-xs-12">
-            <div class="info-box bg-green">
+            <div class="info-box bg-red">
                 <span class="info-box-icon"><i class="far fa-thumbs-down" style="margin-top:20px"></i></span>
     
                 <div class="info-box-content">
-                  <span class="info-box-text"><strong>Seized But Undisposed</strong></span>                  
-                  <span class="info-box-number"></span>
+                  <span class="info-box-text"><strong>Undisposed</strong></span>                  
+                  <span class="info-box-number">{{$data['total_undisposed']}}</span>
                 </div>
                 <!-- /.info-box-content -->
             </div>
@@ -32,12 +32,12 @@
 
     <a href="#">
     <div class="col-md-4 col-sm-6 col-xs-12">
-            <div class="info-box bg-red">
+            <div class="info-box bg-green">
                 <span class="info-box-icon"><i class="far fa-thumbs-up" style="margin-top:20px"></i></span>
     
                 <div class="info-box-content">
-                  <span class="info-box-text"><strong>Seized And Disposed</strong></span>
-                  <span class="info-box-number"></span>
+                  <span class="info-box-text"><strong>Disposed</strong></span>
+                  <span class="info-box-number">{{$data['total_disposed']}}</span>
                 </div>
                 <!-- /.info-box-content -->
             </div>
@@ -68,6 +68,7 @@
             <table class="table table-bordered table-responsive display" style="white-space:nowrap;">
               <thead>
                 <tr>
+                  <th style="display:none">Agency ID </th>
                   <th>Sl No. </th>
                   <th>Stakeholder Name</th>
                   <th>Submission Status</th>
@@ -112,13 +113,17 @@
                         month:month
                       }
                     },
-                    "columns": [   
+                    "columns": [  
+                      {"class":"agency_id",
+                        "data":"Agency ID"}, 
                       {"data": "Sl No"},         
                       {"data": "Stakeholder Name"},
                       {"data": "Submission Status"},
                       {"data": "Action"}
                   ]
             });
+
+            table.column( 0 ).visible( false ); // Hiding the agency id column
     }
 
     var month_of_report = $(".month_of_report").val();    
@@ -129,6 +134,28 @@
             month_of_report = $(".month_of_report").val();
             get_monthly_report(month_of_report);
     });
+
+    // Unlocking Report Submission
+    $(document).on("click",".unlock", function(){      
+          var row = $(".table").dataTable().fnGetData(0);
+          var agency_id = row['Agency ID'];  // this is a way to fetch the value from a hidden field in datatable
+          var month_of_report = $(".month_of_report").val();
+
+          $.ajax({
+                url:"dashboard/unlock_report_submission",
+                type:"POST",
+                data:{
+                  _token: $('meta[name="csrf-token"]').attr('content'),
+                  agency_id:agency_id,
+                  month:month_of_report
+                },
+                success:function(){
+                    swal("Unlocked Successfully","","success");
+                    $(".table").dataTable().api().ajax.reload();
+                }
+          })
+
+    })
 
 });
 </script>
