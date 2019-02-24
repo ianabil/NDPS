@@ -1,0 +1,240 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 11.1
+-- Dumped by pg_dump version 11.1
+
+-- Started on 2019-02-23 00:27:59
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 2907 (class 1262 OID 16394)
+-- Name: ndps; Type: DATABASE; Schema: -; Owner: admin
+--
+
+CREATE DATABASE ndps WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'English_India.1252' LC_CTYPE = 'English_India.1252';
+
+
+ALTER DATABASE ndps OWNER TO admin;
+
+\connect ndps
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 2901 (class 0 OID 16724)
+-- Dependencies: 212
+-- Data for Name: agency_details; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.agency_details (agency_id, agency_name, district_for_report, created_at, updated_at) VALUES (2, 'CID, West Bengal', 'Covering All Over West Bengal', NULL, NULL);
+INSERT INTO public.agency_details (agency_id, agency_name, district_for_report, created_at, updated_at) VALUES (3, 'NCB', 'Covering All Over West Bengal', NULL, NULL);
+INSERT INTO public.agency_details (agency_id, agency_name, district_for_report, created_at, updated_at) VALUES (4, 'KOLKATA POLICE', 'Kolkata', NULL, NULL);
+
+
+--
+-- TOC entry 2891 (class 0 OID 16571)
+-- Dependencies: 202
+-- Data for Name: court_details; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.court_details (court_id, court_name, district_id, created_at, updated_at) VALUES (3, 'JM 1ST COURT SILIGURI', 22, NULL, NULL);
+INSERT INTO public.court_details (court_id, court_name, district_id, created_at, updated_at) VALUES (4, 'JM,MIRIK', 22, NULL, NULL);
+INSERT INTO public.court_details (court_id, court_name, district_id, created_at, updated_at) VALUES (5, 'METROPOLITAN MAGISTRATE,13TH COURT,CALCUTTA', 23, NULL, NULL);
+INSERT INTO public.court_details (court_id, court_name, district_id, created_at, updated_at) VALUES (6, 'JM 1ST COURT BARRACKPUR', 31, NULL, NULL);
+INSERT INTO public.court_details (court_id, court_name, district_id, created_at, updated_at) VALUES (7, 'JM 2ND COURT BARASAT', 31, NULL, NULL);
+INSERT INTO public.court_details (court_id, court_name, district_id, created_at, updated_at) VALUES (8, 'JM 2ND COURT HOWRAH', 30, NULL, NULL);
+INSERT INTO public.court_details (court_id, court_name, district_id, created_at, updated_at) VALUES (9, 'JM 2ND COURT SERAMPORE', 29, NULL, NULL);
+INSERT INTO public.court_details (court_id, court_name, district_id, created_at, updated_at) VALUES (10, 'JM 2ND COURT CHANDANNAGAR', 29, NULL, NULL);
+INSERT INTO public.court_details (court_id, court_name, district_id, created_at, updated_at) VALUES (11, 'JM 7TH COURT BANKURA', 24, NULL, NULL);
+INSERT INTO public.court_details (court_id, court_name, district_id, created_at, updated_at) VALUES (12, 'JM 1ST COURT PURULIA', 28, NULL, NULL);
+
+
+--
+-- TOC entry 2889 (class 0 OID 16563)
+-- Dependencies: 200
+-- Data for Name: districts; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (22, 'DARJEELING', NULL, NULL);
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (23, 'KOLKATA', NULL, NULL);
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (24, 'BANKURA', NULL, NULL);
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (25, 'PURBO MEDINIPUR', NULL, NULL);
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (26, 'MALDA', NULL, NULL);
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (27, 'PASCHIM MEDINIPUR', NULL, NULL);
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (28, 'PURULIA', NULL, NULL);
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (29, 'HOOGLY', NULL, NULL);
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (30, 'HOWRAH', NULL, NULL);
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (31, 'NORTH 24 PARGANAS', NULL, NULL);
+
+
+--
+-- TOC entry 2886 (class 0 OID 16397)
+-- Dependencies: 197
+-- Data for Name: migrations; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.migrations (id, migration, batch) VALUES (13, '2014_10_12_100000_create_password_resets_table', 1);
+INSERT INTO public.migrations (id, migration, batch) VALUES (15, '2019_02_01_075711_create_districts_table', 1);
+INSERT INTO public.migrations (id, migration, batch) VALUES (16, '2019_02_01_075758_create_court_details_table', 1);
+INSERT INTO public.migrations (id, migration, batch) VALUES (19, '2019_02_01_075945_create_narcotics_table', 1);
+INSERT INTO public.migrations (id, migration, batch) VALUES (20, '2019_02_01_080046_create_units_table', 1);
+INSERT INTO public.migrations (id, migration, batch) VALUES (23, '2019_02_01_080158_create_seizures_table', 2);
+INSERT INTO public.migrations (id, migration, batch) VALUES (27, '2014_10_12_000000_create_users_table', 3);
+INSERT INTO public.migrations (id, migration, batch) VALUES (28, '2019_02_01_075904_create_agency_details_table', 4);
+
+
+--
+-- TOC entry 2893 (class 0 OID 16600)
+-- Dependencies: 204
+-- Data for Name: narcotics; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.narcotics (drug_id, drug_name, created_at, updated_at) VALUES (1, 'Ganja', NULL, NULL);
+INSERT INTO public.narcotics (drug_id, drug_name, created_at, updated_at) VALUES (2, 'LSD', NULL, NULL);
+INSERT INTO public.narcotics (drug_id, drug_name, created_at, updated_at) VALUES (3, 'GANJA', NULL, NULL);
+INSERT INTO public.narcotics (drug_id, drug_name, created_at, updated_at) VALUES (4, 'LSD', NULL, NULL);
+INSERT INTO public.narcotics (drug_id, drug_name, created_at, updated_at) VALUES (5, 'MAGIC MASHROOM', NULL, NULL);
+INSERT INTO public.narcotics (drug_id, drug_name, created_at, updated_at) VALUES (6, 'MDMA', NULL, NULL);
+INSERT INTO public.narcotics (drug_id, drug_name, created_at, updated_at) VALUES (7, 'PHENSEDYL', NULL, NULL);
+INSERT INTO public.narcotics (drug_id, drug_name, created_at, updated_at) VALUES (8, 'COCAINE', NULL, NULL);
+INSERT INTO public.narcotics (drug_id, drug_name, created_at, updated_at) VALUES (9, 'HEROIN', NULL, NULL);
+
+
+--
+-- TOC entry 2887 (class 0 OID 16538)
+-- Dependencies: 198
+-- Data for Name: password_resets; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+
+
+--
+-- TOC entry 2897 (class 0 OID 16649)
+-- Dependencies: 208
+-- Data for Name: seizures; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.seizures (seizure_id, drug_name, quantity_of_drug, unit_name, date_of_seizure, date_of_disposal, disposal_quantity, unit_of_disposal_quantity, undisposed_quantity, undisposed_unit, case_details, district_id, agency_id, storage_location, court_id, certification_court_id, date_of_certification, remarks, user_name, submit_flag, month_of_report, created_at, updated_at) VALUES (27, 'Cocaine', 100, '3', '2019-02-02', NULL, NULL, NULL, NULL, NULL, NULL, 22, 2, NULL, NULL, NULL, NULL, NULL, 'CID, West Bengal', 'S', '2019-01-01', '2019-02-22 00:00:00', '2019-02-22 00:00:00');
+
+
+--
+-- TOC entry 2895 (class 0 OID 16608)
+-- Dependencies: 206
+-- Data for Name: units; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.units (unit_id, unit_name, created_at, updated_at) VALUES (2, 'Gram', NULL, NULL);
+INSERT INTO public.units (unit_id, unit_name, created_at, updated_at) VALUES (3, 'KG', NULL, NULL);
+INSERT INTO public.units (unit_id, unit_name, created_at, updated_at) VALUES (4, 'Litre', NULL, NULL);
+INSERT INTO public.units (unit_id, unit_name, created_at, updated_at) VALUES (5, 'Bottles', NULL, NULL);
+INSERT INTO public.units (unit_id, unit_name, created_at, updated_at) VALUES (6, 'Pieces', NULL, NULL);
+INSERT INTO public.units (unit_id, unit_name, created_at, updated_at) VALUES (7, 'Mili Gram', NULL, NULL);
+
+
+--
+-- TOC entry 2899 (class 0 OID 16711)
+-- Dependencies: 210
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.users (id, user_id, user_name, password, stakeholder_id, email, contact_no, email_verified_at, user_type, remember_token, created_at, updated_at, login_at) VALUES (3, 'CALHC', 'Calcutta High Court', '$2y$10$8zg0LUSy847/IxBEdcwEte33QEr4L6zX3NI4PrUgRmFO0HMdU6JUi', NULL, 'ani.fllirty@gmail.com', '8981660217', NULL, 'high_court', 'yJprz2q8x71Nrq2Vsm1f8xgeI9vONzMLOQK726xRUM8YRGDz9q2QVj5lSJdR', '2019-02-22 00:00:00', '2019-02-22 00:00:00', NULL);
+INSERT INTO public.users (id, user_id, user_name, password, stakeholder_id, email, contact_no, email_verified_at, user_type, remember_token, created_at, updated_at, login_at) VALUES (1, 'CID', 'CID, West Bengal', '$2y$10$8zg0LUSy847/IxBEdcwEte33QEr4L6zX3NI4PrUgRmFO0HMdU6JUi', 2, 'banabil90@gmail.com', '8981660217', NULL, 'stakeholder', 'yhsAwqtyZhGlmItANvycTEChsDfT0LiplXLYWOpJZC6VHl54lTZAu8Eny2aG', '2019-02-22 00:00:00', '2019-02-22 00:00:00', NULL);
+
+
+--
+-- TOC entry 2916 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: agency_details_agency_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.agency_details_agency_id_seq', 4, true);
+
+
+--
+-- TOC entry 2917 (class 0 OID 0)
+-- Dependencies: 201
+-- Name: court_details_court_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.court_details_court_id_seq', 12, true);
+
+
+--
+-- TOC entry 2918 (class 0 OID 0)
+-- Dependencies: 199
+-- Name: districts_district_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.districts_district_id_seq', 31, true);
+
+
+--
+-- TOC entry 2919 (class 0 OID 0)
+-- Dependencies: 196
+-- Name: migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.migrations_id_seq', 28, true);
+
+
+--
+-- TOC entry 2920 (class 0 OID 0)
+-- Dependencies: 203
+-- Name: narcotics_drug_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.narcotics_drug_id_seq', 9, true);
+
+
+--
+-- TOC entry 2921 (class 0 OID 0)
+-- Dependencies: 207
+-- Name: seizures_seizure_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.seizures_seizure_id_seq', 27, true);
+
+
+--
+-- TOC entry 2922 (class 0 OID 0)
+-- Dependencies: 205
+-- Name: units_unit_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.units_unit_id_seq', 7, true);
+
+
+--
+-- TOC entry 2923 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.users_id_seq', 3, true);
+
+
+-- Completed on 2019-02-23 00:27:59
+
+--
+-- PostgreSQL database dump complete
+--
+

@@ -11,7 +11,6 @@ use App\Unit;
 use App\Agency_detail;
 use App\Court_detail;
 use App\Seizure;
-use App\Storage_detail;
 use App\User;
 use Carbon\Carbon;
 use DB;
@@ -20,21 +19,78 @@ use Auth;
 
 class MonthlyReportController extends Controller
 {
-    public function submitted_stakeholders(Request $request){
-        $month_of_report = date('Y-m-d', strtotime('01-'.$request->input('month_of_report')));
+
+    public function monthly_report_status(Request $request){
+        $month_of_report = date('Y-m-d', strtotime('01-'.$request->input('month')));
         
-        $data = array();
+        // For dataTable :: STARTS
+        $columns = array( 
+            0 =>'Sl No',
+            1 =>'Stakeholder Name',
+            2 =>'Submission Status',
+            5 =>'Action'
+        );
 
-        $data['agency'] = Seizure::join('agency_details','seizures.agency_id','=','agency_details.agency_id')
-                                ->where([['month_of_report',$month_of_report],['submit_flag','S']])
-                                ->select('agency_details.agency_id','agency_details.agency_name')
-                                ->distinct()
-                                ->get();
+        $sql = "select distinct agency_details.agency_name, seizures.submit_flag, seizures.created_at
+                from agency_details left join (select * from seizures where month_of_report = '".$month_of_report."') as seizures 
+                on agency_details.agency_id = seizures.agency_id order by agency_details.agency_name";
 
-        echo json_encode($data);
+        $status = DB::select($sql);
+
+        $record = array();
+
+        $report['Sl No'] = 0;
+
+        foreach($status as $data){
+            // Serial Number incrementing for every row
+            $report['Sl No'] +=1;
+
+            //If submitted date is within 10 days of present date, a new marker will be shown
+            if(strtotime(date('Y-m-d')) - strtotime($data->created_at) <=10)
+                $report['Stakeholder Name'] = "<strong>".$data->agency_name."</strong> <small class='label pull-right bg-blue'>new</small>";
+            else
+                $report['Stakeholder Name'] = "<strong>".$data->agency_name."</strong>";
+
+            // Initializing with 'NA' value
+            $report['Action'] = 'NA';
+
+            if($data->submit_flag=='S'){
+                // Green Light
+                $report['Submission Status'] = "<span style='height: 25px;width: 25px;
+                                                background-color: green;border-radius: 50%;
+                                                display: inline-block;' title='Report Submitted'></span> <br> Submitted On ". Carbon::parse($data->created_at)->format('d-m-Y');
+                
+                // As submission completed, view report and unlock submission button appears
+                $report['Action'] = "<i class='fas fa-envelope-open-text' title='View Report'></i> <br> 
+                                    <i class='fas fa-lock-open' title='Unlock Submission'></i>";
+            }
+            else if ($data->submit_flag=='N')
+                // Yellow Light
+                $report['Submission Status'] = "<span style='height: 25px;width: 25px;
+                                                background-color: yellow;border-radius: 50%;
+                                                display: inline-block;'  title='Drafted But Not Submitted'></span>";
+            else
+                // Red Light
+                $report['Submission Status'] = "<span style='height: 25px;width: 25px;
+                                                background-color: red;border-radius: 50%;
+                                                display: inline-block;'  title='Yet To Start Working'></span>";
+
+
+            $record[] = $report;
+        }
+
+        $json_data = array(
+            "draw" => intval($request->input('draw')),
+            "recordsTotal" => intval(sizeof($record)),
+            "recordsFiltered" =>intval(sizeof($record)),
+            "data" => $record
+        );
+        
+        echo json_encode($json_data);
+
+
     }
-
-
+    
     public function show_monthly_report(Request $request){
         $month_of_report = date('Y-m-d', strtotime('01-'.$request->input('month_of_report')));
         $stakeholder = $request->input('stakeholder');
@@ -100,7 +156,7 @@ class MonthlyReportController extends Controller
 
     }
 
-    //for stakeholder's own monthwise report
+    //for stakeholder's own monthwise previous report
 
     public function index_previous_report(){
         

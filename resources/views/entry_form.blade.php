@@ -24,9 +24,9 @@
 						<div class="form-group required">
 							<label class="control-label" style="font-size: 20px">Report For The Month Of:</label>
 							@if(sizeof($data['seizures'])>0)
-								<input type="text" class="form-control date_only_month month_of_report" style="width:200px; margin-left:50px" name="month_of_report" id="month_of_report" value="{{date('F',strtotime($data['seizures']['0']->month_of_report)).'-'.date('Y',strtotime($data['seizures']['0']->month_of_report))}}">					
+								<input type="text" class="form-control date_only_month month_of_report" style="width:200px; margin-left:50px" name="month_of_report" id="month_of_report" value="{{date('F',strtotime($data['seizures']['0']->month_of_report)).'-'.date('Y',strtotime($data['seizures']['0']->month_of_report))}}" autocomplete="off">					
 							@else
-							<input type="text" class="form-control date_only_month month_of_report" style="width:200px; margin-left:50px" name="month_of_report" id="month_of_report">	
+							<input type="text" class="form-control date_only_month month_of_report" style="width:200px; margin-left:50px" name="month_of_report" id="month_of_report" autocomplete="off">	
 							@endif
 						</div>
 					</div>
@@ -92,9 +92,9 @@
 
 							<td>
 								<select class="form-control select2 narcotic_unit" style="width:150px" name="narcotic_unit" id="narcotic_unit">
-									<option value="{{$seizures->unit_name}}">{{$seizures->seizure_unit}} </option>
+									<option value="">Select an option</option>
 									@foreach($data['units']  as $data3)
-										<option value="{{$data3['unit_id']}}">{{$data3['unit_name']}} </option>
+										<option value="{{$data3['unit_id']}}" @if($seizures->unit_name == $data3['unit_id']) selected @endif>{{$data3['unit_name']}} </option>
 									@endforeach	
 								</select>
 							</td>
@@ -128,9 +128,9 @@
 
 							<td>
 								<select class="form-control select2 disposal_unit" style="width:150px" name="disposal_unit" id="disposal_unit">
-									<option value="{{$seizures->unit_of_disposal_quantity}}">{{$seizures->disposal_unit}}</option>
+									<option value="">Select an option</option>
 									@foreach($data['units']  as $data4)
-										<option value="{{$data4['unit_id']}}">{{$data4['unit_name']}} </option>
+										<option value="{{$data4['unit_id']}}" @if($seizures->unit_of_disposal_quantity == $data4['unit_id']) selected @endif>{{$data4['unit_name']}} </option>
 									@endforeach	
 								</select>
 							</td>
@@ -143,9 +143,9 @@
 
 							<td>
 								<select class="form-control select2 unit_of_undisposed_quantity" style="width:150px" name="unit_of_undisposed_quantity" id="unit_of_undisposed_quantity" >
-									<option value="{{$seizures->undisposed_unit}}">{{$seizures->undisposed_unit_name}}</option>
+									<option value="">Select an option</option>
 									@foreach($data['units']  as $data5)
-										<option value="{{$data5['unit_id']}}">{{$data5['unit_name']}} </option>
+										<option value="{{$data5['unit_id']}}" @if($seizures->undisposed_unit == $data5['unit_id']) selected @endif>{{$data5['unit_name']}} </option>
 									@endforeach
 								</select>
 							</td>
@@ -165,9 +165,9 @@
 
 							<td>
 								<select class="form-control select2 district" style="width:150px" name="district" id="district">
-									<option value="{{$seizures->district_id}}">{{$seizures->district_name}} </option>
+									<option value="">Select an option</option>
 										@foreach($data['districts']  as $data1)
-											<option value="{{$data1['district_id']}}">{{$data1['district_name']}} </option>
+											<option value="{{$data1['district_id']}}" @if($seizures->district_id == $data1['district_id']) selected @endif>{{$data1['district_name']}} </option>
 										@endforeach
 								</select>
 							</td>
@@ -176,9 +176,9 @@
 
 							<td>
 								<select class="form-control select2 where" style="width:150px" name="where" id="where">
-									<option value="{{$seizures->certification_court_id}}">{{$seizures->court_name}} </option>
+									<option value="">Select an option</option>
 										@foreach($data['courts'] as $data5)
-											<option value="{{$data5['court_id']}}">{{$data5['court_name']}} </option>
+											<option value="{{$data5['court_id']}}" @if($seizures->certification_court_id == $data5['court_id']) selected @endif>{{$data5['court_name']}} </option>
 										@endforeach
 								</select>
 							</td>
@@ -360,7 +360,7 @@
       <br>Loading..
 </div>
    
-   <!--loader starts-->
+   <!--loader ends-->
 @endsection
 
 
@@ -458,11 +458,14 @@
 	/* add row */
 
 	$(document).on("click","#add_more", function(){	
-		$("#tbody tr:last").clone().appendTo("tbody").find(':text').val('').end().find('textarea').val('').end().find('select').prepend('<option value="" selected>Select an option</option>');
+		$("#tbody tr:last").clone().appendTo("tbody").
+							find(':text').val('').end().
+							find('textarea').val('').end().
+							find('select option:selected').removeAttr("selected");
 		$(".date").datepicker({
                 endDate:'0',
                 format: 'dd-mm-yyyy'
-         }); // Date picker initialization For All The Form Elements
+         }); // Date picker initialization For The Newly Added Row
 
 		$(".action").show();
 		counter++;
@@ -697,7 +700,7 @@
 			else{
 				swal("Draft Saved","","success");
 				setTimeout(function(){
-					//window.location.reload();
+					window.location.reload();
 				},1700);
 			}
 			
