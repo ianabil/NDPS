@@ -58,6 +58,9 @@
         Route::post('master_maintenance/stakeholder',
         'MasterMaintenanceController@store_stakeholder');
 
+        Route::post('master_maintenance_stakeholder/update',
+        'MasterMaintenanceController@update_stakeholder');
+
         Route::post('master_maintenance/court_details',
         'MasterMaintenanceController@store_court');
 

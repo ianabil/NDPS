@@ -86,6 +86,7 @@
         var table = $("#show_courts_details").dataTable({  
                             "processing": true,
                             "serverSide": true,
+                            "pageLength": "10",
                             "ajax":{
                                     "url": "show_courts_details",
                                     "dataType": "json",

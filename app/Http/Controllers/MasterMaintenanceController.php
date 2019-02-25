@@ -127,6 +127,32 @@ class MasterMaintenanceController extends Controller
     
             }
 
+            public function update_stakeholder(Request $request){
+                $this->validate ( $request, [ 
+                    'id' => 'required',
+                    'stakeholder' => 'required|max:255',
+                    'district' => 'required|max:255'          
+                ] ); 
+
+                
+                $id = $request->input('id');
+                $stakeholder = strtoupper($request->input('stakeholder'));
+                $district = $request->input('district');
+
+                $data = [
+                    'agency_name'=>$stakeholder,
+                    'updated_at'=>Carbon::today(),
+                    'district_for_report'=>$district
+
+                ];
+
+                Agency_detail::where('agency_id',$id)->update($data);
+                
+                return 1;
+            
+            }
+               
+
             public function get_all_court_details(Request $request){
 
                 $columns = array( 

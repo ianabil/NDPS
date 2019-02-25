@@ -102,9 +102,9 @@
                             "columns": [                
                                 {  "class": "id",
                                     "data": "ID" },
-                                {"class": "stakeholder",
+                                {"class": "stakeholder data",
                                     "data": "STAKEHOLDER" },
-                                {"class": "district",
+                                {"class": "district data",
                                     "data": "DISTRICT" },
                                 {"data": "ACTION" }
                             ]
@@ -153,41 +153,45 @@
                 });
 
             // To prevent updation when no changes to the data is made
-            var stakeholder_name;
-            var prev_data_pubadd;
-            $(document).on("focusin",".data", function(){
-            prev_data_pubname = $(this).closest("tr").find(".name").text();
-            prev_data_pubadd = $(this).closest("tr").find(".address").text();
+        var prev_stakeholder;
+        var prev_jurisdiction;
+        $(document).on("focusin",".data", function(){
+            prev_stakeholder = $(this).closest("tr").find(".stakeholder").text();
+            prev_jurisdiction = $(this).closest("tr").find(".district").text();
         })
 
-         /* Data Updation Code Starts*/
-         $(document).on("focusout",".data", function(){
+        /* Data Updation Code Starts*/
+        $(document).on("focusout",".data", function(){
             var id = $(this).closest("tr").find(".id").text();
-            var stakeholder = $(this).closest("tr").find(".name").text();
-            var jurisdiction = $(this).closest("tr").find(".address").text();
+            var stakeholder = $(this).closest("tr").find(".stakeholder").text();
+            var jurisdiction = $(this).closest("tr").find(".district").text();
             
-            if(pub_name == prev_data_pubname && pub_address == prev_data_pubadd)
+            if(stakeholder == prev_stakeholder && jurisdiction == prev_jurisdiction)
                 return false;
+
 
             $.ajax({
                 type:"POST",
-                url:"publisher_master_maintainance/update",                
+                url:"master_maintenance_stakeholder/update",                
                 data:{_token: $('meta[name="csrf-token"]').attr('content'), 
                         id:id, 
-                        publisher_name:pub_name,
-                        publisher_address:pub_address
+                        stakeholder:stakeholder,
+                        district:jurisdiction
                     },
-                success:function(response){                    
-                    swal("Publisher's Details Updated","","success");
+                success:function(response){   
+                               
+                    swal("Stakeholder's Details Updated","","success");
                     table.api().ajax.reload();
                 },
-                error:function(response) {                   
-                if(response.responseJSON.errors.hasOwnProperty('publisher_name'))
-                    swal("Cannot create new Publisher", ""+response.responseJSON.errors.publisher_name['0'], "error");
-                if(response.responseJSON.errors.hasOwnProperty('publisher_address'))
-                    swal("Cannot create new Publisher", ""+response.responseJSON.errors.publisher_address['0'], "error");
-                table.api().ajax.reload();
-               }
+                error:function(response) {  
+                      if(response.responseJSON.errors.hasOwnProperty('district'))
+                         swal("Cannot updated Stakeholder", ""+response.responseJSON.errors.district['0'], "error");
+                                                         
+                      if(response.responseJSON.errors.hasOwnProperty('stakeholder_name'))
+                          swal("Cannot updated Stakeholder", ""+response.responseJSON.errors.stakeholder_name['0'], "error");
+                          
+                }
+
             })
         })
 
