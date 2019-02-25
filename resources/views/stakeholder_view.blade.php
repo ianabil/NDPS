@@ -100,51 +100,98 @@
                                     "data":{ _token: $('meta[name="csrf-token"]').attr('content')}
                                 },
                             "columns": [                
-                                {  "data": "ID" },
-                                {"data": "STAKEHOLDER" },
-                                {"data": "DISTRICT" },
+                                {  "class": "id",
+                                    "data": "ID" },
+                                {"class": "stakeholder",
+                                    "data": "STAKEHOLDER" },
+                                {"class": "district",
+                                    "data": "DISTRICT" },
                                 {"data": "ACTION" }
                             ]
                         }); 
             // DataTable initialization with Server-Processing ::END
 
-
+            // Double Click To Enable Content editable
+            $(document).on("click",".data", function(){
+                        $(this).attr('contenteditable',true);
+                    })
 
             /*Stakeholder master maintenance */
 
-                $(document).on("click","#add",function (){
+             $(document).on("click","#add",function (){
                 
                             
 
-                            var stakeholder= $("#stakeholder").val().toUpperCase();
-                            var district= $("#district").val().toUpperCase();
+                 var stakeholder= $("#stakeholder").val().toUpperCase();
+                 var district= $("#district").val().toUpperCase();
 
                             
-                        $.ajax({
-                                type:"POST",
-                                url:"master_maintenance/stakeholder",
-                                data: {_token: $('meta[name="csrf-token"]').attr('content'), 
-                                stakeholder_name:stakeholder,
+                 $.ajax({
+                        type:"POST",
+                        url:"master_maintenance/stakeholder",
+                        data:{_token: $('meta[name="csrf-token"]').attr('content'), 
+                                 stakeholder_name:stakeholder,
                                 district:district,
-                                },
-                                success:function(response){
-                                    $("#stakeholder").val('');
-                                    $("#district").val('');
-                                    swal("Added Successfully","A new Stackholder has been added","success");
+                            },
+                             success:function(response){
+                               $("#stakeholder").val('');
+                               $("#district").val('');
+                               swal("Added Successfully","A new Stackholder has been added","success");
                                     
-                                },
-                                error:function(response) {  
-                                    if(response.responseJSON.errors.hasOwnProperty('district'))
-                                        swal("Cannot create new Stakeholder", ""+response.responseJSON.errors.district['0'], "error");
+                            },
+                            error:function(response) {  
+                               if(response.responseJSON.errors.hasOwnProperty('district'))
+                                   swal("Cannot create new Stakeholder", ""+response.responseJSON.errors.district['0'], "error");
                                                          
-                                    if(response.responseJSON.errors.hasOwnProperty('stakeholder_name'))
-                                        swal("Cannot create new Stakeholder", ""+response.responseJSON.errors.stakeholder_name['0'], "error");
+                               if(response.responseJSON.errors.hasOwnProperty('stakeholder_name'))
+                                    swal("Cannot create new Stakeholder", ""+response.responseJSON.errors.stakeholder_name['0'], "error");
                                     
-                                }
+                              }
 
 
                         });
                 });
+
+            // To prevent updation when no changes to the data is made
+            var stakeholder_name;
+            var prev_data_pubadd;
+            $(document).on("focusin",".data", function(){
+            prev_data_pubname = $(this).closest("tr").find(".name").text();
+            prev_data_pubadd = $(this).closest("tr").find(".address").text();
+        })
+
+         /* Data Updation Code Starts*/
+         $(document).on("focusout",".data", function(){
+            var id = $(this).closest("tr").find(".id").text();
+            var stakeholder = $(this).closest("tr").find(".name").text();
+            var jurisdiction = $(this).closest("tr").find(".address").text();
+            
+            if(pub_name == prev_data_pubname && pub_address == prev_data_pubadd)
+                return false;
+
+            $.ajax({
+                type:"POST",
+                url:"publisher_master_maintainance/update",                
+                data:{_token: $('meta[name="csrf-token"]').attr('content'), 
+                        id:id, 
+                        publisher_name:pub_name,
+                        publisher_address:pub_address
+                    },
+                success:function(response){                    
+                    swal("Publisher's Details Updated","","success");
+                    table.api().ajax.reload();
+                },
+                error:function(response) {                   
+                if(response.responseJSON.errors.hasOwnProperty('publisher_name'))
+                    swal("Cannot create new Publisher", ""+response.responseJSON.errors.publisher_name['0'], "error");
+                if(response.responseJSON.errors.hasOwnProperty('publisher_address'))
+                    swal("Cannot create new Publisher", ""+response.responseJSON.errors.publisher_address['0'], "error");
+                table.api().ajax.reload();
+               }
+            })
+        })
+
+        // /* Data Updation Cods Ends */
 
         });
 </script>
