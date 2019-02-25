@@ -66,7 +66,7 @@ class MonthlyReportController extends Controller
             $report['Sl No'] +=1;
 
             //If submitted date is within 10 days of present date, a new marker will be shown
-            if((strtotime(date('Y-m-d')) - strtotime($data->created_at) <=10) && $data->submit_flag == 'S')
+            if(((strtotime(date('Y-m-d')) - strtotime($data->created_at)) / (60*60*24) <=10) && $data->submit_flag == 'S')
                 $report['Stakeholder Name'] = "<strong>".$data->agency_name."</strong> <small class='label pull-right bg-blue'>new</small>";
             else
                 $report['Stakeholder Name'] = "<strong>".$data->agency_name."</strong>";
@@ -77,8 +77,8 @@ class MonthlyReportController extends Controller
             if($data->submit_flag=='S'){
                 // Green Light
                 $report['Submission Status'] = "<span style='height: 25px;width: 25px;
-                                                background-color: green;border-radius: 50%;
-                                                display: inline-block;' title='Report Submitted'></span> <br> Submitted On ". Carbon::parse($data->created_at)->format('d-m-Y');
+                                                background-color: green; border-radius: 50%;
+                                                display: inline-block;' title='Report Submitted'></span>   Submitted On ". Carbon::parse($data->created_at)->format('d-m-Y');
                 
                 // As submission completed, view report and unlock submission button appears
                 $report['Action'] = "<a href='dashboard/show_monthly_report/".$data->agency_id."/".$data->month_of_report."' target='_blank'>
@@ -88,12 +88,12 @@ class MonthlyReportController extends Controller
             else if ($data->submit_flag=='N')
                 // Yellow Light
                 $report['Submission Status'] = "<span style='height: 25px;width: 25px;
-                                                background-color: yellow;border-radius: 50%;
+                                                background-color: gold; border-radius: 50%;
                                                 display: inline-block;'  title='Drafted But Not Submitted'></span>";
             else
                 // Red Light
                 $report['Submission Status'] = "<span style='height: 25px;width: 25px;
-                                                background-color: red;border-radius: 50%;
+                                                background-color: red; border-radius: 50%;
                                                 display: inline-block;'  title='Yet To Start Working'></span>";
 
 

@@ -64,7 +64,14 @@
         Route::post('master_maintenance/court_details',
         'MasterMaintenanceController@store_court');
 
-        Route::post('show_all_stakeholders','MasterMaintenanceController@get_all_stakeholders_data');
+        Route::post('show_all_stakeholders',
+        'MasterMaintenanceController@get_all_stakeholders_data');
+
+        Route::get('create_new_user', 
+        'MasterMaintenanceController@index_user_creation');
+
+        Route::post('create_new_user/create', 
+        'MasterMaintenanceController@create_new_user');
 
     });
 
