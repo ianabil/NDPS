@@ -80,34 +80,34 @@ values(DEFAULT,8,'CHINSURA PS');
 ***********************COURT_DETAILS**********************
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'JM 1ST COURT SILIGURI',1);
+values(DEFAULT,'JM 1ST COURT SILIGURI',22);
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'JM,MIRIK',1);
+values(DEFAULT,'JM,MIRIK',22);
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'METROPOLITAN MAGISTRATE,13TH COURT,CALCUTTA',2);
+values(DEFAULT,'METROPOLITAN MAGISTRATE,13TH COURT,CALCUTTA',23);
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'JM 1ST COURT BARRACKPUR',10);
+values(DEFAULT,'JM 1ST COURT BARRACKPUR',31);
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'JM 2ND COURT BARASAT',10);
+values(DEFAULT,'JM 2ND COURT BARASAT',31);
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'JM 2ND COURT HOWRAH',9);
+values(DEFAULT,'JM 2ND COURT HOWRAH',30);
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'JM 2ND COURT SERAMPORE',8);
+values(DEFAULT,'JM 2ND COURT SERAMPORE',29);
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'JM 2ND COURT CHANDANNAGAR',8);
+values(DEFAULT,'JM 2ND COURT CHANDANNAGAR',29);
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'JM 7TH COURT BANKURA',3);
+values(DEFAULT,'JM 7TH COURT BANKURA',24);
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'JM 1ST COURT PURULIA',7);
+values(DEFAULT,'JM 1ST COURT PURULIA',28);
 
 *************************************AGENCY_DETAILS***********************
 
