@@ -106,9 +106,12 @@
                                     "data": "STAKEHOLDER" },
                                 {"class": "district data",
                                     "data": "DISTRICT" },
-                                {"data": "ACTION" }
+                                {"class": "delete",
+                                    "data": "ACTION" }
                             ]
                         }); 
+
+                        
             // DataTable initialization with Server-Processing ::END
 
             // Double Click To Enable Content editable
@@ -137,7 +140,7 @@
                                $("#stakeholder").val('');
                                $("#district").val('');
                                swal("Added Successfully","A new Stackholder has been added","success");
-                                    
+                               table.api().ajax.reload();   
                             },
                             error:function(response) {  
                                if(response.responseJSON.errors.hasOwnProperty('district'))
@@ -152,7 +155,8 @@
                         });
                 });
 
-            // To prevent updation when no changes to the data is made
+        /* To prevent updation when no changes to the data is made*/
+
         var prev_stakeholder;
         var prev_jurisdiction;
         $(document).on("focusin",".data", function(){
@@ -197,7 +201,56 @@
 
         // /* Data Updation Cods Ends */
 
+
+        /* Data Deletion Cods Starts */
+
+        $(document).on("click",".delete", function(){
+
+           swal({
+				title: "Are You Sure?",
+				text: "Once submitted, you will not be able to change the record",
+				icon: "warning",
+				buttons: true,
+				dangerMode: true,
+				})
+				.then((willDelete) => {
+                    if(willDelete) {
+                        var id = $(this).closest("tr").find(".id").text();
+                        var tr = $(this).closest("tr");
+
+                        $.ajax({
+                            type:"POST",
+                            url:"master_maintenance_stakeholder/delete",
+                            data:{
+                                _token: $('meta[name="csrf-token"]').attr('content'), 
+                                id:id
+                            },
+                            success:function(response){
+                                if(response==1){
+                                    swal("Data Deleted Successfully","","success");  
+                                    table.api().ajax.reload();                
+                                }
+                                else{
+                                    swal("Can Not Delete This Agency","This agency already has some values","error");  
+                                    return false;
+                                }
+
+                            }
+                        })
+                    }
+                    else 
+                    {
+					    swal("Deletion Cancelled","","error");
+				    }
+        })
+
+        /* Data Deletion Cods Ends */
+
+
         });
+
+   });
+
 </script>
 
     </body>

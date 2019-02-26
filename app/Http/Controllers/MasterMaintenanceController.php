@@ -10,6 +10,7 @@ use App\Court_detail;
 use App\District;
 use App\User;
 use Carbon\Carbon;
+use App\Seizure;
 use DB;
 
 class MasterMaintenanceController extends Controller
@@ -34,37 +35,8 @@ class MasterMaintenanceController extends Controller
         return 1;
     }
 
-     public function index(Request $request)
-     {
-         $data= array();
-
-        $data['districts'] = District::select('district_id','district_name')->orderBy('district_name')->get();
-        
-
-        return view('court_view',compact('data'));
-    }
-
-    public function store_court(Request $request){
-
-        $this->validate ( $request, [ 
-            
-            'court_name' => 'required|max:255|unique:court_details,court_name',
-            'district_name' => 'required|max:255'
-
-        ] ); 
-
-        $court_name=strtoupper($request->input('court_name'));
-        $district_name=strtoupper($request->input('district_name'));
-
-        Court_detail::insert([
-            'court_name'=>$court_name,
-            'district_id'=>$district_name,
-            'created_at'=>Carbon::today(),
-            'updated_at'=>Carbon::today()
-            ]);
-        return 1;
-   
-       }
+     
+    
 
        // Data Table Code for stakeholders
     public function get_all_stakeholders_data(Request $request){
@@ -129,6 +101,8 @@ class MasterMaintenanceController extends Controller
     
             }
 
+            /*update stakeholder*/
+
             public function update_stakeholder(Request $request){
                 $this->validate ( $request, [ 
                     'id' => 'required',
@@ -153,7 +127,36 @@ class MasterMaintenanceController extends Controller
                 return 1;
             
             }
-               
+
+             //deleting stakeholder
+
+    public function destroy_stakeholder(Request $request)
+    {
+        $id = $request->input('id');
+        $count = Seizure::where('agency_id',$id)->count();
+    
+        if($count>=1)
+            return 0;
+        else{
+            Agency_detail::where('agency_id',$id)->delete();
+            return 1;
+        }
+        // echo 1;
+    }
+          
+    //court master maintenance view
+
+    public function index_court(Request $request)
+     {
+         $data= array();
+
+        $data['districts'] = District::select('district_id','district_name')->orderBy('district_name')->get();
+        
+
+        return view('court_view',compact('data'));
+    }
+
+    //showing exisiting courts
 
             public function get_all_court_details(Request $request){
 
@@ -226,6 +229,69 @@ class MasterMaintenanceController extends Controller
                     }
         
                 }
+    /*adding new court*/
+
+    public function store_court(Request $request){
+
+        $this->validate ( $request, [ 
+            
+            'court_name' => 'required|max:255|unique:court_details,court_name',
+            'district_name' => 'required|integer|max:255'
+
+        ] ); 
+
+    $court_name=strtoupper($request->input('court_name'));
+    $district_name=strtoupper($request->input('district_name'));
+
+    Court_detail::insert([
+        'court_name'=>$court_name,
+        'district_id'=>$district_name,
+        'created_at'=>Carbon::today(),
+        'updated_at'=>Carbon::today()
+        ]);
+    return 1;
+
+   }
+/*Update court */
+
+   public function update_court(Request $request){
+    $this->validate ( $request, [ 
+        'id' => 'required',
+        'court_name' => 'required|max:255'         
+    ] ); 
+
+    
+    $id = $request->input('id');
+    $court_name= strtoupper($request->input('court'));
+
+    $data = [
+        'court_name'=>$court_name,
+        'updated_at'=>Carbon::today(),
+        ];
+
+        Court_detail::where('court_id',$id)->update($data);
+    
+    return 1;
+
+}
+
+
+   //deleting court detials
+
+   public function destroy_court(Request $request)
+   {
+       $id = $request->input('id');
+       $count = Seizure::where('certification_court_id',$id)->count();
+   
+       if($count>0)
+           return 0;
+       else{
+           Court_detail::where('court_id',$id)->delete();
+           return 1;
+       }
+       // echo 1;
+   }
+
 
 
 
@@ -280,6 +346,13 @@ class MasterMaintenanceController extends Controller
 
         return 1;
     }
+
+   
+
+    
+
+
+   
 
 
 

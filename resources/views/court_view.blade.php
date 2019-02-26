@@ -2,7 +2,7 @@
 <!-- Main content -->
 <div class="box box-default">
         <div class="box-header with-border">
-            <h3 class="box-title">Add New Stakeholder</h3>
+            <h3 class="box-title">Add New Court</h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
@@ -94,10 +94,14 @@
                                     "data":{ _token: $('meta[name="csrf-token"]').attr('content')}
                                 },
                             "columns": [                
-                                {"data": "COURT ID" },
-                                {"data": "COURT NAME" },
-                                {"data": "DISTRICT NAME" },
-                                {"data": "ACTION" }
+                                {"class":"court_id data",
+                                "data": "COURT ID" },
+                                {"class":"court_name data",
+                                 "data": "COURT NAME" },
+                                {"class":"district_name data",
+                                "data": "DISTRICT NAME" },
+                                {"class":"delete"
+                                 ,"data": "ACTION" }
                             ]
                         }); 
             // DataTable initialization with Server-Processing ::END
@@ -116,45 +120,133 @@
 
          /*LOADER*/
 
-         /*Court Details starts*/
+         /*Addition of Court_Details starts*/
             
-            $(document).on("click", "#add_new_court",function(){
+                $(document).on("click", "#add_new_court",function(){
 
-                var court_name= $('#court_name').val().toUpperCase();
-                var district_name= $("#district_name option:selected").val();
+                    var court_name= $('#court_name').val().toUpperCase();
+                    var district=$('#district_name option:selected').val();
+                    
+                    $.ajax({
 
-                $.ajax({
+                        type:"POST",
+                        url:"master_maintenance/court_details",
+                        data:{
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            court_name:court_name,
+                            district_name:district
 
-                    type:"POST",
-                    url:"master_maintenance/court_details",
-                    data:{
-						_token: $('meta[name="csrf-token"]').attr('content'),
-                        court_name:court_name,
-                        district_name:district_name
+                    },
+                    success:function(response)
+                    {
+                        $("#court_name").val('');
+                        swal("Court Added Successfully","","success");
+                        table.api().ajax.reload();
+                    },
+                    error:function(response) {  
 
-                },
-                success:function(response)
-                {
-                    $("#court_name").val('');
-                     $("#district_name").val('');
-                    swal("Court Added Successfully","Court has been added to the database","success");
-
-                },
-                error:function(response) {  
-                        console.log(response);
-
-                    if(response.responseJSON.errors.hasOwnProperty('district_name'))
-                         swal("Cannot create new Court", ""+response.responseJSON.errors.district_name['0'], "error");
-                                                         
-                    if(response.responseJSON.errors.hasOwnProperty('court_name'))
-                         swal("Cannot create new Court", ""+response.responseJSON.errors.court_name['0'], "error");
-                                    
-                 }
+                        if(response.responseJSON.errors.hasOwnProperty('district_name'))
+                            swal("Cannot create new Court", ""+response.responseJSON.errors.district_name['0'], "error");
+                                                       
+                        if(response.responseJSON.errors.hasOwnProperty('court_name'))
+                            swal("Cannot create new Court", ""+response.responseJSON.errors.court_name['0'], "error");
+                                        
+                    }
+                });
             });
 
-        
-         /* Court Details ends*/
-  });
+        /*Addition in Court_Details ends*/
+
+
+        /* Start To prevent updation when no changes to the data is made*/
+
+            var prev_court;
+            $(document).on("focusin",".data", function(){
+                prev_court = $(this).closest("tr").find(".stakeholder").text();
+            })
+
+        /*End to prevent updation when no changes to the data is made */
+
+
+        /* Data Updation Code Starts*/
+        $(document).on("focusout",".data", function(){
+            var id = $(this).closest("tr").find(".id").text();
+            var court_name = $(this).closest("tr").find(".court_name").text();
+           
+            
+            if(court_name == prev_court)
+                return false;
+
+
+            $.ajax({
+                type:"POST",
+                url:"master_maintenance_court/update",                
+                data:{_token: $('meta[name="csrf-token"]').attr('content'), 
+                        id:id, 
+                        court:court
+                     },
+                success:function(response){   
+                               
+                    swal("Court's Details Updated","","success");
+                    table.api().ajax.reload();
+                },
+                error:function(response) {  
+                                                                     
+                      if(response.responseJSON.errors.hasOwnProperty('stakeholder_name'))
+                          swal("Cannot updated Court","", "error");
+                          
+                }
+
+            })
+        })
+
+        // /* Data Updation Cods Ends */
+
+
+
+     /* Data Deletion Cods Starts */
+
+        $(document).on("click",".delete", function(){
+
+            swal({
+                title: "Are You Sure?",
+                text: "Once submitted, you will not be able to change the record",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+                })
+                .then((willDelete) => {
+                    if(willDelete) {
+                        var id = $(this).closest("tr").find(".court_id").text();
+                       
+                        $.ajax({
+                            type:"POST",
+                            url:"master_maintenance_court_details/delete",
+                            data:{
+                                _token: $('meta[name="csrf-token"]').attr('content'), 
+                                id:id
+                            },
+                            success:function(response){
+                                if(response==1){
+                                    swal("Data Deleted Successfully","","success");  
+                                    table.api().ajax.reload();                
+                                }
+                                else{
+                                    swal("Can Not Delete This Court No.","This Court no already has some values","error");  
+                                    return false;
+                                }
+
+                            }
+                        })
+                    }
+                    else 
+                    {
+                        swal("Deletion Cancelled","","error");
+                    }
+            })
+        });
+
+            /* Data Deletion Codes Ends */
       
 });
 </script>
