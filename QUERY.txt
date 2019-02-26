@@ -159,7 +159,24 @@ select s.quantity_of_drug,u1.unit_name seizure_unit, s.disposal_quantity, u2.uni
 
 
 
-*****************************fetching the district wise court name*****************
+*****************************fetching stakeholder wise disposed & undisposed tally*****************
+select disposal_query.agency_name, disposed+undisposed as seizures, disposal_query.disposed as disposed, undisposal_query.undisposed as undisposed
+from 
+
+(select agency_name, count(disposal.disposal_quantity) as disposed
+from agency_details left join (select * from seizures where disposal_quantity IS NOT NULL) as disposal
+on agency_details.agency_id = disposal.agency_id
+group by agency_name) as disposal_query
+
+INNER JOIN 
+
+(select agency_name, count(undisposal.quantity_of_drug) as undisposed
+from agency_details left join (select * from seizures where disposal_quantity IS NULL) as undisposal
+on agency_details.agency_id = undisposal.agency_id
+group by agency_name) as undisposal_query
+
+on disposal_query.agency_name = undisposal_query.agency_name
+order by undisposed DESC
 
 
 
