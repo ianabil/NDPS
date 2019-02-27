@@ -164,7 +164,9 @@
             prev_jurisdiction = $(this).closest("tr").find(".district").text();
         })
 
+
         /* Data Updation Code Starts*/
+
         $(document).on("focusout",".data", function(){
             var id = $(this).closest("tr").find(".id").text();
             var stakeholder = $(this).closest("tr").find(".stakeholder").text();
@@ -195,6 +197,7 @@
                           swal("Cannot updated Stakeholder", ""+response.responseJSON.errors.stakeholder_name['0'], "error");
                           
                 }
+        
 
             })
         })

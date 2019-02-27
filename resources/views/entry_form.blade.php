@@ -137,7 +137,7 @@
 
 							<!--quantity of seizure drugs-->
 
-							<td><input type="text" class="form-control undisposed_quantity" style="width:150px" name="undisposed_quantity" id="undisposed_quantity" value="{{$seizures->undisposed_quantity}}"></td>
+							<td><input type="text" class="form-control undisposed_quantity" style="width:150px" name="undisposed_quantity" id="undisposed_quantity" value="{{$seizures->undisposed_quantity}}"disabled></td>
 
 							<!--unit of quantity of narcotic drugs-->
 
@@ -453,6 +453,17 @@
 
     /*LOADER*/
 	
+
+	/*Seized contraband fed in to undisposed column:start */
+
+	$(document).on("keyup","#quantity_of_narcotics",function(){
+		
+		var seized=$(this).val();
+		
+		$('#undisposed_quantity').val(seized);
+	})
+
+	/*Seized contraband fed in to undisposed column:end */
 
 
 	/* add row */

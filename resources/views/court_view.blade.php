@@ -104,7 +104,7 @@
                                  ,"data": "ACTION" }
                             ]
                         }); 
-            // DataTable initialization with Server-Processing ::END
+           
 
         //select2 initialization code
          $(".select2").select2(); 
@@ -157,20 +157,27 @@
 
         /*Addition in Court_Details ends*/
 
+         // DataTable initialization with Server-Processing ::END
+
+            // Double Click To Enable Content editable
+            $(document).on("click",".court_name", function(){
+                $(this).attr('contenteditable',true);
+              })
+
 
         /* Start To prevent updation when no changes to the data is made*/
 
             var prev_court;
-            $(document).on("focusin",".data", function(){
-                prev_court = $(this).closest("tr").find(".stakeholder").text();
+            $(document).on("focusin",".court_name", function(){
+                prev_court = $(this).closest("tr").find(".court_name").text();
             })
 
         /*End to prevent updation when no changes to the data is made */
 
 
         /* Data Updation Code Starts*/
-        $(document).on("focusout",".data", function(){
-            var id = $(this).closest("tr").find(".id").text();
+        $(document).on("focusout",".court_name", function(){
+            var id = $(this).closest("tr").find(".court_id").text();
             var court_name = $(this).closest("tr").find(".court_name").text();
            
             
@@ -183,16 +190,15 @@
                 url:"master_maintenance_court/update",                
                 data:{_token: $('meta[name="csrf-token"]').attr('content'), 
                         id:id, 
-                        court:court
+                        court_name:court_name
                      },
                 success:function(response){   
-                               
+                     console.log(response);
                     swal("Court's Details Updated","","success");
                     table.api().ajax.reload();
                 },
-                error:function(response) {  
-                                                                     
-                      if(response.responseJSON.errors.hasOwnProperty('stakeholder_name'))
+                error:function(response) {                           
+                    //   if(response.responseJSON.errors.hasOwnProperty('court_name'))
                           swal("Cannot updated Court","", "error");
                           
                 }

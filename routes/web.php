@@ -101,14 +101,7 @@
         Route::post('master_maintenance_court_details/delete',
         'MasterMaintenanceController@destroy_court');
 
-        //Court MAster Maintenance::end
-        
-
-       
-
-       
-
-       
+        //Court Master Maintenance::end
         
 
         Route::post('show_all_stakeholders',
