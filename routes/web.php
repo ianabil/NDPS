@@ -18,7 +18,7 @@
         Auth::routes();
 
 
-    Route::group(['middleware' => ['auth']], function () {
+    Route::group(['middleware' => ['auth','high_court']], function () {
 
 
         //High Court Dashboard::start
@@ -34,9 +34,75 @@
         Route::post('dashboard/unlock_report_submission',
         'MonthlyReportController@unlock_report_submission');
 
+        Route::get('disposed_undisposed_tally',
+        'MonthlyReportController@disposed_undisposed_tally');
+
         //High Court Dashboard::end
 
+        
+       //Stakeholder's Previous Report::start
+       
+       Route::get('previous_report_view', 'MonthlyReportController@index_previous_report');
+        
+       Route::post('stakeholder/previous_report','MonthlyReportController@show_previous_report');
 
+      //Stakeholder's Previous Report::end
+
+
+      
+       //Stakeholder Master Maintenance::start
+      
+       Route::get('stakeholder_view', function(){
+           return view ('stakeholder_view');
+       });
+
+       Route::post('show_all_stakeholders',
+       'MasterMaintenanceController@get_all_stakeholders_data');
+
+       Route::post('master_maintenance/stakeholder',
+       'MasterMaintenanceController@store_stakeholder');
+
+       Route::post('master_maintenance_stakeholder/update',
+       'MasterMaintenanceController@update_stakeholder');
+
+       Route::post('master_maintenance_stakeholder/delete',
+       'MasterMaintenanceController@destroy_stakeholder');
+
+       //Stakeholder MAster Maintenance::end
+
+       
+
+       //Court MAster Maintenance::start
+
+       Route::get('court_view', 'MasterMaintenanceController@index_court');
+
+       Route::post('show_courts_details', 'MasterMaintenanceController@get_all_court_details');
+       
+       Route::post('master_maintenance/court_details',
+       'MasterMaintenanceController@store_court');
+
+       Route::post('master_maintenance_court/update',
+       'MasterMaintenanceController@update_court');
+       
+
+       Route::post('master_maintenance_court_details/delete',
+       'MasterMaintenanceController@destroy_court');
+
+       //Court Master Maintenance::end
+       
+
+       //User Master Maintenance ::starts
+       Route::get('create_new_user', 
+       'MasterMaintenanceController@index_user_creation');
+
+       Route::post('create_new_user/create', 
+       'MasterMaintenanceController@create_new_user');
+       //User Master Maintenance ::ends
+
+    });
+
+
+    Route::group(['middleware' => ['auth','stakeholder']], function () {
 
         //Entry form::start
         
@@ -55,63 +121,6 @@
        //Entry form::end
 
 
-
-       //Stakeholder's Previous Report::start
-       
-        Route::get('previous_report_view', 'MonthlyReportController@index_previous_report');
-        
-        Route::post('stakeholder/previous_report','MonthlyReportController@show_previous_report');
-
-       //Stakeholder's Previous Report::end
-
-
-       
-        //Stakeholder MAster Maintenance::start
-       
-        Route::get('stakeholder_view', function(){
-            return view ('stakeholder_view');
-        });
-
-        Route::post('master_maintenance/stakeholder',
-        'MasterMaintenanceController@store_stakeholder');
-
-        Route::post('master_maintenance_stakeholder/update',
-        'MasterMaintenanceController@update_stakeholder');
-
-        Route::post('master_maintenance_stakeholder/delete',
-        'MasterMaintenanceController@destroy_stakeholder');
-
-        //Stakeholder MAster Maintenance::end
-
-        
-
-        //Court MAster Maintenance::start
-
-        Route::get('court_view', 'MasterMaintenanceController@index_court');
-
-        Route::post('show_courts_details', 'MasterMaintenanceController@get_all_court_details');
-        
-        Route::post('master_maintenance/court_details',
-        'MasterMaintenanceController@store_court');
-
-        Route::post('master_maintenance_court/update',
-        'MasterMaintenanceController@update_court');
-        
-
-        Route::post('master_maintenance_court_details/delete',
-        'MasterMaintenanceController@destroy_court');
-
-        //Court Master Maintenance::end
-        
-
-        Route::post('show_all_stakeholders',
-        'MasterMaintenanceController@get_all_stakeholders_data');
-
-        Route::get('create_new_user', 
-        'MasterMaintenanceController@index_user_creation');
-
-        Route::post('create_new_user/create', 
-        'MasterMaintenanceController@create_new_user');
 
 
 

@@ -257,7 +257,33 @@ class MonthlyReportController extends Controller
         );
         
         echo json_encode($json_data);
+        
 
+    }
+
+    public function disposed_undisposed_tally(){
+        $sql ="select disposal_query.agency_name, disposed+undisposed as seizures, disposal_query.disposed as disposed, undisposal_query.undisposed as undisposed
+        from 
+        
+        (select agency_name, count(disposal.disposal_quantity) as disposed
+        from agency_details left join (select * from seizures where disposal_quantity IS NOT NULL and submit_flag='S') as disposal
+        on agency_details.agency_id = disposal.agency_id
+        group by agency_name) as disposal_query
+        
+        INNER JOIN 
+        
+        (select agency_name, count(undisposal.quantity_of_drug) as undisposed
+        from agency_details left join (select * from seizures where disposal_quantity IS NULL and submit_flag='S') as undisposal
+        on agency_details.agency_id = undisposal.agency_id
+        group by agency_name) as undisposal_query
+        
+        on disposal_query.agency_name = undisposal_query.agency_name
+        order by undisposed DESC
+        ";
+
+        $tally = DB::select($sql);
+
+        return view('disposed_undisposed_tally',compact('tally'));
     }
 
 
