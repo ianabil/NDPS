@@ -18,42 +18,95 @@
         Auth::routes();
 
 
-    Route::group(['middleware' => ['auth']], function () {
-
-        Route::get('dashboard', function () {
-            return view('dashboard');
-        });
-
-        Route::get('/home', 'HomeController@index')->name('home'); 
-
-        Route::resource('entry_form','entry_formController');
-
-        Route::get('post_submission_preview','entry_formController@post_submission_preview');
-
-        Route::get('previous_report_view', function(){
-            return view ('previous_report');
-        });
-
-        Route::post('stakeholder/previous_report','MonthlyReportController@show_previous_report');
-
-        Route::get('stakeholder_view', function(){
-            return view ('stakeholder_view');
-        });
-
-        Route::get('court_view', 'MasterMaintenanceController@index');
+    Route::group(['middleware' => ['auth','high_court']], function () {
 
 
+        //High Court Dashboard::start
 
-        Route::post('monthly_report/show_monthly_report',
+        Route::get('dashboard','MonthlyReportController@index_dashboard');
+
+        Route::post('dashboard/monthly_report_status',
+        'MonthlyReportController@monthly_report_status');
+
+        Route::get('dashboard/show_monthly_report/{agency_id}/{month}',
         'MonthlyReportController@show_monthly_report');
-                
-        Route::get('monthly_report', function(){
-            return view ('monthly_report');
-        });
+
+        Route::post('dashboard/unlock_report_submission',
+        'MonthlyReportController@unlock_report_submission');
+
+        Route::get('disposed_undisposed_tally',
+        'MonthlyReportController@disposed_undisposed_tally');
+
+        //High Court Dashboard::end
+
+        
+       //Stakeholder's Previous Report::start
+       
+       Route::get('previous_report_view', 'MonthlyReportController@index_previous_report');
+        
+       Route::post('stakeholder/previous_report','MonthlyReportController@show_previous_report');
+
+      //Stakeholder's Previous Report::end
 
 
-        Route::post('monthly_report/submitted_stakeholders',
-        'MonthlyReportController@submitted_stakeholders');
+      
+       //Stakeholder Master Maintenance::start
+      
+       Route::get('stakeholder_view', function(){
+           return view ('stakeholder_view');
+       });
+
+       Route::post('show_all_stakeholders',
+       'MasterMaintenanceController@get_all_stakeholders_data');
+
+       Route::post('master_maintenance/stakeholder',
+       'MasterMaintenanceController@store_stakeholder');
+
+       Route::post('master_maintenance_stakeholder/update',
+       'MasterMaintenanceController@update_stakeholder');
+
+       Route::post('master_maintenance_stakeholder/delete',
+       'MasterMaintenanceController@destroy_stakeholder');
+
+       //Stakeholder MAster Maintenance::end
+
+       
+
+       //Court MAster Maintenance::start
+
+       Route::get('court_view', 'MasterMaintenanceController@index_court');
+
+       Route::post('show_courts_details', 'MasterMaintenanceController@get_all_court_details');
+       
+       Route::post('master_maintenance/court_details',
+       'MasterMaintenanceController@store_court');
+
+       Route::post('master_maintenance_court/update',
+       'MasterMaintenanceController@update_court');
+       
+
+       Route::post('master_maintenance_court_details/delete',
+       'MasterMaintenanceController@destroy_court');
+
+       //Court Master Maintenance::end
+       
+
+       //User Master Maintenance ::starts
+       Route::get('create_new_user', 
+       'MasterMaintenanceController@index_user_creation');
+
+       Route::post('create_new_user/create', 
+       'MasterMaintenanceController@create_new_user');
+       //User Master Maintenance ::ends
+
+    });
+
+
+    Route::group(['middleware' => ['auth','stakeholder']], function () {
+
+        //Entry form::start
+        
+        Route::resource('entry_form','entry_formController');
 
         Route::post('entry_form/district',
         'entry_formController@district_wise_court');
@@ -63,10 +116,15 @@
         Route::post('entry_form/submission_validation',
         'entry_formController@submission_validation');
 
-        Route::post('master_maintenance/stakeholder',
-        'MasterMaintenanceController@store_stakeholder');
+        Route::get('post_submission_preview','entry_formController@post_submission_preview');
 
-        Route::post('master_maintenance/court_details',
-        'MasterMaintenanceController@store_court');
+       //Entry form::end
+
+
+
+
 
     });
+
+
+  

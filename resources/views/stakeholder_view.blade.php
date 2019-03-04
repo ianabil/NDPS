@@ -100,57 +100,160 @@
                                     "data":{ _token: $('meta[name="csrf-token"]').attr('content')}
                                 },
                             "columns": [                
-                                {"class": "id",
-                                "data": "PUBCODE" },
-                                {"class": "name data",   
-                                "data": "PUBNAME" },
-                                {"class": "address data",   
-                                "data": "PUBADD" },
-                                {"class": "delete", 
-                                "data": "action" }
+                                {  "class": "id",
+                                    "data": "ID" },
+                                {"class": "stakeholder data",
+                                    "data": "STAKEHOLDER" },
+                                {"class": "district data",
+                                    "data": "DISTRICT" },
+                                {"class": "delete",
+                                    "data": "ACTION" }
                             ]
                         }); 
+
+                        
             // DataTable initialization with Server-Processing ::END
 
-
+            // Double Click To Enable Content editable
+            $(document).on("click",".data", function(){
+                        $(this).attr('contenteditable',true);
+                    })
 
             /*Stakeholder master maintenance */
 
-                $(document).on("click","#add",function (){
+             $(document).on("click","#add",function (){
                 
                             
 
-                            var stakeholder= $("#stakeholder").val().toUpperCase();
-                            var district= $("#district").val().toUpperCase();
+                 var stakeholder= $("#stakeholder").val().toUpperCase();
+                 var district= $("#district").val().toUpperCase();
 
                             
-                        $.ajax({
-                                type:"POST",
-                                url:"master_maintenance/stakeholder",
-                                data: {_token: $('meta[name="csrf-token"]').attr('content'), 
-                                stakeholder_name:stakeholder,
+                 $.ajax({
+                        type:"POST",
+                        url:"master_maintenance/stakeholder",
+                        data:{_token: $('meta[name="csrf-token"]').attr('content'), 
+                                 stakeholder_name:stakeholder,
                                 district:district,
-                                },
-                                success:function(response){
-                                    $("#stakeholder").val('');
-                                    $("#district").val('');
-                                    swal("Added Successfully","A new Stackholder has been added","success");
-                                    
-                                },
-                                error:function(response) {  
-                                    if(response.responseJSON.errors.hasOwnProperty('district'))
-                                        swal("Cannot create new Stakeholder", ""+response.responseJSON.errors.district['0'], "error");
+                            },
+                             success:function(response){
+                               $("#stakeholder").val('');
+                               $("#district").val('');
+                               swal("Added Successfully","A new Stackholder has been added","success");
+                               table.api().ajax.reload();   
+                            },
+                            error:function(response) {  
+                               if(response.responseJSON.errors.hasOwnProperty('district'))
+                                   swal("Cannot create new Stakeholder", ""+response.responseJSON.errors.district['0'], "error");
                                                          
-                                    if(response.responseJSON.errors.hasOwnProperty('stakeholder_name'))
-                                        swal("Cannot create new Stakeholder", ""+response.responseJSON.errors.stakeholder_name['0'], "error");
+                               if(response.responseJSON.errors.hasOwnProperty('stakeholder_name'))
+                                    swal("Cannot create new Stakeholder", ""+response.responseJSON.errors.stakeholder_name['0'], "error");
                                     
-                                }
+                              }
 
 
                         });
                 });
 
+        /* To prevent updation when no changes to the data is made*/
+
+        var prev_stakeholder;
+        var prev_jurisdiction;
+        $(document).on("focusin",".data", function(){
+            prev_stakeholder = $(this).closest("tr").find(".stakeholder").text();
+            prev_jurisdiction = $(this).closest("tr").find(".district").text();
+        })
+
+
+        /* Data Updation Code Starts*/
+
+        $(document).on("focusout",".data", function(){
+            var id = $(this).closest("tr").find(".id").text();
+            var stakeholder = $(this).closest("tr").find(".stakeholder").text();
+            var jurisdiction = $(this).closest("tr").find(".district").text();
+            
+            if(stakeholder == prev_stakeholder && jurisdiction == prev_jurisdiction)
+                return false;
+
+
+            $.ajax({
+                type:"POST",
+                url:"master_maintenance_stakeholder/update",                
+                data:{_token: $('meta[name="csrf-token"]').attr('content'), 
+                        id:id, 
+                        stakeholder:stakeholder,
+                        district:jurisdiction
+                    },
+                success:function(response){   
+                               
+                    swal("Stakeholder's Details Updated","","success");
+                    table.api().ajax.reload();
+                },
+                error:function(response) {  
+                      if(response.responseJSON.errors.hasOwnProperty('district'))
+                         swal("Cannot updated Stakeholder", ""+response.responseJSON.errors.district['0'], "error");
+                                                         
+                      if(response.responseJSON.errors.hasOwnProperty('stakeholder_name'))
+                          swal("Cannot updated Stakeholder", ""+response.responseJSON.errors.stakeholder_name['0'], "error");
+                          
+                }
+        
+
+            })
+        })
+
+        // /* Data Updation Cods Ends */
+
+
+        /* Data Deletion Cods Starts */
+
+        $(document).on("click",".delete", function(){
+
+           swal({
+				title: "Are You Sure?",
+				text: "Once submitted, you will not be able to change the record",
+				icon: "warning",
+				buttons: true,
+				dangerMode: true,
+				})
+				.then((willDelete) => {
+                    if(willDelete) {
+                        var id = $(this).closest("tr").find(".id").text();
+                        var tr = $(this).closest("tr");
+
+                        $.ajax({
+                            type:"POST",
+                            url:"master_maintenance_stakeholder/delete",
+                            data:{
+                                _token: $('meta[name="csrf-token"]').attr('content'), 
+                                id:id
+                            },
+                            success:function(response){
+                                if(response==1){
+                                    swal("Data Deleted Successfully","","success");  
+                                    table.api().ajax.reload();                
+                                }
+                                else{
+                                    swal("Can Not Delete This Agency","This agency already has some values","error");  
+                                    return false;
+                                }
+
+                            }
+                        })
+                    }
+                    else 
+                    {
+					    swal("Deletion Cancelled","","error");
+				    }
+        })
+
+        /* Data Deletion Cods Ends */
+
+
         });
+
+   });
+
 </script>
 
     </body>

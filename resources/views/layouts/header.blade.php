@@ -80,11 +80,16 @@
                                 <span>Reports/Enquiry</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="monthly_report">Monthly Report</a></li>
-                                <li><a href="previous_report_view">Previous Report</a></li>
+                                @if(Auth::user()->user_type == 'high_court')
+                                    <li><a href="#">Composite Report</a></li>
+                                    <li><a href="disposed_undisposed_tally">Disposed Undisposed Tally</a></li>
+                                @else
+                                    <li><a href="previous_report_view">Previously Submitted Report</a></li>
+                                @endif
                             </ul>
                         </li>
-                    
+                        
+                    @if(Auth::user()->user_type == 'high_court')
                         <li class="header"></li>
                         <li class="treeview">
                             <a href="#">
@@ -105,12 +110,11 @@
                                 <span>User Maintainance</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="#">User Creation</a></li>
-                                <li><a href="#">Block User</a></li>
-
+                                <li><a href="create_new_user">User Creation</a></li>
+                                <li><a href="#">Remove User</a></li>
                             </ul>
                         </li>
-                   
+                    @endif
                    
 
                 </ul>

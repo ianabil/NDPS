@@ -15,7 +15,8 @@
                 <div class="col-sm-7">
                     <div class="form-group">
                         <label>
-                            <h3>Court/Agency: {{$data['seizures'][0]->user_name}}</h3>
+                            <h3>Court/Agency: {{$data['agency_details']['0']['agency_name']}}</h3>
+                            <input type = "text" id="agency" style="display:none" value="{{$data['agency_details']['0']['agency_name']}}">
                         </label>
                     </div>
                 </div>
@@ -23,7 +24,8 @@
                     <div class="form-group">
                         <label>
                             <h3>Report For The Month Of: {{$data['seizures']['0']->month_of_report}}</h3>
-                            <input type = "text" id="month_of_report" style="display:none" value="{{date('F',strtotime(date('d-m-Y') . '-1 month')).'-'.date('Y',strtotime(date('d-m-Y') . '-1 month'))}}">
+                            <input type = "text" id="month_of_report" style="display:none" value="{{$data['seizures']['0']->month_of_report}}">
+                            <input type = "text" id="jurisdiction" style="display:none" value="{{$data['agency_details']['0']['district_for_report']}}">
                         </label>
                     </div>
                 </div>
@@ -98,6 +100,8 @@
 
 	$(document).ready(function(){
         var month_of_report = $("#month_of_report").val();
+        var agency = $("#agency").val();
+        var jurisdiction = $("#jurisdiction").val();
         
         $(".table").dataTable({ 
             "searching": false,
@@ -113,7 +117,7 @@
                                 stripNewlines: false
                             },
                             title: 'Report Regarding Seizure/Disposal of Narcotic Drugs For '+month_of_report,
-                            messageTop: 'Court/Agency: CID,West Bengal                                  District: Covering All Over West Bengal',
+                            messageTop: 'Court/Agency: '+agency+'                                  District: '+jurisdiction,
                             messageBottom: '',
                             customize: function(doc) {
 

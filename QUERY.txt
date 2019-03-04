@@ -80,34 +80,34 @@ values(DEFAULT,8,'CHINSURA PS');
 ***********************COURT_DETAILS**********************
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'JM 1ST COURT SILIGURI',1);
+values(DEFAULT,'JM 1ST COURT SILIGURI',22);
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'JM,MIRIK',1);
+values(DEFAULT,'JM,MIRIK',22);
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'METROPOLITAN MAGISTRATE,13TH COURT,CALCUTTA',2);
+values(DEFAULT,'METROPOLITAN MAGISTRATE,13TH COURT,CALCUTTA',23);
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'JM 1ST COURT BARRACKPUR',10);
+values(DEFAULT,'JM 1ST COURT BARRACKPUR',31);
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'JM 2ND COURT BARASAT',10);
+values(DEFAULT,'JM 2ND COURT BARASAT',31);
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'JM 2ND COURT HOWRAH',9);
+values(DEFAULT,'JM 2ND COURT HOWRAH',30);
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'JM 2ND COURT SERAMPORE',8);
+values(DEFAULT,'JM 2ND COURT SERAMPORE',29);
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'JM 2ND COURT CHANDANNAGAR',8);
+values(DEFAULT,'JM 2ND COURT CHANDANNAGAR',29);
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'JM 7TH COURT BANKURA',3);
+values(DEFAULT,'JM 7TH COURT BANKURA',24);
 
 insert into court_details(court_id,court_name,district_id)
-values(DEFAULT,'JM 1ST COURT PURULIA',7);
+values(DEFAULT,'JM 1ST COURT PURULIA',28);
 
 *************************************AGENCY_DETAILS***********************
 
@@ -157,6 +157,26 @@ select s.quantity_of_drug,u1.unit_name seizure_unit, s.disposal_quantity, u2.uni
 		inner join units u2 on cast(s.unit_of_disposal_quantity as int)=u2.unit_id 
 		inner join units u3 on cast(s.undisposed_unit as int)=u3.unit_id
 
+
+
+*****************************fetching stakeholder wise disposed & undisposed tally*****************
+select disposal_query.agency_name, disposed+undisposed as seizures, disposal_query.disposed as disposed, undisposal_query.undisposed as undisposed
+from 
+
+(select agency_name, count(disposal.disposal_quantity) as disposed
+from agency_details left join (select * from seizures where disposal_quantity IS NOT NULL) as disposal
+on agency_details.agency_id = disposal.agency_id
+group by agency_name) as disposal_query
+
+INNER JOIN 
+
+(select agency_name, count(undisposal.quantity_of_drug) as undisposed
+from agency_details left join (select * from seizures where disposal_quantity IS NULL) as undisposal
+on agency_details.agency_id = undisposal.agency_id
+group by agency_name) as undisposal_query
+
+on disposal_query.agency_name = undisposal_query.agency_name
+order by undisposed DESC
 
 
 

@@ -120,7 +120,7 @@ trait AuthenticatesUsers
     {
         if($user->user_type=='stakeholder'){
             return redirect('entry_form') ;
-        }elseif($user->user_type=='high court'){
+        }elseif($user->user_type=='high_court'){
             return redirect('dashboard') ;
         }
     }
