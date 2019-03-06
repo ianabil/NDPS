@@ -81,7 +81,7 @@
                             </a>
                             <ul class="treeview-menu">
                                 @if(Auth::user()->user_type == 'high_court')
-                                    <li><a href="#">Composite Report</a></li>
+                                    <li><a href="composite_report">Composite Report</a></li>
                                     <li><a href="disposed_undisposed_tally">Disposed Undisposed Tally</a></li>
                                 @else
                                     <li><a href="previous_report_view">Previously Submitted Report</a></li>
