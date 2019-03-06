@@ -18,7 +18,7 @@
         <header class="main-header">
         
             <!-- Logo -->
-            @if(Auth::user()->user_type == 'stakeholder')
+            @if(Auth::check() && Auth::user()->user_type == 'stakeholder')
                 <a href="entry_form" class="logo"> 
             @else
                 <a href="dashboard" class="logo"> 
@@ -37,14 +37,20 @@
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 <img src="{{asset('images/FacelessMan.png')}}" class="user-image" alt="User Image">
-                                <span class="hidden-xs"> {{ Auth::user()->user_name }}</span>
+                                <span class="hidden-xs">
+                                        @if(Auth::check())
+                                            {{ Auth::user()->user_name }}
+                                        @endif
+                                </span>
                             </a>
                             <ul class="dropdown-menu">
                                 <!-- User image -->
                                 <li class="user-header">
                                     <img src="{{asset('images/FacelessMan.png')}}" class="img-circle" alt="User Image">
                                     <p>
-                                       {{ Auth::user()->user_name }}
+                                        @if(Auth::check())
+                                            {{ Auth::user()->user_name }}
+                                        @endif
                                     </p>
                                 </li>
 
@@ -80,7 +86,7 @@
                                 <span>Reports/Enquiry</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                             </a>
                             <ul class="treeview-menu">
-                                @if(Auth::user()->user_type == 'high_court')
+                                @if(Auth::check() && Auth::user()->user_type == 'high_court')
                                     <li><a href="composite_report">Composite Report</a></li>
                                     <li><a href="disposed_undisposed_tally">Disposed Undisposed Tally</a></li>
                                 @else
@@ -89,7 +95,7 @@
                             </ul>
                         </li>
                         
-                    @if(Auth::user()->user_type == 'high_court')
+                    @if(Auth::check() && Auth::user()->user_type == 'high_court')
                         <li class="header"></li>
                         <li class="treeview">
                             <a href="#">
