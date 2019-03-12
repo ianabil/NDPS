@@ -99,6 +99,17 @@
        'MasterMaintenanceController@create_new_user');
        //User Master Maintenance ::ends
 
+
+       //Composite Report ::Starts
+
+       Route::get('composite_report',
+       'MonthlyReportController@composite_report_index');
+
+       Route::post('composite_report/show_report',
+       'MonthlyReportController@show_composite_report');
+
+       //Composite Report ::Ends
+
     });
 
 
