@@ -460,11 +460,23 @@
 		
 		var seized=$(this).val();
 		
-		$('#undisposed_quantity').val(seized);
+		$(this).closest('tr').find('.undisposed_quantity').val(seized);
 	})
 
 	/*Seized contraband fed in to undisposed column:end */
 
+
+	/*Undisposed calculation starts */
+
+	$(document).on("keyup","#disposal_quantity",function(){
+
+		var disposal=$(this).val();
+		var seized=$("#quantity_of_narcotics").val();
+
+		var undisposed=seized-disposal;
+		$(this).closest('tr').find('#undisposed_quantity').val(undisposed);
+	})
+	/*Undisposed calculation ends */
 
 	/* add row */
 
@@ -555,7 +567,35 @@
 			}
 		});
 
+	/*validation starts*/
 
+		$(".disposal_quantity").each(function(index){
+			if($(this).val()!=""){
+				if($(this).closest("tr").find("#where").val()=="")
+				{
+					submit_validation_flag=0;
+					return false;
+				}
+				else
+				{
+					if($(this).closest("tr").find("#disposal_unit").val()=="")
+					{
+						submit_validation_flag=0;
+						return false;
+					}
+					else
+					{
+						submit_validation_flag=1;
+					}
+					submit_validation_flag=1;
+				}
+			}
+		});
+
+		// $(".quantity_of_narcotics").each(function(index){
+			
+		
+		/*validation ends*/
 		/* fetching values from quantity_of_narcotics field*/
 
 		$(".quantity_of_narcotics").each(function(index){
@@ -648,6 +688,8 @@
 			}
 
 		});
+
+		
 
 		/* fetching values from where field*/
 
