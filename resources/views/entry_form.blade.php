@@ -471,10 +471,10 @@
 	$(document).on("keyup","#disposal_quantity",function(){
 
 		var disposal=$(this).val();
-		var seized=$("#quantity_of_narcotics").val();
+		var seized=$(this).closest('tr').find('.quantity_of_narcotics').val();
 
 		var undisposed=seized-disposal;
-		$(this).closest('tr').find('#undisposed_quantity').val(undisposed);
+		$(this).closest('tr').find('.undisposed_quantity').val(undisposed);
 	})
 	/*Undisposed calculation ends */
 
