@@ -40,13 +40,7 @@
         //High Court Dashboard::end
 
         
-       //Stakeholder's Previous Report::start
        
-       Route::get('previous_report_view', 'MonthlyReportController@index_previous_report');
-        
-       Route::post('stakeholder/previous_report','MonthlyReportController@show_previous_report');
-
-      //Stakeholder's Previous Report::end
 
 
       
@@ -131,7 +125,13 @@
 
        //Entry form::end
 
+        //Stakeholder's Previous Report::start
+            
+        Route::get('previous_report_view', 'MonthlyReportController@index_previous_report');
+                
+        Route::post('stakeholder/previous_report','MonthlyReportController@show_previous_report');
 
+        //Stakeholder's Previous Report::end
 
 
 
