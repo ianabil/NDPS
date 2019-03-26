@@ -107,7 +107,8 @@
                                 <li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>District Master Maintainance</span></a></li>
                                 <li><a href="court_view"><i class="fa fa-circle-o text-yellow"></i> <span>Court Master Maintainance</span></a></li>
                                 <li><a href="stakeholder_view"><i class="fa fa-circle-o text-violate"></i> <span>Stakeholder Maintainance</span></a></li>
-                                </ul>
+                                <li><a href="narcotic_view"><i class="fa fa-circle-o text-green"></i> <span>Narcotic Maintainance</span></a></li>
+                             </ul>
                         </li>
 
                         <li class="header"></li>

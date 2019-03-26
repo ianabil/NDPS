@@ -276,6 +276,12 @@ class entry_formController extends Controller
         echo json_encode($available_narcotics);
     }
 
+
+    public function add_new_narcotic(Request $request){
+            
+
+    }
+
     public function submission_validation(Request $request){
 
        

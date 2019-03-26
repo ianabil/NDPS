@@ -39,51 +39,58 @@
 
         //High Court Dashboard::end
 
-        
+
+        //Court MAster Maintenance::start
+
+            Route::get('court_view', 'MasterMaintenanceController@index_court');
+
+            Route::post('show_courts_details', 'MasterMaintenanceController@get_all_court_details');
+            
+            Route::post('master_maintenance/court_details',
+            'MasterMaintenanceController@store_court');
+
+            Route::post('master_maintenance_court/update',
+            'MasterMaintenanceController@update_court');
+            
+
+            Route::post('master_maintenance_court_details/delete',
+            'MasterMaintenanceController@destroy_court');
+
+       //Court Master Maintenance::end
        
 
 
       
        //Stakeholder Master Maintenance::start
       
-       Route::get('stakeholder_view', function(){
-           return view ('stakeholder_view');
-       });
+            Route::get('stakeholder_view', function(){
+                return view ('stakeholder_view');
+            });
 
-       Route::post('show_all_stakeholders',
-       'MasterMaintenanceController@get_all_stakeholders_data');
+            Route::post('show_all_stakeholders',
+            'MasterMaintenanceController@get_all_stakeholders_data');
 
-       Route::post('master_maintenance/stakeholder',
-       'MasterMaintenanceController@store_stakeholder');
+            Route::post('master_maintenance/stakeholder',
+            'MasterMaintenanceController@store_stakeholder');
 
-       Route::post('master_maintenance_stakeholder/update',
-       'MasterMaintenanceController@update_stakeholder');
+            Route::post('master_maintenance_stakeholder/update',
+            'MasterMaintenanceController@update_stakeholder');
 
-       Route::post('master_maintenance_stakeholder/delete',
-       'MasterMaintenanceController@destroy_stakeholder');
+            Route::post('master_maintenance_stakeholder/delete',
+            'MasterMaintenanceController@destroy_stakeholder');
 
        //Stakeholder MAster Maintenance::end
 
        
 
-       //Court MAster Maintenance::start
+        //Narcotic Master Maintenance::start
+        
+            Route::get('narcotic_view', function(){
+                return view ('narcotic_view');
+            });
 
-       Route::get('court_view', 'MasterMaintenanceController@index_court');
+        //Narcotic Master Maintenance::start
 
-       Route::post('show_courts_details', 'MasterMaintenanceController@get_all_court_details');
-       
-       Route::post('master_maintenance/court_details',
-       'MasterMaintenanceController@store_court');
-
-       Route::post('master_maintenance_court/update',
-       'MasterMaintenanceController@update_court');
-       
-
-       Route::post('master_maintenance_court_details/delete',
-       'MasterMaintenanceController@destroy_court');
-
-       //Court Master Maintenance::end
-       
 
        //User Master Maintenance ::starts
        Route::get('create_new_user', 
