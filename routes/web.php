@@ -88,8 +88,11 @@
             Route::get('narcotic_view', function(){
                 return view ('narcotic_view');
             });
-
-        //Narcotic Master Maintenance::start
+            
+            Route::post('master_maintenance/narcotic',
+            'MasterMaintenanceController@get_all_narcotics_data');
+                   
+        //Narcotic Master Maintenance::end
 
 
        //User Master Maintenance ::starts

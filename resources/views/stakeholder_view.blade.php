@@ -134,7 +134,7 @@
                         url:"master_maintenance/stakeholder",
                         data:{_token: $('meta[name="csrf-token"]').attr('content'), 
                                  stakeholder_name:stakeholder,
-                                district:district,
+                                 district:district,
                             },
                              success:function(response){
                                $("#stakeholder").val('');

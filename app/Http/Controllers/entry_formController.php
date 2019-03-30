@@ -269,28 +269,14 @@ class entry_formController extends Controller
 
     }
 
-    public function narcotic_suggestion(Request $request){
-        $word = $request->input('word');
-        $available_narcotics = Narcotic::select('drug_name')
-                                        ->get();
-        echo json_encode($available_narcotics);
-    }
-
-
-    public function add_new_narcotic(Request $request){
-            
-
-    }
-
+    
+    
     public function submission_validation(Request $request){
-
-       
-
+        
         $month_of_report = date('Y-m-d',strtotime('01-'.$request->input('month_of_report'))); 
         $submit_flag='S';
         $agency_id=Auth::user()->stakeholder_id;
-        $month_of_report=Seizure::
-                                    where([['month_of_report','=', $month_of_report], 
+        $month_of_report=Seizure::where([['month_of_report','=', $month_of_report], 
                                     ['submit_flag','=', $submit_flag ],
                                     ['agency_id','=', $agency_id ]])
                                     ->count();

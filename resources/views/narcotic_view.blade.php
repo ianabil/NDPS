@@ -13,17 +13,20 @@
             <div class="row">                
                 <div class="col-md-3 form-group required">
                     <label class="control-label">Narcotic's Name</label>
-                    <input type="text" class="form-control" name="narcotic_name" id="narcotic">
+                    <input type="text" class="form-control" name="narcotic_name" id="narcotic_name">
                 </div>
                 <div class="col-md-3 form-group required">
                     <label class="control-label">Narcotic's Unit</label>
-                    <input type="text" class="form-control" name="narcotic_unit" id="narcotic_unit">
+                    <select class="form-control select2 narcotic_unit" style="width:150px" name="narcotic_unit" id="narcotic_unit">
+                        <option value="">Select an option</option>
+                        <option value="others">Others</option>
+                    </select>
                 </div>
                 
                  <div class="col-md-2">
                     <div class="form-group">
                         <label>&nbsp;</label>
-                        <button type="button" class="form-control btn-success btn btn-primary " id="add">Add New Narcotic
+                        <button type="button" class="form-control btn-success btn btn-primary " id="add_narcotics">Add New Narcotic
                     </div>
                 </div>
                 <!-- /.col -->  
@@ -94,7 +97,7 @@
                             "processing": true,
                             "serverSide": true,
                             "ajax":{
-                                    "url": "show_narcotics_data",
+                                    "url": "get_all_narcotics_data",
                                     "dataType": "json",
                                     "type": "POST",
                                     "data":{ _token: $('meta[name="csrf-token"]').attr('content')}
@@ -102,10 +105,10 @@
                             "columns": [                
                                 {  "class": "id",
                                     "data": "ID" },
-                                {"class": "stakeholder data",
-                                    "data": "STAKEHOLDER" },
-                                {"class": "district data",
-                                    "data": "DISTRICT" },
+                                {"class": "narcotic data",
+                                    "data": "NARCOTIC" },
+                                {"class": "unit data",
+                                    "data": "UNIT" },
                                 {"class": "delete",
                                     "data": "ACTION" }
                             ]
@@ -119,35 +122,35 @@
                         $(this).attr('contenteditable',true);
                     })
 
-            /*Stakeholder master maintenance */
+            /*Narcotic master maintenance */
 
-             $(document).on("click","#add",function (){
+             $(document).on("click","#add_narcotics",function (){
                 
                             
 
-                 var stakeholder= $("#stakeholder").val().toUpperCase();
-                 var district= $("#district").val().toUpperCase();
-
+                 var narcotic= $("#narcotic_name").val().toUpperCase();
+                 var narcotic_unit=$("#narcotic_unit").val();
+                 
                             
                  $.ajax({
                         type:"POST",
-                        url:"master_maintenance/stakeholder",
+                        url:"master_maintenance/narcotic",
                         data:{_token: $('meta[name="csrf-token"]').attr('content'), 
-                                 stakeholder_name:stakeholder,
-                                district:district,
-                            },
+                                 narcotic_name:narcotic,
+                                 narcotic_unit:narcotic_unit
+                             },
                              success:function(response){
-                               $("#stakeholder").val('');
-                               $("#district").val('');
-                               swal("Added Successfully","A new Stackholder has been added","success");
+                               $("#narcotic_name").val('');
+                               $("#narcotic_unit").val('');
+                               swal("Added Successfully","A new narcotic has been added","success");
                                table.api().ajax.reload();   
                             },
                             error:function(response) {  
-                               if(response.responseJSON.errors.hasOwnProperty('district'))
-                                   swal("Cannot create new Stakeholder", ""+response.responseJSON.errors.district['0'], "error");
+                               if(response.responseJSON.errors.hasOwnProperty('narcotic_unit'))
+                                   swal("Cannot Add New Narcotics", ""+response.responseJSON.errors.district['0'], "error");
                                                          
-                               if(response.responseJSON.errors.hasOwnProperty('stakeholder_name'))
-                                    swal("Cannot create new Stakeholder", ""+response.responseJSON.errors.stakeholder_name['0'], "error");
+                               if(response.responseJSON.errors.hasOwnProperty('narcotic_name'))
+                                    swal("Cannot Add New Narcotics", ""+response.responseJSON.errors.stakeholder_name['0'], "error");
                                     
                               }
 
@@ -157,95 +160,95 @@
 
         /* To prevent updation when no changes to the data is made*/
 
-        var prev_stakeholder;
-        var prev_jurisdiction;
-        $(document).on("focusin",".data", function(){
-            prev_stakeholder = $(this).closest("tr").find(".stakeholder").text();
-            prev_jurisdiction = $(this).closest("tr").find(".district").text();
-        })
+        // var prev_stakeholder;
+        // var prev_jurisdiction;
+        // $(document).on("focusin",".data", function(){
+        //     prev_stakeholder = $(this).closest("tr").find(".stakeholder").text();
+        //     prev_jurisdiction = $(this).closest("tr").find(".district").text();
+        // })
 
 
         /* Data Updation Code Starts*/
 
-        $(document).on("focusout",".data", function(){
-            var id = $(this).closest("tr").find(".id").text();
-            var stakeholder = $(this).closest("tr").find(".stakeholder").text();
-            var jurisdiction = $(this).closest("tr").find(".district").text();
+        // $(document).on("focusout",".data", function(){
+        //     var id = $(this).closest("tr").find(".id").text();
+        //     var stakeholder = $(this).closest("tr").find(".stakeholder").text();
+        //     var jurisdiction = $(this).closest("tr").find(".district").text();
             
-            if(stakeholder == prev_stakeholder && jurisdiction == prev_jurisdiction)
-                return false;
+        //     if(stakeholder == prev_stakeholder && jurisdiction == prev_jurisdiction)
+        //         return false;
 
 
-            $.ajax({
-                type:"POST",
-                url:"master_maintenance_stakeholder/update",                
-                data:{_token: $('meta[name="csrf-token"]').attr('content'), 
-                        id:id, 
-                        stakeholder:stakeholder,
-                        district:jurisdiction
-                    },
-                success:function(response){   
+        //     $.ajax({
+        //         type:"POST",
+        //         url:"master_maintenance_stakeholder/update",                
+        //         data:{_token: $('meta[name="csrf-token"]').attr('content'), 
+        //                 id:id, 
+        //                 stakeholder:stakeholder,
+        //                 district:jurisdiction
+        //             },
+        //         success:function(response){   
                                
-                    swal("Stakeholder's Details Updated","","success");
-                    table.api().ajax.reload();
-                },
-                error:function(response) {  
-                      if(response.responseJSON.errors.hasOwnProperty('district'))
-                         swal("Cannot updated Stakeholder", ""+response.responseJSON.errors.district['0'], "error");
+        //             swal("Stakeholder's Details Updated","","success");
+        //             table.api().ajax.reload();
+        //         },
+        //         error:function(response) {  
+        //               if(response.responseJSON.errors.hasOwnProperty('district'))
+        //                  swal("Cannot updated Stakeholder", ""+response.responseJSON.errors.district['0'], "error");
                                                          
-                      if(response.responseJSON.errors.hasOwnProperty('stakeholder_name'))
-                          swal("Cannot updated Stakeholder", ""+response.responseJSON.errors.stakeholder_name['0'], "error");
+        //               if(response.responseJSON.errors.hasOwnProperty('stakeholder_name'))
+        //                   swal("Cannot updated Stakeholder", ""+response.responseJSON.errors.stakeholder_name['0'], "error");
                           
-                }
+        //         }
         
 
-            })
-        })
+        //     })
+        // })
 
         // /* Data Updation Cods Ends */
 
 
         /* Data Deletion Cods Starts */
 
-        $(document).on("click",".delete", function(){
+        // $(document).on("click",".delete", function(){
 
-           swal({
-				title: "Are You Sure?",
-				text: "Once submitted, you will not be able to change the record",
-				icon: "warning",
-				buttons: true,
-				dangerMode: true,
-				})
-				.then((willDelete) => {
-                    if(willDelete) {
-                        var id = $(this).closest("tr").find(".id").text();
-                        var tr = $(this).closest("tr");
+        //    swal({
+		// 		title: "Are You Sure?",
+		// 		text: "Once submitted, you will not be able to change the record",
+		// 		icon: "warning",
+		// 		buttons: true,
+		// 		dangerMode: true,
+		// 		})
+		// 		.then((willDelete) => {
+        //             if(willDelete) {
+        //                 var id = $(this).closest("tr").find(".id").text();
+        //                 var tr = $(this).closest("tr");
 
-                        $.ajax({
-                            type:"POST",
-                            url:"master_maintenance_stakeholder/delete",
-                            data:{
-                                _token: $('meta[name="csrf-token"]').attr('content'), 
-                                id:id
-                            },
-                            success:function(response){
-                                if(response==1){
-                                    swal("Data Deleted Successfully","","success");  
-                                    table.api().ajax.reload();                
-                                }
-                                else{
-                                    swal("Can Not Delete This Agency","This agency already has some values","error");  
-                                    return false;
-                                }
+        //                 $.ajax({
+        //                     type:"POST",
+        //                     url:"master_maintenance_stakeholder/delete",
+        //                     data:{
+        //                         _token: $('meta[name="csrf-token"]').attr('content'), 
+        //                         id:id
+        //                     },
+        //                     success:function(response){
+        //                         if(response==1){
+        //                             swal("Data Deleted Successfully","","success");  
+        //                             table.api().ajax.reload();                
+        //                         }
+        //                         else{
+        //                             swal("Can Not Delete This Agency","This agency already has some values","error");  
+        //                             return false;
+        //                         }
 
-                            }
-                        })
-                    }
-                    else 
-                    {
-					    swal("Deletion Cancelled","","error");
-				    }
-        })
+        //                     }
+        //                 })
+        //             }
+        //             else 
+        //             {
+		// 			    swal("Deletion Cancelled","","error");
+		// 		    }
+        // })
 
         /* Data Deletion Cods Ends */
 

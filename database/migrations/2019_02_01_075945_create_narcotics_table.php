@@ -16,8 +16,9 @@ class CreateNarcoticsTable extends Migration
         Schema::create('narcotics', function (Blueprint $table) {
             $table->increments('drug_id');
             $table->string('drug_name')->nullable(false);
+            $table->string('drug_unit')->nullable(false);
             $table->timestamps();
-        });
+         });
     }
 
     /**

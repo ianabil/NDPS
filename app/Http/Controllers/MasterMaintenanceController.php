@@ -11,6 +11,7 @@ use App\District;
 use App\User;
 use Carbon\Carbon;
 use App\Seizure;
+use App\Narcotic;
 use DB;
 
 class MasterMaintenanceController extends Controller
@@ -270,27 +271,92 @@ class MasterMaintenanceController extends Controller
                  Court_detail::where('court_id',$id)->update($data);
                 
                  return 1;
-
-              
-
             }
 
 
                 //deleting court details
 
-                public function destroy_court(Request $request)
-                {
-                    $id = $request->input('id');
-                    $count = Seizure::where('certification_court_id',$id)->count();
+            public function destroy_court(Request $request)
+            {
+                $id = $request->input('id');
+                $count = Seizure::where('certification_court_id',$id)->count();
                 
-                    if($count>0)
-                        return 0;
-                    else{
-                        Court_detail::where('court_id',$id)->delete();
-                        return 1;
-                    }
-                    // echo 1;
+                if($count>0)
+                    return 0;
+                else{
+                    Court_detail::where('court_id',$id)->delete();
+                    return 1;
                 }
+            }
+            
+            
+            //Narcotic:Start
+
+            public function get_all_narcotics_data(Request $request)
+            {
+                $columns = array( 
+                    0 =>'ID', 
+                    1 =>'NARCOTIC',
+                    2=>'UNIT',
+                    3=>'ACTION'
+                );
+        
+                $totalData = Narcotic::count();
+        
+                $totalFiltered = $totalData; 
+        
+                $limit = $request->input('length');
+                $start = $request->input('start');
+                $order = $columns[$request->input('order.0.column')];
+                $dir = $request->input('order.0.dir');
+        
+                if(empty($request->input('search.value'))){
+                    $narcotic = Narcotic::offset($start)
+                                    ->limit($limit)
+                                    ->orderBy('drug_name',$dir)
+                                    ->get();
+                    $totalFiltered = Narcotic::count();
+                }
+                else
+                {
+                    $search = strtoupper($request->input('search.value'));
+                    $narcotic = Narcotic::where('drug_id','like',"%{$search}%")
+                                        ->orWhere('drug_name','like',"%{$search}%")                                    
+                                        ->offset($start)
+                                        ->limit($limit)
+                                        ->orderBy('drug_name',$dir)
+                                        ->get();
+                    $totalFiltered = Narcotic::where('drug_id','like',"%{$search}%")
+                                            ->orWhere('drug_name','like',"%{$search}%")                                           
+                                            ->count();
+                }
+        
+                $data = array();
+        
+                if($narcotic)
+                {
+                    foreach($narcotic as $narcotic)
+                    {
+                        $nestedData['ID'] = $narcotic->drug_id;
+                        $nestedData['NARCOTIC'] = $narcotic->drug_name;
+                        $nestedData['UNIT'] = $narcotic->drug_unit;
+                        $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
+        
+                        $data[] = $nestedData;
+                    }
+                        $json_data = array(
+                            "draw" => intval($request->input('draw')),
+                            "recordsTotal" => intval($totalData),
+                            "recordFiltered" =>intval($totalFiltered),
+                            "data" => $data
+                        );
+                
+                        echo json_encode($json_data);
+                }
+            
+            }
+        //Narcotic:ends
+
 
 
                 // New User Creation
@@ -343,17 +409,7 @@ class MasterMaintenanceController extends Controller
 
                     return 1;
                 }
-
-            
-
-                
-
-
-            
-
-
-
-            }
+ }
 
         
 
