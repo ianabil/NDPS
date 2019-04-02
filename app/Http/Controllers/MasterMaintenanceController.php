@@ -12,6 +12,7 @@ use App\User;
 use Carbon\Carbon;
 use App\Seizure;
 use App\Narcotic;
+use App\Unit;
 use DB;
 
 class MasterMaintenanceController extends Controller
@@ -292,6 +293,14 @@ class MasterMaintenanceController extends Controller
             
             //Narcotic:Start
 
+            public function index_narcotic()
+            {
+                $data=Unit::get();
+
+                return view('narcotic_view',compact('data'));
+
+            }
+
             public function get_all_narcotics_data(Request $request)
             {
                 $columns = array( 
@@ -355,7 +364,115 @@ class MasterMaintenanceController extends Controller
                 }
             
             }
+
+
+        //Add Narcotics
+
+
+            public function store_narcotic(Request $request){
+                $this->validate ( $request, [ 
+                    'narcotic_name' => 'required|max:255|unique:narcotics,drug_name',
+                    'narcotic_unit' => 'required|max:255'         
+                ] ); 
+                $narcotic = strtoupper($request->input('narcotic_name'));
+                $narcotic_unit = strtoupper($request->input('narcotic_unit')); 
+
+                Narcotic::insert([
+                    'drug_name'=>$narcotic,
+                    'drug_unit'=>$narcotic_unit,
+                    'created_at'=>Carbon::today(),
+                    'updated_at'=>Carbon::today()
+                    ]);
+        
+                return 1;
+
+
+            }
+            
         //Narcotic:ends
+
+        //Unit:start
+
+        public function store_unit(Request $request){
+            $this->validate ( $request, [ 
+                'narcotic_unit' => 'required|max:255'         
+            ] ); 
+             $narcotic_unit = strtoupper($request->input('narcotic_unit')); 
+
+            Unit::insert([
+                'unit_name'=>$narcotic_unit,
+                'created_at'=>Carbon::today(),
+                'updated_at'=>Carbon::today()
+                ]);
+    
+            return 1;
+
+
+        }
+
+        public function get_all_units(Request $request)
+            {
+                $columns = array( 
+                    0 =>'ID', 
+                    1 =>'UNIT NAME',
+                    2=>'ACTION'
+                );
+                $totalData =Unit::count();
+        
+                $totalFiltered = $totalData; 
+        
+                $limit = $request->input('length');
+                $start = $request->input('start');
+                $order = $columns[$request->input('order.0.column')];
+                $dir = $request->input('order.0.dir');
+        
+                if(empty($request->input('search.value'))){
+                    $unit = Unit::offset($start)
+                                    ->limit($limit)
+                                    ->orderBy('unit_id',$dir)
+                                    ->get();
+                    $totalFiltered = Unit::count();
+                }
+                else
+                {
+                    $search = strtoupper($request->input('search.value'));
+                    $unit = Unit::where('unit_id','like',"%{$search}%")
+                                        ->orWhere('unit_name','like',"%{$search}%")                                    
+                                        ->offset($start)
+                                        ->limit($limit)
+                                        ->orderBy('unit_name',$dir)
+                                        ->get();
+                    $totalFiltered = Unit::where('unit_id','like',"%{$search}%")
+                                            ->orWhere('unit_name','like',"%{$search}%")                                           
+                                            ->count();
+                }
+        
+                $data = array();
+        
+                if($unit)
+                {
+                    foreach($unit as $unit)
+                    {
+                        $nestedData['ID'] = $unit->unit_id;
+                        $nestedData['UNIT NAME'] = $unit->unit_name;
+                        $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
+        
+                        $data[] = $nestedData;
+                    }
+                        $json_data = array(
+                            "draw" => intval($request->input('draw')),
+                            "recordsTotal" => intval($totalData),
+                            "recordFiltered" =>intval($totalFiltered),
+                            "data" => $data
+                        );
+                
+                        echo json_encode($json_data);
+                }
+            
+            
+            }
+
+        //Unit:end
 
 
 

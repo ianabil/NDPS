@@ -2,7 +2,7 @@
 <!-- Main content -->
 <div class="box box-default">
         <div class="box-header with-border">
-            <h3 class="box-title">Add New Narcotic</h3>
+            <h3 class="box-title">Add New Unit</h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
@@ -12,23 +12,14 @@
         <div class="box-body">
             <div class="row">                
                 <div class="col-md-3 form-group required">
-                    <label class="control-label">Narcotic's Name</label>
-                    <input type="text" class="form-control" name="narcotic_name" id="narcotic_name">
-                </div>
-                <div class="col-md-3 form-group required">
                     <label class="control-label">Narcotic's Unit</label>
-                    <select class="form-control select2 narcotic_unit" style="width:150px" name="narcotic_unit" id="narcotic_unit">
-                        <option value="">Select an option</option>
-                        @foreach($data as $unit)
-                            <option value="{{$unit['unit_id']}}">{{$unit['unit_name']}}</option>
-                        @endforeach
-                    </select>
+                    <input type="text" class="form-control" name="narcotic_unit" id="narcotic_unit">
                 </div>
-                
+                                
                  <div class="col-md-2">
                     <div class="form-group">
                         <label>&nbsp;</label>
-                        <button type="button" class="form-control btn-success btn btn-primary " id="add_narcotics">Add New Narcotic
+                        <button type="button" class="form-control btn-success btn btn-primary" id="add_unit">Add Unit
                     </div>
                 </div>
                 <!-- /.col -->  
@@ -40,7 +31,7 @@
 
 <div class="box box-default" id="show_all_data">
     <div class="box-header with-border">
-        <h3 class="box-title">All Narcotics' Details</h3>
+        <h3 class="box-title">All Units' Details</h3>
         <div class="box-tools pull-right">
             <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
             <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
@@ -48,12 +39,11 @@
     </div>
     <!-- /.box-header -->
     <div class="box-body">
-            <table class="table table-striped table-bordered" id="show_narcotics_data">
+            <table class="table table-striped table-bordered" id="show_unit">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>NARCOTIC'S NAME</th>
-                            <th>NARCOTIC'S UNIT</th>
+                            <th>UNIT NAME</th>
                             <th>ACTION</th>
                         </tr>
                     </thead>                    
@@ -96,11 +86,11 @@
 
             //Datatable Code For Showing Data :: START
 
-                var table = $("#show_narcotics_data").dataTable({  
+                var table = $("#show_unit").dataTable({  
                             "processing": true,
                             "serverSide": true,
                             "ajax":{
-                                    "url": "show_all_narcotics",
+                                    "url": "show_all_units",
                                     "dataType": "json",
                                     "type": "POST",
                                     "data":{ _token: $('meta[name="csrf-token"]').attr('content')}
@@ -108,10 +98,8 @@
                             "columns": [                
                                 {  "class": "id",
                                     "data": "ID" },
-                                {"class": "narcotic data",
-                                    "data": "NARCOTIC" },
                                 {"class": "unit data",
-                                    "data": "UNIT" },
+                                    "data": "UNIT NAME" },
                                 {"class": "delete",
                                     "data": "ACTION" }
                             ]
@@ -127,31 +115,25 @@
 
             /*Narcotic master maintenance */
 
-             $(document).on("click","#add_narcotics",function (){
-                var narcotic= $("#narcotic_name").val().toUpperCase();
+             $(document).on("click","#add_unit",function (){
+
                 var narcotic_unit=$("#narcotic_unit").val();
-                 
-                            
+                                            
                  $.ajax({
                         type:"POST",
-                        url:"master_maintenance/narcotic",
+                        url:"master_maintenance/unit",
                         data:{_token: $('meta[name="csrf-token"]').attr('content'), 
-                                 narcotic_name:narcotic,
-                                 narcotic_unit:narcotic_unit
+                                narcotic_unit:narcotic_unit
                              },
                              success:function(response){
-                               $("#narcotic_name").val('');
-                               $("#narcotic_unit").val('');
-                               swal("Added Successfully","A new narcotic has been added","success");
-                               table.api().ajax.reload();   
+                                $("#narcotic_unit").val('');
+                                swal("Added Successfully","A new narcotic has been added","success");
+                                table.api().ajax.reload();   
                             },
                             error:function(response) {  
                                if(response.responseJSON.errors.hasOwnProperty('narcotic_unit'))
-                                   swal("Cannot Add New Narcotics", ""+response.responseJSON.errors.narcotic_unit['0'], "error");
-                                                         
-                               if(response.responseJSON.errors.hasOwnProperty('narcotic_name'))
-                                    swal("Cannot Add New Narcotics", ""+response.responseJSON.errors.narcotic_name['0'], "error");
-                                    
+                                   swal("Cannot Add New Unit", ""+response.responseJSON.errors.narcotic_unit['0'], "error");
+                                                                                          
                               }
 
 

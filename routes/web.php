@@ -85,22 +85,40 @@
 
         //Narcotic Master Maintenance::start
         
-            Route::get('narcotic_view', function(){
-                return view ('narcotic_view');
-            });
+        Route::get('narcotic_view', 'MasterMaintenanceController@index_narcotic');
             
-            Route::post('master_maintenance/narcotic',
-            'MasterMaintenanceController@get_all_narcotics_data');
-                   
+        Route::post('show_all_narcotics',
+        'MasterMaintenanceController@get_all_narcotics_data');
+                
+        Route::post('master_maintenance/narcotic',
+        'MasterMaintenanceController@store_narcotic');
+
         //Narcotic Master Maintenance::end
 
+        //Unit Master Maintenance:start
 
-       //User Master Maintenance ::starts
+        Route::get('unit_view', function(){
+            return view ('unit_view');
+        });
+
+        Route::post('master_maintenance/unit',
+        'MasterMaintenanceController@store_unit');
+
+
+        Route::post('show_all_units',
+        'MasterMaintenanceController@get_all_units');
+        
+       
+
+        //Unit Master Maintenance:end
+
+        //User Master Maintenance ::starts
        Route::get('create_new_user', 
        'MasterMaintenanceController@index_user_creation');
 
        Route::post('create_new_user/create', 
        'MasterMaintenanceController@create_new_user');
+
        //User Master Maintenance ::ends
 
 
@@ -144,6 +162,7 @@
         //Stakeholder's Previous Report::end
 
 
+        
 
     });
 
