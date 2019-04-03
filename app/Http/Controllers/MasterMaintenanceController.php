@@ -352,7 +352,11 @@ class MasterMaintenanceController extends Controller
                     foreach($narcotic as $narcotic)
                     {
                         $nestedData['ID'] = $narcotic->drug_id;
+                        
                         $nestedData['NARCOTIC'] = $narcotic->drug_name;
+
+                        $unit = Unit::get();                        
+
                         $nestedData['UNIT'] = $narcotic->unit_name;
                         $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
         
