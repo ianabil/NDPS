@@ -122,11 +122,8 @@
             /*Stakeholder master maintenance */
 
              $(document).on("click","#add",function (){
-                
-                            
-
-                 var stakeholder= $("#stakeholder").val().toUpperCase();
-                 var district= $("#district").val().toUpperCase();
+             var stakeholder= $("#stakeholder").val().toUpperCase();
+             var district= $("#district").val().toUpperCase();
 
                             
                  $.ajax({
@@ -202,7 +199,7 @@
             })
         })
 
-        // /* Data Updation Cods Ends */
+        // /* Data Updation Codes Ends */
 
 
         /* Data Deletion Cods Starts */
@@ -247,7 +244,7 @@
 				    }
         })
 
-        /* Data Deletion Cods Ends */
+        /* Data Deletion Codes Ends */
 
 
         });

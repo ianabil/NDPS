@@ -388,8 +388,43 @@ class MasterMaintenanceController extends Controller
 
 
             }
+
+            /*update Narcotics*/
+
+            public function update_narcotics(Request $request){
+                $this->validate ( $request, [ 
+                    'id' => 'required',
+                    'narcotic' => 'required|max:255',
+                    'unit' => 'required|max:255'          
+                ] ); 
+
+                
+                $id = $request->input('id');
+                $narcotic = strtoupper($request->input('narcotic'));
+                $unit = $request->input('unit');
+
+                $data = [
+                    'drug_name'=>$narcotic,
+                    'updated_at'=>Carbon::today(),
+                    'drug_unit'=>$unit
+
+                ];
+
+                Narcotic::where('drug_id',$id)->update($data);
+                
+                return 1;
             
-        //Narcotic:ends
+            }
+
+            //Delete Narcotics
+
+            public function destroy_narcotic(Request $request){
+                    $id = $request->input('id');
+                    Narcotic::where('drug_id',$id)->delete();
+                    return 1;
+             }
+            
+                //Narcotic:ends
 
         //Unit:start
 
@@ -473,6 +508,9 @@ class MasterMaintenanceController extends Controller
             }
 
         //Unit:end
+
+
+
 
 
 
