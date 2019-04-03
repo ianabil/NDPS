@@ -1,4 +1,9 @@
 @extends('layouts.app') @section('content')
+<style>
+    .select2-container--default .select2-selection--multiple .select2-selection__choice{
+        background-color:#111;
+    }
+</style>
 <!-- Main content -->
 <div class="box box-default">
         <div class="box-header with-border">
@@ -17,7 +22,7 @@
                 </div>
                 <div class="col-md-3 form-group required">
                     <label class="control-label">Narcotic's Unit</label>
-                    <select class="form-control select2 narcotic_unit" style="width:150px" name="narcotic_unit" id="narcotic_unit">
+                    <select class="form-control select2 js-example-basic-multiple narcotic_unit" style="width:150px" name="narcotic_unit" id="narcotic_unit"  multiple="multiple">
                         <option value="">Select an option</option>
                         @foreach($data as $unit)
                             <option value="{{$unit['unit_id']}}">{{$unit['unit_name']}}</option>
@@ -79,13 +84,13 @@
 
 <script>
 
-        $(document).ready(function(){
-            
-
+        $(document).ready(function(){            
+             $('.select2').select2({
+                placeholder: "Select Weighing Unit",
+            });
 
             /*LOADER*/
-
-                $(document).ajaxStart(function() {
+            $(document).ajaxStart(function() {
                     $("#wait").css("display", "block");
                 });
                 $(document).ajaxComplete(function() {
@@ -125,10 +130,12 @@
                         $(this).attr('contenteditable',true);
                     })
 
-            /*Narcotic master maintenance */
-
+            //Narcotic master maintenance 
              $(document).on("click","#add_narcotics",function (){
-                var narcotic= $("#narcotic_name").val().toUpperCase();
+                var narcotic = $("#narcotic_name").val().toLowerCase().replace(/\b[a-z]/g, function(letter) {
+                    return letter.toUpperCase();
+                });
+                //var narcotic= $("#narcotic_name").val();
                 var narcotic_unit=$("#narcotic_unit").val();
                  
                             

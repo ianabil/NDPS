@@ -14,10 +14,11 @@ class CreateNarcoticsTable extends Migration
     public function up()
     {
         Schema::create('narcotics', function (Blueprint $table) {
-            $table->increments('drug_id');
+            $table->integer('drug_id');
             $table->string('drug_name')->nullable(false);
-            $table->string('drug_unit')->nullable(false);
+            $table->integer('drug_unit')->nullable(false);
             $table->timestamps();
+            $table->primary(['drug_id','drug_unit']);
          });
     }
 
