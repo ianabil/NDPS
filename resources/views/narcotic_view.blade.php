@@ -84,15 +84,13 @@
 
 <script>
 
-        $(document).ready(function(){
-            
-            $('.select2').select2({
+        $(document).ready(function(){            
+             $('.select2').select2({
                 placeholder: "Select Weighing Unit",
             });
 
             /*LOADER*/
-
-                $(document).ajaxStart(function() {
+            $(document).ajaxStart(function() {
                     $("#wait").css("display", "block");
                 });
                 $(document).ajaxComplete(function() {
@@ -132,10 +130,12 @@
                         $(this).attr('contenteditable',true);
                     })
 
-            /*Narcotic master maintenance */
-
+            //Narcotic master maintenance 
              $(document).on("click","#add_narcotics",function (){
-                var narcotic= $("#narcotic_name").val();
+                var narcotic = $("#narcotic_name").val().toLowerCase().replace(/\b[a-z]/g, function(letter) {
+                    return letter.toUpperCase();
+                });
+                //var narcotic= $("#narcotic_name").val();
                 var narcotic_unit=$("#narcotic_unit").val();
                  
                             

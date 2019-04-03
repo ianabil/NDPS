@@ -254,7 +254,6 @@ class MasterMaintenanceController extends Controller
             }
         
             /*Update court */
-
             public function update_court(Request $request){
                 $this->validate ( $request, [ 
                     'id' => 'required',
@@ -275,8 +274,7 @@ class MasterMaintenanceController extends Controller
             }
 
 
-                //deleting court details
-
+            //deleting court details
             public function destroy_court(Request $request)
             {
                 $id = $request->input('id');
@@ -290,9 +288,11 @@ class MasterMaintenanceController extends Controller
                 }
             }
             
+        //Court:End
             
-            //Narcotic:Start
+        //Narcotic:Start
 
+            // Data Table Code for Narcotics
             public function index_narcotic()
             {
                 $data=Unit::get();
@@ -401,65 +401,48 @@ class MasterMaintenanceController extends Controller
                 return 1;
 
 
-            }
 
-            /*update Narcotics*/
+                }
 
-            public function update_narcotics(Request $request){
-                $this->validate ( $request, [ 
-                    'id' => 'required',
-                    'narcotic' => 'required|max:255',
-                    'unit' => 'required|max:255'          
-                ] ); 
+                //update Narcotics
+                public function update_narcotics(Request $request){
+                    $this->validate ( $request, [ 
+                        'id' => 'required',
+                        'narcotic' => 'required|max:255',
+                        'unit' => 'required|max:255'          
+                    ] ); 
 
-                
-                $id = $request->input('id');
-                $narcotic = strtoupper($request->input('narcotic'));
-                $unit = $request->input('unit');
-
-                $data = [
-                    'drug_name'=>$narcotic,
-                    'updated_at'=>Carbon::today(),
-                    'drug_unit'=>$unit
-
-                ];
-
-                Narcotic::where('drug_id',$id)->update($data);
-                
-                return 1;
-            
-            }
-
-            //Delete Narcotics
-
-            public function destroy_narcotic(Request $request){
+                    
                     $id = $request->input('id');
-                    Narcotic::where('drug_id',$id)->delete();
+                    $narcotic = strtoupper($request->input('narcotic'));
+                    $unit = $request->input('unit');
+
+                    $data = [
+                        'drug_name'=>$narcotic,
+                        'updated_at'=>Carbon::today(),
+                        'drug_unit'=>$unit
+
+                    ];
+
+                    Narcotic::where('drug_id',$id)->update($data);
+                    
                     return 1;
-             }
+                
+                }
+
+                //Delete Narcotics
+                public function destroy_narcotic(Request $request){
+                        $id = $request->input('id');
+                        Narcotic::where('drug_id',$id)->delete();
+                        return 1;
+                }
             
-                //Narcotic:ends
+        //Narcotic:ends
 
         //Unit:start
 
-        public function store_unit(Request $request){
-            $this->validate ( $request, [ 
-                'narcotic_unit' => 'required|max:255'         
-            ] ); 
-             $narcotic_unit = strtoupper($request->input('narcotic_unit')); 
-
-            Unit::insert([
-                'unit_name'=>$narcotic_unit,
-                'created_at'=>Carbon::today(),
-                'updated_at'=>Carbon::today()
-                ]);
-    
-            return 1;
-
-
-        }
-
-        public function get_all_units(Request $request)
+            // Data Table Code for Unit
+            public function get_all_units(Request $request)
             {
                 $columns = array( 
                     0 =>'ID', 
@@ -520,6 +503,46 @@ class MasterMaintenanceController extends Controller
             
             
             }
+
+            //Add Unit
+            public function store_unit(Request $request){
+                $this->validate ( $request, [ 
+                    'narcotic_unit' => 'required|max:255'         
+                ] ); 
+                $narcotic_unit = strtoupper($request->input('narcotic_unit')); 
+
+                Unit::insert([
+                    'unit_name'=>$narcotic_unit,
+                    'created_at'=>Carbon::today(),
+                    'updated_at'=>Carbon::today()
+                    ]);
+        
+            return 1;
+            }
+
+            //update Unit
+            public function update_unit(Request $request){
+                $this->validate ( $request, [ 
+                    'id' => 'required',
+                    'narcotic_unit' => 'required|max:255'          
+                ] ); 
+
+                
+                $id = $request->input('id');
+                $unit = $request->input('unit');
+
+                $data = [
+                    'unit_name'=>$unit,
+                    'updated_at'=>Carbon::today(),
+
+                ];
+
+                Unit::where('unit_id',$id)->update($data);
+                
+                return 1;
+            
+            }
+
 
         //Unit:end
 

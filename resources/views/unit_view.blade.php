@@ -113,11 +113,10 @@
                         $(this).attr('contenteditable',true);
                     })
 
-            /*Narcotic master maintenance */
 
+            //add unit:start
              $(document).on("click","#add_unit",function (){
-
-                var narcotic_unit=$("#narcotic_unit").val();
+                 var narcotic_unit=$("#narcotic_unit").val();
                                             
                  $.ajax({
                         type:"POST",
@@ -139,10 +138,44 @@
 
                         });
                 });
+                //add unit:end
 
-        /* To prevent updation when no changes to the data is made*/
+                //To prevent updation when no changes to the data is made*/
+                var prev_unit;
+                    $(document).on("focusin",".data", function(){
+                        prev_unit = $(this).closest("tr").find(".unit").text();
+                    })
 
-       
+
+                //Data Updation Code Starts
+                $(document).on("focusout",".data", function(){
+                    var id = $(this).closest("tr").find(".id").text();
+                    var unit = $(this).closest("tr").find(".unit").text();
+                                
+                if(unit == prev_unit)
+                        return false;
+
+
+                $.ajax({
+                    type:"POST",
+                    url:"master_maintenance_unit/update",                
+                    data:{_token: $('meta[name="csrf-token"]').attr('content'), 
+                            id:id, 
+                            unit:unit
+                        },
+                    success:function(response){   
+                                
+                        swal("Narcotic Unit's Details Updated","","success");
+                        table.api().ajax.reload();
+                    },
+                    error:function(response) {  
+                        if(response.responseJSON.errors.hasOwnProperty('unit'))
+                            swal("Cannot updated Narcotic Unit", ""+response.responseJSON.errors.unit['0'], "error");
+                    }
+                    })
+                })
+
+                // Data Updation Codes Ends 
 
         });
 

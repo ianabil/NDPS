@@ -40,7 +40,7 @@
         //High Court Dashboard::end
 
 
-        //Court MAster Maintenance::start
+        //Court ::start
 
             Route::get('court_view', 'MasterMaintenanceController@index_court');
 
@@ -56,12 +56,12 @@
             Route::post('master_maintenance_court_details/delete',
             'MasterMaintenanceController@destroy_court');
 
-       //Court Master Maintenance::end
+       //Court ::end
        
 
 
       
-       //Stakeholder Master Maintenance::start
+       //Stakeholder ::start
       
             Route::get('stakeholder_view', function(){
                 return view ('stakeholder_view');
@@ -79,11 +79,11 @@
             Route::post('master_maintenance_stakeholder/delete',
             'MasterMaintenanceController@destroy_stakeholder');
 
-       //Stakeholder MAster Maintenance::end
+       //Stakeholder ::end
 
        
 
-        //Narcotic Master Maintenance::start
+        //Narcotic ::start
         
         Route::get('narcotic_view', 'MasterMaintenanceController@index_narcotic');
             
@@ -101,9 +101,9 @@
 
 
 
-        //Narcotic Master Maintenance::end
+    //Narcotic::end
 
-        //Unit Master Maintenance:start
+        //Unit::start
 
         Route::get('unit_view', function(){
             return view ('unit_view');
@@ -116,18 +116,19 @@
         Route::post('show_all_units',
         'MasterMaintenanceController@get_all_units');
         
-       
+        Route::post('master_maintenance_unit/update',
+        'MasterMaintenanceController@update_narcotics');
 
-        //Unit Master Maintenance:end
+        //Unit::end
 
-        //User Master Maintenance ::starts
+        //User ::starts
        Route::get('create_new_user', 
        'MasterMaintenanceController@index_user_creation');
 
        Route::post('create_new_user/create', 
        'MasterMaintenanceController@create_new_user');
 
-       //User Master Maintenance ::ends
+       //User::ends
 
 
        //Composite Report ::Starts
