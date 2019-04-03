@@ -310,7 +310,8 @@ class MasterMaintenanceController extends Controller
                     3=>'ACTION'
                 );
         
-                $totalData = Narcotic::count();
+                $totalData = Narcotic::join('units','units.unit_id','=','narcotics.drug_unit')
+                                       ->count();
         
                 $totalFiltered = $totalData; 
         
@@ -320,22 +321,26 @@ class MasterMaintenanceController extends Controller
                 $dir = $request->input('order.0.dir');
         
                 if(empty($request->input('search.value'))){
-                    $narcotic = Narcotic::offset($start)
+                    $narcotic = Narcotic::join('units','units.unit_id','=','narcotics.drug_unit')                               
+                                    ->offset($start)
                                     ->limit($limit)
                                     ->orderBy('drug_name',$dir)
                                     ->get();
-                    $totalFiltered = Narcotic::count();
+                    $totalFiltered = Narcotic::join('units','units.unit_id','=','narcotics.drug_unit')
+                                            ->count();
                 }
                 else
                 {
                     $search = strtoupper($request->input('search.value'));
-                    $narcotic = Narcotic::where('drug_id','like',"%{$search}%")
+                    $narcotic = Narcotic::join('units','units.unit_id','=','narcotics.drug_unit')
+                                        ->where('drug_id','like',"%{$search}%")
                                         ->orWhere('drug_name','like',"%{$search}%")                                    
                                         ->offset($start)
                                         ->limit($limit)
                                         ->orderBy('drug_name',$dir)
                                         ->get();
-                    $totalFiltered = Narcotic::where('drug_id','like',"%{$search}%")
+                    $totalFiltered = Narcotic::join('units','units.unit_id','=','narcotics.drug_unit')
+                                            ->store_courtwhere('drug_id','like',"%{$search}%")
                                             ->orWhere('drug_name','like',"%{$search}%")                                           
                                             ->count();
                 }
@@ -348,7 +353,7 @@ class MasterMaintenanceController extends Controller
                     {
                         $nestedData['ID'] = $narcotic->drug_id;
                         $nestedData['NARCOTIC'] = $narcotic->drug_name;
-                        $nestedData['UNIT'] = $narcotic->drug_unit;
+                        $nestedData['UNIT'] = $narcotic->unit_name;
                         $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
         
                         $data[] = $nestedData;
@@ -374,15 +379,20 @@ class MasterMaintenanceController extends Controller
                     'narcotic_name' => 'required|max:255|unique:narcotics,drug_name',
                     'narcotic_unit' => 'required|max:255'         
                 ] ); 
-                $narcotic = strtoupper($request->input('narcotic_name'));
-                $narcotic_unit = strtoupper($request->input('narcotic_unit')); 
 
-                Narcotic::insert([
-                    'drug_name'=>$narcotic,
-                    'drug_unit'=>$narcotic_unit,
-                    'created_at'=>Carbon::today(),
-                    'updated_at'=>Carbon::today()
-                    ]);
+                $narcotic = ucwords($request->input('narcotic_name'));
+                $unit = $request->input('narcotic_unit');
+                
+                $narcotic_id = Narcotic::max('drug_id');
+                for($i=0;$i<sizeof($unit);$i++){
+                    Narcotic::insert([
+                        'drug_id'=>$narcotic_id+1,
+                        'drug_name'=>$narcotic,
+                        'drug_unit'=>$unit[$i],
+                        'created_at'=>Carbon::today(),
+                        'updated_at'=>Carbon::today()
+                        ]);
+                }
         
                 return 1;
 
