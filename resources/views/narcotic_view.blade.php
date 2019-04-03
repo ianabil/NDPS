@@ -158,11 +158,100 @@
                         });
                 });
 
-        /* To prevent updation when no changes to the data is made*/
+         /* To prevent updation when no changes to the data is made*/
 
-       
+        var prev_narcotic;
+        var prev_unit;
+        $(document).on("focusin",".data", function(){
+            prev_narcotic = $(this).closest("tr").find(".narcotic").text();
+            prev_unit = $(this).closest("tr").find(".unit").text();
+        })
 
-        });
+         /* Data Updation Code Starts*/
+
+        $(document).on("focusout",".data", function(){
+            var id = $(this).closest("tr").find(".id").text();
+            var narcotic = $(this).closest("tr").find(".narcotic").text();
+            var unit = $(this).closest("tr").find(".unit").text();
+            
+            if(narcotic == prev_narcotic && unit == prev_unit)
+                return false;
+
+
+            $.ajax({
+                type:"POST",
+                url:"master_maintenance_narcotic/update",                
+                data:{_token: $('meta[name="csrf-token"]').attr('content'), 
+                        id:id, 
+                        narcotic:narcotic,
+                        unit:unit
+                    },
+                success:function(response){   
+                               
+                    swal("Narcotic's Details Updated","","success");
+                    table.api().ajax.reload();
+                },
+                error:function(response) {  
+                      if(response.responseJSON.errors.hasOwnProperty('unit'))
+                         swal("Cannot updated Narcotic", ""+response.responseJSON.errors.unit['0'], "error");
+                                                         
+                      if(response.responseJSON.errors.hasOwnProperty('narcotic'))
+                          swal("Cannot updated Narcotic", ""+response.responseJSON.errors.narcotic['0'], "error");
+                          
+                }
+        
+
+            })
+        })
+
+        // /* Data Updation Cods Ends */
+
+         /* Data Deletion Codes Starts */
+
+        $(document).on("click",".delete", function(){
+
+                swal({
+                    title: "Are You Sure?",
+                    text: "Once submitted, you will not be able to change the record",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                    })
+                    .then((willDelete) => {
+                        if(willDelete) {
+                            var id = $(this).closest("tr").find(".id").text();
+                            var tr = $(this).closest("tr");
+
+                            $.ajax({
+                                type:"POST",
+                                url:"master_maintenance_narcotic/delete",
+                                data:{
+                                    _token: $('meta[name="csrf-token"]').attr('content'), 
+                                    id:id
+                                },
+                                success:function(response){
+                                    if(response==1){
+                                        swal("Data Deleted Successfully","","success");  
+                                        table.api().ajax.reload();                
+                                    }
+                                    else{
+                                        swal("Can Not Delete This Narcotics"," ","error");  
+                                        return false;
+                                    }
+
+                                }
+                            })
+                        }
+                        else 
+                        {
+                            swal("Deletion Cancelled","","error");
+                        }
+                    })
+            });
+
+        /* Data Deletion Codes Ends */
+
+    });
 
 </script>
 

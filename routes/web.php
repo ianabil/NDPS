@@ -93,6 +93,14 @@
         Route::post('master_maintenance/narcotic',
         'MasterMaintenanceController@store_narcotic');
 
+        Route::post('master_maintenance_narcotic/update',
+        'MasterMaintenanceController@update_narcotics');
+
+        Route::post('master_maintenance_narcotic/delete',
+            'MasterMaintenanceController@destroy_narcotic');
+
+
+
         //Narcotic Master Maintenance::end
 
         //Unit Master Maintenance:start
