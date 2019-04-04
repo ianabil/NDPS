@@ -111,14 +111,14 @@
                                     "data":{ _token: $('meta[name="csrf-token"]').attr('content')}
                                 },
                             "columns": [                
-                                {  "class": "id",
-                                    "data": "ID" },
+                                {"class": "id",
+                                  "data": "ID" },
                                 {"class": "narcotic data",
-                                    "data": "NARCOTIC" },
-                                {"class": "unit data",
-                                    "data": "UNIT" },
+                                 "data": "NARCOTIC" },
+                                {"class": "unit",
+                                  "data": "UNIT" },
                                 {"class": "delete",
-                                    "data": "ACTION" }
+                                "data": "ACTION" }
                             ]
                         }); 
 
@@ -128,7 +128,7 @@
             // Double Click To Enable Content editable
             $(document).on("click",".data", function(){
                         $(this).attr('contenteditable',true);
-                    })
+            })
 
             //Narcotic master maintenance 
              $(document).on("click","#add_narcotics",function (){
