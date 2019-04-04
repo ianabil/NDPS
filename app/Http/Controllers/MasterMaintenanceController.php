@@ -370,8 +370,26 @@ class MasterMaintenanceController extends Controller
                     foreach($narcotic as $narcotic)
                     {
                         $nestedData['ID'] = $narcotic->drug_id;
+                        
                         $nestedData['NARCOTIC'] = $narcotic->drug_name;
-                        $nestedData['UNIT'] = $narcotic->unit_name;
+
+                        $unit = Unit::get();
+                        
+                        $option = "";
+                        $option = $option."<select class='form-control' style='width:150px'>";
+                        foreach($unit as $data1){
+                            $option = $option."<option value='".$data1['unit_id']."'";
+                            
+                            if($data1['unit_id']==$narcotic->unit_id)
+                                $option = $option." selected>".$data1['unit_name']."</option>";
+                            else
+                                $option = $option.">".$data1['unit_name']."</option>";
+                        }
+
+                        
+                        $option = $option."</select>";
+                        
+                        $nestedData['UNIT'] = $option;
                         $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
         
                         $data[] = $nestedData;
