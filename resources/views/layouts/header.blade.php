@@ -104,7 +104,7 @@
                                 <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>District Master Maintenance</span></a></li>
+                                <li><a href="district_view"><i class="fa fa-circle-o text-red"></i> <span>District Master Maintenance</span></a></li>
                                 <li><a href="court_view"><i class="fa fa-circle-o text-yellow"></i> <span>Court Master Maintenance</span></a></li>
                                 <li><a href="stakeholder_view"><i class="fa fa-circle-o text-violate"></i> <span>Stakeholder Master Maintenance</span></a></li>
                                 <li><a href="narcotic_view"><i class="fa fa-circle-o text-green"></i> <span>Narcotic Master Maintenance</span></a></li>

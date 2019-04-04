@@ -17,119 +17,136 @@ use DB;
 
 class MasterMaintenanceController extends Controller
 {
-    //Add stakeholder
-    public function store_stakeholder(Request $request){
 
-        $this->validate ( $request, [ 
-            'stakeholder_name' => 'required|max:255|unique:agency_details,agency_name',
-            'district' => 'required|max:255'         
-        ] ); 
+    //District::Start
 
-        $stakeholder = strtoupper($request->input('stakeholder_name'));
-        $district = strtoupper($request->input('district')); 
+        //Fetching districts
+        public function index_district(Request $request)
+                {
+                    $data= array();
 
-        Agency_detail::insert([
-            'agency_name'=>$stakeholder,
-            'district_for_report'=>$district,
-            'created_at'=>Carbon::today(),
-            'updated_at'=>Carbon::today()
-            ]);
+                    $data['districts'] = District::select('district_id','district_name')->orderBy('district_name')->get();
+                    
 
-        return 1;
-    }
+                    return view('district_view',compact('data'));
+                }
 
-  // Data Table Code for stakeholders
-    public function get_all_stakeholders_data(Request $request){
-        $columns = array( 
-            0 =>'ID', 
-            1 =>'STAKEHOLDER',
-            2 =>'DISTRICT',
-            3=>'ACTION'
-        );
 
-        $totalData = Agency_detail::count();
+    //District::End
 
-        $totalFiltered = $totalData; 
+    //stakeholder::Start
+        
+        //Add stakeholder
+        public function store_stakeholder(Request $request){
 
-        $limit = $request->input('length');
-        $start = $request->input('start');
-        $order = $columns[$request->input('order.0.column')];
-        $dir = $request->input('order.0.dir');
+            $this->validate ( $request, [ 
+                'stakeholder_name' => 'required|max:255|unique:agency_details,agency_name',
+                'district' => 'required|max:255'         
+            ] ); 
 
-        if(empty($request->input('search.value'))){
-            $stakeholder = Agency_detail::offset($start)
-                            ->limit($limit)
-                            ->orderBy('agency_name',$dir)
-                            ->get();
-            $totalFiltered = Agency_detail::count();
+            $stakeholder = strtoupper($request->input('stakeholder_name'));
+            $district = strtoupper($request->input('district')); 
+
+            Agency_detail::insert([
+                'agency_name'=>$stakeholder,
+                'district_for_report'=>$district,
+                'created_at'=>Carbon::today(),
+                'updated_at'=>Carbon::today()
+                ]);
+
+            return 1;
         }
-        else{
-            $search = strtoupper($request->input('search.value'));
-            $stakeholder = Agency_detail::where('agency_id','like',"%{$search}%")
-                                ->orWhere('agency_name','like',"%{$search}%")
-                                ->orWhere('district_for_report','like',"%{$search}%")
-                                ->offset($start)
+
+        // Data Table Code for stakeholders
+        public function get_all_stakeholders_data(Request $request){
+            $columns = array( 
+                0 =>'ID', 
+                1 =>'STAKEHOLDER',
+                2 =>'DISTRICT',
+                3=>'ACTION'
+            );
+
+            $totalData = Agency_detail::count();
+
+            $totalFiltered = $totalData; 
+
+            $limit = $request->input('length');
+            $start = $request->input('start');
+            $order = $columns[$request->input('order.0.column')];
+            $dir = $request->input('order.0.dir');
+
+            if(empty($request->input('search.value'))){
+                $stakeholder = Agency_detail::offset($start)
                                 ->limit($limit)
                                 ->orderBy('agency_name',$dir)
                                 ->get();
-            $totalFiltered = Agency_detail::where('agency_id','like',"%{$search}%")
+                $totalFiltered = Agency_detail::count();
+            }
+            else{
+                $search = strtoupper($request->input('search.value'));
+                $stakeholder = Agency_detail::where('agency_id','like',"%{$search}%")
                                     ->orWhere('agency_name','like',"%{$search}%")
                                     ->orWhere('district_for_report','like',"%{$search}%")
-                                    ->count();
-            }
-
-            $data = array();
-
-            if($stakeholder){
-                foreach($stakeholder as $stakeholder){
-                    $nestedData['ID'] = $stakeholder->agency_id;
-                    $nestedData['STAKEHOLDER'] = $stakeholder->agency_name;
-                    $nestedData['DISTRICT'] = $stakeholder->district_for_report;
-                    $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
-    
-                    $data[] = $nestedData;
+                                    ->offset($start)
+                                    ->limit($limit)
+                                    ->orderBy('agency_name',$dir)
+                                    ->get();
+                $totalFiltered = Agency_detail::where('agency_id','like',"%{$search}%")
+                                        ->orWhere('agency_name','like',"%{$search}%")
+                                        ->orWhere('district_for_report','like',"%{$search}%")
+                                        ->count();
                 }
-                    $json_data = array(
-                        "draw" => intval($request->input('draw')),
-                        "recordsTotal" => intval($totalData),
-                        "recordFiltered" =>intval($totalFiltered),
-                        "data" => $data
-                    );
-            
-                    echo json_encode($json_data);
+
+                $data = array();
+
+                if($stakeholder){
+                    foreach($stakeholder as $stakeholder){
+                        $nestedData['ID'] = $stakeholder->agency_id;
+                        $nestedData['STAKEHOLDER'] = $stakeholder->agency_name;
+                        $nestedData['DISTRICT'] = $stakeholder->district_for_report;
+                        $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
+        
+                        $data[] = $nestedData;
+                    }
+                        $json_data = array(
+                            "draw" => intval($request->input('draw')),
+                            "recordsTotal" => intval($totalData),
+                            "recordFiltered" =>intval($totalFiltered),
+                            "data" => $data
+                        );
+                
+                        echo json_encode($json_data);
+                    }
+        
                 }
-    
-            }
 
-            /*update stakeholder*/
+                /*update stakeholder*/
+                public function update_stakeholder(Request $request){
+                    $this->validate ( $request, [ 
+                        'id' => 'required',
+                        'stakeholder' => 'required|max:255',
+                        'district' => 'required|max:255'          
+                    ] ); 
 
-            public function update_stakeholder(Request $request){
-                $this->validate ( $request, [ 
-                    'id' => 'required',
-                    'stakeholder' => 'required|max:255',
-                    'district' => 'required|max:255'          
-                ] ); 
+                    
+                    $id = $request->input('id');
+                    $stakeholder = strtoupper($request->input('stakeholder'));
+                    $district = $request->input('district');
 
+                    $data = [
+                        'agency_name'=>$stakeholder,
+                        'updated_at'=>Carbon::today(),
+                        'district_for_report'=>$district
+
+                    ];
+
+                    Agency_detail::where('agency_id',$id)->update($data);
+                    
+                    return 1;
                 
-                $id = $request->input('id');
-                $stakeholder = strtoupper($request->input('stakeholder'));
-                $district = $request->input('district');
+                }
 
-                $data = [
-                    'agency_name'=>$stakeholder,
-                    'updated_at'=>Carbon::today(),
-                    'district_for_report'=>$district
-
-                ];
-
-                Agency_detail::where('agency_id',$id)->update($data);
-                
-                return 1;
-            
-            }
-
-             //deleting stakeholder
-
+                //deleting stakeholder
                 public function destroy_stakeholder(Request $request)
                 {
                     $id = $request->input('id');
@@ -143,9 +160,11 @@ class MasterMaintenanceController extends Controller
                     }
                     // echo 1;
                 }
+            //Stakeholder::End
+
+            //Court::Start
           
                 //court master maintenance view
-
                 public function index_court(Request $request)
                 {
                     $data= array();
@@ -157,7 +176,6 @@ class MasterMaintenanceController extends Controller
                 }
 
                 //showing exisiting courts
-
                 public function get_all_court_details(Request $request){
 
                     $columns = array( 
@@ -229,8 +247,8 @@ class MasterMaintenanceController extends Controller
                         }
             
                             }
-                /*adding new court*/
 
+                /*adding new court*/
                 public function store_court(Request $request){
 
                     $this->validate ( $request, [ 
@@ -371,9 +389,7 @@ class MasterMaintenanceController extends Controller
             }
 
 
-        //Add Narcotics
-
-
+            //Add Narcotics
             public function store_narcotic(Request $request){
                 $this->validate ( $request, [ 
                     'narcotic_name' => 'required|max:255|unique:narcotics,drug_name',
@@ -400,13 +416,13 @@ class MasterMaintenanceController extends Controller
 
                 }
 
-                //update Narcotics
-                public function update_narcotics(Request $request){
-                    $this->validate ( $request, [ 
-                        'id' => 'required',
-                        'narcotic' => 'required|max:255',
-                        'unit' => 'required|max:255'          
-                    ] ); 
+            //update Narcotics
+            public function update_narcotics(Request $request){
+                $this->validate ( $request, [ 
+                    'id' => 'required',
+                    'narcotic' => 'required|max:255',
+                    'unit' => 'required|max:255'          
+                ] ); 
 
                     
                     $id = $request->input('id');
@@ -538,6 +554,13 @@ class MasterMaintenanceController extends Controller
                 return 1;
             
             }
+
+             //Delete unit
+             public function destroy_unit(Request $request){
+                $id = $request->input('id');
+                Unit::where('unit_id',$id)->delete();
+                return 1;
+              }
 
 
         //Unit:end

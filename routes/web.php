@@ -103,7 +103,7 @@
 
     //Narcotic::end
 
-        //Unit::start
+    //Unit::start
 
         Route::get('unit_view', function(){
             return view ('unit_view');
@@ -119,7 +119,17 @@
         Route::post('master_maintenance_unit/update',
         'MasterMaintenanceController@update_narcotics');
 
-        //Unit::end
+        Route::post('master_maintenance_unit/delete',
+        'MasterMaintenanceController@destroy_unit');
+
+
+    //Unit::end
+
+    //District::Start
+        Route::get('district_view', 'MasterMaintenanceController@index_district');
+
+
+     //District::End
 
         //User ::starts
        Route::get('create_new_user', 
