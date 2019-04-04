@@ -13,7 +13,7 @@
             <div class="row">                
                 <div class="col-md-2 form-group required">
                     <label class="control-label district_name">Districts</label><br>
-                    <select class="select2"  name="district_name" id="district_name">
+                    <select class="form-control select2"  name="district_name" id="district_name">
                         <option value="">Select District</option>
                         @foreach($data['districts']  as $data1)
                             <option value="{{$data1['district_id']}}">{{$data1['district_name']}} </option>
@@ -36,11 +36,8 @@
 
             <hr>
             <!-- /.row -->
-            <div class="row">
-                <div class="col-md-2"  name="partition" id="partition" style="display:none;">
-
+            <div class="row" id="partition_row" style="display:none;">
                 
-                </div>
             </div> 
         </div>
 
@@ -88,30 +85,18 @@
                 var i;
                 for(i=1;i<=patition;i++)
                 {
-                    str=str+"<div class='col-sm-2 form-group required'><label class='control-label'>Name of Partitions</label><input type='text' class='form-control' name='name_of_partiotions'id='name_of_partiotions'></div>";
+                    str=str+"<div class='col-sm-3'><input type='text' class='form-control' name='name_of_partiotions'id='name_of_partiotions'></div>";
                 }
-                $("#partiiton").show();
-                $("#partition").html(str);
-                console.log(str);
                 
-
-
+                $("#partition_row").html(str);
+                $("#partition_row").show();
 
             })
-
-           
-
-
-            
-
-                
-
-
 
         });
 
 </script>
 
-    </body>
+</body>
 
-    </html>
+</html>

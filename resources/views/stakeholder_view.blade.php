@@ -58,7 +58,7 @@
 
 <hr>
          
-         <br> <br>
+<br> <br>
 
 <!--loader starts-->
 
@@ -100,14 +100,14 @@
                                     "data":{ _token: $('meta[name="csrf-token"]').attr('content')}
                                 },
                             "columns": [                
-                                {  "class": "id",
-                                    "data": "ID" },
+                                {"class": "id",
+                                  "data": "ID" },
                                 {"class": "stakeholder data",
-                                    "data": "STAKEHOLDER" },
+                                  "data": "STAKEHOLDER" },
                                 {"class": "district data",
-                                    "data": "DISTRICT" },
+                                  "data": "DISTRICT" },
                                 {"class": "delete",
-                                    "data": "ACTION" }
+                                  "data": "ACTION" }
                             ]
                         }); 
 
