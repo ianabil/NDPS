@@ -376,7 +376,7 @@ class MasterMaintenanceController extends Controller
                         $unit = Unit::get();
                         
                         $option = "";
-                        $option = $option."<select class='form-control' style='width:150px'>";
+                        $option = $option."<select class='form-control unit data' style='width:150px'>";
                         foreach($unit as $data1){
                             $option = $option."<option value='".$data1['unit_id']."'";
                             
@@ -444,8 +444,9 @@ class MasterMaintenanceController extends Controller
 
                     
                     $id = $request->input('id');
-                    $narcotic = strtoupper($request->input('narcotic'));
+                    $narcotic = ucwords($request->input('narcotic'));
                     $unit = $request->input('unit');
+                    $prev_unit = $request->input('prev_unit');
 
                     $data = [
                         'drug_name'=>$narcotic,
@@ -454,7 +455,7 @@ class MasterMaintenanceController extends Controller
 
                     ];
 
-                    Narcotic::where('drug_id',$id)->update($data);
+                    Narcotic::where([['drug_id',$id],['drug_unit',$prev_unit]])->update($data);
                     
                     return 1;
                 
@@ -463,7 +464,8 @@ class MasterMaintenanceController extends Controller
                 //Delete Narcotics
                 public function destroy_narcotic(Request $request){
                         $id = $request->input('id');
-                        Narcotic::where('drug_id',$id)->delete();
+                        $unit = $request->input('unit');
+                        Narcotic::where([['drug_id',$id],['drug_unit',$unit]])->delete();
                         return 1;
                 }
             

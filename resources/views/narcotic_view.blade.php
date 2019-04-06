@@ -108,21 +108,20 @@
                                     "url": "show_all_narcotics",
                                     "dataType": "json",
                                     "type": "POST",
-                                    "data":{ _token: $('meta[name="csrf-token"]').attr('content')}
+                                    "data":{ _token: $('meta[name="csrf-token"]').attr('content')},                                    
                                 },
                             "columns": [                
                                 {"class": "id",
                                   "data": "ID" },
                                 {"class": "narcotic data",
                                  "data": "NARCOTIC" },
-                                {"class": "unit",
-                                  "data": "UNIT" },
+                                {"data": "UNIT" },
                                 {"class": "delete",
                                 "data": "ACTION" }
                             ]
                         }); 
-
                         
+                                       
             // DataTable initialization with Server-Processing ::END
 
             // Double Click To Enable Content editable
@@ -135,7 +134,7 @@
                 var narcotic = $("#narcotic_name").val().toLowerCase().replace(/\b[a-z]/g, function(letter) {
                     return letter.toUpperCase();
                 });
-                //var narcotic= $("#narcotic_name").val();
+                
                 var narcotic_unit=$("#narcotic_unit").val();
                  
                             
@@ -171,7 +170,7 @@
         var prev_unit;
         $(document).on("focusin",".data", function(){
             prev_narcotic = $(this).closest("tr").find(".narcotic").text();
-            prev_unit = $(this).closest("tr").find(".unit").text();
+            prev_unit = $(this).closest("tr").find(".unit").val();
         })
 
          /* Data Updation Code Starts*/
@@ -179,7 +178,7 @@
         $(document).on("focusout",".data", function(){
             var id = $(this).closest("tr").find(".id").text();
             var narcotic = $(this).closest("tr").find(".narcotic").text();
-            var unit = $(this).closest("tr").find(".unit").text();
+            var unit = $(this).closest("tr").find(".unit").val();
             
             if(narcotic == prev_narcotic && unit == prev_unit)
                 return false;
@@ -191,7 +190,8 @@
                 data:{_token: $('meta[name="csrf-token"]').attr('content'), 
                         id:id, 
                         narcotic:narcotic,
-                        unit:unit
+                        unit:unit,
+                        prev_unit:prev_unit
                     },
                 success:function(response){   
                                
@@ -227,14 +227,15 @@
                     .then((willDelete) => {
                         if(willDelete) {
                             var id = $(this).closest("tr").find(".id").text();
-                            var tr = $(this).closest("tr");
+                            var unit = $(this).closest("tr").find(".unit").val();
 
                             $.ajax({
                                 type:"POST",
                                 url:"master_maintenance_narcotic/delete",
                                 data:{
                                     _token: $('meta[name="csrf-token"]').attr('content'), 
-                                    id:id
+                                    id:id,
+                                    unit:unit
                                 },
                                 success:function(response){
                                     if(response==1){
