@@ -81,11 +81,21 @@
 
             $(document).on("click","#add_district", function(){
                 var patition=$("#no_of_partiotions").val();
+               // var district=$("#district_name option:selected").text();
+                
                 var str="";
                 var i;
+
                 for(i=1;i<=patition;i++)
                 {
                     str=str+"<div class='col-sm-3'><input type='text' class='form-control' name='name_of_partiotions'id='name_of_partiotions'></div>";
+                    if(i==1)
+                    {
+                        var district=$("#district_name option:selected").text();
+                        $("#name_of_partiotions").val(district);
+                        
+
+                    }
                 }
                 
                 $("#partition_row").html(str);
