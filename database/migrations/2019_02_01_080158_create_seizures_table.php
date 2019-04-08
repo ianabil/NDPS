@@ -20,11 +20,11 @@ class CreateSeizuresTable extends Migration
             $table->integer('case_year')->nullable(false);
             $table->string('drug_id')->nullable(false);
             $table->double('quantity_of_drug',5,2)->nullable(false);  
-            $table->string('seizure_quantity_weighing_unit_id')->nullable(false);
+            $table->integer('seizure_quantity_weighing_unit_id')->nullable(false);
             $table->date('date_of_seizure')->nullable(true);
             $table->date('date_of_disposal')->nullable(true);
             $table->double('disposal_quantity',5,2)->nullable(true);  
-            $table->string('disposal_quantity_weighing_unit')->nullable(true);
+            $table->integer('disposal_quantity_weighing_unit_id')->nullable(true);
             $table->integer('storage_location_id')->nullable(true);            
             $table->integer('stakeholder_id')->nullable(true);            
             $table->integer('district_id')->nullable(false);  
@@ -36,8 +36,7 @@ class CreateSeizuresTable extends Migration
             $table->string('user_name');
             $table->timestamps();
             
-            $table->foreign('ps_id')->references('ps_id')->on('ps_details');
-            $table->foreign('drug_id')->references('drug_id')->on('narcotics');
+            $table->foreign('ps_id')->references('ps_id')->on('ps_details');            
             $table->foreign('seizure_quantity_weighing_unit_id')->references('unit_id')->on('units');
             $table->foreign('disposal_quantity_weighing_unit_id')->references('unit_id')->on('units');
             $table->foreign('storage_location_id')->references('storage_id')->on('storage_details');

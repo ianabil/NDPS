@@ -11,6 +11,7 @@ use App\Agency_detail;
 use App\Court_detail;
 use App\Seizure;
 use App\Storage_detail;
+use App\Ps_detail;
 use App\User;
 use Carbon\Carbon;
 use DB;
@@ -32,10 +33,11 @@ class entry_formController extends Controller
 
         $data = array();
         
-        //$data['ps'] = Ps_detail::select('ps_id','ps_name')->get();
+        $data['ps'] = Ps_detail::select('ps_id','ps_name')->get();
         $data['narcotics'] = Narcotic::select('drug_id','drug_name')->distinct()->get();
         $data['districts'] = District::select('district_id','district_name')->get();
-        //$data['units'] = Unit::select('unit_id','unit_name')->get();
+        $data['storages'] = Storage_detail::select('storage_id','storage_name')->get();
+        $data['units'] = Unit::select('unit_id','unit_name')->get();
         //$data['courts'] = Court_detail::select('court_id','court_name')->get();
             
         // $sql="select s.*,u1.unit_name seizure_unit, s.disposal_quantity, u2.unit_name disposal_unit,
@@ -90,79 +92,63 @@ class entry_formController extends Controller
      */
     public function store(Request $request)
     {
-        $month_of_report = date('Y-m-d', strtotime('01-'.$request->input('month_of_report')));
+        $this->validate ( $request, [ 
+            'ps' => 'required|integer',
+            'case_no' => 'required|integer',
+            'case_year' => 'required|integer',
+            'narcotic_type' => 'required|integer',
+            'seizure_date' => 'required|date',
+            'seizure_quantity' => 'required|numeric',
+            'seizure_weighing_unit' => 'required|integer',
+            'storage' => 'required|integer',
+            'remark' => 'nullable|max:255',
+            'district' => 'required|integer',         
+            'court' => 'required|integer',
+        ] ); 
 
-        seizure::where([
-                        ['submit_flag','N'],
-                        ['agency_id',Auth::user()->stakeholder_id],
-                        ['month_of_report',$month_of_report]
-                ])->delete();
-
-        $nature_of_narcotic = $request->input('nature_of_narcotic'); 
-        $quantity_of_narcotics = $request->input('quantity_of_narcotics'); 
-        $narcotic_unit = $request->input('narcotic_unit'); 
-        $date_of_seizure =$request->input('date_of_seizure'); 
-        $date_of_disposal =$request->input('date_of_disposal'); 
-        $disposal_quantity = $request->input('disposal_quantity');
-        $disposal_unit = $request->input('disposal_unit');
-        $undisposed_quantity = $request->input('undisposed_quantity');
-        $unit_of_undisposed_quantity = $request->input('unit_of_undisposed_quantity'); 
-        $place_of_storage = $request->input('place_of_storage'); 
-        $case_details = $request->input('case_details'); 
+        $ps = $request->input('ps'); 
+        $case_no = $request->input('case_no'); 
+        $case_year = $request->input('case_year'); 
+        $narcotic_type = $request->input('narcotic_type'); 
+        $seizure_date =$request->input('seizure_date'); 
+        $seizure_quantity =$request->input('seizure_quantity'); 
+        $seizure_weighing_unit = $request->input('seizure_weighing_unit');
+        $storage = $request->input('storage');
+        $remark = $request->input('remark');
         $district = $request->input('district'); 
-        $where = $request->input('where'); 
-        $date_of_certification = $request->input('date_of_certification'); 
-        $counter= $request->input('counter');
+        $court = $request->input('court');
+        $certification_flag='N';
+        $disposal_flag='N';
         $agency_id= Auth::user()->stakeholder_id;
         $user_name=Auth::user()->user_name;
-        $remarks=$request->input('remarks');
         $update_date = Carbon::today();  
         $uploaded_date = Carbon::today();  
-        $submit_flag=$request->input('submit_flag');
         
-            
-        for($i=0;$i<$counter;$i++)
-        {
-            //For preventing blank date value getting inserted as 1970-01-01 into DB
-            if(empty($date_of_disposal[$i]))
-                $disposal_date =NULL;
-            else
-                $disposal_date = date('Y-m-d', strtotime($date_of_disposal[$i]));
 
-            
-            if(empty($date_of_certification[$i]))
-                $certification_date =NULL;
-            else
-                $certification_date = date('Y-m-d', strtotime($date_of_certification[$i]));
+        seizure::insert(
 
-            seizure::insert(
+            [
+                'ps_id'=>$ps,
+                'case_no'=>$case_no,
+                'case_year'=>$case_year,
+                'drug_id'=> $narcotic_type,
+                'quantity_of_drug'=>$seizure_quantity,
+                'seizure_quantity_weighing_unit_id'=>$seizure_weighing_unit,
+                'date_of_seizure'=>date('Y-m-d', strtotime($seizure_date)),
+                'storage_location_id'=>$storage,
+                'stakeholder_id'=>$agency_id,
+                'district_id'=>$district,
+                'certification_court_id'=>$court,
+                'certification_flag'=>$certification_flag,
+                'disposal_flag'=>$disposal_flag,
+                'remarks'=>$remark,
+                'user_name'=>$user_name,
+                'created_at'=>$uploaded_date,
+                'updated_at'=>$update_date
+            ]
 
-                ['drug_name'=>$nature_of_narcotic[$i],
-                 'quantity_of_drug'=>$quantity_of_narcotics[$i],
-                 'unit_name'=>$narcotic_unit[$i],
-                 'date_of_seizure'=> date('Y-m-d', strtotime($date_of_seizure[$i])),
-                 'date_of_disposal'=>$disposal_date,
-                 'disposal_quantity'=>$disposal_quantity[$i],
-                 'unit_of_disposal_quantity'=>$disposal_unit[$i],
-                 'undisposed_quantity'=>$undisposed_quantity[$i],
-                 'undisposed_unit'=>$unit_of_undisposed_quantity[$i],
-                 'storage_location'=>$place_of_storage[$i],
-                 'case_details'=>$case_details[$i],
-                 'district_id'=>$district[$i],
-                 'date_of_certification'=>$certification_date,
-                 'agency_id'=>$agency_id,
-                 'certification_court_id'=>$where[$i],
-                 'remarks'=>$remarks[$i],
-                 'updated_at'=>$update_date,
-                 'created_at'=>$uploaded_date,
-                 'user_name'=>$user_name,
-                 'submit_flag'=>$submit_flag,
-                 'month_of_report'=>$month_of_report
-                 ]
+        );
 
-            );
-
-        }
         return 1;
 
     }
@@ -212,49 +198,7 @@ class entry_formController extends Controller
         //
     }
 
-    public function post_submission_preview(){
-        $agency_id = Auth::user()->stakeholder_id;
-        $data = array();
-
-        $sql="select s.*,u1.unit_name seizure_unit, s.disposal_quantity, u2.unit_name disposal_unit,
-        s.undisposed_quantity,u3.unit_name undisposed_unit_name, court_details.*, districts.*
-        from seizures s left join units u1 on cast(s.unit_name as int)=u1.unit_id 
-        left join units u2 on cast(s.unit_of_disposal_quantity as int)=u2.unit_id 
-        left join units u3 on cast(s.undisposed_unit as int)=u3.unit_id
-        left join court_details on s.certification_court_id = court_details.court_id
-        left join districts on s.district_id = districts.district_id
-        where s.submit_flag='S' and s.agency_id= ".$agency_id." and s.month_of_report = (select max(month_of_report) from seizures where agency_id = ".$agency_id.")
-        order by seizure_id";
-
-        $data['seizures']=DB::select($sql);
-        $data['agency_details'] = Agency_detail::where('agency_id',$agency_id)->get();
-                
-        foreach($data['seizures'] as $seizures){
-            if(empty($seizures->date_of_seizure))
-                $seizures->date_of_seizure='';
-            else
-                $seizures->date_of_seizure = Carbon::parse($seizures->date_of_seizure)->format('d-m-Y');
-            
-            
-            if(empty($seizures->date_of_disposal))
-                $seizures->date_of_disposal='';
-            else
-                $seizures->date_of_disposal = Carbon::parse($seizures->date_of_disposal)->format('d-m-Y');
-
-
-            if(empty($seizures->date_of_certification))
-                $seizures->date_of_certification='';
-            else
-                $seizures->date_of_certification = Carbon::parse($seizures->date_of_certification)->format('d-m-Y');
-           
-                
-            $seizures->month_of_report = date('F',strtotime($seizures->month_of_report)).'-'.date('Y',strtotime($seizures->month_of_report));
-        }
-        
-        return view('post_submission_preview',compact('data'));   
-
-    }
-
+    
     public function district_wise_court(Request $request){
 
         $district = $request->input('district'); 

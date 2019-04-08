@@ -25,8 +25,8 @@
 						<!-- Seizure Details Form :: STARTS -->
 						<div class="tab-pane active" id="seizure">
 							<form id="form_seizure">
-								<div class="form-group row">
-									<label class="col-sm-2 col-form-label-sm-sm" style="font-size:medium">Case No.</label>
+								<div class="form-group required row">
+									<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Case No.</label>
 									<div class="col-sm-3">
 										<select class="form-control select2" id="ps">
 											<option value="">Select PS</option>
@@ -39,7 +39,7 @@
 										<input class="form-control" type="number" id="case_no" placeholder="Case No.">
 									</div>
 									<div class="col-sm-3">
-										<select class="form-control select2" id="year">	
+										<select class="form-control select2" id="case_year">	
 											<option value="">Select Year</option>					
 											@for($i=Date('Y');$i>=2000;$i--)
 												<option value="{{$i}}">{{$i}}</option>
@@ -50,10 +50,10 @@
 
 								<hr>
 
-								<div class="form-group row">
-									<label class="col-sm-2 col-form-label-sm" style="font-size:medium">Nature of Narcotic</label>
+								<div class="form-group required row">
+									<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Nature of Narcotic</label>
 									<div class="col-sm-3">
-										<select class="form-control select2" id="narcotic">
+										<select class="form-control select2" id="narcotic_type">
 											<option value="">Select An Option</option>
 											@foreach($data['narcotics'] as $narcotic)
 												<option value="{{$narcotic->drug_id}}">{{$narcotic->drug_name}}</option>
@@ -61,31 +61,37 @@
 										</select>
 									</div>
 
-									<label class="col-sm-2 col-sm-offset-1 col-form-label-sm" style="font-size:medium">Date of Seizure</label>
+									<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Date of Seizure</label>
 									<div class="col-sm-2">											
 										<input type="text" class="form-control date" placeholder="Choose Date" id="seizure_date" autocomplete="off">
 									</div>										
 								</div>
 
-								<div class="form-group row">
-									<label class="col-sm-2 col-form-label-sm" style="font-size:medium">Quantity of Seizure</label>
+								<div class="form-group required row">
+									<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Quantity of Seizure</label>
 									<div class="col-sm-3">
 										<input class="form-control" type="number" id="seizure_quantity">										
 									</div>
 
-									<label class="col-sm-2 col-sm-offset-1 col-form-label-sm" style="font-size:medium">Weighing Unit</label>
+									<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Weighing Unit</label>
 									<div class="col-sm-2">											
 										<select class="form-control select2" id="seizure_weighing_unit">
 											<option value="">Select An Option</option>
+											@foreach($data['units']  as $unit)
+												<option value="{{$unit->unit_id}}">{{$unit->unit_name}} </option>
+											@endforeach
 										</select>
 									</div>										
 								</div>
 
-								<div class="form-group row">
-									<label class="col-sm-2 col-form-label-sm" style="font-size:medium">Place of Storage</label>
+								<div class="form-group required row">
+									<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Place of Storage</label>
 									<div class="col-sm-3">
 										<select class="form-control select2" id="storage">
 											<option value="">Select An Option</option>
+											@foreach($data['storages'] as $storage)
+												<option value="{{$storage->storage_id}}">{{$storage->storage_name}}</option>
+											@endforeach
 										</select>
 									</div>
 
@@ -115,6 +121,9 @@
 									<div class="col-sm-3">
 										<select class="form-control select2" id="district">
 											<option value="">Select An Option</option>
+											@foreach($data['districts'] as $district)
+												<option value="{{$district->district_id}}">{{$district->district_name}}</option>
+											@endforeach
 										</select>
 									</div>
 
@@ -230,8 +239,131 @@
 
     /*LOADER*/
 
+
+		/*Apply For Certification :: STARTS*/
+		$(document).on("click","#apply",function(){
+				var ps = $("#ps option:selected").val();
+				var case_no = $("#case_no").val();
+				var case_year = $("#case_year").val();
+				var narcotic_type = $("#narcotic_type option:selected").val();
+				var seizure_date = $("#seizure_date").val();
+				var seizure_quantity = $("#seizure_quantity").val();			
+				var seizure_weighing_unit = $("#seizure_weighing_unit option:selected").val();
+				var storage = $("#storage option:selected").val();
+				var remark = $("#remark").val();
+				var district = $("#district option:selected").val();
+				var court = $("#court option:selected").val();
+
+				if(ps==""){
+					swal("Invalid Input","Please Select PS Name","error");
+					return false;
+				}
+				else if(case_no==""){
+					swal("Invalid Input","Please Insert Case No.","error");
+					return false;
+				}
+				else if(case_year==""){
+					swal("Invalid Input","Please Select Case Year.","error");
+					return false;
+				}
+				else if(narcotic_type==""){
+					swal("Invalid Input","Please Select Narcotic Contraband.","error");
+					return false;
+				}
+				else if(seizure_date==""){
+					swal("Invalid Input","Please Insert Date of Seizure","error");
+					return false;
+				}
+				else if(seizure_quantity==""){
+					swal("Invalid Input","Please Insert Seizure Quantity","error");
+					return false;
+				}
+				else if(seizure_weighing_unit==""){
+					swal("Invalid Input","Please Select Weighing Unit","error");
+					return false;
+				}
+				else if(storage==""){
+					swal("Invalid Input","Please Select Place of Storage of Seizure","error");
+					return false;
+				}
+				else if(district==""){
+					swal("Invalid Input","Please Select District","error");
+					return false;
+				}
+				else if(court==""){
+					swal("Invalid Input","Please Select NDPS Court","error");
+					return false;
+				}
+				else{
+							swal({
+							title: "Are you sure?",
+							text: "Once You Applied For Certification, Seizure Details Can Not Be Modified Anymore",
+							icon: "warning",
+							buttons: true,
+							dangerMode: true,
+							})
+							.then((willDelete) => {
+									if (willDelete) {
+										$.ajax({
+													type: "POST",
+													url:"entry_form", 
+													data: {
+														_token: $('meta[name="csrf-token"]').attr('content'),
+														ps:ps,
+														case_no:case_no,
+														case_year:case_year,
+														narcotic_type:narcotic_type,
+														seizure_date:seizure_date,
+														seizure_quantity:seizure_quantity,
+														seizure_weighing_unit:seizure_weighing_unit,
+														storage:storage,
+														remark:remark,
+														district:district,
+														court:court
+													},
+													success:function(response){
+														swal("Application For Certification Successfully Submitted",,"success");
+													},
+													error:function(response){
+														console.log(response);
+													}
+										})
+									}
+							});
+				}
+				
+		})
+		/*Apply For Certification :: ENDS*/
+
+
+		/*Fetch list of court on correspondance to the selected district :: STARTS*/
+		$(document).on("change","#district", function(){	
+
+		var district=$(this).val();
+		$("#court").children('option:not(:first)').remove();
+		
+				$.ajax({
+								type: "POST",
+								url:"entry_form/district",
+								data: {
+									_token: $('meta[name="csrf-token"]').attr('content'),
+									district: district
+								},
+								success:function(resonse){                        
+									var obj=$.parseJSON(resonse)
+									$.each(obj['district_wise_court'],function(index,value){							
+										$("#court").append('<option value="'+value.court_id+'">'+value.court_name+'</option>');
+									})
+								}
+				});
+
+		});
+		/*Fetch list of court on correspondance to the selected district :: ENDS*/
+
+
 	});
 
+	
 </script>
 </body>
 </html>
