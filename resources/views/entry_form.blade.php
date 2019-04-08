@@ -1,4 +1,5 @@
-@extends('layouts.app') @section('content')
+@extends('layouts.app') 
+@section('content')
 <!-- Main content -->
 
 <div class="box box-default">
@@ -29,6 +30,9 @@
 									<div class="col-sm-3">
 										<select class="form-control select2" id="ps">
 											<option value="">Select PS</option>
+											@foreach($data['ps'] as $ps)
+												<option value="{{$ps->ps_id}}">{{$ps->ps_name}}</option>
+											@endforeach
 										</select>
 									</div>
 									<div class="col-sm-3">
@@ -51,6 +55,9 @@
 									<div class="col-sm-3">
 										<select class="form-control select2" id="narcotic">
 											<option value="">Select An Option</option>
+											@foreach($data['narcotics'] as $narcotic)
+												<option value="{{$narcotic->drug_id}}">{{$narcotic->drug_name}}</option>
+											@endforeach
 										</select>
 									</div>
 
@@ -125,7 +132,7 @@
 									<a href="#seizure" data-toggle="tab">
 										<button type="button" class="btn btn-warning btn-lg btnPrevious">Back</button>
 									</a>									
-									<button type="button" class="btn btn-success btn-lg">Submit</button>
+									<button type="button" class="btn btn-success btn-lg" id="apply">Apply For Certification</button>
 									<a href="#disposal" data-toggle="tab">
 										<button type="button" class="btn btn-primary btn-lg btnNext">Next</button>
 									</a>
@@ -165,7 +172,7 @@
 									<a href="#certification" data-toggle="tab">
 										<button type="button" class="btn btn-warning btn-lg btnPrevious">Back</button>
 									</a>
-									<button type="button" class="btn btn-success btn-lg">Submit</button>
+									<button type="button" class="btn btn-success btn-lg" id="submit">Submit</button>
 								</div>
 							</form>
 
@@ -200,12 +207,8 @@
                 endDate:'0',
                 format: 'dd-mm-yyyy'
          }); // Date picker initialization For All The Form Elements
-
-		var date=$(".date_only_month").datepicker({
-			format: "MM-yyyy",
-    		viewMode: "months", 
-    		minViewMode: "months"
-        }); // Date picker initialization For Month of Report
+		
+		$(".select2").select2();
 
 		$('.btnNext').click(function(){
 			$('.nav > .active').next('li').find('a').trigger('click');
@@ -218,12 +221,12 @@
 
  	/*LOADER*/
 
-            $(document).ajaxStart(function() {
-                $("#wait").css("display", "block");
-            });
-            $(document).ajaxComplete(function() {
-                $("#wait").css("display", "none");
-            });
+		$(document).ajaxStart(function() {
+			$("#wait").css("display", "block");
+		});
+		$(document).ajaxComplete(function() {
+			$("#wait").css("display", "none");
+		});
 
     /*LOADER*/
 
