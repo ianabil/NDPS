@@ -58,7 +58,7 @@
 
 <hr>
          
-         <br> <br>
+<br> <br>
 
 <!--loader starts-->
 
@@ -100,14 +100,14 @@
                                     "data":{ _token: $('meta[name="csrf-token"]').attr('content')}
                                 },
                             "columns": [                
-                                {  "class": "id",
-                                    "data": "ID" },
+                                {"class": "id",
+                                  "data": "ID" },
                                 {"class": "stakeholder data",
-                                    "data": "STAKEHOLDER" },
+                                  "data": "STAKEHOLDER" },
                                 {"class": "district data",
-                                    "data": "DISTRICT" },
+                                  "data": "DISTRICT" },
                                 {"class": "delete",
-                                    "data": "ACTION" }
+                                  "data": "ACTION" }
                             ]
                         }); 
 
@@ -122,11 +122,8 @@
             /*Stakeholder master maintenance */
 
              $(document).on("click","#add",function (){
-                
-                            
-
-                 var stakeholder= $("#stakeholder").val().toUpperCase();
-                 var district= $("#district").val().toUpperCase();
+             var stakeholder= $("#stakeholder").val().toUpperCase();
+             var district= $("#district").val().toUpperCase();
 
                             
                  $.ajax({
@@ -134,7 +131,7 @@
                         url:"master_maintenance/stakeholder",
                         data:{_token: $('meta[name="csrf-token"]').attr('content'), 
                                  stakeholder_name:stakeholder,
-                                district:district,
+                                 district:district,
                             },
                              success:function(response){
                                $("#stakeholder").val('');
@@ -202,7 +199,7 @@
             })
         })
 
-        // /* Data Updation Cods Ends */
+        // /* Data Updation Codes Ends */
 
 
         /* Data Deletion Cods Starts */
@@ -247,7 +244,7 @@
 				    }
         })
 
-        /* Data Deletion Cods Ends */
+        /* Data Deletion Codes Ends */
 
 
         });

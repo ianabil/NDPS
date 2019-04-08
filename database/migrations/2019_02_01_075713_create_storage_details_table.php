@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateNarcoticsTable extends Migration
+class CreateStorageDetailsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,11 @@ class CreateNarcoticsTable extends Migration
      */
     public function up()
     {
-        Schema::create('narcotics', function (Blueprint $table) {
-            $table->integer('drug_id');
-            $table->string('drug_name')->nullable(false);
-            $table->integer('drug_unit')->nullable(false);
+        Schema::create('storage_details', function (Blueprint $table) {
+            $table->increments('storage_id');
+            $table->string('storage_name');
             $table->timestamps();
-            $table->primary(['drug_id','drug_unit']);
-         });
+        });
     }
 
     /**
@@ -29,6 +27,6 @@ class CreateNarcoticsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('narcotics');
+        Schema::dropIfExists('storage_details');
     }
 }
