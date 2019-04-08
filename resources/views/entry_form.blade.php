@@ -76,10 +76,7 @@
 									<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Weighing Unit</label>
 									<div class="col-sm-2">											
 										<select class="form-control select2" id="seizure_weighing_unit">
-											<option value="">Select An Option</option>
-											@foreach($data['units']  as $unit)
-												<option value="{{$unit->unit_id}}">{{$unit->unit_name}} </option>
-											@endforeach
+											<option value="">Select An Option</option>											
 										</select>
 									</div>										
 								</div>
@@ -322,7 +319,7 @@
 														court:court
 													},
 													success:function(response){
-														swal("Application For Certification Successfully Submitted",,"success");
+														swal("Application For Certification Successfully Submitted","","success");
 													},
 													error:function(response){
 														console.log(response);
@@ -359,6 +356,58 @@
 
 		});
 		/*Fetch list of court on correspondance to the selected district :: ENDS*/
+
+
+		/*Fetch list of units on correspondance to the selected narcotic type :: STARTS*/
+		$(document).on("change","#narcotic_type", function(){	
+
+			var narcotic=$(this).val();
+			$("#seizure_weighing_unit").children('option:not(:first)').remove();
+
+					$.ajax({
+									type: "POST",
+									url:"entry_form/narcotic_units",
+									data: {
+										_token: $('meta[name="csrf-token"]').attr('content'),
+										narcotic: narcotic
+									},
+									success:function(resonse){                        
+										var obj=$.parseJSON(resonse)
+										$.each(obj['units'],function(index,value){							
+											$("#seizure_weighing_unit").append('<option value="'+value.unit_id+'">'+value.unit_name+'</option>');
+										})
+									}
+					});
+
+			});
+			/*Fetch list of units on correspondance to the selected narcotic type :: ENDS*/
+
+
+			/*Fetching case details for a specific case :: STARTS */
+			$(document).on("change","#case_year", function(){
+					var ps = $("#ps option:selected").val();
+					var case_no = $("#case_no").val();
+					var case_year = $("#case_year option:selected").val();
+
+					if(ps!="" && case_no!="" && case_year!=""){
+							$.ajax({
+								type:"POST",
+								url:"entry_form/fetch_case_details",
+								data:{
+									_token: $('meta[name="csrf-token"]').attr('content'),
+									ps:ps,
+									case_no:case_no,
+									case_year:case_year
+								},
+								success:function(response){
+									var obj = $.parseJSON(response);
+									console.log(obj);
+								}
+							})
+					}
+
+			})
+			/*Fetching case details for a specific case :: ENDS */
 
 
 	});

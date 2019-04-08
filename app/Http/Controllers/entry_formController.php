@@ -36,9 +36,7 @@ class entry_formController extends Controller
         $data['ps'] = Ps_detail::select('ps_id','ps_name')->get();
         $data['narcotics'] = Narcotic::select('drug_id','drug_name')->distinct()->get();
         $data['districts'] = District::select('district_id','district_name')->get();
-        $data['storages'] = Storage_detail::select('storage_id','storage_name')->get();
-        $data['units'] = Unit::select('unit_id','unit_name')->get();
-        //$data['courts'] = Court_detail::select('court_id','court_name')->get();
+        $data['storages'] = Storage_detail::select('storage_id','storage_name')->get();                
             
         // $sql="select s.*,u1.unit_name seizure_unit, s.disposal_quantity, u2.unit_name disposal_unit,
         // s.undisposed_quantity,u3.unit_name undisposed_unit_name, court_details.*, districts.*
@@ -198,7 +196,7 @@ class entry_formController extends Controller
         //
     }
 
-    
+    // District wise NDPS Court fetching
     public function district_wise_court(Request $request){
 
         $district = $request->input('district'); 
@@ -212,6 +210,40 @@ class entry_formController extends Controller
         echo json_encode($data);
 
 
+    }
+
+    // Narcotic wise unit fetching
+    public function narcotic_units(Request $request){
+
+        $narcotic = $request->input('narcotic'); 
+
+        $data['units']=Narcotic::join('units',"narcotics.drug_unit","=","units.unit_id")
+                                ->select('unit_id','unit_name')
+                                ->where('drug_id','=', $narcotic )
+                                ->get();
+
+        echo json_encode($data);
+
+    }
+
+
+    //Fetch case details of a specific case no.
+    public function fetch_case_details(Request $request){
+        $ps = $request->input('ps');
+        $case_no = $request->input('case_no');
+        $case_year = $request->input('case_year');
+
+        $data['case_details'] = Seizure::join('ps_details','seizures.ps_id','=','ps_details.ps_id')
+                        ->join('narcotics','seizures.drug_id','=','narcotics.drug_id')
+                        ->join('units','seizure_quantity_weighing_unit_id','=','units.unit_id')
+                        ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
+                        ->join('districts','seizures.district_id','=','districts.district_id')
+                        ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
+                        ->where([['seizures.ps_id',$ps],['seizures.case_no',$case_no],['seizures.case_year',$case_year]])
+                        ->limit(1)
+                        ->get();
+
+        echo json_encode($data);
     }
 
     

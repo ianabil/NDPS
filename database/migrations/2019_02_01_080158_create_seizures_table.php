@@ -18,7 +18,7 @@ class CreateSeizuresTable extends Migration
             $table->integer('ps_id')->nullable(false); 
             $table->integer('case_no')->nullable(false);
             $table->integer('case_year')->nullable(false);
-            $table->string('drug_id')->nullable(false);
+            $table->integer('drug_id')->nullable(false);
             $table->double('quantity_of_drug',5,2)->nullable(false);  
             $table->integer('seizure_quantity_weighing_unit_id')->nullable(false);
             $table->date('date_of_seizure')->nullable(true);

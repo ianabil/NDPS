@@ -160,10 +160,12 @@
         
         Route::resource('entry_form','entry_formController');
 
+        Route::post('entry_form/narcotic_units','entry_formController@narcotic_units');
+
         Route::post('entry_form/district',
         'entry_formController@district_wise_court');
 
-        Route::post('entry_form/narcotic_suggestion','entry_formController@narcotic_suggestion');
+        Route::post('entry_form/fetch_case_details','entry_formController@fetch_case_details');
 
         Route::post('entry_form/submission_validation',
         'entry_formController@submission_validation');
