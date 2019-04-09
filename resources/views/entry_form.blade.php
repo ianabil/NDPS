@@ -132,6 +132,13 @@
 									</div>
 								</div>
 
+								<div class="form-group row" id="if_certified" style="display:none">
+									<label class="col-sm-2 col-form-label-sm" style="font-size:medium">Certification Date</label>
+									<div class="col-sm-3">
+										<input type="text" class="form-control date" id="certification_date" autocomplete="off">
+									</div>
+								</div>
+
 								<hr>
 
 								<div class="col-sm-4 col-sm-offset-4">
@@ -140,7 +147,7 @@
 									</a>									
 									<button type="button" class="btn btn-success btn-lg" id="apply">Apply For Certification</button>
 									<a href="#disposal" data-toggle="tab">
-										<button type="button" class="btn btn-primary btn-lg btnNext">Next</button>
+										<button type="button" class="btn btn-primary btn-lg btnNext" id="toDisposal" style="display:none">Next</button>
 									</a>
 								</div>
 
@@ -402,6 +409,33 @@
 								success:function(response){
 									var obj = $.parseJSON(response);
 									console.log(obj);
+									if(obj['case_details'].length>0){
+											$("#ps").attr('disabled',true);
+											$("#case_no").attr('readonly',true);
+											$("#case_year").attr('disabled',true);
+											$("#narcotic_type").prepend("<option value='"+obj['case_details']['0'].drug_id+"' selected>"+obj['case_details']['0'].drug_name+"</option>").attr('disabled',true);
+											$("#seizure_date").val(obj['case_details']['0'].date_of_seizure).attr('readonly',true);
+											$("#seizure_quantity").val(obj['case_details']['0'].quantity_of_drug).attr('readonly',true);
+											$("#seizure_weighing_unit").prepend("<option value='"+obj['case_details']['0'].seizure_quantity_weighing_unit_id+"' selected>"+obj['case_details']['0'].unit_name+"</option>").attr('disabled',true);									
+											$("#storage").prepend("<option value='"+obj['case_details']['0'].storage_location_id+"' selected>"+obj['case_details']['0'].storage_name+"</option>").attr('disabled',true);
+											$("#remark").val(obj['case_details']['0'].remarks).attr('readonly',true);
+											$("#district").prepend("<option value='"+obj['case_details']['0'].district_id+"' selected>"+obj['case_details']['0'].district_name+"</option>").attr('disabled',true);
+											$("#court").prepend("<option value='"+obj['case_details']['0'].court_id+"' selected>"+obj['case_details']['0'].court_name+"</option>").attr('disabled',true);
+
+											if(obj['case_details']['0'].certification_flag=='Y'){
+													$("#certification_date").val(obj['case_details']['0'].date_of_certification);
+													$("#if_certified").show();
+													$("#apply").hide();		
+													$("#toDisposal").show();
+													$("#li_disposal").css("pointer-events","");									
+													$("#li_disposal").css("opacity","");
+											}
+											else{
+												$("#if_certified").html('<div class="alert alert-danger" style="width:90%" role="alert">Certification Yet To Be Approved By The Judicial Magistrate!!</div>');
+												$("#if_certified").show();
+												$("#apply").hide();
+											}
+									}
 								}
 							})
 					}
