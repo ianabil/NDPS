@@ -58,20 +58,32 @@
 
             <div class="col-md-3">
                 <label>User Type</label>
-                <select class="form-control" name="user_type" id="user_type">
+                <select class="form-control select2" name="user_type" id="user_type">
                     <option value="">Select One Option. . . </option>
                     <option value="stakeholder">Stakeholder</option>
+                    <option value="magistrate">Judicial Magistrate</option>
                     <option value="high_court">Calcutta High Court</option>
                 </select>
             </div>
             <!--/col-->
 
-            <div class="col-md-3" id="div_agency">
+            <div class="col-md-3" id="div_agency" style="display: none">
                 <label>Agency Name</label>
-                <select class="form-control" name="stakeholder_name" id="stakeholder_name">
+                <select class="form-control select2" name="stakeholder_name" id="stakeholder_name">
                     <option value="">Select One Option. . . </option>
-                    @foreach ($agency_details as $agency)
-                        <option value="{{$agency['agency_id']}}">{{$agency['agency_name']}}</option>
+                    @foreach ($data['agency_details'] as $agency)
+                        <option value="{{$agency->agency_id}}">{{$agency->agency_name}}</option>
+                    @endforeach
+                </select>
+            </div>
+            <!--/col-->
+
+            <div class="col-md-3" id="div_court" style="display:none">
+                <label>NDPS Court</label>
+                <select class="form-control select2" name="court_name" id="court_name">
+                    <option value="">Select One Option. . . </option>
+                    @foreach ($data['court_details'] as $court)
+                        <option value="{{$court->court_id}}">{{$court->court_name}}</option>
                     @endforeach
                 </select>
             </div>
@@ -95,6 +107,8 @@
 
     <script>
         $(document).ready(function(){
+
+            $(".select2").select2();
                   
                 $(document).on("click","#create_user", function(){
                       
@@ -106,8 +120,13 @@
                         var password_confirmation = $("#password_confirmation").val();
                         var user_type = $("#user_type option:selected").val();
                         var stakeholder_name = $("#stakeholder_name option:selected").val();
-                        var user_name = $("#stakeholder_name option:selected").text();
-
+                        var court_name = $("#court_name option:selected").val();
+                        if(user_type=="stakeholder")
+                            var user_name = $("#stakeholder_name option:selected").text();
+                        else if(user_type=="magistrate")
+                            var user_name = $("#court_name option:selected").text();
+                        else if(user_type=="high_court")
+                            var user_name = 'Calcutta High Court';
                         
                     $.ajax({
 
@@ -121,7 +140,8 @@
                                 password:password,
                                 password_confirmation: password_confirmation,
                                 user_type:user_type,
-                                stakeholder_name:stakeholder_name
+                                stakeholder_name:stakeholder_name,
+                                court_name:court_name
                         },
 
                         success:function (response)
@@ -147,10 +167,25 @@
                                 swal("Cannot Create New User", ""+response.responseJSON.errors.user_type['0'], "error");
                             else if(response.responseJSON.errors.hasOwnProperty('stakeholder_name'))
                                 swal("Cannot Create New User", ""+response.responseJSON.errors.stakeholder_name['0'], "error");
+                                else if(response.responseJSON.errors.hasOwnProperty('court_name'))
+                                swal("Cannot Create New User", ""+response.responseJSON.errors.court_name['0'], "error");
                                     
                         }
                     })
 
+            })
+
+
+            $(document).on("change","#user_type",function(){
+                var user_type = $(this).val();
+                if(user_type=="magistrate"){
+                    $("#div_agency").hide();
+                    $("#div_court").show();
+                }
+                else if(user_type=="stakeholder"){
+                    $("#div_agency").show();
+                    $("#div_court").hide();
+                }
             })
 
         })

@@ -20,8 +20,10 @@
             <!-- Logo -->
             @if(Auth::check() && Auth::user()->user_type == 'stakeholder')
                 <a href="entry_form" class="logo"> 
-            @else
-                <a href="dashboard" class="logo"> 
+            @elseif(Auth::check() && Auth::user()->user_type == 'high_court')
+                <a href="dashboard" class="logo">
+            @elseif(Auth::check() && Auth::user()->user_type == 'magistrate')
+                <a href="magistrate_entry_form" class="logo"> 
             @endif  
                 <span class="logo-lg"><b>NDPS</b>
             </a>
@@ -89,7 +91,7 @@
                                 @if(Auth::check() && Auth::user()->user_type == 'high_court')
                                     <li><a href="composite_report">Composite Report</a></li>
                                     <li><a href="disposed_undisposed_tally">Disposed Undisposed Tally</a></li>
-                                @else
+                                @elseif(Auth::check() && Auth::user()->user_type == 'stakeholder')
                                     <li><a href="previous_report_view">Previously Submitted Report</a></li>
                                 @endif
                             </ul>

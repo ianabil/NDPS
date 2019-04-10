@@ -585,61 +585,64 @@ class MasterMaintenanceController extends Controller
 
         //Unit:end
 
+        // New User Creation
+        
+        public function index_user_creation(){
+
+            $data['agency_details'] = Agency_detail::select('agency_id','agency_name')
+                                    ->distinct()
+                                    ->orderBy('agency_name')
+                                    ->get();
+
+            $data['court_details'] = Court_detail::select('court_id','court_name')
+                                    ->distinct()
+                                    ->orderBy('court_name')
+                                    ->get();
+
+            return view('create_new_user', compact('data'));
+        }
+            
+
+        public function create_new_user(Request $request){
+
+            $this->validate ( $request, [ 
+                'user_id' => 'required|unique:users,user_id|max:30',
+                'user_name' => 'required|max:255',
+                'password' => 'required|confirmed|max:255',
+                'user_type' => 'required|max:30',
+                'stakeholder_name' => 'nullable|integer',
+                'court_name' => 'nullable|integer',
+                'email_id' => 'nullable|email|max:100',
+                'contact_no' => 'nullable|integer'         
+            ] ); 
 
 
+            $user_id = $request->input('user_id');
+            $user_name = $request->input('user_name');
+            $password = Hash::make($request->input('password'));
+            $user_type = $request->input('user_type');
+            $stakeholder_name = $request->input('stakeholder_name');
+            $court_name = $request->input('court_name');
+            $email = $request->input('email_id');
+            $phno = $request->input('contact_no');
+            $created_at = Carbon::today();
+            $updated_at = Carbon::today();
 
+            User::insert([
+                    'user_id' => $user_id,
+                    'user_name' => $user_name,
+                    'password' => $password,
+                    'stakeholder_id' => $stakeholder_name,
+                    'court_id' => $court_name,
+                    'email' => $email,
+                    'contact_no' => $phno,
+                    'user_type' => $user_type,
+                    'created_at' => $created_at,
+                    'updated_at' => $updated_at
+            ]);
 
-
-                // New User Creation
-                
-                public function index_user_creation(){
-
-                    $agency_details = Agency_detail::select('agency_id','agency_name')
-                                                        ->distinct()
-                                                        ->orderBy('agency_name')
-                                                        ->get();
-
-                    return view('create_new_user', compact('agency_details'));
-                }
-                    
-
-                public function create_new_user(Request $request){
-
-                    $this->validate ( $request, [ 
-                        'user_id' => 'required|unique:users,user_id|max:30',
-                        'user_name' => 'required|max:255',
-                        'password' => 'required|confirmed|max:255',
-                        'user_type' => 'required|max:30',
-                        'stakeholder_name' => 'required|integer',
-                        'email_id' => 'nullable|email|max:100',
-                        'contact_no' => 'nullable|integer'         
-                    ] ); 
-
-
-                    $user_id = $request->input('user_id');
-                    $user_name = $request->input('user_name');
-                    $password = Hash::make($request->input('password'));
-                    $user_type = $request->input('user_type');
-                    $stakeholder_name = $request->input('stakeholder_name');
-                    $email = $request->input('email_id');
-                    $phno = $request->input('contact_no');
-                    $created_at = Carbon::today();
-                    $updated_at = Carbon::today();
-
-                    User::insert([
-                            'user_id' => $user_id,
-                            'user_name' => $user_name,
-                            'password' => $password,
-                            'stakeholder_id' => $stakeholder_name,
-                            'email' => $email,
-                            'contact_no' => $phno,
-                            'user_type' => $user_type,
-                            'created_at' => $created_at,
-                            'updated_at' => $updated_at
-                    ]);
-
-                    return 1;
-                }
+            return 1;
+        }
  }
 
         

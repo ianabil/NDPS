@@ -20,6 +20,8 @@ class Stakeholder
             return $next($request);
         else if(Auth::check() && Auth::user()->user_type=='high_court')
             return redirect('/dashboard');
+        else if(Auth::check() && Auth::user()->user_type=='magistrate')
+            return redirect('magistrate_entry_form');
 
     }
 }

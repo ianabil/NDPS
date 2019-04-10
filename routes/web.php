@@ -16,7 +16,7 @@
         });
 
         Auth::routes();
-
+        
 
     Route::group(['middleware' => ['auth','high_court']], function () {
 
@@ -154,6 +154,8 @@
 
         Route::post('entry_form/fetch_case_details','entry_formController@fetch_case_details');
 
+        Route::post('entry_form/dispose','entry_formController@dispose');
+
         Route::post('entry_form/submission_validation',
         'entry_formController@submission_validation');
 
@@ -169,8 +171,16 @@
 
         //Stakeholder's Previous Report::end
 
+    });
 
-        
+
+    Route::group(['middleware' => ['auth','magistrate']], function () {
+
+        Route::get('magistrate_entry_form','MagistrateController@show_magistrate_index');
+
+        Route::post('magistrate_entry_form/fetch_case_details','MagistrateController@fetch_case_details');
+
+        Route::post('magistrate_entry_form/certify','MagistrateController@certify');
 
     });
 
