@@ -113,8 +113,8 @@
 						<!-- Certification Details Form :: STARTS -->
 						<div class="tab-pane" id="certification">
 							<form id="form_certification">
-								<div class="form-group row">
-									<label class="col-sm-2 col-form-label-sm" style="font-size:medium">District</label>
+								<div class="form-group required row">
+									<label class="col-sm-2 col-form-label-sm  control-label" style="font-size:medium">District</label>
 									<div class="col-sm-3">
 										<select class="form-control select2" id="district">
 											<option value="">Select An Option</option>
@@ -124,7 +124,7 @@
 										</select>
 									</div>
 
-									<label class="col-sm-2 col-sm-offset-1 col-form-label-sm" style="font-size:medium">NDPS Court</label>
+									<label class="col-sm-2 col-sm-offset-1 col-form-label-sm  control-label" style="font-size:medium">NDPS Court</label>
 									<div class="col-sm-3">											
 										<select class="form-control select2" id="court">
 											<option value="">Select An Option</option>
@@ -158,13 +158,13 @@
 						<!-- Disposal Details Form :: STARTS -->
 						<div class="tab-pane" id="disposal">
 							<form id="form_disposal">
-								<div class="form-group row">
-									<label class="col-sm-2 col-form-label-sm" style="font-size:medium">Disposal Quantity</label>
+								<div class="form-group required row">
+									<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Disposal Quantity</label>
 									<div class="col-sm-2">
 										<input class="form-control" type="number" id="disposal_quantity">
 									</div>
 
-									<label class="col-sm-2 col-sm-offset-2 col-form-label-sm" style="font-size:medium">Weighing Unit</label>
+									<label class="col-sm-2 col-sm-offset-2 col-form-label-sm control-label" style="font-size:medium">Weighing Unit</label>
 									<div class="col-sm-2">											
 										<select class="form-control select2" id="disposal_weighing_unit">
 											<option value="">Select An Option</option>
@@ -172,8 +172,8 @@
 									</div>
 								</div>	
 
-								<div class="form-group row">
-									<label class="col-sm-2 col-form-label-sm-sm-sm" style="font-size:medium">Date of Disposal</label>
+								<div class="form-group required row">
+									<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Date of Disposal</label>
 									<div class="col-sm-2">											
 										<input type="text" class="form-control date" placeholder="Choose Date" id="disposal_date" autocomplete="off">
 									</div>	
@@ -185,7 +185,7 @@
 									<a href="#certification" data-toggle="tab">
 										<button type="button" class="btn btn-warning btn-lg btnPrevious">Back</button>
 									</a>
-									<button type="button" class="btn btn-success btn-lg" id="submit">Submit</button>
+									<button type="button" class="btn btn-success btn-lg" id="dispose">Dispose</button>
 								</div>
 							</form>
 
@@ -425,12 +425,18 @@
 											$("#court").prepend("<option value='"+obj['case_details']['0'].court_id+"' selected>"+obj['case_details']['0'].court_name+"</option>").attr('disabled',true);
 
 											if(obj['case_details']['0'].certification_flag=='Y'){
-													$("#certification_date").val(obj['case_details']['0'].date_of_certification);
+													$("#certification_date").val(obj['case_details']['0'].date_of_certification).attr('readonly',true);
 													$("#if_certified").show();
 													$("#apply").hide();		
 													$("#toDisposal").show();
 													$("#li_disposal").css("pointer-events","");									
-													$("#li_disposal").css("opacity","");
+													$("#li_disposal").css("opacity","");	
+
+													if(obj['case_details']['0'].disposal_flag=='Y'){
+														$("#disposal_quantity").val(obj['case_details']['0'].disposal_quantity).attr('readonly',true);
+														$("#disposal_date").val(obj['case_details']['0'].date_of_disposal).attr('readonly',true);
+														$("#dispose").hide();
+													}											
 											}
 											else{
 												$("#if_certified").html('<div class="alert alert-danger" style="width:90%" role="alert">Certification Yet To Be Approved By The Judicial Magistrate!!</div>');
@@ -450,15 +456,61 @@
 			/*Fetching case details for a specific case :: ENDS */
 
 
-			/*Insertion Of Disposal Details ::STARTS*/
-			$(document).on("click","#submit",function(){
+			/* Dispose :: STARTS*/
+			$(document).on("click","#dispose",function(){
 					var ps = $("#ps option:selected").val();
 					var case_no = $("#case_no").val();
 					var case_year = $("#case_year option:selected").val();
+					var disposal_quantity = $("#disposal_quantity").val();
+					var disposal_weighing_unit = $("#disposal_weighing_unit option:selected").val();
+					var disposal_date = $("#disposal_date").val();
 
+					if(disposal_quantity==""){
+						swal("Invalid Input","Please Insert Disposal Quantity","error");
+						return false;
+					}
+					else if(disposal_weighing_unit==""){
+						swal("Invalid Input","Please Select Weighing Unit","error");
+						return false;
+					}
+					else if(disposal_date==""){
+						swal("Invalid Input","Please Insert Date of Disposal","error");
+						return false;
+					}
+					else{
+						swal({
+							title: "Are you sure?",
+							text: "",
+							icon: "warning",
+							buttons: true,
+							dangerMode: true,
+							})
+							.then((willDelete) => {
+									if (willDelete) {
+										$.ajax({
+													type: "POST",
+													url:"entry_form/dispose", 
+													data: {
+														_token: $('meta[name="csrf-token"]').attr('content'),
+														ps:ps,
+														case_no:case_no,
+														case_year:case_year,
+														disposal_date:disposal_date,
+														disposal_quantity:disposal_quantity,
+														disposal_weighing_unit:disposal_weighing_unit
+													},
+													success:function(response){
+														swal("Disposed Successfully","","success");
+													},
+													error:function(response){
+														console.log(response);
+													}
+										})
+									}
+						});
+					}
 			})
-
-			/*Insertion Of Disposal Details ::STARTS*/
+			/* Dispose :: ENDS*/
 
 
 	});

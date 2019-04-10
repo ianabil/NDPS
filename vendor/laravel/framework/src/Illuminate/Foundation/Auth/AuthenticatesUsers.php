@@ -123,6 +123,9 @@ trait AuthenticatesUsers
         }elseif($user->user_type=='high_court'){
             return redirect('dashboard') ;
         }
+        elseif($user->user_type=='magistrate'){
+            return redirect('magistrate_entry_form');
+        }
     }
 
     /**

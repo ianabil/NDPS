@@ -108,7 +108,7 @@ class entry_formController extends Controller
         $case_no = $request->input('case_no'); 
         $case_year = $request->input('case_year'); 
         $narcotic_type = $request->input('narcotic_type'); 
-        $seizure_date =$request->input('seizure_date'); 
+        $seizure_date = Carbon::parse($request->input('seizure_date'))->format('Y-m-d'); 
         $seizure_quantity =$request->input('seizure_quantity'); 
         $seizure_weighing_unit = $request->input('seizure_weighing_unit');
         $storage = $request->input('storage');
@@ -242,8 +242,50 @@ class entry_formController extends Controller
                         ->where([['seizures.ps_id',$ps],['seizures.case_no',$case_no],['seizures.case_year',$case_year]])
                         ->limit(1)
                         ->get();
-        
+
+        foreach($data['case_details'] as $case_details){
+            $case_details->date_of_seizure = Carbon::parse($case_details->date_of_seizure)->format('d-m-Y');
+            if($case_details->certification_flag=='Y')
+                $case_details->date_of_certification = Carbon::parse($case_details->date_of_certification)->format('d-m-Y');
+            if($case_details->disposal_flag=='Y')
+                $case_details->date_of_disposal = Carbon::parse($case_details->date_of_disposal)->format('d-m-Y');
+        }
+
         echo json_encode($data);
+    }
+
+
+    // Do Dispose
+    public function dispose(Request $request){
+        
+        $this->validate ( $request, [ 
+            'ps' => 'required|integer',
+            'case_no' => 'required|integer',
+            'case_year' => 'required|integer',
+            'disposal_date' => 'required|date',
+            'disposal_quantity' => 'required|numeric',
+            'disposal_weighing_unit' => 'required|integer'
+        ] ); 
+           
+        $ps = $request->input('ps'); 
+        $case_no = $request->input('case_no'); 
+        $case_year = $request->input('case_year');
+        $disposal_date = Carbon::parse($request->input('disposal_date'))->format('Y-m-d');
+        $disposal_quantity = $request->input('disposal_quantity'); 
+        $disposal_weighing_unit = $request->input('disposal_weighing_unit');
+
+        $data = [
+            'disposal_flag'=>'Y',
+            'date_of_disposal'=>$disposal_date,
+            'disposal_quantity'=>$disposal_quantity,
+            'disposal_quantity_weighing_unit_id'=>$disposal_weighing_unit,
+            'updated_at'=>Carbon::today()
+        ];
+
+        Seizure::where([['ps_id',$ps],['case_no',$case_no],['case_year',$case_year]])->update($data);
+        
+        return 1;
+        
     }
 
     
@@ -262,4 +304,5 @@ class entry_formController extends Controller
         echo json_encode($month_of_report);
 
     }
+
 }
