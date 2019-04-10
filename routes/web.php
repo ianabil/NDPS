@@ -22,7 +22,6 @@
 
 
         //High Court Dashboard::start
-
         Route::get('dashboard','MonthlyReportController@index_dashboard');
 
         Route::post('dashboard/monthly_report_status',
@@ -36,55 +35,44 @@
 
         Route::get('disposed_undisposed_tally',
         'MonthlyReportController@disposed_undisposed_tally');
-
         //High Court Dashboard::end
 
 
         //Court ::start
+        Route::get('court_view', 'MasterMaintenanceController@index_court');
 
-            Route::get('court_view', 'MasterMaintenanceController@index_court');
+        Route::post('show_courts_details', 'MasterMaintenanceController@get_all_court_details');
+        
+        Route::post('master_maintenance/court_details',
+        'MasterMaintenanceController@store_court');
 
-            Route::post('show_courts_details', 'MasterMaintenanceController@get_all_court_details');
-            
-            Route::post('master_maintenance/court_details',
-            'MasterMaintenanceController@store_court');
+        Route::post('master_maintenance_court/update',
+        'MasterMaintenanceController@update_court');
+        
 
-            Route::post('master_maintenance_court/update',
-            'MasterMaintenanceController@update_court');
-            
-
-            Route::post('master_maintenance_court_details/delete',
-            'MasterMaintenanceController@destroy_court');
-
+        Route::post('master_maintenance_court_details/delete',
+        'MasterMaintenanceController@destroy_court');
        //Court ::end
-       
-
-
-      
+    
        //Stakeholder ::start
-      
-            Route::get('stakeholder_view', function(){
-                return view ('stakeholder_view');
-            });
+       Route::get('stakeholder_view', function(){
+            return view ('stakeholder_view');
+        });
 
-            Route::post('show_all_stakeholders',
-            'MasterMaintenanceController@get_all_stakeholders_data');
+        Route::post('show_all_stakeholders',
+        'MasterMaintenanceController@get_all_stakeholders_data');
 
-            Route::post('master_maintenance/stakeholder',
-            'MasterMaintenanceController@store_stakeholder');
+        Route::post('master_maintenance/stakeholder',
+        'MasterMaintenanceController@store_stakeholder');
 
-            Route::post('master_maintenance_stakeholder/update',
-            'MasterMaintenanceController@update_stakeholder');
+        Route::post('master_maintenance_stakeholder/update',
+        'MasterMaintenanceController@update_stakeholder');
 
-            Route::post('master_maintenance_stakeholder/delete',
-            'MasterMaintenanceController@destroy_stakeholder');
-
+        Route::post('master_maintenance_stakeholder/delete',
+        'MasterMaintenanceController@destroy_stakeholder');
        //Stakeholder ::end
 
-       
-
         //Narcotic ::start
-        
         Route::get('narcotic_view', 'MasterMaintenanceController@index_narcotic');
             
         Route::post('show_all_narcotics',
@@ -98,13 +86,9 @@
 
         Route::post('master_maintenance_narcotic/delete',
             'MasterMaintenanceController@destroy_narcotic');
+        //Narcotic::end
 
-
-
-    //Narcotic::end
-
-    //Unit::start
-
+        //Unit::start
         Route::get('unit_view', function(){
             return view ('unit_view');
         });
@@ -121,15 +105,18 @@
 
         Route::post('master_maintenance_unit/delete',
         'MasterMaintenanceController@destroy_unit');
+        //Unit::end
 
-
-    //Unit::end
-
-    //District::Start
+        //District::Start
         Route::get('district_view', 'MasterMaintenanceController@index_district');
+        //District::End
 
+        //Police Station::Start
+        Route::get('ps_view', function(){
+            return view ('ps_view');
+        });
 
-     //District::End
+        //Police Station::End
 
         //User ::starts
        Route::get('create_new_user', 
