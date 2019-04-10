@@ -16,6 +16,15 @@
         });
 
         Auth::routes();
+
+       //User ::starts
+       Route::get('create_new_user', 
+       'MasterMaintenanceController@index_user_creation');
+
+       Route::post('create_new_user/create', 
+       'MasterMaintenanceController@create_new_user');
+
+       //User::ends
         
 
     Route::group(['middleware' => ['auth','high_court']], function () {
@@ -116,16 +125,20 @@
             return view ('ps_view');
         });
 
+        
+        Route::post('master_maintenance/police_station',
+        'MasterMaintenanceController@store_ps');
+
         //Police Station::End
 
-        //User ::starts
-       Route::get('create_new_user', 
-       'MasterMaintenanceController@index_user_creation');
+    //     //User ::starts
+    //    Route::get('create_new_user', 
+    //    'MasterMaintenanceController@index_user_creation');
 
-       Route::post('create_new_user/create', 
-       'MasterMaintenanceController@create_new_user');
+    //    Route::post('create_new_user/create', 
+    //    'MasterMaintenanceController@create_new_user');
 
-       //User::ends
+    //    //User::ends
 
 
        //Composite Report ::Starts

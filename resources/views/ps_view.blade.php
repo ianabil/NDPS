@@ -12,14 +12,13 @@
         <div class="box-body">
             <div class="row">                
                 <div class="col-md-3 form-group required">
-                    <label class="control-label">Police station</label>
-                    <input type="text" class="form-control" name="ps_station" id="ps_station">
+                    <label class="control-label">Police Station's Name</label>
+                        <input type="text" class="form-control ps_name" name="ps_name" id="ps_name">
                 </div>
-                                
-                 <div class="col-md-2">
+                <div class="col-md-2">
                     <div class="form-group">
                         <label>&nbsp;</label>
-                        <button type="button" class="form-control btn-success btn btn-primary" id="add_ps">Add Police Station
+                        <button type="button" class="form-control btn-success btn btn-primary" name="add_new_ps" id="add_new_ps">Add New PS
                     </div>
                 </div>
                 <!-- /.col -->  
@@ -31,7 +30,7 @@
 
 <div class="box box-default" id="show_all_data">
     <div class="box-header with-border">
-        <h3 class="box-title">All Police Stations' Details</h3>
+        <h3 class="box-title"> Police Stations' Details</h3>
         <div class="box-tools pull-right">
             <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
             <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
@@ -39,12 +38,12 @@
     </div>
     <!-- /.box-header -->
     <div class="box-body">
-            <table class="table table-striped table-bordered" id="show_unit">
+            <table class="table table-striped table-bordered" id="show_ps_details">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>POLICE STATIONS' NAME</th>
-                            <th>ACTION</th>
+                            <th>POLICE STATION'S NAME</th>
+                             <th>Action</th>
                         </tr>
                     </thead>                    
             </table>
@@ -53,7 +52,7 @@
 
 <hr>
          
-<br> <br>
+         <br> <br>
 
 <!--loader starts-->
 
@@ -62,174 +61,73 @@
       <br>Loading..
 </div>
    
-   <!--loader starts-->
 
 @endsection
+
+
 <script src="{{asset('js/jquery/jquery.min.js')}}"></script>
 
 <script>
 
-        $(document).ready(function(){
+    $(document).ready(function(){
+
+                 
+
+        //select2 initialization code
+         $(".select2").select2(); 
+
+         /*LOADER*/
+
+            $(document).ajaxStart(function() {
+                $("#wait").css("display", "block");
+            });
+            $(document).ajaxComplete(function() {
+                $("#wait").css("display", "none");
+            });
+
+         /*LOADER*/
+
+         /*Addition of Ps_Details starts*/
             
+                $(document).on("click", "#add_new_ps",function(){
 
-
-            /*LOADER*/
-
-                $(document).ajaxStart(function() {
-                    $("#wait").css("display", "block");
-                });
-                $(document).ajaxComplete(function() {
-                    $("#wait").css("display", "none");
-                });
-
-            /*LOADER*/
-
-            // //Datatable Code For Showing Data :: START
-
-            //     var table = $("#show_unit").dataTable({  
-            //                 "processing": true,
-            //                 "serverSide": true,
-            //                 "ajax":{
-            //                         "url": "show_all_units",
-            //                         "dataType": "json",
-            //                         "type": "POST",
-            //                         "data":{ _token: $('meta[name="csrf-token"]').attr('content')}
-            //                     },
-            //                 "columns": [                
-            //                     {  "class": "id",
-            //                         "data": "ID" },
-            //                     {"class": "unit data",
-            //                         "data": "UNIT NAME" },
-            //                     {"class": "delete",
-            //                         "data": "ACTION" }
-            //                 ]
-            //             }); 
-
-                        
-            // DataTable initialization with Server-Processing ::END
-
-            // Double Click To Enable Content editable
-            $(document).on("click",".data", function(){
-                        $(this).attr('contenteditable',true);
-                    })
-
-
-            //add unit:start
-             $(document).on("click","#add_unit",function (){
-
-
-                var narcotic_unit=$("#narcotic_unit").val().toLowerCase().replace(/\b[a-z>]/g, function(letter)
-                  {
+                    var ps_name = $("#ps_name").val().toLowerCase().replace(/\b[a-z]/g, function(letter) {
                     return letter.toUpperCase();
-                  });
-                                            
-                 $.ajax({
-                        type:"POST",
-                        url:"master_maintenance/unit",
-                        data:{_token: $('meta[name="csrf-token"]').attr('content'), 
-                                narcotic_unit:narcotic_unit
-                             },
-                             success:function(response){
-                                $("#narcotic_unit").val('');
-                                swal("Added Successfully","A new narcotic has been added","success");
-                                table.api().ajax.reload();   
-                            },
-                            error:function(response) {  
-                               if(response.responseJSON.errors.hasOwnProperty('narcotic_unit'))
-                                   swal("Cannot Add New Unit", ""+response.responseJSON.errors.narcotic_unit['0'], "error");
-                                                                                          
-                              }
-
-
-                        });
                 });
-                //add unit:end
+                    var district_name=$('#district_name option:selected').val();
+                    
+                    $.ajax({
 
-                //To prevent updation when no changes to the data is made*/
-                var prev_unit;
-                    $(document).on("focusin",".data", function(){
-                        prev_unit = $(this).closest("tr").find(".unit").text();
-                    })
+                        type:"POST",
+                        url:"master_maintenance/police_station",
+                        data:{
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            ps_name:ps_name,
+                            district_name:district_name
 
-
-                //Data Updation Code Starts
-                $(document).on("focusout",".data", function(){
-                    var id = $(this).closest("tr").find(".id").text();
-                    var unit = $(this).closest("tr").find(".unit").text();
-                                
-                if(unit == prev_unit)
-                        return false;
-
-
-                $.ajax({
-                    type:"POST",
-                    url:"master_maintenance_unit/update",                
-                    data:{_token: $('meta[name="csrf-token"]').attr('content'), 
-                            id:id, 
-                            unit:unit
-                        },
-                    success:function(response){   
-                                
-                        swal("Narcotic Unit's Details Updated","","success");
-                        table.api().ajax.reload();
+                    },
+                    success:function(response)
+                    {
+                        $("#ps_name").val('');
+                        swal("PS Added Successfully","","success");
+                        //table.api().ajax.reload();
                     },
                     error:function(response) {  
-                        if(response.responseJSON.errors.hasOwnProperty('unit'))
-                            swal("Cannot updated Narcotic Unit", ""+response.responseJSON.errors.unit['0'], "error");
-                    }
-                    })
-                })
 
-                // Data Updation Codes Ends 
+                        console.log(response);
 
-                // Data Deletion Codes Starts */
+                   if(response.responseJSON.errors.hasOwnProperty('ps_name'))
+                                   swal("Cannot Add New PS", ""+response.responseJSON.errors.ps_name['0'], "error");
+                                                         
+                                                    
+                         }                
+                    });
+            });
 
-                $(document).on("click",".delete", function(){
+        /*Addition in PS_Details ends*/
+        
 
-                swal({
-                    title: "Are You Sure?",
-                    text: "Once submitted, you will not be able to change the record",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                    })
-                    .then((willDelete) => {
-                        if(willDelete) {
-                            var id = $(this).closest("tr").find(".id").text();
-                            var tr = $(this).closest("tr");
-
-                            $.ajax({
-                                type:"POST",
-                                url:"master_maintenance_unit/delete",
-                                data:{
-                                    _token: $('meta[name="csrf-token"]').attr('content'), 
-                                    id:id
-                                },
-                                success:function(response){
-                                    if(response==1){
-                                        swal("Unit Deleted Successfully","","success");  
-                                        table.api().ajax.reload();                
-                                    }
-                                    else{
-                                        swal("Can Not Delete This Narcotics"," ","error");  
-                                        return false;
-                                    }
-
-                                }
-                            })
-                        }
-                        else 
-                        {
-                            swal("Deletion Cancelled","","error");
-                        }
-                    })
-                });
-
-                // Data Deletion Codes Ends 
-
-
-        });
-
+});
 </script>
 
     </body>

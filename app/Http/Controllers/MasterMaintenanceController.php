@@ -13,7 +13,9 @@ use Carbon\Carbon;
 use App\Seizure;
 use App\Narcotic;
 use App\Unit;
+use App\Ps_detail;
 use DB;
+
 
 class MasterMaintenanceController extends Controller
 {
@@ -584,6 +586,61 @@ class MasterMaintenanceController extends Controller
 
 
         //Unit:end
+
+        //Police Staion:Start
+
+
+            //ps master maintenance view
+            public function index_ps(Request $request)
+            {
+                $data= array();
+
+                $data['districts'] = District::select('district_id','district_name')->orderBy('district_name')->get();
+                
+
+                return view('ps_view',compact('data'));
+            }
+
+             //Adding new PS
+             public function store_ps(Request $request){
+
+                $this->validate ( $request, [                     
+                    'ps_name' => 'required|max:255|unique:ps_details,ps_name'                    
+
+                ] ); //'district_name' => 'required|integer|max:255'
+                $ps_name=strtoupper($request->input('ps_name'));
+                // $district_name=strtoupper($request->input('district_name'));
+
+                Ps_detail::insert([
+                    'ps_name'=>$ps_name,
+                    'created_at'=>Carbon::today(),
+                    'updated_at'=>Carbon::today()
+                    ]);
+                return 1;
+            }
+
+             //Update PS
+             public function update_ps(Request $request){
+                $this->validate ( $request, [ 
+                    'id' => 'required',
+                    'ps_name' => 'required|max:255',      
+                ] ); 
+
+                    
+                    $id = $request->input('id');
+                    $ps_name = ucwords($request->input('ps_name'));
+                   
+                    $data = [
+                        'ps_name'=>$narcotic,
+                        'updated_at'=>Carbon::today()
+                        ];
+
+                    Ps_detail::where(['ps_id',$id])->update($data);
+                    
+                    return 1;
+                
+                }
+        //Police Staion:End
 
         // New User Creation
         
