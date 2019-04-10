@@ -242,7 +242,7 @@ class entry_formController extends Controller
                         ->where([['seizures.ps_id',$ps],['seizures.case_no',$case_no],['seizures.case_year',$case_year]])
                         ->limit(1)
                         ->get();
-
+        
         echo json_encode($data);
     }
 

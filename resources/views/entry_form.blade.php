@@ -41,7 +41,7 @@
 									<div class="col-sm-3">
 										<select class="form-control select2" id="case_year">	
 											<option value="">Select Year</option>					
-											@for($i=Date('Y');$i>=2000;$i--)
+											@for($i=Date('Y');$i>=1970;$i--)
 												<option value="{{$i}}">{{$i}}</option>
 											@endfor
 										</select>
@@ -382,6 +382,7 @@
 										var obj=$.parseJSON(resonse)
 										$.each(obj['units'],function(index,value){							
 											$("#seizure_weighing_unit").append('<option value="'+value.unit_id+'">'+value.unit_name+'</option>');
+											$("#disposal_weighing_unit").append('<option value="'+value.unit_id+'">'+value.unit_name+'</option>');
 										})
 									}
 					});
@@ -414,6 +415,7 @@
 											$("#case_no").attr('readonly',true);
 											$("#case_year").attr('disabled',true);
 											$("#narcotic_type").prepend("<option value='"+obj['case_details']['0'].drug_id+"' selected>"+obj['case_details']['0'].drug_name+"</option>").attr('disabled',true);
+											$("#narcotic_type").trigger("change");
 											$("#seizure_date").val(obj['case_details']['0'].date_of_seizure).attr('readonly',true);
 											$("#seizure_quantity").val(obj['case_details']['0'].quantity_of_drug).attr('readonly',true);
 											$("#seizure_weighing_unit").prepend("<option value='"+obj['case_details']['0'].seizure_quantity_weighing_unit_id+"' selected>"+obj['case_details']['0'].unit_name+"</option>").attr('disabled',true);									
@@ -435,6 +437,10 @@
 												$("#if_certified").show();
 												$("#apply").hide();
 											}
+
+											if(obj['case_details']['0'].disposal_flag=='Y'){
+												$("#submit").hide();
+											}
 									}
 								}
 							})
@@ -442,6 +448,17 @@
 
 			})
 			/*Fetching case details for a specific case :: ENDS */
+
+
+			/*Insertion Of Disposal Details ::STARTS*/
+			$(document).on("click","#submit",function(){
+					var ps = $("#ps option:selected").val();
+					var case_no = $("#case_no").val();
+					var case_year = $("#case_year option:selected").val();
+
+			})
+
+			/*Insertion Of Disposal Details ::STARTS*/
 
 
 	});
