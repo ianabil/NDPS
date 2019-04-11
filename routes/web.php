@@ -15,14 +15,26 @@
         return view('welcome');
     });
 
+<<<<<<< HEAD
     Auth::routes();
+=======
+        Auth::routes();
+
+       //User ::starts
+       Route::get('create_new_user', 
+       'MasterMaintenanceController@index_user_creation');
+
+       Route::post('create_new_user/create', 
+       'MasterMaintenanceController@create_new_user');
+
+       //User::ends
+>>>>>>> 05bfdb5a8dc9e96c135b7a17cba751c0639bba72
         
 
     Route::group(['middleware' => ['auth','high_court']], function () {
 
 
         //High Court Dashboard::start
-
         Route::get('dashboard','MonthlyReportController@index_dashboard');
 
         Route::post('dashboard/monthly_report_status',
@@ -36,18 +48,22 @@
 
         Route::get('disposed_undisposed_tally',
         'MonthlyReportController@disposed_undisposed_tally');
-
         //High Court Dashboard::end
 
 
         //Court ::start
-
         Route::get('court_view', 'MasterMaintenanceController@index_court');
 
+<<<<<<< HEAD
+        Route::get('court_view', 'MasterMaintenanceController@index_court');
+
+=======
+>>>>>>> 05bfdb5a8dc9e96c135b7a17cba751c0639bba72
         Route::post('show_courts_details', 'MasterMaintenanceController@get_all_court_details');
         
         Route::post('master_maintenance/court_details',
         'MasterMaintenanceController@store_court');
+<<<<<<< HEAD
 
         Route::post('master_maintenance_court/update',
         'MasterMaintenanceController@update_court');
@@ -55,8 +71,17 @@
 
         Route::post('master_maintenance_court_details/delete',
         'MasterMaintenanceController@destroy_court');
+=======
 
+        Route::post('master_maintenance_court/update',
+        'MasterMaintenanceController@update_court');
+        
+>>>>>>> 05bfdb5a8dc9e96c135b7a17cba751c0639bba72
+
+        Route::post('master_maintenance_court_details/delete',
+        'MasterMaintenanceController@destroy_court');
        //Court ::end
+<<<<<<< HEAD
 
       
        //Stakeholder ::start
@@ -76,13 +101,28 @@
 
         Route::post('master_maintenance_stakeholder/delete',
         'MasterMaintenanceController@destroy_stakeholder');
+=======
+    
+       //Stakeholder ::start
+       Route::get('stakeholder_view', function(){
+            return view ('stakeholder_view');
+        });
 
+        Route::post('show_all_stakeholders',
+        'MasterMaintenanceController@get_all_stakeholders_data');
+
+        Route::post('master_maintenance/stakeholder',
+        'MasterMaintenanceController@store_stakeholder');
+
+        Route::post('master_maintenance_stakeholder/update',
+        'MasterMaintenanceController@update_stakeholder');
+>>>>>>> 05bfdb5a8dc9e96c135b7a17cba751c0639bba72
+
+        Route::post('master_maintenance_stakeholder/delete',
+        'MasterMaintenanceController@destroy_stakeholder');
        //Stakeholder ::end
 
-       
-
         //Narcotic ::start
-        
         Route::get('narcotic_view', 'MasterMaintenanceController@index_narcotic');
             
         Route::post('show_all_narcotics',
@@ -96,13 +136,9 @@
 
         Route::post('master_maintenance_narcotic/delete',
             'MasterMaintenanceController@destroy_narcotic');
+        //Narcotic::end
 
-
-
-    //Narcotic::end
-
-    //Unit::start
-
+        //Unit::start
         Route::get('unit_view', function(){
             return view ('unit_view');
         });
@@ -119,24 +155,37 @@
 
         Route::post('master_maintenance_unit/delete',
         'MasterMaintenanceController@destroy_unit');
+        //Unit::end
 
-
-    //Unit::end
-
-    //District::Start
+        //District::Start
         Route::get('district_view', 'MasterMaintenanceController@index_district');
+        //District::End
 
+        //Police Station::Start
+        Route::get('ps_view', function(){
+            return view ('ps_view');
+        });
 
-     //District::End
+        
+        Route::post('master_maintenance/police_station',
+        'MasterMaintenanceController@store_ps');
 
+<<<<<<< HEAD
       //User ::starts
        Route::get('create_new_user', 
        'MasterMaintenanceController@index_user_creation');
+=======
+        //Police Station::End
+>>>>>>> 05bfdb5a8dc9e96c135b7a17cba751c0639bba72
 
-       Route::post('create_new_user/create', 
-       'MasterMaintenanceController@create_new_user');
+    //     //User ::starts
+    //    Route::get('create_new_user', 
+    //    'MasterMaintenanceController@index_user_creation');
 
-       //User::ends
+    //    Route::post('create_new_user/create', 
+    //    'MasterMaintenanceController@create_new_user');
+
+    //    //User::ends
 
 
        //Composite Report ::Starts
