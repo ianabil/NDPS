@@ -21,12 +21,8 @@ class MonthlyReportController extends Controller
 {
 
     public function index_dashboard(){
-        $data['total_seizure'] = Seizure::where('submit_flag','S')
-                                        ->count();
-        $data['total_disposed'] = Seizure::where([
-                                                ['submit_flag','S'],
-                                                ['disposal_quantity','<>',NULL]
-                                            ])
+        $data['total_seizure'] = Seizure::count();
+        $data['total_disposed'] = Seizure::where('disposal_flag','Y')
                                             ->count();
         
         $data['total_undisposed'] = $data['total_seizure'] - $data['total_disposed'];

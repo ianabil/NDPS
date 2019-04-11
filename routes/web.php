@@ -11,11 +11,11 @@
 |
 */
 
-        Route::get('/', function () {
-            return view('welcome');
-        });
+    Route::get('/', function () {
+        return view('welcome');
+    });
 
-        Auth::routes();
+    Auth::routes();
         
 
     Route::group(['middleware' => ['auth','high_court']], function () {
@@ -42,42 +42,40 @@
 
         //Court ::start
 
-            Route::get('court_view', 'MasterMaintenanceController@index_court');
+        Route::get('court_view', 'MasterMaintenanceController@index_court');
 
-            Route::post('show_courts_details', 'MasterMaintenanceController@get_all_court_details');
-            
-            Route::post('master_maintenance/court_details',
-            'MasterMaintenanceController@store_court');
+        Route::post('show_courts_details', 'MasterMaintenanceController@get_all_court_details');
+        
+        Route::post('master_maintenance/court_details',
+        'MasterMaintenanceController@store_court');
 
-            Route::post('master_maintenance_court/update',
-            'MasterMaintenanceController@update_court');
-            
+        Route::post('master_maintenance_court/update',
+        'MasterMaintenanceController@update_court');
+        
 
-            Route::post('master_maintenance_court_details/delete',
-            'MasterMaintenanceController@destroy_court');
+        Route::post('master_maintenance_court_details/delete',
+        'MasterMaintenanceController@destroy_court');
 
        //Court ::end
-       
-
 
       
        //Stakeholder ::start
       
-            Route::get('stakeholder_view', function(){
-                return view ('stakeholder_view');
-            });
+        Route::get('stakeholder_view', function(){
+            return view ('stakeholder_view');
+        });
 
-            Route::post('show_all_stakeholders',
-            'MasterMaintenanceController@get_all_stakeholders_data');
+        Route::post('show_all_stakeholders',
+        'MasterMaintenanceController@get_all_stakeholders_data');
 
-            Route::post('master_maintenance/stakeholder',
-            'MasterMaintenanceController@store_stakeholder');
+        Route::post('master_maintenance/stakeholder',
+        'MasterMaintenanceController@store_stakeholder');
 
-            Route::post('master_maintenance_stakeholder/update',
-            'MasterMaintenanceController@update_stakeholder');
+        Route::post('master_maintenance_stakeholder/update',
+        'MasterMaintenanceController@update_stakeholder');
 
-            Route::post('master_maintenance_stakeholder/delete',
-            'MasterMaintenanceController@destroy_stakeholder');
+        Route::post('master_maintenance_stakeholder/delete',
+        'MasterMaintenanceController@destroy_stakeholder');
 
        //Stakeholder ::end
 
@@ -131,7 +129,7 @@
 
      //District::End
 
-        //User ::starts
+      //User ::starts
        Route::get('create_new_user', 
        'MasterMaintenanceController@index_user_creation');
 
