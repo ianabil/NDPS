@@ -275,6 +275,9 @@
                                     },
                                     success:function(response){
                                         swal("Certification Successfully Done","","success");
+                                        setTimeout(function(){
+                                            window.location.reload();
+                                        },2000);
                                     },
                                     error:function(response){
                                         console.log(response);

@@ -327,6 +327,9 @@
 													},
 													success:function(response){
 														swal("Application For Certification Successfully Submitted","","success");
+														setTimeout(function(){
+																window.location.reload();
+														},2000);
 													},
 													error:function(response){
 														console.log(response);
@@ -500,7 +503,10 @@
 														disposal_weighing_unit:disposal_weighing_unit
 													},
 													success:function(response){
-														swal("Disposed Successfully","","success");
+														swal("Disposal Record Submitted Successfully","","success");
+														setTimeout(function(){
+																window.location.reload();
+														},2000);
 													},
 													error:function(response){
 														console.log(response);

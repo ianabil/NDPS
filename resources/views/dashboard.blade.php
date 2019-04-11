@@ -7,7 +7,7 @@
             <span class="info-box-icon"><i class="ion ion-document-text" style="margin-top:20px"></i></span>
 
             <div class="info-box-content">
-              <span class="info-box-text"><strong>Total Seizure</strong></span>
+              <span class="info-box-text"><strong>Total Case</strong></span>
             <span class="info-box-number">{{$data['total_seizure']}}</span>
             </div>
             <!-- /.info-box-content -->
@@ -21,7 +21,7 @@
                 <span class="info-box-icon"><i class="far fa-thumbs-down" style="margin-top:20px"></i></span>
     
                 <div class="info-box-content">
-                  <span class="info-box-text"><strong>Undisposed</strong></span>                  
+                  <span class="info-box-text"><strong>Total Undisposed</strong></span>                  
                   <span class="info-box-number">{{$data['total_undisposed']}}</span>
                 </div>
                 <!-- /.info-box-content -->
@@ -36,7 +36,7 @@
                 <span class="info-box-icon"><i class="far fa-thumbs-up" style="margin-top:20px"></i></span>
     
                 <div class="info-box-content">
-                  <span class="info-box-text"><strong>Disposed</strong></span>
+                  <span class="info-box-text"><strong>Total Disposed</strong></span>
                   <span class="info-box-number">{{$data['total_disposed']}}</span>
                 </div>
                 <!-- /.info-box-content -->
@@ -54,7 +54,7 @@
             <form class="form-inline">
                 <label class="box-title" style="font-size:25px; margin-left:15%">
                     Report Submission Status For The Month Of :                  
-                    <input type="text" class="form-control month_of_report" style="width:20%; margin-left:3%" name="month_of_report" id="month_of_report" value="{{date('F',strtotime(date('d-m-Y') . '-1 month')).'-'.date('Y',strtotime(date('d-m-Y') . '-1 month'))}}" autocomplete="off">
+                    <input type="text" class="form-control month_of_report" style="width:20%; margin-left:3%" name="month_of_report" id="month_of_report" value="{{date('F',strtotime(date('d-m-Y'))).'-'.date('Y',strtotime(date('d-m-Y')))}}" autocomplete="off">
                 </label>
             </form>
             <div class="box-tools pull-right">
@@ -68,11 +68,16 @@
             <table class="table table-bordered table-responsive display" style="white-space:nowrap;">
               <thead>
                 <tr>
-                  <th style="display:none">Agency ID </th>
+                  <th style="display:none">PS ID </th>
+                  <th style="display:none">CASE NO </th>
+                  <th style="display:none">CASE YEAR </th>
+                  <th></th>
                   <th>Sl No. </th>
                   <th>Stakeholder Name</th>
-                  <th>Submission Status</th>
-                  <th>Action</th>
+                  <th>Case No.</th>                                    
+                  <th>Nature of Narcotic</th>
+                  <th>Certification Status</th>
+                  <th>Disposal Status</th>
                 </tr>
               </thead>
             </table>
@@ -114,16 +119,26 @@
                       }
                     },
                     "columns": [  
-                      {"class":"agency_id",
-                        "data":"Agency ID"}, 
+                      {"class":"ps_id",
+                        "data":"PS ID"},
+                      {"class":"case_no",
+                        "data":"Case No"},
+                      {"class":"case_year",
+                        "data":"Case Year"},
+                      {"class":"more_details",
+                        "data":"More Details"}, 
                       {"data": "Sl No"},         
                       {"data": "Stakeholder Name"},
-                      {"data": "Submission Status"},
-                      {"data": "Action"}
+                      {"data": "Case_No"},
+                      {"data": "Narcotic Type"},
+                      {"data": "Certification Status"},
+                      {"data": "Disposal Status"}
                   ]
             });
 
-            table.column( 0 ).visible( false ); // Hiding the agency id column
+            table.column( 0 ).visible( false ); // Hiding the ps id column
+            table.column( 1 ).visible( false ); // Hiding the case no. column
+            table.column( 2 ).visible( false ); // Hiding the case year column
     }
 
     var month_of_report = $(".month_of_report").val();    
