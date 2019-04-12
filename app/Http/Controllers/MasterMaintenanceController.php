@@ -15,6 +15,7 @@ use App\Narcotic;
 use App\Narcotic_unit;
 use App\Unit;
 use App\Ps_detail;
+use App\Storage_detail;
 use DB;
 
 
@@ -700,6 +701,114 @@ class MasterMaintenanceController extends Controller
                     }
 
         //Police Staion:End
+
+
+        //Storage :start
+
+            // Data Table Code for STORAGE
+            public function get_all_storage(Request $request)
+            {
+                $columns = array( 
+                    0 =>'ID', 
+                    1 =>'STORAGE NAME',
+                    2=>'ACTION'
+                );
+                $totalData =Storage_detail::count();
+        
+                $totalFiltered = $totalData; 
+        
+                $limit = $request->input('length');
+                $start = $request->input('start');
+                $order = $columns[$request->input('order.0.column')];
+                $dir = $request->input('order.0.dir');
+        
+                if(empty($request->input('search.value'))){
+                    $storages = Storage_detail::offset($start)
+                                    ->limit($limit)
+                                    ->orderBy('storage_id',$dir)
+                                    ->get();
+                    $totalFiltered = Storage_detail::count();
+                }
+                else
+                {
+                    $search = strtoupper($request->input('search.value'));
+                    $storages = Storage_detail::where('storage_name','like',"%{$search}%")
+                                        ->orWhere('storage_id','like',"%{$search}%")
+                                        ->offset($start)
+                                        ->limit($limit)
+                                        ->orderBy('storage_id',$dir)
+                                        ->get();
+                    $totalFiltered = Storage_detail::where('storage_name','like',"%{$search}%")
+                                            ->orWhere('storage_id','like',"%{$search}%")                                           
+                                            ->count();
+                }
+        
+                $data = array();
+        
+                if($storages)
+                {
+                    foreach($storages as $storage)
+                    {
+                        $nestedData['ID'] = $storage->storage_id;
+                        $nestedData['STORAGE NAME'] = $storage->storage_name;
+                        $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
+        
+                        $data[] = $nestedData;
+                    }
+                        $json_data = array(
+                            "draw" => intval($request->input('draw')),
+                            "recordsTotal" => intval($totalData),
+                            "recordFiltered" =>intval($totalFiltered),
+                            "data" => $data
+                        );
+                
+                        echo json_encode($json_data);
+                }
+            
+            
+            }
+
+             //Adding new STORAGE
+             public function store_storage(Request $request){
+
+                $this->validate ( $request, [                     
+                    'storage_name' => 'required|max:255|unique:storage_details,storage_name'                    
+
+                ] );
+                $storage_name=strtoupper($request->input('storage_name'));
+              
+                Storage_detail::insert([
+                    'storage_name'=>$storage_name,
+                    'created_at'=>Carbon::today(),
+                    'updated_at'=>Carbon::today()
+                    ]);
+                return 1;
+            }
+
+             //Update STORAGE
+             public function update_storage(Request $request){
+                $this->validate ( $request, [ 
+                    'id' => 'required',
+                    'storage_name' => 'required|max:255',      
+                ] ); 
+
+                    
+                    $id = $request->input('id');
+                    $storage_name = ucwords($request->input('storage_name'));
+                
+                    $data = [
+                        'storage_name'=>$storage_name,
+                        'updated_at'=>Carbon::today()
+                        ];
+
+                    Storage_detail::where('storage_id',$id)->update($data);
+                    
+                    return 1;
+                
+                }
+
+
+        //Storage:End
 
         // New User Creation
         

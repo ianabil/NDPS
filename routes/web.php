@@ -139,9 +139,24 @@
         Route::post('master_maintenance_ps/ps_delete',
         'MasterMaintenanceController@destroy_ps');
         
+        //Police Station::End
+
+        //Storage :: Start
+        Route::get('storage_view',function(){
+            return view ('storage_view');
+        });
+
+        Route::post('show_all_storage',
+        'MasterMaintenanceController@get_all_storage');
+
+        Route::post('master_maintenance/storage',
+        'MasterMaintenanceController@store_storage');
+
+        Route::post('master_maintenance_storage/storage_update',
+        'MasterMaintenanceController@update_storage');
         
 
-        //Police Station::End
+        //Storage :: End
 
       //User ::starts
        Route::get('create_new_user', 

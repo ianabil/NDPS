@@ -112,6 +112,7 @@
                                 <li><a href="narcotic_view"><i class="fa fa-circle-o text-green"></i> <span>Narcotic Master Maintenance</span></a></li>
                                 <li><a href="unit_view"><i class="fa fa-circle-o text-black"></i> <span>Unit Master Maintenance</span></a></li>
                                 <li><a href="ps_view"><i class="fa fa-circle-o text-blue"></i> <span>PS Master Maintenance</span></a></li>
+                                <li><a href="storage_view"><i class="fa fa-circle-o text-brown"></i> <span>Storage Master Maintenance</span></a></li>
                              </ul>
                         </li>
 
