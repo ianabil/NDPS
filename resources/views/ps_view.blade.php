@@ -100,9 +100,9 @@
                                 },
                             "columns": [                
                                 {"class": "id",
-                                  "data": "PS_ID" },
+                                  "data": "ID" },
                                 {"class": "ps_name data",
-                                 "data": "PS_NAME" },
+                                 "data": "POLICE STATION NAME" },
                                 {"class": "delete",
                                 "data": "ACTION" }
                             ]
@@ -117,51 +117,127 @@
             })
 
 
-         /*Addition of Ps_Details starts*/
-            
-                $(document).on("click", "#add_new_ps",function(){
+             //Addition of Ps_Details starts
+        
+            $(document).on("click", "#add_new_ps",function(){
 
-                    var ps_name = $("#ps_name").val().toLowerCase().replace(/\b[a-z]/g, function(letter) {
-                    return letter.toUpperCase();
+                var ps_name = $("#ps_name").val().toLowerCase().replace(/\b[a-z]/g, function(letter) {
+                return letter.toUpperCase();
+            });
+                var district_name=$('#district_name option:selected').val();
+                
+                $.ajax({
+
+                    type:"POST",
+                    url:"master_maintenance/police_station",
+                    data:{
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        ps_name:ps_name,
+                        district_name:district_name
+
+                },
+                success:function(response)
+                {
+                    $("#ps_name").val('');
+                    swal("PS Added Successfully","","success");
+                    table.api().ajax.reload();
+                },
+                error:function(response) {  
+
+                    console.log(response);
+
+                if(response.responseJSON.errors.hasOwnProperty('ps_name'))
+                                swal("Cannot Add New PS", ""+response.responseJSON.errors.ps_name['0'], "error");
+                                                        
+                                                
+                        }                
                 });
-                    var district_name=$('#district_name option:selected').val();
-                    
-                    $.ajax({
-
-                        type:"POST",
-                        url:"master_maintenance/police_station",
-                        data:{
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            ps_name:ps_name,
-                            district_name:district_name
-
-                    },
-                    success:function(response)
-                    {
-                        $("#ps_name").val('');
-                        swal("PS Added Successfully","","success");
-                        //table.api().ajax.reload();
-                    },
-                    error:function(response) {  
-
-                        console.log(response);
-
-                   if(response.responseJSON.errors.hasOwnProperty('ps_name'))
-                                   swal("Cannot Add New PS", ""+response.responseJSON.errors.ps_name['0'], "error");
-                                                         
-                                                    
-                         }                
-                    });
             });
 
-        /*Addition in PS_Details ends*/
+        //Addition in PS_Details ends
 
-        /* To prevent updation when no changes to the data is made*/
+        //To prevent updation when no changes to the data is made
 
         var prev_pc_name;
         $(document).on("focusin",".data", function(){
-            prev_pc_name = $(this).closest("tr").find(".ps_name").text();
+        prev_ps_name = $(this).closest("tr").find(".ps_name").text();
         })
+
+        //Data Updation Code Starts
+        $(document).on("focusout",".data", function(){
+            var id = $(this).closest("tr").find(".id").text();
+            var ps_name = $(this).closest("tr").find(".ps_name").text();
+                        
+            if(ps_name == prev_ps_name)
+                    return false;
+
+
+            $.ajax({
+                type:"POST",
+                url:"master_maintenance_ps/ps_update",                
+                data:{_token: $('meta[name="csrf-token"]').attr('content'), 
+                        id:id, 
+                        ps_name:ps_name
+                    },
+                success:function(response){   
+                            
+                    swal("Police Station's Details Updated","","success");
+                    table.api().ajax.reload();
+                },
+                error:function(response) {  
+                    console.log(response);
+                    if(response.responseJSON.errors.hasOwnProperty('ps_name'))
+                        swal("Cannot updated Police Station", ""+response.responseJSON.errors.ps_name['0'], "error");
+                }
+                })
+        })
+
+        // Data Updation Codes Ends 
+
+        // Data Deletion Codes Starts */
+
+                $(document).on("click",".delete", function(){
+
+            swal({
+                title: "Are You Sure?",
+                text: "Once submitted, you will not be able to change the record",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+                })
+                .then((willDelete) => {
+                    if(willDelete) {
+                        var id = $(this).closest("tr").find(".id").text();
+                        var tr = $(this).closest("tr");
+
+                        $.ajax({
+                            type:"POST",
+                            url:"master_maintenance_ps/ps_delete",
+                            data:{
+                                _token: $('meta[name="csrf-token"]').attr('content'), 
+                                id:id
+                            },
+                            success:function(response){
+                                if(response==1){
+                                    swal("Police Station Deleted Successfully","","success");  
+                                    table.api().ajax.reload();                
+                                }
+                                else{
+                                    swal("Can Not Delete This Police Station"," ","error");  
+                                    return false;
+                                }
+
+                            }
+                        })
+                    }
+                    else 
+                    {
+                        swal("Deletion Cancelled","","error");
+                    }
+                })
+            });
+
+            // Data Deletion Codes Ends 
 
         
 

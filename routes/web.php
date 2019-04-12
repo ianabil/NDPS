@@ -130,6 +130,19 @@
         Route::post('master_maintenance/police_station',
         'MasterMaintenanceController@store_ps');
 
+        Route::post('show_all_ps',
+        'MasterMaintenanceController@get_all_ps');
+
+        Route::post('master_maintenance_ps/ps_update',
+        'MasterMaintenanceController@update_ps');
+
+        Route::post('master_maintenance_ps/ps_delete',
+        'MasterMaintenanceController@destroy_ps');
+        
+        
+
+        //Police Station::End
+
       //User ::starts
        Route::get('create_new_user', 
        'MasterMaintenanceController@index_user_creation');

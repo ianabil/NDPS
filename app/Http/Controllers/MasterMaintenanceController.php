@@ -597,119 +597,108 @@ class MasterMaintenanceController extends Controller
 
         //Police Staion:Start
 
-        // // Data Table Code for PS
-            public function get_all_ps(Request $request)
-            {
-                $columns = array( 
-                    0 =>'ID', 
-                    1 =>'POLICE STATION NAME',
-                    2=>'ACTION'
-                );
-                $totalData =Ps_detail::count();
-        
-                $totalFiltered = $totalData; 
-        
-                $limit = $request->input('length');
-                $start = $request->input('start');
-                $order = $columns[$request->input('order.0.column')];
-                $dir = $request->input('order.0.dir');
-        
-                if(empty($request->input('search.value'))){
-                    $unit = Ps_detail::offset($start)
-                                    ->limit($limit)
-                                    ->orderBy('ps_id',$dir)
-                                    ->get();
-                    $totalFiltered = Ps_detail::count();
-                }
-                else
+            // Data Table Code for PS
+                public function get_all_ps(Request $request)
                 {
-                    $search = strtoupper($request->input('search.value'));
-                    $unit = Ps_detail::where('ps_id','like',"%{$search}%")
-                                      
-                                        ->offset($start)
+                    $columns = array( 
+                        0 =>'ID', 
+                        1 =>'POLICE STATION NAME',
+                        2=>'ACTION'
+                    );
+                    $totalData =Ps_detail::count();
+            
+                    $totalFiltered = $totalData; 
+            
+                    $limit = $request->input('length');
+                    $start = $request->input('start');
+                    $order = $columns[$request->input('order.0.column')];
+                    $dir = $request->input('order.0.dir');
+            
+                    if(empty($request->input('search.value'))){
+                        $ps = Ps_detail::offset($start)
                                         ->limit($limit)
-                                        ->orderBy('unit_name',$dir)
+                                        ->orderBy('ps_id',$dir)
                                         ->get();
-                    $totalFiltered = Unit::where('unit_id','like',"%{$search}%")
-                                            ->orWhere('unit_name','like',"%{$search}%")                                           
-                                            ->count();
-                }
-        
-                $data = array();
-        
-                if($unit)
-                {
-                    foreach($unit as $unit)
-                    {
-                        $nestedData['ID'] = $unit->unit_id;
-                        $nestedData['UNIT NAME'] = $unit->unit_name;
-                        $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
-        
-                        $data[] = $nestedData;
+                        $totalFiltered = Ps_detail::count();
                     }
-                        $json_data = array(
-                            "draw" => intval($request->input('draw')),
-                            "recordsTotal" => intval($totalData),
-                            "recordFiltered" =>intval($totalFiltered),
-                            "data" => $data
-                        );
-                
-                        echo json_encode($json_data);
-                }
+                    else
+                    {
+                        $search = strtoupper($request->input('search.value'));
+                        $ps = Ps_detail::where('ps_name','like',"%{$search}%")
+                                            ->offset($start)
+                                            ->limit($limit)
+                                            ->orderBy('ps_name',$dir)
+                                            ->get();
+                        $totalFiltered = Ps_detail::where('ps_id','like',"%{$search}%")
+                                                ->orWhere('ps_name','like',"%{$search}%")                                           
+                                                ->count();
+                    }
             
+                    $data = array();
             
-            }
-
-            //ps master maintenance view
-            public function index_ps(Request $request)
-            {
-                $data= array();
-
-                $data['districts'] = District::select('district_id','district_name')->orderBy('district_name')->get();
-                
-
-                return view('ps_view',compact('data'));
-            }
-
-             //Adding new PS
-             public function store_ps(Request $request){
-
-                $this->validate ( $request, [                     
-                    'ps_name' => 'required|max:255|unique:ps_details,ps_name'                    
-
-                ] ); //'district_name' => 'required|integer|max:255'
-                $ps_name=strtoupper($request->input('ps_name'));
-                // $district_name=strtoupper($request->input('district_name'));
-
-                Ps_detail::insert([
-                    'ps_name'=>$ps_name,
-                    'created_at'=>Carbon::today(),
-                    'updated_at'=>Carbon::today()
-                    ]);
-                return 1;
-            }
-
-             //Update PS
-             public function update_ps(Request $request){
-                $this->validate ( $request, [ 
-                    'id' => 'required',
-                    'ps_name' => 'required|max:255',      
-                ] ); 
-
+                    if($ps)
+                    {
+                        foreach($ps as $ps)
+                        {
+                            $nestedData['ID'] = $ps->ps_id;
+                            $nestedData['POLICE STATION NAME'] = $ps->ps_name;
+                            $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
+            
+                            $data[] = $nestedData;
+                        }
+                            $json_data = array(
+                                "draw" => intval($request->input('draw')),
+                                "recordsTotal" => intval($totalData),
+                                "recordFiltered" =>intval($totalFiltered),
+                                "data" => $data
+                            );
                     
-                    $id = $request->input('id');
-                    $ps_name = ucwords($request->input('ps_name'));
-                   
-                    $data = [
-                        'ps_name'=>$narcotic,
+                            echo json_encode($json_data);
+                    }
+                
+                
+                }
+
+                //Adding new PS
+                public function store_ps(Request $request){
+
+                    $this->validate ( $request, [                     
+                        'ps_name' => 'required|max:255|unique:ps_details,ps_name'                    
+
+                    ] ); //'district_name' => 'required|integer|max:255'
+                    $ps_name=strtoupper($request->input('ps_name'));
+                    // $district_name=strtoupper($request->input('district_name'));
+
+                    Ps_detail::insert([
+                        'ps_name'=>$ps_name,
+                        'created_at'=>Carbon::today(),
                         'updated_at'=>Carbon::today()
-                        ];
-
-                    Ps_detail::where(['ps_id',$id])->update($data);
-                    
+                        ]);
                     return 1;
-                
                 }
+
+                //Update PS
+                public function update_ps(Request $request){
+                    $this->validate ( $request, [ 
+                        'id' => 'required',
+                        'ps_name' => 'required|max:255',      
+                    ] ); 
+
+                        
+                        $id = $request->input('id');
+                        $ps_name = ucwords($request->input('ps_name'));
+                    
+                        $data = [
+                            'ps_name'=>$ps_name,
+                            'updated_at'=>Carbon::today()
+                            ];
+
+                        Ps_detail::where('ps_id',$id)->update($data);
+                        
+                        return 1;
+                    
+                    }
+
         //Police Staion:End
 
         // New User Creation
