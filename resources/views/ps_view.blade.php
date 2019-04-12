@@ -87,6 +87,36 @@
 
          /*LOADER*/
 
+         //Datatable Code For Showing Data :: START
+
+                var table = $("#show_ps_details").dataTable({  
+                            "processing": true,
+                            "serverSide": true,
+                            "ajax":{
+                                    "url": "show_all_ps",
+                                    "dataType": "json",
+                                    "type": "POST",
+                                    "data":{ _token: $('meta[name="csrf-token"]').attr('content')},                                    
+                                },
+                            "columns": [                
+                                {"class": "id",
+                                  "data": "PS_ID" },
+                                {"class": "ps_name data",
+                                 "data": "PS_NAME" },
+                                {"class": "delete",
+                                "data": "ACTION" }
+                            ]
+                        }); 
+                        
+                                       
+            // DataTable initialization with Server-Processing ::END
+
+            // Double Click To Enable Content editable
+            $(document).on("click",".data", function(){
+                        $(this).attr('contenteditable',true);
+            })
+
+
          /*Addition of Ps_Details starts*/
             
                 $(document).on("click", "#add_new_ps",function(){
@@ -125,6 +155,14 @@
             });
 
         /*Addition in PS_Details ends*/
+
+        /* To prevent updation when no changes to the data is made*/
+
+        var prev_pc_name;
+        $(document).on("focusin",".data", function(){
+            prev_pc_name = $(this).closest("tr").find(".ps_name").text();
+        })
+
         
 
 });

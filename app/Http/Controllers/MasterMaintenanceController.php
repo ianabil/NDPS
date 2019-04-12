@@ -589,6 +589,68 @@ class MasterMaintenanceController extends Controller
 
         //Police Staion:Start
 
+        // // Data Table Code for PS
+            public function get_all_ps(Request $request)
+            {
+                $columns = array( 
+                    0 =>'ID', 
+                    1 =>'POLICE STATION NAME',
+                    2=>'ACTION'
+                );
+                $totalData =Ps_detail::count();
+        
+                $totalFiltered = $totalData; 
+        
+                $limit = $request->input('length');
+                $start = $request->input('start');
+                $order = $columns[$request->input('order.0.column')];
+                $dir = $request->input('order.0.dir');
+        
+                if(empty($request->input('search.value'))){
+                    $unit = Ps_detail::offset($start)
+                                    ->limit($limit)
+                                    ->orderBy('ps_id',$dir)
+                                    ->get();
+                    $totalFiltered = Ps_detail::count();
+                }
+                else
+                {
+                    $search = strtoupper($request->input('search.value'));
+                    $unit = Ps_detail::where('ps_id','like',"%{$search}%")
+                                      
+                                        ->offset($start)
+                                        ->limit($limit)
+                                        ->orderBy('unit_name',$dir)
+                                        ->get();
+                    $totalFiltered = Unit::where('unit_id','like',"%{$search}%")
+                                            ->orWhere('unit_name','like',"%{$search}%")                                           
+                                            ->count();
+                }
+        
+                $data = array();
+        
+                if($unit)
+                {
+                    foreach($unit as $unit)
+                    {
+                        $nestedData['ID'] = $unit->unit_id;
+                        $nestedData['UNIT NAME'] = $unit->unit_name;
+                        $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
+        
+                        $data[] = $nestedData;
+                    }
+                        $json_data = array(
+                            "draw" => intval($request->input('draw')),
+                            "recordsTotal" => intval($totalData),
+                            "recordFiltered" =>intval($totalFiltered),
+                            "data" => $data
+                        );
+                
+                        echo json_encode($json_data);
+                }
+            
+            
+            }
 
             //ps master maintenance view
             public function index_ps(Request $request)
