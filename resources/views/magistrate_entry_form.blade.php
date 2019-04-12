@@ -105,15 +105,15 @@
                     <!-- Certification Details Form :: STARTS -->
                     <div class="tab-pane" id="certification">
                         <form id="form_certification">
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label-sm" style="font-size:medium">District</label>
+                            <div class="form-group row required">
+                                <label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">District</label>
                                 <div class="col-sm-3">
                                     <select class="form-control select2" id="district">
                                         <option value="">Select An Option</option>                                        
                                     </select>
                                 </div>
 
-                                <label class="col-sm-2 col-sm-offset-1 col-form-label-sm" style="font-size:medium">NDPS Court</label>
+                                <label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">NDPS Court</label>
                                 <div class="col-sm-3">											
                                     <select class="form-control select2" id="court">
                                         <option value="">Select An Option</option>
@@ -130,7 +130,16 @@
 
                             <hr>
 
-                            <div class="col-sm-4 col-sm-offset-4">
+                            <div class="form-check form-group required">
+                                <input class="form-check-input" type="checkbox" value="verification" id="verification_statement">
+                                <label class="form-check-label control-label" for="verification_statement" style="font-size:medium">
+                                  I hereby declare that the seizure details furnished here are true and correct.
+                                </label>
+                              </div>
+
+                            <hr>
+
+                            <div class="col-sm-4 col-sm-offset-5">
                                 <a href="#seizure" data-toggle="tab">
                                     <button type="button" class="btn btn-warning btn-lg btnPrevious">Back</button>
                                 </a>									
@@ -223,10 +232,12 @@
                                 $("#remark").val(obj['case_details']['0'].remarks).attr('readonly',true);
                                 $("#district").prepend("<option value='"+obj['case_details']['0'].district_id+"' selected>"+obj['case_details']['0'].district_name+"</option>").attr('disabled',true);
                                 $("#court").prepend("<option value='"+obj['case_details']['0'].court_id+"' selected>"+obj['case_details']['0'].court_name+"</option>").attr('disabled',true);
+                                
 
                                 if(obj['case_details']['0'].certification_flag=='Y'){
                                         $("#certification_date").val(obj['case_details']['0'].date_of_certification).attr('readonly',true);                                        
-                                        $("#certify").hide();                                        
+                                        $("#certify").hide();    
+                                        $("#verification_statement").attr({checked:true,disabled:true});                                    
                                 }
                                 else{                                    
                                     $("#certify").show();
@@ -252,8 +263,9 @@
         var case_no = $("#case_no").val();
         var case_year = $("#case_year option:selected").val();
         var certification_date = $("#certification_date").val();
-
-        if(certification_date!=""){
+        var verification_statement = $('#verification_statement').is(":checked");
+        
+        if(certification_date!="" && verification_statement){
             swal({
                 title: "Are you sure?",
                 text: "",
@@ -287,7 +299,7 @@
             });
         }
         else{
-            swal("Invalid Input","Please Input Date of Certification","error");
+            swal("Invalid Input","Please Fill All Mandatory Fields","error");
             return false;
         }
 
