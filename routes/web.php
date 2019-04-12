@@ -11,20 +11,11 @@
 |
 */
 
-        Route::get('/', function () {
-            return view('welcome');
-        });
+    Route::get('/', function () {
+        return view('welcome');
+    });
 
-        Auth::routes();
-
-       //User ::starts
-       Route::get('create_new_user', 
-       'MasterMaintenanceController@index_user_creation');
-
-       Route::post('create_new_user/create', 
-       'MasterMaintenanceController@create_new_user');
-
-       //User::ends
+    Auth::routes();
         
 
     Route::group(['middleware' => ['auth','high_court']], function () {
@@ -50,6 +41,8 @@
         //Court ::start
         Route::get('court_view', 'MasterMaintenanceController@index_court');
 
+        Route::get('court_view', 'MasterMaintenanceController@index_court');
+
         Route::post('show_courts_details', 'MasterMaintenanceController@get_all_court_details');
         
         Route::post('master_maintenance/court_details',
@@ -61,10 +54,15 @@
 
         Route::post('master_maintenance_court_details/delete',
         'MasterMaintenanceController@destroy_court');
+
+        Route::post('master_maintenance_court_details/delete',
+        'MasterMaintenanceController@destroy_court');
        //Court ::end
-    
+
+      
        //Stakeholder ::start
-       Route::get('stakeholder_view', function(){
+      
+        Route::get('stakeholder_view', function(){
             return view ('stakeholder_view');
         });
 
@@ -76,6 +74,9 @@
 
         Route::post('master_maintenance_stakeholder/update',
         'MasterMaintenanceController@update_stakeholder');
+
+        Route::post('master_maintenance_stakeholder/delete',
+        'MasterMaintenanceController@destroy_stakeholder');
 
         Route::post('master_maintenance_stakeholder/delete',
         'MasterMaintenanceController@destroy_stakeholder');
@@ -129,16 +130,18 @@
         Route::post('master_maintenance/police_station',
         'MasterMaintenanceController@store_ps');
 
-        //Police Station::End
+      //User ::starts
+       Route::get('create_new_user', 
+       'MasterMaintenanceController@index_user_creation');
 
-    //     //User ::starts
-    //    Route::get('create_new_user', 
-    //    'MasterMaintenanceController@index_user_creation');
+        //User ::starts
+       Route::get('create_new_user', 
+       'MasterMaintenanceController@index_user_creation');
 
-    //    Route::post('create_new_user/create', 
-    //    'MasterMaintenanceController@create_new_user');
+       Route::post('create_new_user/create', 
+       'MasterMaintenanceController@create_new_user');
 
-    //    //User::ends
+       //User::ends
 
 
        //Composite Report ::Starts

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Narcotic;
+use App\Narcotic_unit;
 use App\District;
 use App\Unit;
 use App\Agency_detail;
@@ -217,9 +218,9 @@ class entry_formController extends Controller
 
         $narcotic = $request->input('narcotic'); 
 
-        $data['units']=Narcotic::join('units',"narcotics.drug_unit","=","units.unit_id")
-                                ->select('unit_id','unit_name')
-                                ->where('drug_id','=', $narcotic )
+        $data['units']=Narcotic_unit::join('units',"narcotic_units.unit_id","=","units.unit_id")
+                                ->select('units.unit_id','unit_name')
+                                ->where('narcotic_id','=', $narcotic )
                                 ->get();
 
         echo json_encode($data);
@@ -239,8 +240,7 @@ class entry_formController extends Controller
                         ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
                         ->join('districts','seizures.district_id','=','districts.district_id')
                         ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
-                        ->where([['seizures.ps_id',$ps],['seizures.case_no',$case_no],['seizures.case_year',$case_year]])
-                        ->limit(1)
+                        ->where([['seizures.ps_id',$ps],['seizures.case_no',$case_no],['seizures.case_year',$case_year]])                        
                         ->get();
 
         foreach($data['case_details'] as $case_details){

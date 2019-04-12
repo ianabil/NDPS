@@ -16,8 +16,6 @@ class CreatePsDetailsTable extends Migration
         Schema::create('ps_details', function (Blueprint $table) {
             $table->increments('ps_id');
             $table->string('ps_name')->nullable(false);
-            $table->integer('district_id')->nullable(false);
-            $table->foreign('district_id')->references('district_id')->on('districts');
             $table->timestamps();
         });
     }

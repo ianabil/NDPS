@@ -11,6 +11,8 @@ use App\Unit;
 use App\Agency_detail;
 use App\Court_detail;
 use App\Seizure;
+use App\Storage_detail;
+use App\Ps_detail;
 use App\User;
 use Carbon\Carbon;
 use DB;
@@ -21,12 +23,8 @@ class MonthlyReportController extends Controller
 {
 
     public function index_dashboard(){
-        $data['total_seizure'] = Seizure::where('submit_flag','S')
-                                        ->count();
-        $data['total_disposed'] = Seizure::where([
-                                                ['submit_flag','S'],
-                                                ['disposal_quantity','<>',NULL]
-                                            ])
+        $data['total_seizure'] = Seizure::count();
+        $data['total_disposed'] = Seizure::where('disposal_flag','Y')
                                             ->count();
         
         $data['total_undisposed'] = $data['total_seizure'] - $data['total_disposed'];
@@ -37,65 +35,86 @@ class MonthlyReportController extends Controller
 
 
     public function monthly_report_status(Request $request){
-        $month_of_report = date('Y-m-d', strtotime('01-'.$request->input('month')));
+        $start_date = date('Y-m-d', strtotime('01-'.$request->input('month')));
+        $end_date = date('Y-m-d', strtotime($start_date. ' +30 days'));
         
         // For dataTable :: STARTS
         $columns = array( 
-            0 =>'Sl No',
-            1 =>'Stakeholder Name',
-            2 =>'Submission Status',
-            5 =>'Action',
-            6=> 'Agency ID'
+            0 =>'PS ID',
+            1=>'Case No',
+            2=>'Case Year',
+            3=>'More Details',
+            4=>'Sl No',
+            5=>'Stakeholder Name',
+            6 =>'Case_No',
+            7 =>'Narcotic Type',
+            8 =>'Certification Status',
+            9 =>'Disposal Status'
         );
 
-        $sql = "select distinct agency_details.agency_id, agency_details.agency_name, seizures.month_of_report, seizures.submit_flag, seizures.created_at
-                from agency_details left join (select * from seizures where month_of_report = '".$month_of_report."') as seizures 
-                on agency_details.agency_id = seizures.agency_id order by seizures.created_at, agency_details.agency_name";
-
-        $status = DB::select($sql);
+        $seizure_details = Seizure::join('ps_details','seizures.ps_id','=','ps_details.ps_id')
+                                    ->join('agency_details','seizures.stakeholder_id','=','agency_details.agency_id')
+                                    ->join('narcotics','seizures.drug_id','=','narcotics.drug_id')
+                                    ->join('units','seizures.seizure_quantity_weighing_unit_id','=','units.unit_id')
+                                    ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
+                                    ->where([
+                                        ['date_of_seizure','>=',$start_date],
+                                        ['date_of_seizure','<=',$end_date]
+                                    ])
+                                    ->orWhere([
+                                        ['date_of_certification','>=',$start_date],
+                                        ['date_of_certification','<=',$end_date]
+                                    ])
+                                    ->orWhere([
+                                        ['date_of_disposal','>=',$start_date],
+                                        ['date_of_disposal','<=',$end_date]
+                                    ])
+                                    ->get();
 
         $record = array();
 
         $report['Sl No'] = 0;
 
-        foreach($status as $data){
-            //Agency ID
-            $report['Agency ID'] = $data->agency_id;
+        foreach($seizure_details as $data){
+            //PS ID
+            $report['PS ID'] = $data->ps_id;
+
+            //Case No
+            $report['Case No'] = $data->case_no;
+
+            //PS ID
+            $report['Case Year'] = $data->case_year;
+
+            //More Details
+            $report['More Details'] = '+';
 
             // Serial Number incrementing for every row
             $report['Sl No'] +=1;
 
             //If submitted date is within 10 days of present date, a new marker will be shown
-            if(((strtotime(date('Y-m-d')) - strtotime($data->created_at)) / (60*60*24) <=10) && $data->submit_flag == 'S')
+            if(((strtotime(date('Y-m-d')) - strtotime($data->updated_at)) / (60*60*24) <=10))
                 $report['Stakeholder Name'] = "<strong>".$data->agency_name."</strong> <small class='label pull-right bg-blue'>new</small>";
             else
                 $report['Stakeholder Name'] = "<strong>".$data->agency_name."</strong>";
 
-            // Initializing with 'NA' value
-            $report['Action'] = 'NA';
+            //Case_No
+            $report['Case_No'] = $data->ps_name." PS / ".$data->case_no." / ".$data->case_year;
 
-            if($data->submit_flag=='S'){
-                // Green Light
-                $report['Submission Status'] = "<span style='height: 25px;width: 25px;
-                                                background-color: green; border-radius: 50%;
-                                                display: inline-block;' title='Report Submitted'></span>   Submitted On ". Carbon::parse($data->created_at)->format('d-m-Y');
-                
-                // As submission completed, view report and unlock submission button appears
-                $report['Action'] = "<a href='dashboard/show_monthly_report/".$data->agency_id."/".$data->month_of_report."' target='_blank'>
-                                    <i class='fas fa-download view' title='View Report'></i> </a><br> 
-                                    <i class='fas fa-lock-open unlock' style='cursor:pointer' title='Unlock Submission'></i>";
-            }
-            else if ($data->submit_flag=='N')
-                // Yellow Light
-                $report['Submission Status'] = "<span style='height: 25px;width: 25px;
-                                                background-color: gold; border-radius: 50%;
-                                                display: inline-block;'  title='Drafted But Not Submitted'></span>";
-            else
-                // Red Light
-                $report['Submission Status'] = "<span style='height: 25px;width: 25px;
-                                                background-color: red; border-radius: 50%;
-                                                display: inline-block;'  title='Yet To Start Working'></span>";
+            //Narcotic Type
+            $report['Narcotic Type'] = $data->drug_name;
 
+            //Certification Status
+            if($data->certification_flag=='Y')
+                $report['Certification Status'] = 'DONE';
+            else if ($data->certification_flag=='N')
+                $report['Certification Status'] = 'PENDING';
+
+
+            //Disposal Status
+            if($data->disposal_flag=='Y')
+                $report['Disposal Status'] = 'DONE';
+            else if ($data->disposal_flag=='N')
+                $report['Disposal Status'] = 'NOT DISPOSED';
 
             $record[] = $report;
         }
