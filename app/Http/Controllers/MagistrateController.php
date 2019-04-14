@@ -67,17 +67,27 @@ class MagistrateController extends Controller
             'ps' => 'required|integer',
             'case_no' => 'required|integer',
             'case_year' => 'required|integer',
-            'certification_date' => 'required|date'
+            'sample_quantity' => 'required|numeric',
+            'sample_weighing_unit' => 'required|integer',
+            'certification_date' => 'required|date',
+            'magistrate_remarks' => 'nullable|max:255'
         ] ); 
 
         $ps = $request->input('ps'); 
         $case_no = $request->input('case_no'); 
         $case_year = $request->input('case_year');
+
+        $sample_quantity = $request->input('sample_quantity'); 
+        $sample_weighing_unit = $request->input('sample_weighing_unit');         
         $certification_date = Carbon::parse($request->input('certification_date'))->format('Y-m-d');
+        $magistrate_remarks = $request->input('magistrate_remarks');
 
         $data = [
             'certification_flag'=>'Y',
+            'quantity_of_sample'=>$sample_quantity,
+            'sample_quantity_weighing_unit_id'=>$sample_weighing_unit,
             'date_of_certification'=>$certification_date,
+            'magistrate_remarks'=>$magistrate_remarks,
             'updated_at'=>Carbon::today()
         ];
 

@@ -132,11 +132,45 @@
 									</div>
 								</div>
 
-								<div class="form-group row" id="if_certified" style="display:none">
-									<label class="col-sm-2 col-form-label-sm" style="font-size:medium">Certification Date</label>
-									<div class="col-sm-3">
-										<input type="text" class="form-control date" id="certification_date" autocomplete="off">
-									</div>
+								<div class="form-group" id="if_certified" style="display:none">
+										
+										<div class="form-group required row">
+											<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Quantity of Sample</label>
+											<div class="col-sm-3">
+													<input class="form-control" type="number" id="sample_quantity">										
+											</div>
+
+											<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Weighing Unit</label>
+											<div class="col-sm-2">											
+													<select class="form-control select2" id="sample_weighing_unit">
+															<option value="">Select An Option</option>											
+													</select>
+											</div>										
+										</div>
+
+
+										<div class="form-group required row">
+												<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Certification Date</label>
+												<div class="col-sm-3">
+														<input type="text" class="form-control date" id="certification_date" placeholder="Choose Date" autocomplete="off">
+												</div>
+
+												<label class="col-sm-2 col-sm-offset-1 col-form-label-sm" style="font-size:medium">Remarks</label>
+												<div class="col-sm-2">											
+														<textarea class="form-control" id="magistrate_remarks" ></textarea>
+												</div>
+										</div>
+
+										<hr>
+
+										<div class="form-check form-group required">
+												<input class="form-check-input" type="checkbox" value="verification" id="verification_statement">
+												<label class="form-check-label control-label" for="verification_statement" style="font-size:medium">
+													I hereby declare that the seizure details furnished here are true and correct.
+												</label>
+										</div>
+
+
 								</div>
 
 								<hr>
@@ -412,7 +446,7 @@
 								},
 								success:function(response){
 									var obj = $.parseJSON(response);
-									console.log(obj);
+
 									if(obj['case_details'].length>0){
 											$("#ps").attr('disabled',true);
 											$("#case_no").attr('readonly',true);
@@ -428,7 +462,13 @@
 											$("#court").prepend("<option value='"+obj['case_details']['0'].court_id+"' selected>"+obj['case_details']['0'].court_name+"</option>").attr('disabled',true);
 
 											if(obj['case_details']['0'].certification_flag=='Y'){
-													$("#certification_date").val(obj['case_details']['0'].date_of_certification).attr('readonly',true);
+													$("#sample_weighing_unit").prepend("<option value='"+obj['case_details']['0'].seizure_quantity_weighing_unit_id+"' selected>"+obj['case_details']['0'].unit_name+"</option>").attr('disabled',true);									
+													$("#sample_quantity").val(obj['case_details']['0'].quantity_of_sample).attr('readonly',true);                                        
+													$("#certification_date").val(obj['case_details']['0'].date_of_certification).attr('readonly',true);                                  
+													$("#magistrate_remarks").val(obj['case_details']['0'].magistrate_remarks).attr('readonly',true);                                                                                      
+													$("#verification_statement").attr({checked:true,disabled:true}); 
+													$("#disposal_weighing_unit").prepend("<option value='"+obj['case_details']['0'].seizure_quantity_weighing_unit_id+"' selected>"+obj['case_details']['0'].unit_name+"</option>").attr('disabled',true);									
+													$("#disposal_quantity").val(obj['case_details']['0'].quantity_of_drug - obj['case_details']['0'].quantity_of_sample).attr('readonly',true);                                                                           
 													$("#if_certified").show();
 													$("#apply").hide();		
 													$("#toDisposal").show();
@@ -442,7 +482,7 @@
 													}											
 											}
 											else{
-												$("#if_certified").html('<div class="alert alert-danger" style="width:90%" role="alert">Certification Yet To Be Approved By The Judicial Magistrate!!</div>');
+												$("#if_certified").html('<div class="alert alert-danger" style="width:90%" role="alert">Certification Yet To Be Approved By The Judicial Magistrate !!</div>');
 												$("#if_certified").show();
 												$("#apply").hide();
 											}
@@ -457,6 +497,16 @@
 
 			})
 			/*Fetching case details for a specific case :: ENDS */
+
+			/* Fetching Case Details On Other Events Too :: STARTS */
+				$(document).on("change","#ps", function(){
+						$("#case_year").trigger("change");
+				})
+
+				$(document).on("keyup","#case_no", function(){
+						$("#case_year").trigger("change");
+				})
+			/* Fetching Case Details On Other Events Too :: ENDS */
 
 
 			/* Dispose :: STARTS*/
