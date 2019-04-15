@@ -52,8 +52,8 @@
   <div class="box box-primary">
           <div class="box-header with-border">
             <form class="form-inline">
-                <label class="box-title" style="font-size:25px; margin-left:15%">
-                    Report Submission Status For The Month Of :                  
+                <label class="box-title" style="font-size:25px; margin-left:30%">
+                    Report For The Month Of :                  
                     <input type="text" class="form-control month_of_report" style="width:20%; margin-left:3%" name="month_of_report" id="month_of_report" value="{{date('F',strtotime(date('d-m-Y'))).'-'.date('Y',strtotime(date('d-m-Y')))}}" autocomplete="off">
                 </label>
             </form>
@@ -99,13 +99,13 @@
               minViewMode: "months"
             }); // Date picker initialization For Month of Report
 
-    
+    var table;
     // This function will take month as an input and fetch corresponding report
     function get_monthly_report(month){
 
             $('.table').DataTable().destroy();
 
-            var table = $(".table").DataTable({ 
+            table = $(".table").DataTable({ 
                     "processing": true,
                     "serverSide": true,
                     "searching": false,
@@ -125,8 +125,7 @@
                         "data":"Case No"},
                       {"class":"case_year",
                         "data":"Case Year"},
-                      {"class":"more_details",
-                        "data":"More Details"}, 
+                      {"data":"More Details"}, 
                       {"data": "Sl No"},         
                       {"data": "Stakeholder Name"},
                       {"data": "Case_No"},
@@ -150,25 +149,34 @@
             get_monthly_report(month_of_report);
     });
 
-    // Unlocking Report Submission
-    $(document).on("click",".unlock", function(){      
-          var row = $(".table").dataTable().fnGetData(0);
-          var agency_id = row['Agency ID'];  // this is a way to fetch the value from a hidden field in datatable
-          var month_of_report = $(".month_of_report").val();
 
-          $.ajax({
-                url:"dashboard/unlock_report_submission",
-                type:"POST",
-                data:{
-                  _token: $('meta[name="csrf-token"]').attr('content'),
-                  agency_id:agency_id,
-                  month:month_of_report
-                },
-                success:function(){
-                    swal("Unlocked Successfully","","success");
-                    $(".table").dataTable().api().ajax.reload();
-                }
-          })
+    // Fetching More Details About a Case
+    $(document).on("click",".more_details",function(){  
+          var element = $(this);        
+          var tr = element.closest('tr');
+          var row = table.row(tr).data();
+
+          var ps_id = row['PS ID'];  
+          var case_no = row['Case No'];
+          var case_year = row['Case Year'];
+          
+         $.ajax({
+              type:"POST",
+              url:"dashboard/fetch_more_details",
+              data:{
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                ps_id:ps_id,
+                case_no:case_no,
+                case_year:case_year
+              },
+              success:function(response){
+                console.log(response);
+                element.attr("src","images/details_close.png");
+              },
+              error:function(response){
+                console.log(response);
+              }
+         }) 
 
     })
 

@@ -86,7 +86,7 @@ class MonthlyReportController extends Controller
             $report['Case Year'] = $data->case_year;
 
             //More Details
-            $report['More Details'] = '+';
+            $report['More Details'] = '<img src="images/details_open.png" style="cursor:pointer" class="more_details" alt="More Details">';
 
             // Serial Number incrementing for every row
             $report['Sl No'] +=1;
@@ -130,7 +130,36 @@ class MonthlyReportController extends Controller
 
 
     }
+
+    public function fetch_case_details(Request $request){
+        $ps_id = $request->input('ps_id');
+        $case_no = $request->input('case_no');
+        $case_year = $request->input('case_year');
+
+        $case_details = Seizure::join('ps_details','seizures.ps_id','=','ps_details.ps_id')
+                                ->join('agency_details','seizures.stakeholder_id','=','agency_details.agency_id')
+                                ->join('narcotics','seizures.drug_id','=','narcotics.drug_id')
+                                ->join('units AS u1','seizures.seizure_quantity_weighing_unit_id','=','u1.unit_id')
+                                ->join('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
+                                ->join('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
+                                ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
+                                ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
+                                ->where([
+                                    ['seizures.ps_id',$ps_id],
+                                    ['case_no',$case_no],
+                                    ['case_year',$case_year]
+                                ])
+                                ->select('quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',
+                                'date_of_disposal','disposal_quantity','u3.unit_name AS disposal_unit',
+                                'storage_name','court_name','date_of_certification','quantity_of_sample',
+                                'u2.unit_name AS sample_unit','remarks','magistrate_remarks')
+                                ->get();
+        
+        echo json_encode($case_details);
+
+    }
     
+    /*
     // Report For A Specific Stakeholder For A Specific Month
     public function show_monthly_report($agency_id, $month){
         $sql="select s.*,u1.unit_name seizure_unit, s.disposal_quantity, u2.unit_name disposal_unit,
@@ -381,5 +410,6 @@ class MonthlyReportController extends Controller
         echo json_encode($json_data);
 
     }
+    */
   
 }

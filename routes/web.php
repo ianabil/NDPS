@@ -27,14 +27,8 @@
         Route::post('dashboard/monthly_report_status',
         'MonthlyReportController@monthly_report_status');
 
-        Route::get('dashboard/show_monthly_report/{agency_id}/{month}',
-        'MonthlyReportController@show_monthly_report');
-
-        Route::post('dashboard/unlock_report_submission',
-        'MonthlyReportController@unlock_report_submission');
-
-        Route::get('disposed_undisposed_tally',
-        'MonthlyReportController@disposed_undisposed_tally');
+        Route::post('dashboard/fetch_more_details',
+        'MonthlyReportController@fetch_case_details');
         //High Court Dashboard::end
 
 
