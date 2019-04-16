@@ -154,13 +154,16 @@
     $(document).on("click",".more_details",function(){  
           var element = $(this);        
           var tr = element.closest('tr');
-          var row = table.row(tr).data();
+          var row = table.row(tr);
+          var row_data = table.row(tr).data();
 
-          var ps_id = row['PS ID'];  
-          var case_no = row['Case No'];
-          var case_year = row['Case Year'];
+          var ps_id = row_data['PS ID'];  
+          var case_no = row_data['Case No'];
+          var case_year = row_data['Case Year'];
           
-         $.ajax({
+          var obj;
+
+        $.ajax({
               type:"POST",
               url:"dashboard/fetch_more_details",
               data:{
@@ -170,13 +173,22 @@
                 case_year:case_year
               },
               success:function(response){
-                console.log(response);
-                element.attr("src","images/details_close.png");
+                obj = $.parseJSON(response);                           
               },
               error:function(response){
                 console.log(response);
-              }
-         }) 
+              },
+              async: false
+        }) 
+
+        if(row.child.isShown() ) {
+            element.attr("src","images/details_open.png");
+            row.child.hide();
+        }
+        else {
+            element.attr("src","images/details_close.png");
+            row.child('<table class="table table-bordered table-responsive"><thead><tr><th>Date of Seizure</th><th>Seizure Quantity</th><th>Storage Location</th><th>Case Details / Remarks</th><th>Date of Certification</th><th>Certified By</th><th>Sample Quantity</th><th>Magistrate Remarks</th><th>Date of Disposal</th><th>Disposal Quantity</th></tr></thead><tbody><tr><td>'+obj['0'].date_of_seizure+'</td><td>'+obj['0'].quantity_of_drug+' '+obj['0'].seizure_unit+'</td><td>'+obj['0'].storage_name+'</td><td>'+obj['0'].remarks+'</td><td>'+obj['0'].date_of_certification+'</td><td>'+obj['0'].court_name+'</td><td>'+obj['0'].quantity_of_sample+' '+obj['0'].sample_unit+'</td><td>'+obj['0'].magistrate_remarks+'</td><td>'+obj['0'].date_of_disposal+'</td><td>'+obj['0'].disposal_quantity+' '+obj['0'].disposal_unit+'</td></tr></tbody></table>').show();
+        }
 
     })
 

@@ -150,10 +150,39 @@ class MonthlyReportController extends Controller
                                     ['case_year',$case_year]
                                 ])
                                 ->select('quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',
-                                'date_of_disposal','disposal_quantity','u3.unit_name AS disposal_unit',
-                                'storage_name','court_name','date_of_certification','quantity_of_sample',
+                                'date_of_disposal','disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit',
+                                'storage_name','court_name','date_of_certification','certification_flag','quantity_of_sample',
                                 'u2.unit_name AS sample_unit','remarks','magistrate_remarks')
                                 ->get();
+
+        $case_details[0]['date_of_seizure'] = Carbon::parse($case_details[0]['date_of_seizure'])->format('d-m-Y');
+        
+        if($case_details[0]['certification_flag']=='Y'){                    
+            $case_details[0]['date_of_certification'] = Carbon::parse($case_details[0]['date_of_certification'])->format('d-m-Y');
+        }
+        else{
+            $case_details[0]['date_of_certification'] = 'NA';
+            $case_details[0]['quantity_of_sample'] = 'NA';
+            $case_details[0]['sample_unit'] = '';
+            $case_details[0]['magistrate_remarks'] = 'NA';
+        }
+        
+        if($case_details[0]['disposal_flag']=='Y'){                    
+            $case_details[0]['date_of_disposal'] = Carbon::parse($case_details[0]['date_of_disposal'])->format('d-m-Y');
+        }
+        else{
+            $case_details[0]['date_of_disposal'] = 'NA';
+            $case_details[0]['disposal_quantity'] = 'NA';
+            $case_details[0]['disposal_unit'] = '';
+        }
+
+        if($case_details[0]['remarks']==null)
+            $case_details[0]['remarks']='Not Mentioned';
+
+        
+        if($case_details[0]['magistrate_remarks']==null)
+            $case_details[0]['magistrate_remarks']='Not Mentioned';
+
         
         echo json_encode($case_details);
 
