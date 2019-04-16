@@ -189,50 +189,50 @@
 
         // Data Updation Codes Ends 
 
-//         // Data Deletion Codes Starts */
+       // Data Deletion Codes Starts */
 
-//                 $(document).on("click",".delete", function(){
+                $(document).on("click",".delete", function(){
 
-//             swal({
-//                 title: "Are You Sure?",
-//                 text: "Once submitted, you will not be able to change the record",
-//                 icon: "warning",
-//                 buttons: true,
-//                 dangerMode: true,
-//                 })
-//                 .then((willDelete) => {
-//                     if(willDelete) {
-//                         var id = $(this).closest("tr").find(".id").text();
-//                         var tr = $(this).closest("tr");
+                swal({
+                    title: "Are You Sure?",
+                    text: "Once submitted, you will not be able to change the record",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                    })
+                    .then((willDelete) => {
+                        if(willDelete) {
+                            var id = $(this).closest("tr").find(".id").text();
+                            var tr = $(this).closest("tr");
 
-//                         $.ajax({
-//                             type:"POST",
-//                             url:"master_maintenance_ps/ps_delete",
-//                             data:{
-//                                 _token: $('meta[name="csrf-token"]').attr('content'), 
-//                                 id:id
-//                             },
-//                             success:function(response){
-//                                 if(response==1){
-//                                     swal("Police Station Deleted Successfully","","success");  
-//                                     table.api().ajax.reload();                
-//                                 }
-//                                 else{
-//                                     swal("Can Not Delete This Police Station"," ","error");  
-//                                     return false;
-//                                 }
+                            $.ajax({
+                                type:"POST",
+                                url:"master_maintenance_storage/storage_delete",
+                                data:{
+                                    _token: $('meta[name="csrf-token"]').attr('content'), 
+                                    id:id
+                                },
+                                success:function(response){
+                                    if(response==1){
+                                        swal("Storage Deleted Successfully","","success");  
+                                        table.api().ajax.reload();                
+                                    }
+                                    else{
+                                        swal("Can Not Delete This Storage"," ","error");  
+                                        return false;
+                                    }
 
-//                             }
-//                         })
-//                     }
-//                     else 
-//                     {
-//                         swal("Deletion Cancelled","","error");
-//                     }
-//                 })
-//             });
+                                }
+                            })
+                        }
+                        else 
+                        {
+                            swal("Deletion Cancelled","","error");
+                        }
+                    })
+                });
 
-//             // Data Deletion Codes Ends 
+                // Data Deletion Codes Ends 
 
         
  });

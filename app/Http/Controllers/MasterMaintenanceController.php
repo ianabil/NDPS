@@ -807,6 +807,12 @@ class MasterMaintenanceController extends Controller
                 
                 }
 
+              //Delete storage
+             public function destroy_storage(Request $request){
+                $id = $request->input('id');
+                Storage_detail::where('storage_id',$id)->delete();
+                return 1;
+              }
 
         //Storage:End
 

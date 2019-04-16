@@ -148,6 +148,9 @@
 
         Route::post('master_maintenance_storage/storage_update',
         'MasterMaintenanceController@update_storage');
+
+        Route::post('master_maintenance_storage/storage_delete',
+        'MasterMaintenanceController@destroy_storage');
         
 
         //Storage :: End
