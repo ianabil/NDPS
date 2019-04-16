@@ -140,10 +140,10 @@ class MonthlyReportController extends Controller
                                 ->join('agency_details','seizures.stakeholder_id','=','agency_details.agency_id')
                                 ->join('narcotics','seizures.drug_id','=','narcotics.drug_id')
                                 ->join('units AS u1','seizures.seizure_quantity_weighing_unit_id','=','u1.unit_id')
-                                ->join('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
-                                ->join('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
+                                ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
+                                ->leftjoin('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
                                 ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                                ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
+                                ->leftjoin('court_details','seizures.certification_court_id','=','court_details.court_id')
                                 ->where([
                                     ['seizures.ps_id',$ps_id],
                                     ['case_no',$case_no],
@@ -155,34 +155,35 @@ class MonthlyReportController extends Controller
                                 'u2.unit_name AS sample_unit','remarks','magistrate_remarks')
                                 ->get();
 
-        $case_details[0]['date_of_seizure'] = Carbon::parse($case_details[0]['date_of_seizure'])->format('d-m-Y');
-        
-        if($case_details[0]['certification_flag']=='Y'){                    
-            $case_details[0]['date_of_certification'] = Carbon::parse($case_details[0]['date_of_certification'])->format('d-m-Y');
-        }
-        else{
-            $case_details[0]['date_of_certification'] = 'NA';
-            $case_details[0]['quantity_of_sample'] = 'NA';
-            $case_details[0]['sample_unit'] = '';
-            $case_details[0]['magistrate_remarks'] = 'NA';
-        }
-        
-        if($case_details[0]['disposal_flag']=='Y'){                    
-            $case_details[0]['date_of_disposal'] = Carbon::parse($case_details[0]['date_of_disposal'])->format('d-m-Y');
-        }
-        else{
-            $case_details[0]['date_of_disposal'] = 'NA';
-            $case_details[0]['disposal_quantity'] = 'NA';
-            $case_details[0]['disposal_unit'] = '';
-        }
+        foreach($case_details as $case){
+            $case['date_of_seizure'] = Carbon::parse($case['date_of_seizure'])->format('d-m-Y');
+            
+            if($case['certification_flag']=='Y'){                    
+                $case['date_of_certification'] = Carbon::parse($case['date_of_certification'])->format('d-m-Y');
+            }
+            else{
+                $case['date_of_certification'] = 'NA';
+                $case['quantity_of_sample'] = 'NA';
+                $case['sample_unit'] = '';
+                $case['magistrate_remarks'] = 'NA';
+            }
+            
+            if($case['disposal_flag']=='Y'){                    
+                $case['date_of_disposal'] = Carbon::parse($case['date_of_disposal'])->format('d-m-Y');
+            }
+            else{
+                $case['date_of_disposal'] = 'NA';
+                $case['disposal_quantity'] = 'NA';
+                $case['disposal_unit'] = '';
+            }
 
-        if($case_details[0]['remarks']==null)
-            $case_details[0]['remarks']='Not Mentioned';
+            if($case['remarks']==null)
+                $case['remarks']='Not Mentioned';
 
-        
-        if($case_details[0]['magistrate_remarks']==null)
-            $case_details[0]['magistrate_remarks']='Not Mentioned';
-
+            
+            if($case['magistrate_remarks']==null)
+                $case['magistrate_remarks']='Not Mentioned';
+        }
         
         echo json_encode($case_details);
 
