@@ -700,6 +700,21 @@ class MasterMaintenanceController extends Controller
                     
                     }
 
+                //Delete Police Station
+                    public function destroy_police_station(Request $request){
+                        $id = $request->input('id');
+                        Ps_detail::where('ps_id',$id)->delete();
+                        return 1;
+                    }
+
+                    public function destroy_seizure_police_record(Request $request){
+                        $id = $request->input('id');
+                        Seizure::where('ps_id',$id)->delete();
+                        Ps_detail::where('ps_id',$id)->delete();
+                        return 1;
+
+                    }
+
         //Police Staion:End
 
 

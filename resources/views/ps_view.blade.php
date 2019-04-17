@@ -198,48 +198,73 @@
 
                 $(document).on("click",".delete", function(){
 
-            swal({
-                title: "Are You Sure?",
-                text: "Once submitted, you will not be able to change the record",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-                })
-                .then((willDelete) => {
-                    if(willDelete) {
-                        var id = $(this).closest("tr").find(".id").text();
-                        var tr = $(this).closest("tr");
+                swal({
+                    title: "Are You Sure?",
+                    text: "Once submitted, you will not be able to change the record",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                    })
+                    .then((willDelete) => {
+                        if(willDelete) {
+                            var id = $(this).closest("tr").find(".id").text();
+                            var tr = $(this).closest("tr");
 
-                        $.ajax({
-                            type:"POST",
-                            url:"master_maintenance_ps/ps_delete",
-                            data:{
-                                _token: $('meta[name="csrf-token"]').attr('content'), 
-                                id:id
-                            },
-                            success:function(response){
-                                if(response==1){
-                                    swal("Police Station Deleted Successfully","","success");  
-                                    table.api().ajax.reload();                
+                            $.ajax({
+                                type:"POST",
+                                url:"master_maintenance_ps/ps_delete",
+                                data:{
+                                    _token: $('meta[name="csrf-token"]').attr('content'), 
+                                    id:id
+                                },
+                                success:function(response){
+                                    if(response==1){
+                                        swal("Police Station Deleted Successfully","","success");  
+                                        table.api().ajax.reload();                
+                                    }
+                                },
+                                error:function(response){
+                                    swal({
+                                        title: "Are You Sure?",
+                                        text: "Once deleted, you will not be able to get the record associated with this police station",
+                                        icon: "warning",
+                                        buttons: true,
+                                        dangerMode: true,
+                                        })
+                                        .then((willDelete) => {
+                                        if(willDelete) {
+                                            var id = $(this).closest("tr").find(".id").text();
+                                            var tr = $(this).closest("tr");
+
+                                            $.ajax({
+                                                type:"POST",
+                                                url:"master_maintenance_ps/seizure_ps_delete",
+                                                data:{
+                                                    _token: $('meta[name="csrf-token"]').attr('content'), 
+                                                    id:id
+                                                },
+                                                success:function(response){
+                                                    if(response==1){
+                                                        swal("Police Station Deleted Successfully  ","Police Staion and its associated entry has been deleted","success");  
+                                                        table.api().ajax.reload();                
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        
+                                    })
                                 }
-                                else{
-                                    swal("Can Not Delete This Police Station"," ","error");  
-                                    return false;
-                                }
-
-                            }
-                        })
-                    }
-                    else 
-                    {
-                        swal("Deletion Cancelled","","error");
-                    }
+                            })
+                        }
+                        
+                        else 
+                        {
+                            swal("Deletion Cancelled","","error");
+                        }
                 })
-            });
 
-            // Data Deletion Codes Ends 
-
-        
+    // Data Deletion Codes Ends 
+        });
 
 });
 </script>

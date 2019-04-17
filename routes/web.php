@@ -133,6 +133,11 @@
         Route::post('master_maintenance_ps/ps_delete',
         'MasterMaintenanceController@destroy_ps');
         
+        Route::post('master_maintenance_ps/ps_delete',
+        'MasterMaintenanceController@destroy_police_station');
+
+        Route::post('master_maintenance_ps/seizure_ps_delete',
+        'MasterMaintenanceController@destroy_seizure_police_record');
         //Police Station::End
 
         //Storage :: Start
