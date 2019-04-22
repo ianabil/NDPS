@@ -150,16 +150,8 @@
                                $("#narcotic_unit").val('');
                                swal("Added Successfully","A new narcotic has been added","success");
                                table.api().ajax.reload();   
-                            },
-                            error:function(response) {  
-                               if(response.responseJSON.errors.hasOwnProperty('narcotic_unit'))
-                                   swal("Cannot Add New Narcotics", ""+response.responseJSON.errors.narcotic_unit['0'], "error");
-                                                         
-                               if(response.responseJSON.errors.hasOwnProperty('narcotic_name'))
-                                    swal("Cannot Add New Narcotics", ""+response.responseJSON.errors.narcotic_name['0'], "error");
-                                    
-                              }
-
+                            }
+                        
 
                         });
                 });
@@ -203,12 +195,9 @@
                          swal("Cannot updated Narcotic", ""+response.responseJSON.errors.unit['0'], "error");
                                                          
                       if(response.responseJSON.errors.hasOwnProperty('narcotic'))
-                          swal("Cannot updated Narcotic", ""+response.responseJSON.errors.narcotic['0'], "error");
-                          
+                          swal("Cannot updated Narcotic", ""+response.responseJSON.errors.narcotic['0'], "error");         
                 }
-        
-
-            })
+             })
         })
 
         // /* Data Updation Cods Ends */
@@ -242,13 +231,43 @@
                                         swal("Data Deleted Successfully","","success");  
                                         table.api().ajax.reload();                
                                     }
-                                    else{
-                                        swal("Can Not Delete This Narcotics"," ","error");  
-                                        return false;
+                                },
+                                error:function(response){
+                                                                    
+                                    var id = element.closest("tr").find(".id").text();
+                                        swal({
+                                            title: "Are You Sure?",
+                                            text: "Once deleted,all details of SEIZURE and USERS associated with this COURT will be deleted ",
+                                            icon: "warning",
+                                            buttons: true,
+                                            dangerMode: true,
+                                            })
+                                            .then((willDelete) => {
+                                            if(willDelete) {
+                                            
+                                                var tr =element.closest("tr");
+
+                                                $.ajax({
+                                                    type:"POST",
+                                                    url:"master_maintenance_narcotic/seizure_narcotic_delete",
+                                                    data:{
+                                                        _token: $('meta[name="csrf-token"]').attr('content'), 
+                                                        id:id
+                                                    },
+                                                    success:function(response){
+                                                        if(response==1){
+                                                            swal("Court Deleted Successfully","Court and its associated entry has been deleted","success");  
+                                                            table.api().ajax.reload();                
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                            
+                                        })
+                                    
                                     }
 
-                                }
-                            })
+                               })
                         }
                         else 
                         {

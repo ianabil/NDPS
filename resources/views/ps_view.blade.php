@@ -197,7 +197,7 @@
         // Data Deletion Codes Starts */
 
                 $(document).on("click",".delete", function(){
-
+                    var element=$(this);
                 swal({
                     title: "Are You Sure?",
                     text: "Once submitted, you will not be able to change the record",
@@ -224,17 +224,18 @@
                                     }
                                 },
                                 error:function(response){
+                                    var id = element.closest("tr").find(".id").text();
                                     swal({
                                         title: "Are You Sure?",
-                                        text: "Once deleted, you will not be able to get the record associated with this police station",
+                                        text: "Once deleted,all seizure details associated with this PS will be deleted ",
                                         icon: "warning",
                                         buttons: true,
                                         dangerMode: true,
                                         })
                                         .then((willDelete) => {
                                         if(willDelete) {
-                                            var id = $(this).closest("tr").find(".id").text();
-                                            var tr = $(this).closest("tr");
+                                         
+                                            var tr =element.closest("tr");
 
                                             $.ajax({
                                                 type:"POST",

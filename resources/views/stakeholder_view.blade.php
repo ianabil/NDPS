@@ -205,10 +205,10 @@
         /* Data Deletion Cods Starts */
 
         $(document).on("click",".delete", function(){
-
+        var element=$(this);
            swal({
 				title: "Are You Sure?",
-				text: "Once submitted, you will not be able to change the record",
+				text: "Once submitted, you will not be able to recover the data",
 				icon: "warning",
 				buttons: true,
 				dangerMode: true,
@@ -230,13 +230,41 @@
                                     swal("Data Deleted Successfully","","success");  
                                     table.api().ajax.reload();                
                                 }
-                                else{
-                                    swal("Can Not Delete This Agency","This agency already has some values","error");  
-                                    return false;
-                                }
+                            },
+                            error:function(response){
+                                
+                                var id = element.closest("tr").find(".id").text();
+                                    swal({
+                                        title: "Are You Sure?",
+                                        text: "Once deleted,all details of SEIZURE and USERS associated with this STAKEHOLDER, will be deleted ",
+                                        icon: "warning",
+                                        buttons: true,
+                                        dangerMode: true,
+                                        })
+                                        .then((willDelete) => {
+                                        if(willDelete) {
+                                         
+                                            var tr =element.closest("tr");
 
-                            }
-                        })
+                                            $.ajax({
+                                                type:"POST",
+                                                url:"master_maintenance_stakeholder/seizure_stakeholder_delete",
+                                                data:{
+                                                    _token: $('meta[name="csrf-token"]').attr('content'), 
+                                                    id:id
+                                                },
+                                                success:function(response){
+                                                    if(response==1){
+                                                        swal("Court Deleted Successfully","Court and its associated entry has been deleted","success");  
+                                                        table.api().ajax.reload();                
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        
+                                    })
+                                }
+                            });
                     }
                     else 
                     {

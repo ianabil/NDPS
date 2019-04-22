@@ -136,23 +136,22 @@
                             court_name:court_name,
                             district_name:district
 
-                    },
-                    success:function(response)
-                    {
-                        $("#court_name").val('');
-                        swal("Court Added Successfully","","success");
-                        table.api().ajax.reload();
-                    },
-                    error:function(response) {  
+                            },
+                            success:function(response)
+                            {
+                                $("#court_name").val('');
+                                swal("Court Added Successfully","","success");
+                                table.api().ajax.reload();
+                            },
+                            error:function(response) {  
 
-                        if(response.responseJSON.errors.hasOwnProperty('district_name'))
-                            swal("Cannot create new Court", ""+response.responseJSON.errors.district_name['0'], "error");
-                                                       
-                        if(response.responseJSON.errors.hasOwnProperty('court_name'))
-                            swal("Cannot create new Court", ""+response.responseJSON.errors.court_name['0'], "error");
-                                        
-                    }
-                });
+                                if(response.responseJSON.errors.hasOwnProperty('district_name'))
+                                    swal("Cannot create new Court", ""+response.responseJSON.errors.district_name['0'], "error");
+                                                            
+                                if(response.responseJSON.errors.hasOwnProperty('court_name'))
+                                    swal("Cannot create new Court", ""+response.responseJSON.errors.court_name['0'], "error");
+                                }
+                        });
             });
 
         /*Addition in Court_Details ends*/
@@ -210,10 +209,10 @@
 
 
 
-     /* Data Deletion Cods Starts */
+     /* Data Deletion Codes Starts */
 
         $(document).on("click",".delete", function(){
-
+            var element=$(this);
             swal({
                 title: "Are You Sure?",
                 text: "Once submitted, you will not be able to change the record",
@@ -224,7 +223,8 @@
                 .then((willDelete) => {
                     if(willDelete) {
                         var id = $(this).closest("tr").find(".court_id").text();
-                       
+                        var tr = $(this).closest("tr");
+
                         $.ajax({
                             type:"POST",
                             url:"master_maintenance_court_details/delete",
@@ -234,29 +234,57 @@
                             },
                             success:function(response){
                                 if(response==1){
-                                    swal("Data Deleted Successfully","","success");  
+                                    swal("Court Deleted Successfully","","success");  
                                     table.api().ajax.reload();                
                                 }
-                                else{
-                                    swal("Can Not Delete This Court No.","This Court no already has some values","error");  
-                                    return false;
-                                }
+                            },
+                            error:function(response){
+                                
+                                var id = element.closest("tr").find(".court_id").text();
+                                    swal({
+                                        title: "Are You Sure?",
+                                        text: "Once deleted,all details of SEIZURE and USERS associated with this COURT will be deleted ",
+                                        icon: "warning",
+                                        buttons: true,
+                                        dangerMode: true,
+                                        })
+                                        .then((willDelete) => {
+                                        if(willDelete) {
+                                         
+                                            var tr =element.closest("tr");
 
-                            }
-                        })
-                    }
+                                            $.ajax({
+                                                type:"POST",
+                                                url:"master_maintenance_court/seizure_court_delete",
+                                                data:{
+                                                    _token: $('meta[name="csrf-token"]').attr('content'), 
+                                                    id:id
+                                                },
+                                                success:function(response){
+                                                    if(response==1){
+                                                        swal("Court Deleted Successfully","Court and its associated entry has been deleted","success");  
+                                                        table.api().ajax.reload();                
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        
+                                    })
+                                }
+                            }); 
+                        }
                     else 
                     {
                         swal("Deletion Cancelled","","error");
                     }
-            })
-        });
-
+            });
+        
             /* Data Deletion Codes Ends */
+        });
       
 });
 </script>
 
-    </body>
+</body>
 
-    </html>
+</html>

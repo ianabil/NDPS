@@ -49,8 +49,8 @@
         Route::post('master_maintenance_court_details/delete',
         'MasterMaintenanceController@destroy_court');
 
-        Route::post('master_maintenance_court_details/delete',
-        'MasterMaintenanceController@destroy_court');
+         Route::post('master_maintenance_court/seizure_court_delete',
+        'MasterMaintenanceController@destroy_seizure_court_record');
        //Court ::end
 
       
@@ -74,6 +74,9 @@
 
         Route::post('master_maintenance_stakeholder/delete',
         'MasterMaintenanceController@destroy_stakeholder');
+
+        Route::post('master_maintenance_stakeholder/seizure_stakeholder_delete',
+        'MasterMaintenanceController@destroy_seizure_stakeholder_record');
        //Stakeholder ::end
 
         //Narcotic ::start
@@ -89,7 +92,10 @@
         'MasterMaintenanceController@update_narcotics');
 
         Route::post('master_maintenance_narcotic/delete',
-            'MasterMaintenanceController@destroy_narcotic');
+        'MasterMaintenanceController@destroy_narcotic');
+
+        Route::post('master_maintenance_narcotic/seizure_narcotic_delete',
+        'MasterMaintenanceController@destroy_seizure_narcotic_record');
         //Narcotic::end
 
         //Unit::start
@@ -109,6 +115,10 @@
 
         Route::post('master_maintenance_unit/delete',
         'MasterMaintenanceController@destroy_unit');
+
+         
+        Route::post('master_maintenance_unit/seizure_unit_delete',
+        'MasterMaintenanceController@destroy_seizure_unit_record');
         //Unit::end
 
         //District::Start
@@ -157,7 +167,8 @@
         Route::post('master_maintenance_storage/storage_delete',
         'MasterMaintenanceController@destroy_storage');
         
-
+        Route::post('master_maintenance_storage/seizure_storage_delete',
+        'MasterMaintenanceController@destroy_seizure_storage_record');
         //Storage :: End
 
       //User ::starts

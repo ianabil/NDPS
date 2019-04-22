@@ -192,19 +192,19 @@
        // Data Deletion Codes Starts */
 
                 $(document).on("click",".delete", function(){
-
+                var element=$(this);
+                var id;
                 swal({
                     title: "Are You Sure?",
-                    text: "Once submitted, you will not be able to change the record",
+                    text: "Once Deleted, you will not be able to recover the data",
                     icon: "warning",
                     buttons: true,
                     dangerMode: true,
                     })
                     .then((willDelete) => {
-                        if(willDelete) {
-                            var id = $(this).closest("tr").find(".id").text();
-                            var tr = $(this).closest("tr");
-
+                    if(willDelete){
+                             id = $(this).closest("tr").find(".id").text();
+                           
                             $.ajax({
                                 type:"POST",
                                 url:"master_maintenance_storage/storage_delete",
@@ -217,14 +217,41 @@
                                         swal("Storage Deleted Successfully","","success");  
                                         table.api().ajax.reload();                
                                     }
-                                    else{
-                                        swal("Can Not Delete This Storage"," ","error");  
-                                        return false;
-                                    }
+                                },
+                                error:function(response){
 
-                                }
-                            })
+                                     swal({
+                                        title: "Are You Sure?",
+                                        text: "Once deleted,all details of SEIZURE and USERS associated with this STORAGE will be deleted ",
+                                        icon: "warning",
+                                        buttons: true,
+                                        dangerMode: true,
+                                        })
+                                        .then((willDelete) => {
+                                        if(willDelete) {
+                                            $.ajax({
+                                                type:"POST",
+                                                url:"master_maintenance_storage/seizure_storage_delete",
+                                                data:
+                                                {
+                                                    _token: $('meta[name="csrf-token"]').attr('content'),
+                                                    id:id
+                                                },
+                                                success:function(response)
+                                                {
+                                                    if(response==1)
+                                                    {
+                                                        swal("Storage Deleted Successfully","Storage and its associated entry has been deleted","success");  
+                                                        table.api().ajax.reload();                
+                                                    }
+                                                }
+                                         })
+                                    }
+                                })
                         }
+                     })
+                    }
+
                         else 
                         {
                             swal("Deletion Cancelled","","error");

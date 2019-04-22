@@ -185,51 +185,73 @@
                 // Data Deletion Codes Starts */
 
                 $(document).on("click",".delete", function(){
-
-                swal({
-                    title: "Are You Sure?",
-                    text: "Once submitted, you will not be able to change the record",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                    })
-                    .then((willDelete) => {
-                        if(willDelete) {
-                            var id = $(this).closest("tr").find(".id").text();
-                            var tr = $(this).closest("tr");
-
-                            $.ajax({
-                                type:"POST",
-                                url:"master_maintenance_unit/delete",
-                                data:{
-                                    _token: $('meta[name="csrf-token"]').attr('content'), 
-                                    id:id
-                                },
-                                success:function(response){
-                                    if(response==1){
-                                        swal("Unit Deleted Successfully","","success");  
-                                        table.api().ajax.reload();                
+                    var element=$(this);
+                    var id;
+                    swal({
+                        title: "Are You Sure?",
+                        text: "Once deleted, you will not be able to recover the data",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                        })
+                        .then((willDelete) => {
+                            if(willDelete) {
+                                var id = $(this).closest("tr").find(".id").text();
+                                
+                                $.ajax({
+                                    type:"POST",
+                                    url:"master_maintenance_unit/delete",
+                                    data:{
+                                        _token: $('meta[name="csrf-token"]').attr('content'), 
+                                        id:id
+                                    },
+                                    success:function(response){
+                                        if(response==1){
+                                            swal("Unit Deleted Successfully","","success");  
+                                            table.api().ajax.reload();                
+                                        }
+                                    },
+                                    error:function(response){
+                                    
+                                        swal({
+                                            title: "Are You Sure?",
+                                            text: "Once deleted,all details of SEIZURE and USERS associated with this UNIT will be deleted ",
+                                            icon: "warning",
+                                            buttons: true,
+                                            dangerMode: true,
+                                            })
+                                            .then((willDelete) => {
+                                            if(willDelete) {
+                                                $.ajax({
+                                                    type:"POST",
+                                                    url:"master_maintenance_unit/seizure_unit_delete",
+                                                    data:{
+                                                        _token: $('meta[name="csrf-token"]').attr('content'), 
+                                                        id:id
+                                                    },
+                                                    success:function(response){
+                                                        if(response==1){
+                                                            swal("Court Deleted Successfully","Court and its associated entry has been deleted","success");  
+                                                            table.api().ajax.reload();                
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                            
+                                        })
                                     }
-                                    else{
-                                        swal("Can Not Delete This Narcotics"," ","error");  
-                                        return false;
-                                    }
-
-                                }
-                            })
+                                }); 
                         }
-                        else 
-                        {
-                            swal("Deletion Cancelled","","error");
-                        }
-                    })
-                });
-
-                // Data Deletion Codes Ends 
-
-
+                    else 
+                    {
+                        swal("Deletion Cancelled","","error");
+                    }
+            });
+        
+            /* Data Deletion Codes Ends */
         });
-
+      
+});
 </script>
 
     </body>

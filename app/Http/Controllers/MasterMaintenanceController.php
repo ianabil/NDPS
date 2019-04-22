@@ -154,15 +154,18 @@ class MasterMaintenanceController extends Controller
                 public function destroy_stakeholder(Request $request)
                 {
                     $id = $request->input('id');
-                    $count = Seizure::where('agency_id',$id)->count();
-                
-                    if($count>=1)
-                        return 0;
-                    else{
-                        Agency_detail::where('agency_id',$id)->delete();
-                        return 1;
-                    }
-                    // echo 1;
+                    Agency_detail::where('agency_id',$id)->delete();
+                    return 1;
+                }
+
+                public function destroy_seizure_stakeholder_record(Request $request)
+                {
+                    $id = $request->input('id');
+                    Seizure::where('stakeholder_id',$id)->delete();
+                    User::where('stakeholder_id',$id)->delete();
+                    Agency_detail::where('agency_id',$id)->delete();
+                    return 1;
+
                 }
             //Stakeholder::End
 
@@ -300,14 +303,16 @@ class MasterMaintenanceController extends Controller
             public function destroy_court(Request $request)
             {
                 $id = $request->input('id');
-                $count = Seizure::where('certification_court_id',$id)->count();
-                
-                if($count>0)
-                    return 0;
-                else{
-                    Court_detail::where('court_id',$id)->delete();
-                    return 1;
-                }
+                Court_detail::where('court_id',$id)->delete();
+                return 1;
+            }
+
+            public function destroy_seizure_court_record(Request $request){
+                $id = $request->input('id');
+                Seizure::where('certification_court_id',$id)->delete();
+                User::where('court_id',$id)->delete();
+                Court_detail::where('court_id',$id)->delete();
+                return 1;
             }
             
         //Court:End
@@ -318,7 +323,6 @@ class MasterMaintenanceController extends Controller
             public function index_narcotic()
             {
                 $data=Unit::get();
-
                 return view('narcotic_view',compact('data'));
 
             }
@@ -424,15 +428,19 @@ class MasterMaintenanceController extends Controller
                 $narcotic = ucwords($request->input('narcotic_name'));
                 $unit = $request->input('narcotic_unit');
                 
-                $narcotic_id = Narcotic_unit::max('narcotic_id');
+               
                 
                 Narcotic::insert([
-                    'drug_name' => $narcotic
+                    'drug_name' => $narcotic,
+                    'created_at'=>Carbon::today(),
+                    'updated_at'=>Carbon::today()
                 ]);
+
+                $narcotic_id = Narcotic::max('drug_id');
 
                 for($i=0;$i<sizeof($unit);$i++){
                     Narcotic_unit::insert([
-                        'narcotic_id'=>$narcotic_id+1,
+                        'narcotic_id'=>$narcotic_id,
                         'unit_id'=>$unit[$i],
                         'created_at'=>Carbon::today(),
                         'updated_at'=>Carbon::today()
@@ -475,9 +483,19 @@ class MasterMaintenanceController extends Controller
                 //Delete Narcotics
                 public function destroy_narcotic(Request $request){
                         $id = $request->input('id');
-                        $unit = $request->input('unit');
-                        Narcotic::where([['drug_id',$id],['drug_unit',$unit]])->delete();
+                        Narcotic_unit::where('narcotic_id',$id)->delete();
+                        Narcotic::where('drug_id',$id)->delete();
                         return 1;
+                }
+
+                
+                public function destroy_seizure_narcotic_record(Request $request)
+                {
+                    $id = $request->input('id');
+                    Seizure::where('drug_id',$id)->delete();
+                    Narcotic_unit::where('narcotic_id',$id)->delete();
+                    Narcotic::where('drug_id',$id)->delete();
+                    return 1;
                 }
             
         //Narcotic:ends
@@ -592,6 +610,16 @@ class MasterMaintenanceController extends Controller
                 Unit::where('unit_id',$id)->delete();
                 return 1;
               }
+
+              public function destroy_seizure_unit_record(Request $request)
+              {
+                  $id = $request->input('id');
+                  Seizure::where('seizure_quantity_weighing_unit_id',$id)->delete();
+                  Narcotic_unit::where('unit_id',$id)->delete();
+                  Unit::where('unit_id',$id)->delete();
+                  return 1;
+              }
+
 
 
         //Unit:end
@@ -827,6 +855,14 @@ class MasterMaintenanceController extends Controller
                 $id = $request->input('id');
                 Storage_detail::where('storage_id',$id)->delete();
                 return 1;
+              }
+
+              public function destroy_seizure_storage_record(Request $request)
+              {
+                  $id = $request->input('id');
+                  Seizure::where('storage_location_id',$id)->delete();
+                  Storage_detail::where('storage_id',$id)->delete();
+                  return 1;
               }
 
         //Storage:End
