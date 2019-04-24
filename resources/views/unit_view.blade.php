@@ -131,7 +131,7 @@
                              },
                              success:function(response){
                                 $("#narcotic_unit").val('');
-                                swal("Added Successfully","A new narcotic has been added","success");
+                                swal("Added Successfully","A new narcotic unit has been added","success");
                                 table.api().ajax.reload();   
                             },
                             error:function(response) {  
