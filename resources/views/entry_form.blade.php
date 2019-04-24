@@ -50,47 +50,54 @@
 
 								<hr>
 
-								<div class="form-group required row">
-									<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Nature of Narcotic</label>
-									<div class="col-sm-3">
-										<select class="form-control select2" id="narcotic_type">
-											<option value="">Select An Option</option>
-											@foreach($data['narcotics'] as $narcotic)
-												<option value="{{$narcotic->drug_id}}">{{$narcotic->drug_name}}</option>
-											@endforeach
-										</select>
+								<div class="div_add_more">
+									<div class="form-group required row">
+										<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Nature of Narcotic</label>
+										<div class="col-sm-3">
+											<select class="form-control select2" id="narcotic_type" class="narcotic_type">
+												<option value="">Select An Option</option>
+												@foreach($data['narcotics'] as $narcotic)
+													<option value="{{$narcotic->drug_id}}">{{$narcotic->drug_name}}</option>
+												@endforeach
+											</select>									
+										</div>
+
+										<div class="col-sm-1" class="div_img_add_more">											
+											<img src="{{asset('images/details_open.png')}}" style="cursor:pointer" class="add_more" alt="add_more" id="add_more">
+										</div>
+										
+										<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Place of Storage</label>
+										<div class="col-sm-3">
+											<select class="form-control select2" id="storage" class="storage">
+												<option value="">Select An Option</option>
+												@foreach($data['storages'] as $storage)
+													<option value="{{$storage->storage_id}}">{{$storage->storage_name}}</option>
+												@endforeach
+											</select>
+										</div>
+
 									</div>
 
-									<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Date of Seizure</label>
-									<div class="col-sm-2">											
+									<div class="form-group required row">
+										<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Quantity of Seizure</label>
+										<div class="col-sm-3">
+											<input class="form-control" type="number" id="seizure_quantity" class="seizure_quantity">										
+										</div>
+
+										<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Weighing Unit</label>
+										<div class="col-sm-2">											
+											<select class="form-control select2" id="seizure_weighing_unit" class="seizure_weighing_unit">
+												<option value="">Select An Option</option>											
+											</select>
+										</div>										
+									</div>
+								</div>
+
+								<div class="form-group required row">									
+									<label class="col-sm-2  col-form-label-sm control-label" style="font-size:medium">Date of Seizure</label>
+									<div class="col-sm-3">											
 										<input type="text" class="form-control date" placeholder="Choose Date" id="seizure_date" autocomplete="off">
-									</div>										
-								</div>
-
-								<div class="form-group required row">
-									<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Quantity of Seizure</label>
-									<div class="col-sm-3">
-										<input class="form-control" type="number" id="seizure_quantity">										
-									</div>
-
-									<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Weighing Unit</label>
-									<div class="col-sm-2">											
-										<select class="form-control select2" id="seizure_weighing_unit">
-											<option value="">Select An Option</option>											
-										</select>
-									</div>										
-								</div>
-
-								<div class="form-group required row">
-									<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Place of Storage</label>
-									<div class="col-sm-3">
-										<select class="form-control select2" id="storage">
-											<option value="">Select An Option</option>
-											@foreach($data['storages'] as $storage)
-												<option value="{{$storage->storage_id}}">{{$storage->storage_name}}</option>
-											@endforeach
-										</select>
-									</div>
+									</div>		
 
 									<label class="col-sm-2 col-sm-offset-1 col-form-label-sm" style="font-size:medium">Case Details / Remark</label>
 									<div class="col-sm-2">											
@@ -276,6 +283,28 @@
 		});
 
     /*LOADER*/
+
+		/*If multiple narcotics are seized in a same case :: STARTS*/
+			$(document).on("click","#add_more", function(){
+				$(".div_add_more:first").clone().insertAfter(".div_add_more:last");
+				$(".nature_of_narcotic:last").val('');
+				$(".storage:last").val('');
+				$(".seizure_quantity:last").val('');
+				$(".seizure_weighing_unit:last").val('');
+
+				$(".add_more:last").attr({src:"images/details_close.png",
+																  class:"remove", 
+																	alt:"remove",
+																	id:""});
+			})
+		/*If multiple narcotics are seized in a same case :: ENDS*/
+
+
+		/*If multiple narcotics are seized in a same case and want to remove one :: STARTS*/
+		$(document).on("click",".remove", function(){
+				$(this).closest(".div_add_more").remove();
+		})
+		/*If multiple narcotics are seized in a same case and want to remove one :: ENDS*/
 
 
 		/*Apply For Certification :: STARTS*/
