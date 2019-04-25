@@ -91,20 +91,23 @@ class entry_formController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate ( $request, [ 
+        $this->validate( $request, [ 
             'ps' => 'required|integer',
             'case_no' => 'required|integer',
             'case_year' => 'required|integer',
-            'narcotic_type' => 'required|integer',
+            'narcotic_type' => 'required|array|distinct',
+            'narcotic_type.*' => 'required|distinct',
             'seizure_date' => 'required|date',
-            'seizure_quantity' => 'required|numeric',
-            'seizure_weighing_unit' => 'required|integer',
+            'seizure_quantity' => 'required|array',
+            'seizure_quantity.*' => 'required',
+            'seizure_weighing_unit' => 'required|array',
+            'seizure_weighing_unit.*' => 'required',
             'storage' => 'required|integer',
             'remark' => 'nullable|max:255',
             'district' => 'required|integer',         
             'court' => 'required|integer',
         ] ); 
-
+       
         $ps = $request->input('ps'); 
         $case_no = $request->input('case_no'); 
         $case_year = $request->input('case_year'); 
@@ -123,30 +126,31 @@ class entry_formController extends Controller
         $update_date = Carbon::today();  
         $uploaded_date = Carbon::today();  
         
+        for($i=0;$i<sizeof($narcotic_type);$i++){
+            seizure::insert(
 
-        seizure::insert(
+                [
+                    'ps_id'=>$ps,
+                    'case_no'=>$case_no,
+                    'case_year'=>$case_year,
+                    'drug_id'=> $narcotic_type[$i],
+                    'quantity_of_drug'=>$seizure_quantity[$i],
+                    'seizure_quantity_weighing_unit_id'=>$seizure_weighing_unit[$i],
+                    'date_of_seizure'=>date('Y-m-d', strtotime($seizure_date)),
+                    'storage_location_id'=>$storage,
+                    'stakeholder_id'=>$agency_id,
+                    'district_id'=>$district,
+                    'certification_court_id'=>$court,
+                    'certification_flag'=>$certification_flag,
+                    'disposal_flag'=>$disposal_flag,
+                    'remarks'=>$remark,
+                    'user_name'=>$user_name,
+                    'created_at'=>$uploaded_date,
+                    'updated_at'=>$update_date
+                ]
 
-            [
-                'ps_id'=>$ps,
-                'case_no'=>$case_no,
-                'case_year'=>$case_year,
-                'drug_id'=> $narcotic_type,
-                'quantity_of_drug'=>$seizure_quantity,
-                'seizure_quantity_weighing_unit_id'=>$seizure_weighing_unit,
-                'date_of_seizure'=>date('Y-m-d', strtotime($seizure_date)),
-                'storage_location_id'=>$storage,
-                'stakeholder_id'=>$agency_id,
-                'district_id'=>$district,
-                'certification_court_id'=>$court,
-                'certification_flag'=>$certification_flag,
-                'disposal_flag'=>$disposal_flag,
-                'remarks'=>$remark,
-                'user_name'=>$user_name,
-                'created_at'=>$uploaded_date,
-                'updated_at'=>$update_date
-            ]
-
-        );
+            );
+        }
 
         return 1;
 

@@ -54,8 +54,8 @@
 									<div class="form-group required row">
 										<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Nature of Narcotic</label>
 										<div class="col-sm-3">
-											<select class="form-control select2" id="narcotic_type" class="narcotic_type">
-												<option value="">Select An Option</option>
+											<select class="form-control select2 narcotic_type">
+												<option value="" selected>Select An Option</option>
 												@foreach($data['narcotics'] as $narcotic)
 													<option value="{{$narcotic->drug_id}}">{{$narcotic->drug_name}}</option>
 												@endforeach
@@ -65,10 +65,28 @@
 										<div class="col-sm-1" class="div_img_add_more">											
 											<img src="{{asset('images/details_open.png')}}" style="cursor:pointer" class="add_more" alt="add_more" id="add_more">
 										</div>
-										
+
+									</div>
+
+									<div class="form-group required row">
+										<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Quantity of Seizure</label>
+										<div class="col-sm-3">
+											<input class="form-control seizure_quantity" type="number">										
+										</div>
+
+										<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Weighing Unit</label>
+										<div class="col-sm-2">											
+											<select class="form-control select2 seizure_weighing_unit">
+												<option value="" selected>Select An Option</option>											
+											</select>
+										</div>										
+									</div>
+								</div>
+
+								<div class="form-group required row">	
 										<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Place of Storage</label>
 										<div class="col-sm-3">
-											<select class="form-control select2" id="storage" class="storage">
+											<select class="form-control select2" id="storage">
 												<option value="">Select An Option</option>
 												@foreach($data['storages'] as $storage)
 													<option value="{{$storage->storage_id}}">{{$storage->storage_name}}</option>
@@ -76,33 +94,18 @@
 											</select>
 										</div>
 
-									</div>
-
-									<div class="form-group required row">
-										<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Quantity of Seizure</label>
-										<div class="col-sm-3">
-											<input class="form-control" type="number" id="seizure_quantity" class="seizure_quantity">										
-										</div>
-
-										<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Weighing Unit</label>
-										<div class="col-sm-2">											
-											<select class="form-control select2" id="seizure_weighing_unit" class="seizure_weighing_unit">
-												<option value="">Select An Option</option>											
-											</select>
-										</div>										
-									</div>
-								</div>
-
-								<div class="form-group required row">									
-									<label class="col-sm-2  col-form-label-sm control-label" style="font-size:medium">Date of Seizure</label>
+									<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Date of Seizure</label>
 									<div class="col-sm-3">											
 										<input type="text" class="form-control date" placeholder="Choose Date" id="seizure_date" autocomplete="off">
-									</div>		
+									</div>																		
+								</div>
 
-									<label class="col-sm-2 col-sm-offset-1 col-form-label-sm" style="font-size:medium">Case Details / Remark</label>
-									<div class="col-sm-2">											
-										<textarea class="form-control" id="remark" ></textarea>
-									</div>										
+
+								<div class="form-group required row">	
+										<label class="col-sm-2 col-form-label-sm" style="font-size:medium">Case Details / Remark</label>
+										<div class="col-sm-2">											
+											<textarea class="form-control" id="remark" ></textarea>
+										</div>	
 								</div>
 
 								<hr>
@@ -262,7 +265,7 @@
                 format: 'dd-mm-yyyy'
          }); // Date picker initialization For All The Form Elements
 		
-		$(".select2").select2();
+		//$(".select2").select2();
 
 		$('.btnNext').click(function(){
 			$('.nav > .active').next('li').find('a').trigger('click');
@@ -284,38 +287,57 @@
 
     /*LOADER*/
 
-		/*If multiple narcotics are seized in a same case :: STARTS*/
-			$(document).on("click","#add_more", function(){
-				$(".div_add_more:first").clone().insertAfter(".div_add_more:last");
-				$(".nature_of_narcotic:last").val('');
-				$(".storage:last").val('');
-				$(".seizure_quantity:last").val('');
-				$(".seizure_weighing_unit:last").val('');
 
+		/*If multiple narcotics are seized in a same case :: STARTS*/
+			var count = 0;
+			$(document).on("click","#add_more", function(){
+				count++;
+				$(".div_add_more:first").clone().insertAfter(".div_add_more:last");
 				$(".add_more:last").attr({src:"images/details_close.png",
 																  class:"remove", 
 																	alt:"remove",
 																	id:""});
+				$(".seizure_quantity:last").val('');
+				
 			})
 		/*If multiple narcotics are seized in a same case :: ENDS*/
 
 
 		/*If multiple narcotics are seized in a same case and want to remove one :: STARTS*/
 		$(document).on("click",".remove", function(){
+				count --;
 				$(this).closest(".div_add_more").remove();
 		})
 		/*If multiple narcotics are seized in a same case and want to remove one :: ENDS*/
 
 
 		/*Apply For Certification :: STARTS*/
+		var narcotic_type = new Array();
+		var seizure_quantity = new Array();
+		var seizure_weighing_unit = new Array();
+		
 		$(document).on("click","#apply",function(){
+
 				var ps = $("#ps option:selected").val();
 				var case_no = $("#case_no").val();
 				var case_year = $("#case_year").val();
-				var narcotic_type = $("#narcotic_type option:selected").val();
-				var seizure_date = $("#seizure_date").val();
-				var seizure_quantity = $("#seizure_quantity").val();			
-				var seizure_weighing_unit = $("#seizure_weighing_unit option:selected").val();
+
+				narcotic_type = [];
+				$(".narcotic_type").each(function(){
+						narcotic_type.push($(this).val());
+				})
+				
+				seizure_quantity = [];
+				$(".seizure_quantity").each(function(){
+						seizure_quantity.push($(this).val());
+				})
+
+				seizure_weighing_unit = [];
+				$(".seizure_weighing_unit").each(function(){
+					seizure_weighing_unit.push($(this).val());
+				})
+
+				var seizure_date = $("#seizure_date").val();				
 				var storage = $("#storage option:selected").val();
 				var remark = $("#remark").val();
 				var district = $("#district option:selected").val();
@@ -332,23 +354,11 @@
 				else if(case_year==""){
 					swal("Invalid Input","Please Select Case Year.","error");
 					return false;
-				}
-				else if(narcotic_type==""){
-					swal("Invalid Input","Please Select Narcotic Contraband.","error");
-					return false;
-				}
+				}				
 				else if(seizure_date==""){
 					swal("Invalid Input","Please Insert Date of Seizure","error");
 					return false;
-				}
-				else if(seizure_quantity==""){
-					swal("Invalid Input","Please Insert Seizure Quantity","error");
-					return false;
-				}
-				else if(seizure_weighing_unit==""){
-					swal("Invalid Input","Please Select Weighing Unit","error");
-					return false;
-				}
+				}				
 				else if(storage==""){
 					swal("Invalid Input","Please Select Place of Storage of Seizure","error");
 					return false;
@@ -396,6 +406,16 @@
 													},
 													error:function(response){
 														console.log(response);
+														// if(response.responseJSON.errors.hasOwnProperty('seizure_weighing_unit'))
+														// 		swal("Invalid Input", ""+response.responseJSON.errors.seizure_weighing_unit['0'], "error");
+
+														// if(response.responseJSON.errors.hasOwnProperty('seizure_quantity'))
+														// 		swal("Invalid Input", ""+response.responseJSON.errors.seizure_quantity['0'], "error");
+
+														// if(response.responseJSON.errors.hasOwnProperty('narcotic_type'))
+														// 		swal("Invalid Input", ""+response.responseJSON.errors.narcotic_type['0'], "error");
+														swal("Invalid Input","","error");
+														
 													}
 										})
 									}
@@ -432,10 +452,13 @@
 
 
 		/*Fetch list of units on correspondance to the selected narcotic type :: STARTS*/
-		$(document).on("change","#narcotic_type", function(){	
+		$(document).on("change",".narcotic_type", function(){	
 
 			var narcotic=$(this).val();
-			$("#seizure_weighing_unit").children('option:not(:first)').remove();
+			// If div structure changes, following code will not work
+			var element = $(this).parent().parent().next().find(".seizure_weighing_unit");
+			
+			element.children('option:not(:first)').remove();
 
 					$.ajax({
 									type: "POST",
@@ -447,7 +470,7 @@
 									success:function(resonse){                        
 										var obj=$.parseJSON(resonse)
 										$.each(obj['units'],function(index,value){							
-											$("#seizure_weighing_unit").append('<option value="'+value.unit_id+'">'+value.unit_name+'</option>');
+											element.append('<option value="'+value.unit_id+'">'+value.unit_name+'</option>');
 											$("#disposal_weighing_unit").append('<option value="'+value.unit_id+'">'+value.unit_name+'</option>');
 										})
 									}
