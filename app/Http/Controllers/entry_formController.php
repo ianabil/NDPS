@@ -239,12 +239,19 @@ class entry_formController extends Controller
         $case_year = $request->input('case_year');
 
         $data['case_details'] = Seizure::join('ps_details','seizures.ps_id','=','ps_details.ps_id')
+                        ->join('agency_details','seizures.stakeholder_id','=','agency_details.agency_id')
                         ->join('narcotics','seizures.drug_id','=','narcotics.drug_id')
-                        ->join('units','seizure_quantity_weighing_unit_id','=','units.unit_id')
+                        ->join('units AS u1','seizures.seizure_quantity_weighing_unit_id','=','u1.unit_id')
+                        ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
+                        ->leftjoin('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
                         ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                        ->join('districts','seizures.district_id','=','districts.district_id')
                         ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
+                        ->join('districts','seizures.district_id','=','districts.district_id')
                         ->where([['seizures.ps_id',$ps],['seizures.case_no',$case_no],['seizures.case_year',$case_year]])                        
+                        ->select('drug_name','narcotics.drug_id','quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',
+                                'date_of_disposal','disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit',
+                                'storage_name','court_name','districts.district_id','district_name','date_of_certification','certification_flag','quantity_of_sample',
+                                'u2.unit_name AS sample_unit','remarks','magistrate_remarks')
                         ->get();
 
         foreach($data['case_details'] as $case_details){
@@ -253,6 +260,8 @@ class entry_formController extends Controller
                 $case_details->date_of_certification = Carbon::parse($case_details->date_of_certification)->format('d-m-Y');
             if($case_details->disposal_flag=='Y')
                 $case_details->date_of_disposal = Carbon::parse($case_details->date_of_disposal)->format('d-m-Y');
+            if($case_details->magistrate_remarks==null)
+                $case_details->magistrate_remarks = "";
         }
 
         echo json_encode($data);

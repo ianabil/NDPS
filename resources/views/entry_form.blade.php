@@ -154,7 +154,7 @@
 									</a>									
 									<button type="button" class="btn btn-success btn-lg" id="apply">Apply For Certification</button>
 									<a href="#disposal" data-toggle="tab">
-										<button type="button" class="btn btn-primary btn-lg btnNext" id="toDisposal" style="display:none">Next</button>
+										<button type="button" class="btn btn-primary btn-lg btnNext" id="toDisposal">Next</button>
 									</a>
 								</div>
 
@@ -468,29 +468,22 @@
 
 											var str_case_details ="";
 											var str_certification_details = "";
+											var str_disposal_details = "";
+											var all_narcotic_certfication_flag = 1;
+											var all_narcotic_disposal_flag = 1;
+
 											$.each(obj['case_details'],function(index,value){
 												str_case_details+=
 													'<div class="form-group required row">'+
 															'<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Nature of Narcotic</label>'+
 															'<div class="col-sm-3">'+
-																'<select class="form-control select2 narcotic_type" disabled>'+
-																		'<option value="'+value.drug_id+'" selected>'+value.drug_name+'</option>'+
-																'</select>'+
+																'<input type="text" class="form-control" value="'+value.drug_name+'" disabled>'+																
 															'</div>'+
-														'</div>'+
 
-														'<div class="form-group required row">'+
-																'<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Quantity of Seizure</label>'+
-																'<div class="col-sm-3">'+
-																		'<input class="form-control seizure_quantity" type="number" value="'+value.quantity_of_drug+'" disabled>'+										
-																'</div>'+
-
-																'<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Weighing Unit</label>'+
-																'<div class="col-sm-2">'+
-																		'<select class="form-control select2 seizure_weighing_unit" disabled>'+
-																				'<option value="'+value.seizure_quantity_weighing_unit_id+'" selected>'+value.unit_name+'</option>'+
-																		'</select>'+
-																'</div>'+
+															'<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Quantity of Seizure</label>'+
+															'<div class="col-sm-3">'+
+																	'<input class="form-control" type="text" value="'+value.quantity_of_drug+' '+value.seizure_unit+'" disabled>'+										
+															'</div>'+
 														'</div>';		
 
 													if(value.certification_flag=='Y'){
@@ -498,80 +491,161 @@
 																		'<div class="form-group required row">'+
 																				'<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Nature of Narcotic</label>'+
 																				'<div class="col-sm-3">'+
-																					'<select class="form-control select2 narcotic_type" disabled>'+
-																							'<option value="'+value.drug_id+'" selected>'+value.drug_name+'</option>'+
-																					'</select>'+
+																					'<input type="text" class="form-control" value="'+value.drug_name+'" disabled>'+
 																				'</div>'+
-																		'</div>'+
 
-																		'<div class="form-group required row">'
-																				'<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Quantity of Sample</label>'+
+																				'<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Quantity of Sample</label>'+
 																				'<div class="col-sm-3">'+
-																						'<input class="form-control" type="number" id="sample_quantity" value="'+value.quantity_of_sample+'" disabled>'+										
-																				'</div>'+
-
-																				'<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Weighing Unit</label>'+
-																				'<div class="col-sm-2">'+
-																						'<select class="form-control select2" id="sample_weighing_unit" disabled>'+
-																								'<option value="'+value.sample_quantity_weighing_unit_id+'">'+value.unit_name+'</option>'+											
-																						'</select>'+
-																				'</div>'+
+																						'<input class="form-control" type="text" value="'+value.quantity_of_sample+' '+value.sample_unit+'" disabled>'+										
+																				'</div>'+																				
 																		'</div>'+
 
 																		'<div class="form-group required row">'+
 																				'<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Certification Date</label>'+
 																				'<div class="col-sm-3">'+
-																						'<input type="text" class="form-control date" id="certification_date" placeholder="Choose Date" value="'+value.date_of_certification+'" disabled>'+
+																						'<input type="text" class="form-control date" value="'+value.date_of_certification+'" disabled>'+
 																				'</div>'+
 
 																				'<label class="col-sm-2 col-sm-offset-1 col-form-label-sm" style="font-size:medium">Remarks</label>'+
 																				'<div class="col-sm-2">'+
-																						'<textarea class="form-control" id="magistrate_remarks" >'+value.magistrate_remarks+'</textarea>'+
+																						'<textarea class="form-control" id="magistrate_remarks" disabled>'+value.magistrate_remarks+'</textarea>'+
 																				'</div>'+
 																		'</div>'+
 
 																		'<div class="form-check form-group required">'+
-																				'<input class="form-check-input" type="checkbox" value="verification" id="verification_statement">'+
+																				'<input class="form-check-input" type="checkbox" value="verification" id="verification_statement" checked disabled>'+
 																				'<label class="form-check-label control-label" for="verification_statement" style="font-size:medium">'+
 																					'I hereby declare that the seizure details furnished here are true and correct.'+
 																				'</label>'+
 																		'</div>';
 
-																		$("#apply").hide();		
-																		$("#toDisposal").show();
+																		$("#apply").hide();	
 																		$("#li_disposal").css("pointer-events","");									
 																		$("#li_disposal").css("opacity","");	
+
+																		if(value.disposal_flag=='Y'){
+																			str_disposal_details+=""+
+																					'<div class="form-group required row">'+
+																						'<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Nature of Narcotic</label>'+
+																						'<div class="col-sm-3">'+
+																							'<input type="text" class="form-control" value="'+value.drug_name+'" disabled>'+
+																						'</div>'+
+																							
+																						'<label class="col-sm-2 col-sm-offset-2 col-form-label-sm control-label" style="font-size:medium">Disposal Quantity</label>'+
+																							'<div class="col-sm-2">'+
+																								'<input class="form-control disposal_quantity" type="text" value="'+value.disposal_quantity+' '+value.disposal_unit+' disabled>'+
+																							'</div>'+
+																					'</div>'+	
+
+																					'<div class="form-group required row">'+
+																						'<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Date of Disposal</label>'+
+																						'<div class="col-sm-2">'+
+																							'<input type="text" class="form-control date disposal_date" value="'+value.date_of_disposal+' autocomplete="off" disabled>'+
+																						'</div>'+
+																					'</div>'+
+
+																					'<hr>'
+																					
+																					'<div class="col-sm-3 col-sm-offset-4">'+
+																						'<a href="#certification" data-toggle="tab">'+
+																							'<button type="button" class="btn btn-warning btn-lg btnPrevious">Back</button>'+
+																						'</a>'+																						
+																					'</div>';
+
+																					$("#dispose").hide();
+
+																		}
+																		else{
+																			str_disposal_details+=""+
+																				'<div class="form-group required row">'+
+																						'<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Narcotic Type</label>'+
+																						'<div class="col-sm-3">'+
+																								'<select class="form-control select2 narcotic_type_disposal" disabled>'+
+																									'<option value="'+value.drug_id+'" selected>'+value.drug_name+'"</option>'+
+																								'</select>'+
+																						'</div>'+
+																				'</div>'+
+
+																				'<div class="form-group required row">'+
+																						'<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Disposal Quantity</label>'+
+																						'<div class="col-sm-2">'+
+																							'<input class="form-control disposal_quantity" type="number">'+
+																						'</div>'+
+
+																						'<label class="col-sm-2 col-sm-offset-2 col-form-label-sm control-label" style="font-size:medium">Weighing Unit</label>'+
+																						'<div class="col-sm-2">'+
+																							'<select class="form-control select2 disposal_weighing_unit">'+
+																								'<option value="'+value.drug_id+'" selected>'+value.drug_name+'"</option>'+
+																							'</select>'+
+																						'</div>'+
+																				'</div>'+
+																				
+																				'<hr>';	
+
+																				all_narcotic_disposal_flag = 0;																			
+
+																		}
 													}
 													else{														
-														str_certification_details+='<hr>'+
+														str_certification_details+=
 																		'<div class="form-group required row">'+
 																				'<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Nature of Narcotic</label>'+
 																				'<div class="col-sm-3">'+
-																					'<select class="form-control select2 narcotic_type" disabled>'+
-																							'<option value="'+value.drug_id+'" selected>'+value.drug_name+'</option>'+
-																					'</select>'+
+																					'<input type="text" class="form-control narcotic_type" value="'+value.drug_name+'" disabled>'+
 																				'</div>'+
 																		'</div>'+
 
 																		'<div class="alert alert-danger" style="width:90%" role="alert">Certification Yet To Be Approved By The Judicial Magistrate</div>';
-
-															$("#apply").hide();
+															
+														all_narcotic_certfication_flag = 0;
+															$("#apply").hide();																
+															$("#toDisposal").hide();
 													}
-
-													if(value.disposal_flag=='N'){
-														$("#dispose").show();
-													}
-												
+													
 											})
+
+											str_disposal_details+=
+													'<div class="form-group required row">'+
+														'<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Date of Disposal</label>'+
+														'<div class="col-sm-2">'+
+															'<input type="text" class="form-control date" placeholder="Choose Date" id="disposal_date" autocomplete="off">'+
+														'</div>'+
+													'</div>'+
+
+													'<hr>'+
+
+													'<div class="col-sm-3 col-sm-offset-4">'+
+														'<a href="#certification" data-toggle="tab">'+
+															'<button type="button" class="btn btn-warning btn-lg btnPrevious">Back</button>'+
+														'</a>'+
+														'<button type="button" class="btn btn-success btn-lg" id="dispose">Dispose</button>'+
+													'</div>';
 
 											$(".div_add_more").html(str_case_details);
 											$("#if_certified").html(str_certification_details);
+											$("#form_disposal").html(str_disposal_details);
 											
 											$("#seizure_date").val(obj['case_details']['0'].date_of_seizure).attr('readonly',true);											
 											$("#storage").prepend("<option value='"+obj['case_details']['0'].storage_location_id+"' selected>"+obj['case_details']['0'].storage_name+"</option>").attr('disabled',true);
 											$("#remark").val(obj['case_details']['0'].remarks).attr('readonly',true);
 											$("#district").prepend("<option value='"+obj['case_details']['0'].district_id+"' selected>"+obj['case_details']['0'].district_name+"</option>").attr('disabled',true);
 											$("#court").prepend("<option value='"+obj['case_details']['0'].court_id+"' selected>"+obj['case_details']['0'].court_name+"</option>").attr('disabled',true);
+											
+											// If one or many of 'n' no. of seized narcotic doesn't get certified 
+											if(all_narcotic_certfication_flag==0){
+
+											}
+											else{
+
+											}
+
+											// If one or many of 'n' no. of seized narcotic doesn't get disposed
+											if(all_narcotic_disposal_flag==0){
+
+											}
+											else{
+
+											}
 										
 									}
 								}
