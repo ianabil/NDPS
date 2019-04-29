@@ -248,10 +248,12 @@ class entry_formController extends Controller
                         ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
                         ->join('districts','seizures.district_id','=','districts.district_id')
                         ->where([['seizures.ps_id',$ps],['seizures.case_no',$case_no],['seizures.case_year',$case_year]])                        
-                        ->select('drug_name','narcotics.drug_id','quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',
-                                'date_of_disposal','disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit',
-                                'storage_name','court_name','districts.district_id','district_name','date_of_certification','certification_flag','quantity_of_sample',
-                                'u2.unit_name AS sample_unit','remarks','magistrate_remarks')
+                        ->select('drug_name','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
+                                'u1.unit_name AS seizure_unit','date_of_seizure','date_of_disposal',
+                                'disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit','storage_name',
+                                'court_name','districts.district_id','district_name','date_of_certification',
+                                'certification_flag','quantity_of_sample','u2.unit_name AS sample_unit',
+                                'remarks','magistrate_remarks')
                         ->get();
 
         foreach($data['case_details'] as $case_details){
@@ -275,6 +277,7 @@ class entry_formController extends Controller
             'ps' => 'required|integer',
             'case_no' => 'required|integer',
             'case_year' => 'required|integer',
+            'narcotic_type' => 'required|integer',
             'disposal_date' => 'required|date',
             'disposal_quantity' => 'required|numeric',
             'disposal_weighing_unit' => 'required|integer'
@@ -283,6 +286,7 @@ class entry_formController extends Controller
         $ps = $request->input('ps'); 
         $case_no = $request->input('case_no'); 
         $case_year = $request->input('case_year');
+        $narcotic_type = $request->input('narcotic_type');
         $disposal_date = Carbon::parse($request->input('disposal_date'))->format('Y-m-d');
         $disposal_quantity = $request->input('disposal_quantity'); 
         $disposal_weighing_unit = $request->input('disposal_weighing_unit');
@@ -295,7 +299,11 @@ class entry_formController extends Controller
             'updated_at'=>Carbon::today()
         ];
 
-        Seizure::where([['ps_id',$ps],['case_no',$case_no],['case_year',$case_year]])->update($data);
+        Seizure::where([['ps_id',$ps],
+                        ['case_no',$case_no],
+                        ['case_year',$case_year],
+                        ['drug_id',$narcotic_type]
+                ])->update($data);
         
         return 1;
         
