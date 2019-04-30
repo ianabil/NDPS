@@ -239,6 +239,12 @@
 
         Route::post('magistrate_entry_form/certify','MagistrateController@certify');
 
+        Route::post('magistrate_entry_form/monthly_report_status',
+        'MagistrateController@monthly_report_status');
+
+        Route::post('magistrate_entry_form/fetch_more_details',
+        'MagistrateController@fetch_case_details_for_report');
+
     });
 
 
