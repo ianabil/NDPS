@@ -91,20 +91,23 @@ class entry_formController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate ( $request, [ 
+        $this->validate( $request, [ 
             'ps' => 'required|integer',
             'case_no' => 'required|integer',
             'case_year' => 'required|integer',
-            'narcotic_type' => 'required|integer',
+            'narcotic_type' => 'required|array|distinct',
+            'narcotic_type.*' => 'required|distinct',
             'seizure_date' => 'required|date',
-            'seizure_quantity' => 'required|numeric',
-            'seizure_weighing_unit' => 'required|integer',
+            'seizure_quantity' => 'required|array',
+            'seizure_quantity.*' => 'required',
+            'seizure_weighing_unit' => 'required|array',
+            'seizure_weighing_unit.*' => 'required',
             'storage' => 'required|integer',
             'remark' => 'nullable|max:255',
             'district' => 'required|integer',         
             'court' => 'required|integer',
         ] ); 
-
+       
         $ps = $request->input('ps'); 
         $case_no = $request->input('case_no'); 
         $case_year = $request->input('case_year'); 
@@ -123,30 +126,31 @@ class entry_formController extends Controller
         $update_date = Carbon::today();  
         $uploaded_date = Carbon::today();  
         
+        for($i=0;$i<sizeof($narcotic_type);$i++){
+            seizure::insert(
 
-        seizure::insert(
+                [
+                    'ps_id'=>$ps,
+                    'case_no'=>$case_no,
+                    'case_year'=>$case_year,
+                    'drug_id'=> $narcotic_type[$i],
+                    'quantity_of_drug'=>$seizure_quantity[$i],
+                    'seizure_quantity_weighing_unit_id'=>$seizure_weighing_unit[$i],
+                    'date_of_seizure'=>date('Y-m-d', strtotime($seizure_date)),
+                    'storage_location_id'=>$storage,
+                    'stakeholder_id'=>$agency_id,
+                    'district_id'=>$district,
+                    'certification_court_id'=>$court,
+                    'certification_flag'=>$certification_flag,
+                    'disposal_flag'=>$disposal_flag,
+                    'remarks'=>$remark,
+                    'user_name'=>$user_name,
+                    'created_at'=>$uploaded_date,
+                    'updated_at'=>$update_date
+                ]
 
-            [
-                'ps_id'=>$ps,
-                'case_no'=>$case_no,
-                'case_year'=>$case_year,
-                'drug_id'=> $narcotic_type,
-                'quantity_of_drug'=>$seizure_quantity,
-                'seizure_quantity_weighing_unit_id'=>$seizure_weighing_unit,
-                'date_of_seizure'=>date('Y-m-d', strtotime($seizure_date)),
-                'storage_location_id'=>$storage,
-                'stakeholder_id'=>$agency_id,
-                'district_id'=>$district,
-                'certification_court_id'=>$court,
-                'certification_flag'=>$certification_flag,
-                'disposal_flag'=>$disposal_flag,
-                'remarks'=>$remark,
-                'user_name'=>$user_name,
-                'created_at'=>$uploaded_date,
-                'updated_at'=>$update_date
-            ]
-
-        );
+            );
+        }
 
         return 1;
 
@@ -235,12 +239,21 @@ class entry_formController extends Controller
         $case_year = $request->input('case_year');
 
         $data['case_details'] = Seizure::join('ps_details','seizures.ps_id','=','ps_details.ps_id')
+                        ->join('agency_details','seizures.stakeholder_id','=','agency_details.agency_id')
                         ->join('narcotics','seizures.drug_id','=','narcotics.drug_id')
-                        ->join('units','seizure_quantity_weighing_unit_id','=','units.unit_id')
+                        ->join('units AS u1','seizures.seizure_quantity_weighing_unit_id','=','u1.unit_id')
+                        ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
+                        ->leftjoin('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
                         ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                        ->join('districts','seizures.district_id','=','districts.district_id')
                         ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
+                        ->join('districts','seizures.district_id','=','districts.district_id')
                         ->where([['seizures.ps_id',$ps],['seizures.case_no',$case_no],['seizures.case_year',$case_year]])                        
+                        ->select('drug_name','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
+                                'u1.unit_name AS seizure_unit','date_of_seizure','date_of_disposal',
+                                'disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit','storage_name',
+                                'court_name','districts.district_id','district_name','date_of_certification',
+                                'certification_flag','quantity_of_sample','u2.unit_name AS sample_unit',
+                                'remarks','magistrate_remarks')
                         ->get();
 
         foreach($data['case_details'] as $case_details){
@@ -249,6 +262,8 @@ class entry_formController extends Controller
                 $case_details->date_of_certification = Carbon::parse($case_details->date_of_certification)->format('d-m-Y');
             if($case_details->disposal_flag=='Y')
                 $case_details->date_of_disposal = Carbon::parse($case_details->date_of_disposal)->format('d-m-Y');
+            if($case_details->magistrate_remarks==null)
+                $case_details->magistrate_remarks = "";
         }
 
         echo json_encode($data);
@@ -262,6 +277,7 @@ class entry_formController extends Controller
             'ps' => 'required|integer',
             'case_no' => 'required|integer',
             'case_year' => 'required|integer',
+            'narcotic_type' => 'required|integer',
             'disposal_date' => 'required|date',
             'disposal_quantity' => 'required|numeric',
             'disposal_weighing_unit' => 'required|integer'
@@ -270,6 +286,7 @@ class entry_formController extends Controller
         $ps = $request->input('ps'); 
         $case_no = $request->input('case_no'); 
         $case_year = $request->input('case_year');
+        $narcotic_type = $request->input('narcotic_type');
         $disposal_date = Carbon::parse($request->input('disposal_date'))->format('Y-m-d');
         $disposal_quantity = $request->input('disposal_quantity'); 
         $disposal_weighing_unit = $request->input('disposal_weighing_unit');
@@ -282,7 +299,11 @@ class entry_formController extends Controller
             'updated_at'=>Carbon::today()
         ];
 
-        Seizure::where([['ps_id',$ps],['case_no',$case_no],['case_year',$case_year]])->update($data);
+        Seizure::where([['ps_id',$ps],
+                        ['case_no',$case_no],
+                        ['case_year',$case_year],
+                        ['drug_id',$narcotic_type]
+                ])->update($data);
         
         return 1;
         
