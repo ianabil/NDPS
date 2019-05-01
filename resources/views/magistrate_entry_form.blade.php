@@ -12,7 +12,7 @@
     <!-- /.box-header -->
     <div class="box-body">
             <div class="container">	
-                <ul  class="nav nav-pills col-sm-offset-4">
+                <ul class="nav nav-pills col-sm-offset-4" id="ul_nav" style="display:none">
                     <li class="active" style="border-style:outset" id="li_seizure"><a href="#seizure" data-toggle="tab"><strong style="font-size:large">Seizure Details</strong></a></li>
                     <li style="border-style:outset;pointer-events:none;opacity:0.3;" id="li_certification"><a href="#certification" data-toggle="tab"><strong style="font-size:large">Certification Details</strong></a></li>
                 </ul>
@@ -46,10 +46,12 @@
                                 </div>
                             </div>
 
-                            <hr>
-                            <div id="seizure_details" style="display:none">
+                            
+                            <div id="seizure_details" style="display:none">                                
                                 <!-- Content will come dynamically -->
                             </div>
+
+                            
                         </form>
                     </div>
                     <!-- Seizure Details Form :: ENDS -->
@@ -73,9 +75,19 @@
                                 </div>
                             </div>
 
+                            <hr>
+
                             <div class="form-group" id="certification_details">
                                 <!-- Content Will Come Dynamically -->
                             </div>
+
+                            <div class="col-sm-4 col-sm-offset-5">
+                                <a href="#seizure" data-toggle="tab">
+                                    <button type="button" class="btn btn-warning btn-lg btnPrevious">Back</button>
+                                </a>
+                            </div>
+
+
                         </form>
                     </div>
                     <!-- Certification Details Form :: ENDS -->
@@ -201,6 +213,147 @@
                                 $("#ps").attr('disabled',true);
                                 $("#case_no").attr('readonly',true);
                                 $("#case_year").attr('disabled',true);
+
+                                var str_case_details ="";
+                                var str_certification_details = "";
+                                var str_disposal_details = "";
+                                var all_narcotic_certfication_flag = 0;
+                                var all_narcotic_disposal_flag = 0;
+
+                                $.each(obj['case_details'],function(index,value){
+                                    str_case_details+="<hr>"+
+                                    '<div class="form-group required row">'+
+                                            '<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Nature of Narcotic</label>'+
+                                            '<div class="col-sm-3">'+
+                                                '<input type="text" class="form-control" value="'+value.drug_name+'" disabled>'+																
+                                            '</div>'+
+
+                                            '<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Quantity of Seizure</label>'+
+                                            '<div class="col-sm-3">'+
+                                                    '<input class="form-control" type="text" value="'+value.quantity_of_drug+' '+value.seizure_unit+'" disabled>'+										
+                                            '</div>'+
+                                        '</div>';
+                                        		
+
+                                    if(value.certification_flag=='Y'){
+                                            str_certification_details+=""+
+                                                        '<div class="form-group required row">'+
+                                                                '<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Nature of Narcotic</label>'+
+                                                                '<div class="col-sm-3">'+
+                                                                    '<input type="text" class="form-control" value="'+value.drug_name+'" disabled>'+
+                                                                '</div>'+
+
+                                                                '<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Quantity of Sample</label>'+
+                                                                '<div class="col-sm-3">'+
+                                                                        '<input class="form-control" type="text" value="'+value.quantity_of_sample+' '+value.sample_unit+'" disabled>'+										
+                                                                '</div>'+																				
+                                                        '</div>'+
+
+                                                        '<div class="form-group required row">'+
+                                                                '<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Certification Date</label>'+
+                                                                '<div class="col-sm-3">'+
+                                                                        '<input type="text" class="form-control date" value="'+value.date_of_certification+'" disabled>'+
+                                                                '</div>'+
+
+                                                                '<label class="col-sm-2 col-sm-offset-1 col-form-label-sm" style="font-size:medium">Remarks</label>'+
+                                                                '<div class="col-sm-2">'+
+                                                                        '<textarea class="form-control" id="magistrate_remarks" disabled>'+value.magistrate_remarks+'</textarea>'+
+                                                                '</div>'+
+                                                        '</div>'+
+
+                                                        '<div class="form-check form-group required">'+
+                                                                '<input class="form-check-input" type="checkbox" value="verification" id="verification_statement" checked disabled>'+
+                                                                '<label class="form-check-label control-label" for="verification_statement" style="font-size:medium">'+
+                                                                    'I hereby declare that the seizure details furnished here are true and correct.'+
+                                                                '</label>'+
+                                                        '</div>'+
+                                                        
+                                                        '<hr>';
+                                    }
+                                    else{														
+                                        str_certification_details+=""+
+                                            '<div class="form-group required row">'+
+                                                    '<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Narcotic Type</label>'+
+                                                    '<div class="col-sm-3">'+
+                                                            '<select class="form-control select2 narcotic_type_certification" disabled>'+
+                                                                '<option value="'+value.drug_id+'" selected>'+value.drug_name+'</option>'+
+                                                            '</select>'+
+                                                    '</div>'+
+                                            '</div>'+
+
+                                            '<div class="form-group required row">'+
+                                                '<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Quantity of Sample</label>'+
+                                                '<div class="col-sm-3">'+
+                                                    '<input class="form-control sample_quantity" type="number">'+
+                                                '</div>'+
+
+                                                '<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Weighing Unit</label>'+
+                                                '<div class="col-sm-2">'+
+                                                    '<select class="form-control select2 sample_weighing_unit">'+
+                                                        '<option value="">Select An Option</option>'+											
+                                                    '</select>'+
+                                                '</div>'+									
+                                            '</div>'+
+
+
+                                            '<div class="form-group required row">'+
+                                                '<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Certification Date</label>'+
+                                                '<div class="col-sm-3">'+
+                                                    '<input type="text" class="form-control date certification_date" placeholder="Choose Date" autocomplete="off">'+
+                                                '</div>'+
+
+                                                '<label class="col-sm-2 col-sm-offset-1 col-form-label-sm" style="font-size:medium">Remarks</label>'+
+                                                '<div class="col-sm-2">'+
+                                                    '<textarea class="form-control" id="magistrate_remarks" ></textarea>'+
+                                                '</div>'+
+                                            '</div>'+
+
+                                            '<div class="form-group required row">'+
+                                                '<input class="form-check-input verification_statement" type="checkbox" value="verification">'+
+                                                '<label class="form-check-label control-label col-form-label-sm" for="verification_statement" style="font-size:medium">'+
+                                                    'I hereby declare that the seizure details furnished here are true and correct.'+
+                                                '</label>'+
+
+                                                '<div class="col-sm-3 col-sm-offset-5">'+
+                                                    '<button type="button" class="btn btn-success btn-md certify">Certify</button>'+
+                                                '</div>'+
+                                            '</div>'+
+                                                        
+                                            '<hr>';                                                        
+                                        
+                                    }
+                                })
+
+                                str_case_details+= '<hr>'+
+                                    '<div class="col-sm-3 col-sm-offset-5">'+
+                                        '<a href="#certification" data-toggle="tab">'+
+                                            '<button type="button" class="btn btn-success btn-lg btnNext">Next</button>'+
+                                        '</a>'+
+                                    '</div>';
+
+                                $("#seizure_details").html(str_case_details);
+                                $("#seizure_details").show();
+                                $("#ul_nav").show();
+
+                                $("#li_certification").css("pointer-events","");									
+                                $("#li_certification").css("opacity","");
+
+                                $("#certification_details").html(str_certification_details);
+                               
+                                $(".select2").select2();
+                                $(".date").datepicker({
+                                                endDate:'0',
+                                                format: 'dd-mm-yyyy'
+                                }); // Initialization of Date picker For The Disposal Screen
+                                
+                                $("#seizure_date").val(obj['case_details']['0'].date_of_seizure).attr('readonly',true);											
+                                $("#storage").prepend("<option value='"+obj['case_details']['0'].storage_location_id+"' selected>"+obj['case_details']['0'].storage_name+"</option>").attr('disabled',true);
+                                $("#remark").val(obj['case_details']['0'].remarks).attr('readonly',true);
+                                $("#district").prepend("<option value='"+obj['case_details']['0'].district_id+"' selected>"+obj['case_details']['0'].district_name+"</option>").attr('disabled',true);
+                                $("#court").prepend("<option value='"+obj['case_details']['0'].court_id+"' selected>"+obj['case_details']['0'].court_name+"</option>").attr('disabled',true);
+
+                                $(".narcotic_type_certification").trigger("change");
+                                
                             }
                             else{
                                 swal("No Record Found","","error");
@@ -211,6 +364,34 @@
 
     })
     /*Fetching case details for a specific case :: ENDS */
+
+
+    	/*Fetch list of units on correspondance to the selected sezied narcotic type :: STARTS*/
+		$(document).on("change",".narcotic_type_certification", function(){	
+
+            var narcotic=$(this).val();
+            // If div structure changes, following code will not work
+            var element = $(this).parent().parent().next().find(".sample_weighing_unit");
+
+            element.children('option:not(:first)').remove();
+
+                $.ajax({
+                    type: "POST",
+                    url:"magistrate_entry_form/narcotic_units",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        narcotic: narcotic
+                    },
+                    success:function(resonse){                        
+                        var obj=$.parseJSON(resonse)
+                        $.each(obj['units'],function(index,value){							
+                            element.append('<option value="'+value.unit_id+'">'+value.unit_name+'</option>');
+                        })
+                    }
+                });
+
+        });
+        /*Fetch list of units on correspondance to the selected narcotic type :: ENDS*/
 
 
     /* Fetching Case Details On Other Events Too :: STARTS */
@@ -319,17 +500,32 @@
     
 
     /*Certify ::STARTS*/
-    $(document).on("click","#certify",function(){
+    $(document).on("click",".certify",function(){
         var ps = $("#ps option:selected").val();
         var case_no = $("#case_no").val();
         var case_year = $("#case_year option:selected").val();
 
-        var sample_quantity = $("#sample_quantity").val();
-        var sample_unit = $("#sample_weighing_unit option:selected").val();
-        var certification_date = $("#certification_date").val();
-        var magistrate_remarks = $("#magistrate_remarks").val();
-        var verification_statement = $('#verification_statement').is(":checked");
-        
+        var element = $(this);
+
+        // If div structure changes, following code will not work :: STARTS
+        var narcotic_type = $(this).parent().parent().prev().prev().prev().find(".narcotic_type_certification").val();
+
+        var element_sample_quantity = $(this).parent().parent().prev().prev().find(".sample_quantity");
+        var sample_quantity = element_sample_quantity.val();
+
+        var element_sample_unit = $(this).parent().parent().prev().prev().find(".sample_weighing_unit");
+        var sample_unit = element_sample_unit.val();
+
+        var element_certification_date = $(this).parent().parent().prev().find(".certification_date");
+        var certification_date = element_certification_date.val();
+
+        var element_magistrate_remarks = $(this).parent().parent().prev().find(".magistrate_remarks");
+        var magistrate_remarks = element_magistrate_remarks.val();
+
+        var element_verification_statement = $(this).parent().parent().find(".verification_statement");
+        var verification_statement = element_verification_statement.is(":checked");
+        // If div structure changes, following code will not work :: ENDS
+       
         if(sample_quantity==""){
             swal("Invalid Input","Please Input Sample Quantity","error");
             return false;

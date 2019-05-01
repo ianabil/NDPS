@@ -43,22 +43,45 @@ class MagistrateController extends Controller
         $case_year = $request->input('case_year');
 
         $data['case_details'] = Seizure::join('ps_details','seizures.ps_id','=','ps_details.ps_id')
+                        ->join('agency_details','seizures.stakeholder_id','=','agency_details.agency_id')
                         ->join('narcotics','seizures.drug_id','=','narcotics.drug_id')
-                        ->join('units','seizure_quantity_weighing_unit_id','=','units.unit_id')
+                        ->join('units AS u1','seizures.seizure_quantity_weighing_unit_id','=','u1.unit_id')
+                        ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')                        
                         ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                        ->join('districts','seizures.district_id','=','districts.district_id')
                         ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
-                        ->where([['seizures.ps_id',$ps],['seizures.case_no',$case_no],['seizures.case_year',$case_year],['certification_court_id',$court_id]])
-                        ->limit(1)
+                        ->join('districts','seizures.district_id','=','districts.district_id')
+                        ->where([['seizures.ps_id',$ps],['seizures.case_no',$case_no],['seizures.case_year',$case_year]])                        
+                        ->select('drug_name','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
+                                'u1.unit_name AS seizure_unit','date_of_seizure','storage_name',
+                                'court_name','districts.district_id','district_name','date_of_certification',
+                                'certification_flag','quantity_of_sample','u2.unit_name AS sample_unit',
+                                'remarks','magistrate_remarks')
                         ->get();
+
         foreach($data['case_details'] as $case_details){
             $case_details->date_of_seizure = Carbon::parse($case_details->date_of_seizure)->format('d-m-Y');
             if($case_details->certification_flag=='Y')
-                $case_details->date_of_certification = Carbon::parse($case_details->date_of_certification)->format('d-m-Y');
-            
+                $case_details->date_of_certification = Carbon::parse($case_details->date_of_certification)->format('d-m-Y');           
+            if($case_details->magistrate_remarks==null)
+                $case_details->magistrate_remarks = "";
         }
 
         echo json_encode($data);
+    }
+
+
+    // Narcotic wise unit fetching
+    public function narcotic_units(Request $request){
+
+        $narcotic = $request->input('narcotic'); 
+
+        $data['units']=Narcotic_unit::join('units',"narcotic_units.unit_id","=","units.unit_id")
+                                ->select('units.unit_id','unit_name')
+                                ->where('narcotic_id','=', $narcotic )
+                                ->get();
+
+        echo json_encode($data);
+
     }
 
     // Do certification
