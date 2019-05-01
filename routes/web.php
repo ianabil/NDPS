@@ -126,11 +126,11 @@
         //District::End
 
         //Police Station::Start
-        Route::get('ps_view', function(){
-            return view ('ps_view');
-        });
 
+
+        Route::get('ps_view', 'MasterMaintenanceController@index_ps');
         
+
         Route::post('master_maintenance/police_station',
         'MasterMaintenanceController@store_ps');
 
@@ -184,6 +184,7 @@
 
        //User::ends
 
+       
 
        //Composite Report ::Starts
 
@@ -240,6 +241,15 @@
         Route::post('magistrate_entry_form/certify','MagistrateController@certify');
 
     });
+
+    //update password:start
+
+    Route::get('update_password', function () {
+        return view('update_password');
+     });
+
+     Route::post('update_password','MasterMaintenanceController@update_password');
+     //update password:end
 
 
   

@@ -16,6 +16,7 @@ class CreateUnitsTable extends Migration
         Schema::create('units', function (Blueprint $table) {
             $table->increments('unit_id')->nullable(false);
             $table->string('unit_name')->nullable(false);
+            $table->integer('unit_degree')->nullable(false);
             $table->timestamps();
         });
     }

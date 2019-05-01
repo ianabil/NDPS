@@ -15,6 +15,15 @@
                     <label class="control-label">Police Station's Name</label>
                         <input type="text" class="form-control ps_name" name="ps_name" id="ps_name">
                 </div>
+                <div class="col-md-4 form-group required">
+                    <label class="control-label district_name">District</label><br>
+                        <select class="select2"  name="district_name" id="district_name">
+                             <option value="">Select District</option>
+                             @foreach($data['districts']  as $data1)
+                             	<option value="{{$data1['district_id']}}">{{$data1['district_name']}} </option>
+							 @endforeach
+                         </select>
+                </div>
                 <div class="col-md-2">
                     <div class="form-group">
                         <label>&nbsp;</label>
@@ -43,7 +52,8 @@
                         <tr>
                             <th>#</th>
                             <th>POLICE STATION'S NAME</th>
-                             <th>Action</th>
+                            <th>DISTRICT</th>
+                            <th>Action</th>
                         </tr>
                     </thead>                    
             </table>
@@ -103,6 +113,8 @@
                                   "data": "ID" },
                                 {"class": "ps_name data",
                                  "data": "POLICE STATION NAME" },
+                                 {"class": "district data",
+                                 "data": "DISTRICT" },
                                 {"class": "delete",
                                 "data": "ACTION" }
                             ]

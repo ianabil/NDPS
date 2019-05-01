@@ -261,7 +261,7 @@ class MasterMaintenanceController extends Controller
                     $this->validate ( $request, [ 
                         
                         'court_name' => 'required|max:255|unique:court_details,court_name',
-                        'district_name' => 'required|integer|max:255'
+                        'district_name' => 'required|integer|max:1000'
 
                     ] ); 
 
@@ -508,7 +508,8 @@ class MasterMaintenanceController extends Controller
                 $columns = array( 
                     0 =>'ID', 
                     1 =>'UNIT NAME',
-                    2=>'ACTION'
+                    2=>'UNIT DEGREE',
+                    3=>'ACTION'
                 );
                 $totalData =Unit::count();
         
@@ -548,6 +549,7 @@ class MasterMaintenanceController extends Controller
                     {
                         $nestedData['ID'] = $unit->unit_id;
                         $nestedData['UNIT NAME'] = $unit->unit_name;
+                        $nestedData['UNIT DEGREE'] = $unit->unit_degree;
                         $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
         
                         $data[] = $nestedData;
@@ -568,12 +570,14 @@ class MasterMaintenanceController extends Controller
             //Add Unit
             public function store_unit(Request $request){
                 $this->validate ( $request, [ 
-                    'narcotic_unit' => 'required|max:255'         
+                    'narcotic_unit' => 'required|max:255',
+                    'unit_degree' => 'required|integer'   
                 ] ); 
                 $narcotic_unit = strtoupper($request->input('narcotic_unit')); 
-
+                $unit_degree = $request->input('unit_degree'); 
                 Unit::insert([
                     'unit_name'=>$narcotic_unit,
+                    'unit_degree' =>$unit_degree,
                     'created_at'=>Carbon::today(),
                     'updated_at'=>Carbon::today()
                     ]);
@@ -594,7 +598,7 @@ class MasterMaintenanceController extends Controller
 
                 $data = [
                     'unit_name'=>$unit,
-                    'updated_at'=>Carbon::today(),
+                    'updated_at'=>Carbon::today()
 
                 ];
 
@@ -626,12 +630,24 @@ class MasterMaintenanceController extends Controller
 
         //Police Staion:Start
 
+            public function index_ps(Request $request)
+            {
+                $data= array();
+
+                $data['districts'] = District::select('district_id','district_name')->orderBy('district_name')->get();
+                
+
+                return view('ps_view',compact('data'));
+            }
+
+
             // Data Table Code for PS
                 public function get_all_ps(Request $request)
                 {
                     $columns = array( 
                         0 =>'ID', 
                         1 =>'POLICE STATION NAME',
+                        3 =>'DISTRICT',
                         2=>'ACTION'
                     );
                     $totalData =Ps_detail::count();
@@ -644,23 +660,26 @@ class MasterMaintenanceController extends Controller
                     $dir = $request->input('order.0.dir');
             
                     if(empty($request->input('search.value'))){
-                        $ps = Ps_detail::offset($start)
+                        $ps = Ps_detail::join('districts','ps_details.district_id','=','districts.district_id')
+                                        ->offset($start)
                                         ->limit($limit)
                                         ->orderBy('ps_id',$dir)
                                         ->get();
-                        $totalFiltered = Ps_detail::count();
+                        $totalFiltered = Ps_detail::join('districts','ps_details.district_id','=','districts.district_id')
+                                          ->count();
                     }
                     else
                     {
                         $search = strtoupper($request->input('search.value'));
-                        $ps = Ps_detail::where('ps_name','like',"%{$search}%")
-                                            ->offset($start)
-                                            ->limit($limit)
-                                            ->orderBy('ps_name',$dir)
-                                            ->get();
-                        $totalFiltered = Ps_detail::where('ps_id','like',"%{$search}%")
-                                                ->orWhere('ps_name','like',"%{$search}%")                                           
-                                                ->count();
+                        $ps = Ps_detail::join('districts','ps_details.district_id','=','districts.district_id')
+                                        ->where('ps_name','like',"%{$search}%")
+                                        ->offset($start)
+                                        ->limit($limit)
+                                        ->orderBy('ps_name',$dir)
+                                        ->get();
+                        $totalFiltered = Ps_detail::join('districts','ps_details.district_id','=','districts.district_id')
+                                                    ->where('ps_name','like',"%{$search}%")                                      
+                                                    ->count();
                     }
             
                     $data = array();
@@ -671,6 +690,7 @@ class MasterMaintenanceController extends Controller
                         {
                             $nestedData['ID'] = $ps->ps_id;
                             $nestedData['POLICE STATION NAME'] = $ps->ps_name;
+                            $nestedData['DISTRICT'] = $ps->district_name;
                             $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
             
                             $data[] = $nestedData;
@@ -692,7 +712,7 @@ class MasterMaintenanceController extends Controller
                 public function store_ps(Request $request){
 
                     $this->validate ( $request, [                     
-                        'ps_name' => 'required|max:255|unique:ps_details,ps_name'                    
+                        'ps_name' => 'required|string|max:255|unique:ps_details,ps_name'                    
 
                     ] ); //'district_name' => 'required|integer|max:255'
                     $ps_name=strtoupper($request->input('ps_name'));
@@ -925,6 +945,39 @@ class MasterMaintenanceController extends Controller
 
             return 1;
         }
+
+        //Update Password:Start
+
+        public function update_password(Request $request){
+
+            $this->validate($request,
+                    ['new_password' => 'required|confirmed|alpha_dash|min:6|max:15|different:current_password',
+                    'current_password' =>'required'
+                    ]);
+            
+            $uid=$request->input('uid');  
+            $new_password = Hash::make($request->input('new_password'));
+            $cur_password =  $request->input('current_password');
+            $data['user'] = User::where('user_id',$uid)
+                            ->get();
+
+            if(Hash::check($cur_password, $data['user'][0]['password']))
+            {
+                User::where('user_id',$uid)
+                ->update(['password'=>$new_password, 'updated_at'=>Carbon::today()]);
+            
+                return 1;
+            }
+
+            else
+             return 0;
+
+           
+            
+           
+        }
+
+        //Update Password:End
  }
 
         

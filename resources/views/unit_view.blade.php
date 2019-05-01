@@ -15,6 +15,16 @@
                     <label class="control-label">Narcotic's Unit</label>
                     <input type="text" class="form-control" name="narcotic_unit" id="narcotic_unit">
                 </div>
+                <div class="col-md-4 form-group required">
+                    <label class="control-label unit_degree">Unit Degree</label><br>
+                        <select class="select2"  name="unit_degree" id="unit_degree">
+                             <option value="">Select District</option>
+                             <option value="3">Kg/Kl/ect</option>
+                             <option value="2">Gram/Litre/ect</option>
+                             <option value="1">Mg/Ml/ect</option>
+                             <option value="0">Ampule/pieces/others/ect</option>
+                         </select>
+                </div>
                                 
                  <div class="col-md-2">
                     <div class="form-group">
@@ -44,6 +54,7 @@
                         <tr>
                             <th>#</th>
                             <th>UNIT NAME</th>
+                            <th>UNIT DEGREE</th>
                             <th>ACTION</th>
                         </tr>
                     </thead>                    
@@ -100,6 +111,8 @@
                                     "data": "ID" },
                                 {"class": "unit data",
                                     "data": "UNIT NAME" },
+                                {"class": "unit_degree data",
+                                "data": "UNIT DEGREE" },
                                 {"class": "delete",
                                     "data": "ACTION" }
                             ]
@@ -122,12 +135,14 @@
                   {
                     return letter.toUpperCase();
                   });
+                  var unit_degree=$("#unit_degree option:selected").val();
                                             
                  $.ajax({
                         type:"POST",
                         url:"master_maintenance/unit",
                         data:{_token: $('meta[name="csrf-token"]').attr('content'), 
-                                narcotic_unit:narcotic_unit
+                                narcotic_unit:narcotic_unit,
+                                unit_degree:unit_degree
                              },
                              success:function(response){
                                 $("#narcotic_unit").val('');
@@ -139,9 +154,7 @@
                                    swal("Cannot Add New Unit", ""+response.responseJSON.errors.narcotic_unit['0'], "error");
                                                                                           
                               }
-
-
-                        });
+                    });
                 });
                 //add unit:end
 
