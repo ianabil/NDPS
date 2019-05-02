@@ -59,11 +59,16 @@
 												@foreach($data['narcotics'] as $narcotic)
 													<option value="{{$narcotic->drug_id}}">{{$narcotic->drug_name}}</option>
 												@endforeach
+												<option value="other">Other</option>
 											</select>									
 										</div>
 
 										<div class="col-sm-1 div_img_add_more">											
 											<img src="{{asset('images/details_open.png')}}" style="cursor:pointer" class="add_more" alt="add_more" id="add_more">
+										</div>
+
+										<div class="col-sm-3 div_other_narcotic_type" style="display:none">
+												<input class="form-control input_other_narcotic_type" type="text" placeholder="Narcotic Name">	
 										</div>
 
 									</div>
@@ -91,6 +96,7 @@
 												@foreach($data['storages'] as $storage)
 													<option value="{{$storage->storage_id}}">{{$storage->storage_name}}</option>
 												@endforeach
+												<option value="other">Other</option>
 											</select>
 										</div>
 
@@ -222,7 +228,7 @@
 			var count = 0;
 			$(document).on("click","#add_more", function(){
 				count++;
-				$(".div_add_more:first").clone().insertAfter(".div_add_more:last");
+				$(".div_add_more:first").clone().find('.div_other_narcotic_type').hide().end().insertAfter(".div_add_more:last");
 				$(".add_more:last").attr({src:"images/details_close.png",
 																  class:"remove", 
 																	alt:"remove",
@@ -326,7 +332,8 @@
 														storage:storage,
 														remark:remark,
 														district:district,
-														court:court
+														court:court,
+														flag_other_narcotic:flag_other_narcotic
 													},
 													success:function(response){
 														swal("Application For Certification Successfully Submitted","","success");
@@ -335,17 +342,7 @@
 														},2000);
 													},
 													error:function(response){
-														console.log(response);
-														// if(response.responseJSON.errors.hasOwnProperty('seizure_weighing_unit'))
-														// 		swal("Invalid Input", ""+response.responseJSON.errors.seizure_weighing_unit['0'], "error");
-
-														// if(response.responseJSON.errors.hasOwnProperty('seizure_quantity'))
-														// 		swal("Invalid Input", ""+response.responseJSON.errors.seizure_quantity['0'], "error");
-
-														// if(response.responseJSON.errors.hasOwnProperty('narcotic_type'))
-														// 		swal("Invalid Input", ""+response.responseJSON.errors.narcotic_type['0'], "error");
-														swal("Invalid Input","","error");
-														
+														swal("Invalid Input","","error");														
 													}
 										})
 									}
@@ -382,10 +379,22 @@
 
 
 		/*Fetch list of units on correspondance to the selected sezied narcotic type :: STARTS*/
+		var flag_other_narcotic=0;
+
 		$(document).on("change",".narcotic_type", function(){	
 
 			var narcotic=$(this).val();
+
 			// If div structure changes, following code will not work
+			if(narcotic=="other"){
+				$(this).parent().parent().find('.div_other_narcotic_type').show();
+				flag_other_narcotic = 1;
+			}
+			else{
+				$(this).parent().parent().find('.div_other_narcotic_type').hide();
+				flag_other_narcotic = 0;
+			}
+			
 			var element = $(this).parent().parent().next().find(".seizure_weighing_unit");
 			
 			element.children('option:not(:first)').remove();
@@ -395,7 +404,8 @@
 									url:"entry_form/narcotic_units",
 									data: {
 										_token: $('meta[name="csrf-token"]').attr('content'),
-										narcotic: narcotic
+										narcotic: narcotic,
+										flag_other_narcotic
 									},
 									success:function(resonse){                        
 										var obj=$.parseJSON(resonse)
