@@ -324,7 +324,31 @@
                                     }
                                 })
 
-                                str_case_details+= '<hr>'+
+                                str_case_details+= "<hr>"+
+                                    '<div class="form-group required row">'+
+                                            '<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Place of Storage</label>'+
+                                            '<div class="col-sm-3">'+
+                                                '<select class="form-control select2" id="storage" disabled>'+
+                                                    '<option value="'+obj['case_details']['0'].storage_location_id+'" selected>'+obj['case_details']['0'].storage_name+'</option>'+
+                                                '</select>'+
+                                            '</div>'+
+
+                                        '<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Date of Seizure</label>'+
+                                        '<div class="col-sm-3">'+
+                                            '<input type="text" class="form-control date" id="seizure_date" autocomplete="off" value="'+obj['case_details']['0'].date_of_seizure+'" disabled>'+
+                                        '</div>'+
+                                    '</div>'+
+
+
+                                    '<div class="form-group required row">'+	
+                                            '<label class="col-sm-2 col-form-label-sm" style="font-size:medium">Case Details / Remark</label>'+
+                                            '<div class="col-sm-2">'+
+                                                '<textarea class="form-control" id="remark" disabled>'+obj['case_details']['0'].remarks+'</textarea>'+
+                                            '</div>'+	
+                                    '</div>'+
+
+                                    '<hr>'+
+                                    
                                     '<div class="col-sm-3 col-sm-offset-5">'+
                                         '<a href="#certification" data-toggle="tab">'+
                                             '<button type="button" class="btn btn-success btn-lg btnNext">Next</button>'+
