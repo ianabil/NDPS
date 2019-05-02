@@ -1,13 +1,13 @@
 @extends('layouts.app') 
 @section('content')
 
-<div class="row">
+<div class="row">    
     <div class="col-md-4 col-sm-6 col-xs-12">
         <div class="info-box bg-purple">
             <span class="info-box-icon"><i class="ion ion-document-text" style="margin-top:20px"></i></span>
 
             <div class="info-box-content">
-              <span class="info-box-text"><strong>Total Case</strong></span>
+              <span class="info-box-text"><strong>Total Seizure</strong></span>
             <span class="info-box-number">{{$data['total_seizure']}}</span>
             </div>
             <!-- /.info-box-content -->
@@ -15,7 +15,6 @@
         <!-- /.info-box -->
     </div>
 
-    <a href="#">
     <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="info-box bg-red">
                 <span class="info-box-icon"><i class="far fa-thumbs-down" style="margin-top:20px"></i></span>
@@ -28,9 +27,8 @@
             </div>
             <!-- /.info-box -->
     </div>
-    </a>
 
-    <a href="#">
+    
     <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="info-box bg-green">
                 <span class="info-box-icon"><i class="far fa-thumbs-up" style="margin-top:20px"></i></span>
@@ -42,8 +40,7 @@
                 <!-- /.info-box-content -->
             </div>
             <!-- /.info-box -->
-    </div>
-  </a>
+    </div>  
 
 </div>
 
@@ -187,7 +184,65 @@
         }
         else {
             element.attr("src","images/details_close.png");
-            row.child('<table class="table table-bordered table-responsive"><thead><tr><th>Date of Seizure</th><th>Seizure Quantity</th><th>Storage Location</th><th>Case Details / Remarks</th><th>Date of Certification</th><th>Certified By</th><th>Sample Quantity</th><th>Magistrate Remarks</th><th>Date of Disposal</th><th>Disposal Quantity</th></tr></thead><tbody><tr><td>'+obj['0'].date_of_seizure+'</td><td>'+obj['0'].quantity_of_drug+' '+obj['0'].seizure_unit+'</td><td>'+obj['0'].storage_name+'</td><td>'+obj['0'].remarks+'</td><td>'+obj['0'].date_of_certification+'</td><td>'+obj['0'].court_name+'</td><td>'+obj['0'].quantity_of_sample+' '+obj['0'].sample_unit+'</td><td>'+obj['0'].magistrate_remarks+'</td><td>'+obj['0'].date_of_disposal+'</td><td>'+obj['0'].disposal_quantity+' '+obj['0'].disposal_unit+'</td></tr></tbody></table>').show();
+            var child_string ="";
+            child_string += '<table class="table table-bordered table-responsive">'+
+                                '<thead>'+
+                                    '<tr>'+
+                                        '<th>Date of Seizure</th>'+
+                                        '<th>Seizure Quantity</th>'+
+                                        '<th>Storage Location</th>'+
+                                        '<th>Case Details / Remarks</th>'+
+                                        '<th>Date of Certification</th>'+
+                                        '<th>Certified By</th>'+
+                                        '<th>Sample Quantity</th>'+
+                                        '<th>Magistrate Remarks</th>'+
+                                        '<th>Date of Disposal</th>'+
+                                        '<th>Disposal Quantity</th>'+
+                                    '</tr>'+
+                                '</thead>'+
+                                
+                                '<tbody>';
+
+            $.each(obj,function(key,value){
+                child_string += ""+
+                            '<tr>'+
+                                '<td>'+
+                                    value.date_of_seizure+
+                                '</td>'+
+                                '<td>'+
+                                    value.quantity_of_drug+' '+value.seizure_unit+
+                                '</td>'+
+                                '<td>'+
+                                    value.storage_name+
+                                '</td>'+
+                                '<td>'+
+                                    value.remarks+
+                                '</td>'+
+                                '<td>'+
+                                    value.date_of_certification+
+                                '</td>'+
+                                '<td>'+
+                                    value.court_name+
+                                '</td>'+
+                                '<td>'+
+                                    value.quantity_of_sample+' '+value.sample_unit+
+                                '</td>'+
+                                '<td>'+
+                                    value.magistrate_remarks+
+                                '</td>'+
+                                '<td>'+
+                                    value.date_of_disposal+
+                                '</td>'+
+                                '<td>'+
+                                    value.disposal_quantity+' '+value.disposal_unit+
+                                '</td>'+
+                            '</tr>';
+            })
+
+            child_string +='</tbody></table>';
+            console.log(child_string);
+
+            row.child(child_string).show();
         }
 
     })

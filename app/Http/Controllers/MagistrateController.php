@@ -90,6 +90,7 @@ class MagistrateController extends Controller
             'ps' => 'required|integer',
             'case_no' => 'required|integer',
             'case_year' => 'required|integer',
+            'narcotic_type' => 'required|integer',
             'sample_quantity' => 'required|numeric',
             'sample_weighing_unit' => 'required|integer',
             'certification_date' => 'required|date',
@@ -99,6 +100,7 @@ class MagistrateController extends Controller
         $ps = $request->input('ps'); 
         $case_no = $request->input('case_no'); 
         $case_year = $request->input('case_year');
+        $narcotic_type = $request->input('narcotic_type');
 
         $sample_quantity = $request->input('sample_quantity'); 
         $sample_weighing_unit = $request->input('sample_weighing_unit');         
@@ -114,7 +116,12 @@ class MagistrateController extends Controller
             'updated_at'=>Carbon::today()
         ];
 
-        Seizure::where([['ps_id',$ps],['case_no',$case_no],['case_year',$case_year]])->update($data);
+        Seizure::where([
+            ['ps_id',$ps],
+            ['case_no',$case_no],
+            ['case_year',$case_year],
+            ['drug_id',$narcotic_type]
+        ])->update($data);
         
         return 1;
         
@@ -139,41 +146,36 @@ class MagistrateController extends Controller
             9 =>'Disposal Status'
         );
 
-        $seizure_details = Seizure::join('ps_details','seizures.ps_id','=','ps_details.ps_id')
-                                    ->join('agency_details','seizures.stakeholder_id','=','agency_details.agency_id')
-                                    ->join('narcotics','seizures.drug_id','=','narcotics.drug_id')
-                                    ->join('units','seizures.seizure_quantity_weighing_unit_id','=','units.unit_id')
-                                    ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                                    ->where([
-                                        ['date_of_seizure','>=',$start_date],
-                                        ['date_of_seizure','<=',$end_date],
-                                        ['certification_court_id',$court_id]
-                                    ])
-                                    ->orWhere([
-                                        ['date_of_certification','>=',$start_date],
-                                        ['date_of_certification','<=',$end_date],
-                                        ['certification_court_id',$court_id]
-                                    ])
-                                    ->orWhere([
-                                        ['date_of_disposal','>=',$start_date],
-                                        ['date_of_disposal','<=',$end_date],
-                                        ['certification_court_id',$court_id]
-                                    ])
-                                    ->get();
-
+        // Fetching unique Case No. As Multiple Row May Exist For A Single Case No.
+        $cases = Seizure::join('ps_details','seizures.ps_id','=','ps_details.ps_id')
+                        ->join('agency_details','seizures.stakeholder_id','=','agency_details.agency_id')
+                        ->where([
+                            ['seizures.created_at','>=',$start_date],
+                            ['seizures.created_at','<=',$end_date],
+                            ['certification_court_id',$court_id]
+                        ])
+                        ->orWhere([
+                            ['seizures.updated_at','>=',$start_date],
+                            ['seizures.updated_at','<=',$end_date],
+                            ['certification_court_id',$court_id]
+                        ])
+                        ->select('seizures.ps_id','case_no','case_year','seizures.created_at','ps_name','agency_name')
+                        ->distinct()
+                        ->get();
+        
         $record = array();
 
         $report['Sl No'] = 0;
-
-        foreach($seizure_details as $data){
+        
+        foreach($cases as $case){
             //PS ID
-            $report['PS ID'] = $data->ps_id;
+            $report['PS ID'] = $case->ps_id;
 
             //Case No
-            $report['Case No'] = $data->case_no;
+            $report['Case No'] = $case->case_no;
 
             //PS ID
-            $report['Case Year'] = $data->case_year;
+            $report['Case Year'] = $case->case_year;
 
             //More Details
             $report['More Details'] = '<img src="images/details_open.png" style="cursor:pointer" class="more_details" alt="More Details">';
@@ -182,32 +184,88 @@ class MagistrateController extends Controller
             $report['Sl No'] +=1;
 
             //If submitted date is within 10 days of present date, a new marker will be shown
-            if(((strtotime(date('Y-m-d')) - strtotime($data->created_at)) / (60*60*24) <=10))
-                $report['Stakeholder Name'] = "<strong>".$data->agency_name."</strong> <small class='label pull-right bg-blue'>new</small>";
+            if(((strtotime(date('Y-m-d')) - strtotime($case->created_at)) / (60*60*24) <=10))
+                $report['Stakeholder Name'] = "<strong>".$case->agency_name."</strong> <small class='label pull-right bg-blue'>new</small>";
             else
-                $report['Stakeholder Name'] = "<strong>".$data->agency_name."</strong>";
+                $report['Stakeholder Name'] = "<strong>".$case->agency_name."</strong>";
 
             //Case_No
-            $report['Case_No'] = $data->ps_name." PS / ".$data->case_no." / ".$data->case_year;
+            $report['Case_No'] = $case->ps_name." PS / ".$case->case_no." / ".$case->case_year;
 
-            //Narcotic Type
-            $report['Narcotic Type'] = $data->drug_name;
+            // Fetching details of respective Case No.   
+            $seizure_details = Seizure::join('narcotics','seizures.drug_id','=','narcotics.drug_id')
+                                        ->join('units','seizures.seizure_quantity_weighing_unit_id','=','units.unit_id')                                        
+                                        ->where([
+                                            ['seizures.ps_id',$case->ps_id],
+                                            ['case_no',$case->case_no],
+                                            ['case_year',$case->case_year]
+                                        ])                                        
+                                        ->get();
+            
+            $certification_done_flag = 0;
+            $certification_pending_flag = 0;
+            $partial_certification_flag = 0;
 
-            //Certification Status
-            if($data->certification_flag=='Y')
-                $report['Certification Status'] = 'DONE';
-            else if ($data->certification_flag=='N')
+            $disposal_done_flag = 0;
+            $disposal_pending_flag = 0;
+            $partial_disposal_flag = 0;
+
+            $report['Narcotic Type'] = "";
+            foreach($seizure_details as $seizure){
+                //Narcotic Type
+                $report['Narcotic Type'] = $report['Narcotic Type'].$seizure->drug_name."<br>";
+
+                 //Certification Status
+                if($seizure->certification_flag=='Y'){
+                    $certification_done_flag = 1;
+                }
+                else{
+                    $certification_pending_flag = 1;
+                }
+
+                if($certification_done_flag == 1 && $certification_pending_flag == 1){
+                    $partial_certification_flag = 1;
+                }
+
+                //Disposal Status
+                if($seizure->disposal_flag=='Y'){
+                    $disposal_done_flag = 1;
+                }
+                else{
+                    $disposal_pending_flag = 1;
+                }
+
+                if($disposal_done_flag == 1 && $disposal_pending_flag == 1){
+                    $partial_disposal_flag = 1;
+                }
+            }
+
+            //Certification Status                
+            if($partial_certification_flag == 1){
+                $report['Certification Status'] = 'PARTIALLY CERTFIED';
+            }
+            else if($certification_done_flag == 1 && $certification_pending_flag == 0){
+                $report['Certification Status'] = 'CERTFIED';
+            }
+            else if($certification_done_flag == 0 && $certification_pending_flag == 1){
                 $report['Certification Status'] = 'PENDING';
+            }
 
 
-            //Disposal Status
-            if($data->disposal_flag=='Y')
-                $report['Disposal Status'] = 'DONE';
-            else if ($data->disposal_flag=='N')
-                $report['Disposal Status'] = 'NOT DISPOSED';
+            //Disposal Status                
+            if($partial_disposal_flag == 1){
+                $report['Disposal Status'] = 'PARTIALLY DISPOSED';
+            }
+            else if($disposal_done_flag == 1 && $disposal_pending_flag == 0){
+                $report['Disposal Status'] = 'DISPOSED';
+            }
+            else if($disposal_done_flag == 0 && $disposal_pending_flag == 1){
+                $report['Disposal Status'] = 'PENDING';
+            }
 
             $record[] = $report;
-        }
+
+        }  
 
         $json_data = array(
             "draw" => intval($request->input('draw')),
@@ -254,6 +312,7 @@ class MagistrateController extends Controller
                 $case['date_of_certification'] = Carbon::parse($case['date_of_certification'])->format('d-m-Y');
             }
             else{
+                $case['court_name'] = 'CERTFICATION PENDING';
                 $case['date_of_certification'] = 'NA';
                 $case['quantity_of_sample'] = 'NA';
                 $case['sample_unit'] = '';

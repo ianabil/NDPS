@@ -3,7 +3,7 @@
 <!-- Main content -->
 <div class="box box-default">
     <div class="box-header with-border" >
-        <h3 class="box-title" text-align="center"><strong>Certification Details of Narcotic Contrabands:</strong></h3>
+        <h3 class="box-title" text-align="center"><strong>Find Case To Certify:</strong></h3>
         <div class="box-tools pull-right">
             <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
             <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
@@ -12,12 +12,14 @@
     <!-- /.box-header -->
     <div class="box-body">
             <div class="container">	
-                <ul class="nav nav-pills col-sm-offset-4" id="ul_nav" style="display:none">
-                    <li class="active" style="border-style:outset" id="li_seizure"><a href="#seizure" data-toggle="tab"><strong style="font-size:large">Seizure Details</strong></a></li>
-                    <li style="border-style:outset;pointer-events:none;opacity:0.3;" id="li_certification"><a href="#certification" data-toggle="tab"><strong style="font-size:large">Certification Details</strong></a></li>
-                </ul>
-                
-                <br><hr>
+                <div id="ul_nav" style="display:none">
+                    <ul class="nav nav-pills col-sm-offset-4">
+                        <li class="active" style="border-style:outset" id="li_seizure"><a href="#seizure" data-toggle="tab"><strong style="font-size:large">Seizure Details</strong></a></li>
+                        <li style="border-style:outset;pointer-events:none;opacity:0.3;" id="li_certification"><a href="#certification" data-toggle="tab"><strong style="font-size:large">Certification Details</strong></a></li>
+                    </ul>
+                    
+                    <br><hr>
+                </div>
 
                 <div class="tab-content clearfix">
                     <!-- Seizure Details Form :: STARTS -->
@@ -304,7 +306,7 @@
 
                                                 '<label class="col-sm-2 col-sm-offset-1 col-form-label-sm" style="font-size:medium">Remarks</label>'+
                                                 '<div class="col-sm-2">'+
-                                                    '<textarea class="form-control" id="magistrate_remarks" ></textarea>'+
+                                                    '<textarea class="form-control magistrate_remarks" ></textarea>'+
                                                 '</div>'+
                                             '</div>'+
 
@@ -503,7 +505,8 @@
                 case_year:case_year
               },
               success:function(response){
-                obj = $.parseJSON(response);                           
+                obj = $.parseJSON(response);  
+                console.log(obj);                         
               },
               error:function(response){
                 console.log(response);
@@ -517,7 +520,65 @@
         }
         else {
             element.attr("src","images/details_close.png");
-            row.child('<table class="table table-bordered table-responsive"><thead><tr><th>Date of Seizure</th><th>Seizure Quantity</th><th>Storage Location</th><th>Case Details / Remarks</th><th>Date of Certification</th><th>Certified By</th><th>Sample Quantity</th><th>Magistrate Remarks</th><th>Date of Disposal</th><th>Disposal Quantity</th></tr></thead><tbody><tr><td>'+obj['0'].date_of_seizure+'</td><td>'+obj['0'].quantity_of_drug+' '+obj['0'].seizure_unit+'</td><td>'+obj['0'].storage_name+'</td><td>'+obj['0'].remarks+'</td><td>'+obj['0'].date_of_certification+'</td><td>'+obj['0'].court_name+'</td><td>'+obj['0'].quantity_of_sample+' '+obj['0'].sample_unit+'</td><td>'+obj['0'].magistrate_remarks+'</td><td>'+obj['0'].date_of_disposal+'</td><td>'+obj['0'].disposal_quantity+' '+obj['0'].disposal_unit+'</td></tr></tbody></table>').show();
+
+            var child_string ="";
+            child_string += '<table class="table table-bordered table-responsive">'+
+                                '<thead>'+
+                                    '<tr>'+
+                                        '<th>Date of Seizure</th>'+
+                                        '<th>Seizure Quantity</th>'+
+                                        '<th>Storage Location</th>'+
+                                        '<th>Case Details / Remarks</th>'+
+                                        '<th>Date of Certification</th>'+
+                                        '<th>Certified By</th>'+
+                                        '<th>Sample Quantity</th>'+
+                                        '<th>Magistrate Remarks</th>'+
+                                        '<th>Date of Disposal</th>'+
+                                        '<th>Disposal Quantity</th>'+
+                                    '</tr>'+
+                                '</thead>'+
+                                
+                                '<tbody>';
+
+            $.each(obj,function(key,value){
+                child_string += ""+
+                            '<tr>'+
+                                '<td>'+
+                                    value.date_of_seizure+
+                                '</td>'+
+                                '<td>'+
+                                    value.quantity_of_drug+' '+value.seizure_unit+
+                                '</td>'+
+                                '<td>'+
+                                    value.storage_name+
+                                '</td>'+
+                                '<td>'+
+                                    value.remarks+
+                                '</td>'+
+                                '<td>'+
+                                    value.date_of_certification+
+                                '</td>'+
+                                '<td>'+
+                                    value.court_name+
+                                '</td>'+
+                                '<td>'+
+                                    value.quantity_of_sample+' '+value.sample_unit+
+                                '</td>'+
+                                '<td>'+
+                                    value.magistrate_remarks+
+                                '</td>'+
+                                '<td>'+
+                                    value.date_of_disposal+
+                                '</td>'+
+                                '<td>'+
+                                    value.disposal_quantity+' '+value.disposal_unit+
+                                '</td>'+
+                            '</tr>';
+            })
+
+            child_string +='</tbody></table>';
+
+            row.child(child_string).show();
         }
 
     })
@@ -584,6 +645,7 @@
                                             ps:ps,
                                             case_no:case_no,
                                             case_year:case_year,
+                                            narcotic_type:narcotic_type,
                                             sample_quantity:sample_quantity,
                                             sample_weighing_unit:sample_unit,
                                             certification_date:certification_date,
