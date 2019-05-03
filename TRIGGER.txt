@@ -1,0 +1,32 @@
+
+
+Storage
+------------------------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION movedetatoarchive_storage_details() RETURNS trigger AS
+
+	$BODY$
+	BEGIN
+		insert into storage_details_archive values(old.storage_id,old.storage_name,old.created_at,old.updated_at);
+		return old; 
+	END;
+	$BODY$
+LANGUAGE plpgsql;
+
+
+CREATE TRIGGER movedetatoarchive_storage_details
+   BEFORE DELETE ON storage_details FOR EACH ROW
+   EXECUTE PROCEDURE movedetatoarchive_storage_details();
+   
+-----------------------------------------------------------------------------------------------------------------------------
+Agency
+-----------------------------------------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION movedetatoarchive_agency_details() RETURNS trigger AS
+
+$BODY$
+BEGIN
+insert into agency_details_archive values(old.agency_id,old.agency_name,old.district_for_report,old.created_at,old.updated_at);
+	return old; 
+END;
+$BODY$
+ LANGUAGE plpgsql;

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDistrictsArchieveTable extends Migration
+class CreateDistrictsArchiveTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class CreateDistrictsArchieveTable extends Migration
      */
     public function up()
     {
-        Schema::create('districts_archieve', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('districts_archive', function (Blueprint $table) {
+            $table->increments('district_id')->nullable(false);
+            $table->string('district_name')->nullable(false);
             $table->timestamps();
         });
     }
