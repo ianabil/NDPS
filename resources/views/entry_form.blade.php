@@ -82,7 +82,7 @@
 
 										<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Weighing Unit</label>
 										<div class="col-sm-2">											
-											<select class="form-control select2 seizure_weighing_unit" autocomplete="off">
+											<select class="form-control seizure_weighing_unit" autocomplete="off">
 												<option value="" selected>Select An Option</option>											
 											</select>
 										</div>										
@@ -209,7 +209,7 @@
                 format: 'dd-mm-yyyy'
          }); // Date picker initialization For All The Form Elements
 		
-		//$(".select2").select2();
+		$(".select2").select2(); // select2 dropdown initialization
 
 		$('.btnNext').click(function(){
 			$('.nav > .active').next('li').find('a').trigger('click');

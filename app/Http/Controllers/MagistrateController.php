@@ -211,7 +211,7 @@ class MagistrateController extends Controller
             $partial_disposal_flag = 0;
 
             $report['Narcotic Type'] = "";
-            foreach($seizure_details as $seizure){
+            foreach($seizure_details as $key => $seizure){
                 //Narcotic Type
                 $report['Narcotic Type'] = $report['Narcotic Type'].$seizure->drug_name."<br>";
 
@@ -245,7 +245,7 @@ class MagistrateController extends Controller
                 $report['Certification Status'] = 'PARTIALLY CERTFIED';
             }
             else if($certification_done_flag == 1 && $certification_pending_flag == 0){
-                $report['Certification Status'] = 'CERTFIED';
+                $report['Certification Status'] = 'COMPLETED';
             }
             else if($certification_done_flag == 0 && $certification_pending_flag == 1){
                 $report['Certification Status'] = 'PENDING';
@@ -299,7 +299,7 @@ class MagistrateController extends Controller
                                     ['case_year',$case_year],
                                     ['certification_court_id',$court_id]
                                 ])
-                                ->select('quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',
+                                ->select('drug_name','quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',
                                 'date_of_disposal','disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit',
                                 'storage_name','court_name','date_of_certification','certification_flag','quantity_of_sample',
                                 'u2.unit_name AS sample_unit','remarks','magistrate_remarks')
@@ -310,9 +310,10 @@ class MagistrateController extends Controller
             
             if($case['certification_flag']=='Y'){                    
                 $case['date_of_certification'] = Carbon::parse($case['date_of_certification'])->format('d-m-Y');
+                $case['certification_flag'] = 'COMPLETED';
             }
             else{
-                $case['court_name'] = 'CERTFICATION PENDING';
+                $case['certification_flag'] = 'PENDING';
                 $case['date_of_certification'] = 'NA';
                 $case['quantity_of_sample'] = 'NA';
                 $case['sample_unit'] = '';
