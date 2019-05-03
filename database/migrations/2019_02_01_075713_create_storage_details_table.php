@@ -16,6 +16,7 @@ class CreateStorageDetailsTable extends Migration
         Schema::create('storage_details', function (Blueprint $table) {
             $table->increments('storage_id');
             $table->string('storage_name');
+            $table->string('display')->nullable(false);
             $table->timestamps();
         });
     }

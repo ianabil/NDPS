@@ -28,7 +28,7 @@
 								<div class="form-group required row">
 									<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Case No.</label>
 									<div class="col-sm-3">
-										<select class="form-control select2" id="ps">
+										<select class="form-control select2" id="ps" autocomplete="off">
 											<option value="">Select PS</option>
 											@foreach($data['ps'] as $ps)
 												<option value="{{$ps->ps_id}}">{{$ps->ps_name}}</option>
@@ -36,10 +36,10 @@
 										</select>
 									</div>
 									<div class="col-sm-3">
-										<input class="form-control" type="number" id="case_no" placeholder="Case No.">
+										<input class="form-control" type="number" id="case_no" placeholder="Case No." autocomplete="off">
 									</div>
 									<div class="col-sm-3">
-										<select class="form-control select2" id="case_year">	
+										<select class="form-control select2" id="case_year" autocomplete="off">	
 											<option value="">Select Year</option>					
 											@for($i=Date('Y');$i>=1980;$i--)
 												<option value="{{$i}}">{{$i}}</option>
@@ -54,12 +54,12 @@
 									<div class="form-group required row">
 										<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Nature of Narcotic</label>
 										<div class="col-sm-3">
-											<select class="form-control select2 narcotic_type">
+											<select class="form-control narcotic_type" autocomplete="off">
 												<option value="" selected>Select An Option</option>
 												@foreach($data['narcotics'] as $narcotic)
 													<option value="{{$narcotic->drug_id}}">{{$narcotic->drug_name}}</option>
 												@endforeach
-												<option value="other">Other</option>
+												<option value="999">Other</option>
 											</select>									
 										</div>
 
@@ -68,7 +68,8 @@
 										</div>
 
 										<div class="col-sm-3 div_other_narcotic_type" style="display:none">
-												<input class="form-control input_other_narcotic_type" type="text" placeholder="Narcotic Name">	
+												<input class="form-control other_narcotic_name" type="text" placeholder="Narcotic Name" autocomplete="off">
+												<input class="form-control flag_other_narcotic" type="number" style="display:none" autocomplete="off"> 	
 										</div>
 
 									</div>
@@ -76,12 +77,12 @@
 									<div class="form-group required row">
 										<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Quantity of Seizure</label>
 										<div class="col-sm-3">
-											<input class="form-control seizure_quantity" type="number">										
+											<input class="form-control seizure_quantity" type="number" autocomplete="off">										
 										</div>
 
 										<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Weighing Unit</label>
 										<div class="col-sm-2">											
-											<select class="form-control select2 seizure_weighing_unit">
+											<select class="form-control select2 seizure_weighing_unit" autocomplete="off">
 												<option value="" selected>Select An Option</option>											
 											</select>
 										</div>										
@@ -91,19 +92,20 @@
 								<div class="form-group required row">	
 										<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Place of Storage</label>
 										<div class="col-sm-3">
-											<select class="form-control select2" id="storage">
+											<select class="form-control select2" id="storage" autocomplete="off">
 												<option value="">Select An Option</option>
 												@foreach($data['storages'] as $storage)
 													<option value="{{$storage->storage_id}}">{{$storage->storage_name}}</option>
 												@endforeach
-												<option value="other">Other</option>
+												<option value="999">Other</option>
 											</select>
 										</div>
 
-									<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Date of Seizure</label>
-									<div class="col-sm-3">											
-										<input type="text" class="form-control date" placeholder="Choose Date" id="seizure_date" autocomplete="off">
-									</div>																		
+										<div class="col-sm-3 col-sm-offset-1 div_other_storage" style="display:none">
+											<input class="form-control other_storage_name" type="text" placeholder="Storage Name" autocomplete="off">
+											<input class="form-control flag_other_storage" type="number" style="display:none" autocomplete="off"> 	
+										</div>
+																											
 								</div>
 
 
@@ -111,7 +113,13 @@
 										<label class="col-sm-2 col-form-label-sm" style="font-size:medium">Case Details / Remark</label>
 										<div class="col-sm-2">											
 											<textarea class="form-control" id="remark" ></textarea>
-										</div>	
+										</div>
+										
+										<label class="col-sm-2 col-sm-offset-2 col-form-label-sm control-label" style="font-size:medium">Date of Seizure</label>
+										<div class="col-sm-3">											
+											<input type="text" class="form-control date" placeholder="Choose Date" id="seizure_date" autocomplete="off">
+										</div>
+
 								</div>
 
 								<hr>
@@ -251,6 +259,8 @@
 		var narcotic_type = new Array();
 		var seizure_quantity = new Array();
 		var seizure_weighing_unit = new Array();
+		var flag_other_narcotic = new Array();
+		var other_narcotic_name = new Array();	
 		
 		$(document).on("click","#apply",function(){
 
@@ -273,11 +283,26 @@
 					seizure_weighing_unit.push($(this).val());
 				})
 
+				flag_other_narcotic = [];
+				$(".flag_other_narcotic").each(function(){
+					flag_other_narcotic.push($(this).val());
+				})
+
+				other_narcotic_name = [];
+				$(".other_narcotic_name").each(function(){
+					other_narcotic_name.push($(this).val());
+				})
+			
+				
+				var flag_other_storage = $(".flag_other_storage").val();
+				var other_storage_name = $(".other_storage_name").val();
+				
 				var seizure_date = $("#seizure_date").val();				
 				var storage = $("#storage option:selected").val();
 				var remark = $("#remark").val();
 				var district = $("#district option:selected").val();
 				var court = $("#court option:selected").val();
+
 
 				if(ps==""){
 					swal("Invalid Input","Please Select PS Name","error");
@@ -333,7 +358,10 @@
 														remark:remark,
 														district:district,
 														court:court,
-														flag_other_narcotic:flag_other_narcotic
+														flag_other_narcotic:flag_other_narcotic,
+														other_narcotic_name:other_narcotic_name,
+														flag_other_storage:flag_other_storage,
+														other_storage_name:other_storage_name
 													},
 													success:function(response){
 														swal("Application For Certification Successfully Submitted","","success");
@@ -379,20 +407,20 @@
 
 
 		/*Fetch list of units on correspondance to the selected sezied narcotic type :: STARTS*/
-		var flag_other_narcotic=0;
-
 		$(document).on("change",".narcotic_type", function(){	
 
 			var narcotic=$(this).val();
 
 			// If div structure changes, following code will not work
-			if(narcotic=="other"){
+			if(narcotic=="999"){
 				$(this).parent().parent().find('.div_other_narcotic_type').show();
-				flag_other_narcotic = 1;
+				var flag_other_narcotic = 1;
+				$(this).parent().parent().find('.div_other_narcotic_type').find('.flag_other_narcotic').val(1);
 			}
 			else{
 				$(this).parent().parent().find('.div_other_narcotic_type').hide();
-				flag_other_narcotic = 0;
+				var flag_other_narcotic = 0;
+				$(this).parent().parent().find('.div_other_narcotic_type').find('.flag_other_narcotic').val(0);	
 			}
 			
 			var element = $(this).parent().parent().next().find(".seizure_weighing_unit");
@@ -414,6 +442,26 @@
 										})
 									}
 					});
+
+			});
+			/*Fetch list of units on correspondance to the selected narcotic type :: ENDS*/
+
+
+			/*For Other Storage Functionality :: STARTS*/
+			$(document).on("change","#storage", function(){	
+					var storage=$(this).val();
+
+					// If div structure changes, following code will not work
+					if(storage=="999"){
+						$(this).parent().parent().find('.div_other_storage').show();
+						var flag_other_storage = 1;
+						$(this).parent().parent().find('.div_other_storage').find('.flag_other_storage').val(1);
+					}
+					else{
+						$(this).parent().parent().find('.div_other_storage').hide();
+						var flag_other_storage = 0;
+						$(this).parent().parent().find('.div_other_storage').find('.flag_other_storage').val(0);	
+					}
 
 			});
 			/*Fetch list of units on correspondance to the selected narcotic type :: ENDS*/

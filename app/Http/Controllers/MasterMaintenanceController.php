@@ -432,6 +432,7 @@ class MasterMaintenanceController extends Controller
                 
                 Narcotic::insert([
                     'drug_name' => $narcotic,
+                    'display' => 'Y',
                     'created_at'=>Carbon::today(),
                     'updated_at'=>Carbon::today()
                 ]);
@@ -842,6 +843,7 @@ class MasterMaintenanceController extends Controller
               
                 Storage_detail::insert([
                     'storage_name'=>$storage_name,
+                    'display'=>'Y',
                     'created_at'=>Carbon::today(),
                     'updated_at'=>Carbon::today()
                     ]);

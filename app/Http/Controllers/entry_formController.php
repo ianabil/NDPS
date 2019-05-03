@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 
 use App\Narcotic;
@@ -35,40 +35,14 @@ class entry_formController extends Controller
         $data = array();
         
         $data['ps'] = Ps_detail::select('ps_id','ps_name')->get();
-        $data['narcotics'] = Narcotic::select('drug_id','drug_name')->distinct()->get();
+        $data['narcotics'] = Narcotic::where('display','Y')
+                                        ->select('drug_id','drug_name')
+                                        ->distinct()
+                                        ->get();
         $data['districts'] = District::select('district_id','district_name')->get();
-        $data['storages'] = Storage_detail::select('storage_id','storage_name')->get();                
-            
-        // $sql="select s.*,u1.unit_name seizure_unit, s.disposal_quantity, u2.unit_name disposal_unit,
-        // s.undisposed_quantity,u3.unit_name undisposed_unit_name, court_details.*, districts.*
-        // from seizures s left join units u1 on cast(s.unit_name as int)=u1.unit_id 
-        // left join units u2 on cast(s.unit_of_disposal_quantity as int)=u2.unit_id 
-        // left join units u3 on cast(s.undisposed_unit as int)=u3.unit_id
-        // left join court_details on s.certification_court_id = court_details.court_id
-        // left join districts on s.district_id = districts.district_id
-        // where s.submit_flag='N' and s.agency_id= ".$agency_id." order by seizure_id";
-
-        //$data['seizures']=DB::select($sql);
-
-        // foreach($data['seizures'] as $seizures){
-        //     if(empty($seizures->date_of_seizure))
-        //         $seizures->date_of_seizure='';
-        //     else
-        //         $seizures->date_of_seizure = Carbon::parse($seizures->date_of_seizure)->format('d-m-Y');
-            
-            
-        //     if(empty($seizures->date_of_disposal))
-        //         $seizures->date_of_disposal='';
-        //     else
-        //         $seizures->date_of_disposal = Carbon::parse($seizures->date_of_disposal)->format('d-m-Y');
-
-
-        //     if(empty($seizures->date_of_certification))
-        //         $seizures->date_of_certification='';
-        //     else
-        //         $seizures->date_of_certification = Carbon::parse($seizures->date_of_certification)->format('d-m-Y');
-        // }
-            
+        $data['storages'] = Storage_detail::where('display','Y')
+                                            ->select('storage_id','storage_name')
+                                            ->get(); 
 
         return view('entry_form',compact('data'));   
     }
@@ -95,8 +69,8 @@ class entry_formController extends Controller
             'ps' => 'required|integer',
             'case_no' => 'required|integer',
             'case_year' => 'required|integer',
-            'narcotic_type' => 'required|array|distinct',
-            'narcotic_type.*' => 'required|distinct',
+            'narcotic_type' => 'required|array',
+            'narcotic_type.*' => 'required|integer',
             'seizure_date' => 'required|date',
             'seizure_quantity' => 'required|array',
             'seizure_quantity.*' => 'required',
@@ -107,6 +81,14 @@ class entry_formController extends Controller
             'district' => 'required|integer',         
             'court' => 'required|integer',
         ] ); 
+
+        // $v = Validator::make($request, [
+        //     'flag_other_narcotic' => 'required|integer'
+        // ]);
+
+        // $v->sometimes('other_narcotic_name', 'required|max:255', function ($input) {
+        //     return $input->flag_other_narcotic = 1;
+        // });
        
         $ps = $request->input('ps'); 
         $case_no = $request->input('case_no'); 
@@ -126,11 +108,61 @@ class entry_formController extends Controller
         $update_date = Carbon::today();  
         $uploaded_date = Carbon::today();  
         $flag_other_narcotic = $request->input('flag_other_narcotic'); 
+        $other_narcotic_name = $request->input('other_narcotic_name'); 
+        $flag_other_storage = $request->input('flag_other_storage'); 
+        $other_storage_name = $request->input('other_storage_name'); 
         
         for($i=0;$i<sizeof($narcotic_type);$i++){
-            if($flag_other_narcotic==0){
-                seizure::insert(
+            if($flag_other_narcotic[$i]==1){
 
+                $count = Narcotic::where('drug_name','ILIKE',trim($other_narcotic_name[$i]))
+                                    ->count();
+
+                if($count<1){
+
+                    Narcotic::insert([
+                        'drug_name' => trim($other_narcotic_name[$i]),
+                        'display' => 'N',
+                        'created_at'=>Carbon::today(),
+                        'updated_at'=>Carbon::today()
+                    ]);
+
+                    $max_narcotic_value = Narcotic::max('drug_id');
+                    $narcotic_type[$i] = $max_narcotic_value;
+                }
+                else{
+                    $drug_id = Narcotic::where('drug_name','ILIKE',trim($other_narcotic_name[$i]))
+                                        ->max('drug_id');
+                    $narcotic_type[$i] = $drug_id;
+                }
+            }
+
+
+            if($flag_other_storage==1){
+
+                $count = Storage_detail::where('storage_name','ILIKE',trim($other_storage_name))
+                                        ->count();
+
+                if($count<1){
+
+                    Storage_detail::insert([
+                        'storage_name'=>trim($other_storage_name),
+                        'display' => 'N',
+                        'created_at'=>Carbon::today(),
+                        'updated_at'=>Carbon::today()
+                    ]);
+
+                    $max_storage_value = Storage_detail::max('storage_id');
+                    $storage = $max_storage_value;
+                }
+                else{
+                    $storage_id = Storage_detail::where('storage_name','ILIKE',trim($other_storage_name))
+                                        ->max('storage_id');
+                    $storage = $storage_id;
+                }
+            }
+
+            seizure::insert(
                     [
                         'ps_id'=>$ps,
                         'case_no'=>$case_no,
@@ -152,10 +184,7 @@ class entry_formController extends Controller
                     ]
 
                 );
-            }
-            else if($flag_other_narcotic==1){
                 
-            }
         }
 
         return 1;
