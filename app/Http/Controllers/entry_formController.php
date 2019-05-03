@@ -125,31 +125,37 @@ class entry_formController extends Controller
         $user_name=Auth::user()->user_name;
         $update_date = Carbon::today();  
         $uploaded_date = Carbon::today();  
+        $flag_other_narcotic = $request->input('flag_other_narcotic'); 
         
         for($i=0;$i<sizeof($narcotic_type);$i++){
-            seizure::insert(
+            if($flag_other_narcotic==0){
+                seizure::insert(
 
-                [
-                    'ps_id'=>$ps,
-                    'case_no'=>$case_no,
-                    'case_year'=>$case_year,
-                    'drug_id'=> $narcotic_type[$i],
-                    'quantity_of_drug'=>$seizure_quantity[$i],
-                    'seizure_quantity_weighing_unit_id'=>$seizure_weighing_unit[$i],
-                    'date_of_seizure'=>date('Y-m-d', strtotime($seizure_date)),
-                    'storage_location_id'=>$storage,
-                    'stakeholder_id'=>$agency_id,
-                    'district_id'=>$district,
-                    'certification_court_id'=>$court,
-                    'certification_flag'=>$certification_flag,
-                    'disposal_flag'=>$disposal_flag,
-                    'remarks'=>$remark,
-                    'user_name'=>$user_name,
-                    'created_at'=>$uploaded_date,
-                    'updated_at'=>$update_date
-                ]
+                    [
+                        'ps_id'=>$ps,
+                        'case_no'=>$case_no,
+                        'case_year'=>$case_year,
+                        'drug_id'=> $narcotic_type[$i],
+                        'quantity_of_drug'=>$seizure_quantity[$i],
+                        'seizure_quantity_weighing_unit_id'=>$seizure_weighing_unit[$i],
+                        'date_of_seizure'=>date('Y-m-d', strtotime($seizure_date)),
+                        'storage_location_id'=>$storage,
+                        'stakeholder_id'=>$agency_id,
+                        'district_id'=>$district,
+                        'certification_court_id'=>$court,
+                        'certification_flag'=>$certification_flag,
+                        'disposal_flag'=>$disposal_flag,
+                        'remarks'=>$remark,
+                        'user_name'=>$user_name,
+                        'created_at'=>$uploaded_date,
+                        'updated_at'=>$update_date
+                    ]
 
-            );
+                );
+            }
+            else if($flag_other_narcotic==1){
+                
+            }
         }
 
         return 1;
@@ -221,11 +227,17 @@ class entry_formController extends Controller
     public function narcotic_units(Request $request){
 
         $narcotic = $request->input('narcotic'); 
+        $flag_other_narcotic = $request->input('flag_other_narcotic'); 
 
-        $data['units']=Narcotic_unit::join('units',"narcotic_units.unit_id","=","units.unit_id")
+        if($flag_other_narcotic==0){
+                $data['units']=Narcotic_unit::join('units',"narcotic_units.unit_id","=","units.unit_id")
                                 ->select('units.unit_id','unit_name')
                                 ->where('narcotic_id','=', $narcotic )
                                 ->get();
+        }
+        else if($flag_other_narcotic==1){
+                $data['units']=Unit::get();
+        }
 
         echo json_encode($data);
 
