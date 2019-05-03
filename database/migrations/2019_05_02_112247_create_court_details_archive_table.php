@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCourtDetailsArchieveTable extends Migration
+class CreateCourtDetailsArchiveTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,12 @@ class CreateCourtDetailsArchieveTable extends Migration
      */
     public function up()
     {
-        Schema::create('court_details_archieve', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('court_details_archive', function (Blueprint $table) {
+            $table->increments('court_id')->nullable(false);
+            $table->string('court_name')->nullable(false);
+            $table->integer('district_id')->nullable(false);
+            $table->foreign('district_id')->references('district_id')->on('districts');
+
             $table->timestamps();
         });
     }

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAgencyDetailsArchieveTable extends Migration
+class CreateAgencyDetailsArchiveTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class CreateAgencyDetailsArchieveTable extends Migration
      */
     public function up()
     {
-        Schema::create('agency_details_archieve', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('agency_details_archive', function (Blueprint $table) {
+            $table->increments('agency_id')->nullable(false);
+            $table->string('agency_name')->nullable(false);
+            $table->string('district_for_report')->nullable(true);
             $table->timestamps();
         });
     }

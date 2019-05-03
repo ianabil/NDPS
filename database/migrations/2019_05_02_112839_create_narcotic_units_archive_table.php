@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateNarcoticUnitsArchieveTable extends Migration
+class CreateNarcoticUnitsArchiveTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,14 @@ class CreateNarcoticUnitsArchieveTable extends Migration
      */
     public function up()
     {
-        Schema::create('narcotic_units_archieve', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('narcotic_units_archive', function (Blueprint $table) {
+            $table->integer('narcotic_id');
+            $table->integer('unit_id');            
             $table->timestamps();
+
+            $table->primary(['narcotic_id','unit_id']);
+            $table->foreign('narcotic_id')->references('drug_id')->on('narcotics');
+            $table->foreign('unit_id')->references('unit_id')->on('units');
         });
     }
 

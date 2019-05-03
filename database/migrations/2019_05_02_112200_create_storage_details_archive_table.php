@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePsDetailsArchieveTable extends Migration
+class CreateStorageDetailsArchiveTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class CreatePsDetailsArchieveTable extends Migration
      */
     public function up()
     {
-        Schema::create('ps_details_archieve', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('storage_details_archive', function (Blueprint $table) {
+            $table->increments('storage_id');
+            $table->string('storage_name');
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ class CreatePsDetailsArchieveTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ps_details_archieve');
+        Schema::dropIfExists('storage_details_archieve');
     }
 }
