@@ -160,23 +160,27 @@
           
           var obj;
 
-        $.ajax({
-              type:"POST",
-              url:"dashboard/fetch_more_details",
-              data:{
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                ps_id:ps_id,
-                case_no:case_no,
-                case_year:case_year
-              },
-              success:function(response){
-                obj = $.parseJSON(response);                           
-              },
-              error:function(response){
-                console.log(response);
-              },
-              async: false
-        }) 
+    // fetch case details only when the child row is hide
+        if(!row.child.isShown()){ 
+
+                $.ajax({
+                    type:"POST",
+                    url:"dashboard/fetch_more_details",
+                    data:{
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        ps_id:ps_id,
+                        case_no:case_no,
+                        case_year:case_year
+                    },
+                    success:function(response){
+                        obj = $.parseJSON(response);              
+                    },
+                    error:function(response){
+                        console.log(response);
+                    },
+                    async: false
+                }) 
+        }
 
         if(row.child.isShown() ) {
             element.attr("src","images/details_open.png");
@@ -184,18 +188,39 @@
         }
         else {
             element.attr("src","images/details_close.png");
-            var child_string ="";
-            child_string += '<table class="table table-bordered table-responsive">'+
+
+            var child_string ="";            
+            child_string += '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
+                                '<tr>'+
+                                    '<td><strong>Date of Seizure:</strong></td>'+
+                                    '<td>'+obj['0'].date_of_seizure+'</td>'+
+                                '</tr>'+
+                                '<tr>'+
+                                    '<td><strong>Storage Location:</strong></td>'+
+                                    '<td>'+obj['0'].storage_name+'</td>'+
+                                '</tr>'+
+                                '<tr>'+
+                                    '<td><strong>Case Details / Remarks:</strong></td>'+
+                                    '<td>'+obj['0'].remarks+'</td>'+
+                                '</tr>'+
+                                '<tr>'+
+                                    '<td><strong>Certification Court:</strong></td>'+
+                                    '<td>'+obj['0'].court_name+'</td>'+
+                                '</tr>'+
+                            '</table>'+
+
+                            '<br>'+
+            
+                            '<table class="table table-bordered table-responsive">'+
                                 '<thead>'+
                                     '<tr>'+
-                                        '<th>Date of Seizure</th>'+
-                                        '<th>Seizure Quantity</th>'+
-                                        '<th>Storage Location</th>'+
-                                        '<th>Case Details / Remarks</th>'+
+                                        '<th>Narcotic Type</th>'+
+                                        '<th>Seizure Quantity</th>'+                                        
+                                        '<th>Certification Status</th>'+
                                         '<th>Date of Certification</th>'+
-                                        '<th>Certified By</th>'+
                                         '<th>Sample Quantity</th>'+
                                         '<th>Magistrate Remarks</th>'+
+                                        '<th>Disposal Status</th>'+
                                         '<th>Date of Disposal</th>'+
                                         '<th>Disposal Quantity</th>'+
                                     '</tr>'+
@@ -205,48 +230,44 @@
 
             $.each(obj,function(key,value){
                 child_string += ""+
-                            '<tr>'+
-                                '<td>'+
-                                    value.date_of_seizure+
-                                '</td>'+
-                                '<td>'+
-                                    value.quantity_of_drug+' '+value.seizure_unit+
-                                '</td>'+
-                                '<td>'+
-                                    value.storage_name+
-                                '</td>'+
-                                '<td>'+
-                                    value.remarks+
-                                '</td>'+
-                                '<td>'+
-                                    value.date_of_certification+
-                                '</td>'+
-                                '<td>'+
-                                    value.court_name+
-                                '</td>'+
-                                '<td>'+
-                                    value.quantity_of_sample+' '+value.sample_unit+
-                                '</td>'+
-                                '<td>'+
-                                    value.magistrate_remarks+
-                                '</td>'+
-                                '<td>'+
-                                    value.date_of_disposal+
-                                '</td>'+
-                                '<td>'+
-                                    value.disposal_quantity+' '+value.disposal_unit+
-                                '</td>'+
-                            '</tr>';
+                    '<tr>'+ 
+                        '<td>'+
+                            value.drug_name+
+                        '</td>'+                               
+                        '<td>'+
+                            value.quantity_of_drug+' '+value.seizure_unit+
+                        '</td>'+
+                        '<td>'+
+                            value.certification_flag+
+                        '</td>'+
+                        '<td>'+
+                            value.date_of_certification+
+                        '</td>'+                                
+                        '<td>'+
+                            value.quantity_of_sample+' '+value.sample_unit+
+                        '</td>'+
+                        '<td>'+
+                            value.magistrate_remarks+
+                        '</td>'+
+                        '<td>'+
+                            value.disposal_flag+
+                        '</td>'+
+                        '<td>'+
+                            value.date_of_disposal+
+                        '</td>'+
+                        '<td>'+
+                            value.disposal_quantity+' '+value.disposal_unit+
+                        '</td>'+
+                    '</tr>';
             })
 
             child_string +='</tbody></table>';
-            console.log(child_string);
 
             row.child(child_string).show();
         }
 
     })
-
+    
 });
 </script>
 

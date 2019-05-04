@@ -35,7 +35,6 @@ class MonthlyReportController extends Controller
 
 
     public function monthly_report_status(Request $request){
-        $court_id =Auth::user()->court_id;
         $start_date = date('Y-m-d', strtotime('01-'.$request->input('month')));
         $end_date = date('Y-m-d', strtotime($start_date. ' +30 days'));
         
@@ -115,10 +114,10 @@ class MonthlyReportController extends Controller
             $disposal_pending_flag = 0;
             $partial_disposal_flag = 0;
 
-            $report['Narcotic Type'] = "";
-            foreach($seizure_details as $seizure){
+            $report['Narcotic Type'] = "<ul type='square'>";
+            foreach($seizure_details as $key => $seizure){
                 //Narcotic Type
-                $report['Narcotic Type'] = $report['Narcotic Type'].$seizure->drug_name."<br>";
+                $report['Narcotic Type'] .= "<li>".$seizure->drug_name."</li>";
 
                  //Certification Status
                 if($seizure->certification_flag=='Y'){
@@ -144,13 +143,14 @@ class MonthlyReportController extends Controller
                     $partial_disposal_flag = 1;
                 }
             }
+            $report['Narcotic Type'] .= "</ul>";
 
             //Certification Status                
             if($partial_certification_flag == 1){
                 $report['Certification Status'] = 'PARTIALLY CERTFIED';
             }
             else if($certification_done_flag == 1 && $certification_pending_flag == 0){
-                $report['Certification Status'] = 'CERTFIED';
+                $report['Certification Status'] = 'COMPLETED';
             }
             else if($certification_done_flag == 0 && $certification_pending_flag == 1){
                 $report['Certification Status'] = 'PENDING';
@@ -182,7 +182,6 @@ class MonthlyReportController extends Controller
         echo json_encode($json_data);
 
 
-
     }
 
     public function fetch_case_details(Request $request){
@@ -203,20 +202,21 @@ class MonthlyReportController extends Controller
                                     ['case_no',$case_no],
                                     ['case_year',$case_year]
                                 ])
-                                ->select('quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',
+                                ->select('drug_name','quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',
                                 'date_of_disposal','disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit',
                                 'storage_name','court_name','date_of_certification','certification_flag','quantity_of_sample',
                                 'u2.unit_name AS sample_unit','remarks','magistrate_remarks')
                                 ->get();
-
+                                
         foreach($case_details as $case){
             $case['date_of_seizure'] = Carbon::parse($case['date_of_seizure'])->format('d-m-Y');
             
             if($case['certification_flag']=='Y'){                    
                 $case['date_of_certification'] = Carbon::parse($case['date_of_certification'])->format('d-m-Y');
+                $case['certification_flag'] = 'Certification Completed';
             }
             else{
-                $case['court_name'] = 'CERTFICATION PENDING';
+                $case['certification_flag'] = 'PENDING';
                 $case['date_of_certification'] = 'NA';
                 $case['quantity_of_sample'] = 'NA';
                 $case['sample_unit'] = '';
@@ -225,19 +225,21 @@ class MonthlyReportController extends Controller
             
             if($case['disposal_flag']=='Y'){                    
                 $case['date_of_disposal'] = Carbon::parse($case['date_of_disposal'])->format('d-m-Y');
+                $case['disposal_flag'] = 'Disposed';
             }
             else{
                 $case['date_of_disposal'] = 'NA';
                 $case['disposal_quantity'] = 'NA';
                 $case['disposal_unit'] = '';
+                $case['disposal_flag'] = 'PENDING';
             }
 
             if($case['remarks']==null)
-                $case['remarks']='Not Mentioned';
+                $case['remarks']='Nothing Mentioned';
 
             
             if($case['magistrate_remarks']==null)
-                $case['magistrate_remarks']='Not Mentioned';
+                $case['magistrate_remarks']='Nothing Mentioned';
         }
         
         echo json_encode($case_details);

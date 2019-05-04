@@ -318,7 +318,7 @@ class MagistrateController extends Controller
             
             if($case['certification_flag']=='Y'){                    
                 $case['date_of_certification'] = Carbon::parse($case['date_of_certification'])->format('d-m-Y');
-                $case['certification_flag'] = 'COMPLETED';
+                $case['certification_flag'] = 'Certification Completed';
             }
             else{
                 $case['certification_flag'] = 'PENDING';
@@ -330,7 +330,7 @@ class MagistrateController extends Controller
             
             if($case['disposal_flag']=='Y'){                    
                 $case['date_of_disposal'] = Carbon::parse($case['date_of_disposal'])->format('d-m-Y');
-                $case['disposal_flag'] = 'COMPLETED';
+                $case['disposal_flag'] = 'Disposed';
             }
             else{
                 $case['date_of_disposal'] = 'NA';
