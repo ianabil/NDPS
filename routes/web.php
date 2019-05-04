@@ -238,7 +238,7 @@
 
         Route::post('magistrate_entry_form/fetch_case_details','MagistrateController@fetch_case_details');
 
-        Route::post('magistrate_entry_form/narcotic_units','entry_formController@narcotic_units');
+        Route::post('magistrate_entry_form/narcotic_units','MagistrateController@narcotic_units');
 
         Route::post('magistrate_entry_form/certify','MagistrateController@certify');
 

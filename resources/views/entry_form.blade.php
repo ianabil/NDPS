@@ -781,7 +781,7 @@
 													success:function(response){
 														swal("Disposal Record Submitted Successfully","","success");
 														element_disposal_quantity.attr('readonly',true);
-														element_disposal_weighing_unit.attr('readonly',true);
+														element_disposal_weighing_unit.attr('disabled',true);
 														element_disposal_date.attr('readonly',true);
 														element.hide();
 													},

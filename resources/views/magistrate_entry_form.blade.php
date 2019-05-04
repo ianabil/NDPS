@@ -278,7 +278,7 @@
                                                     '<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Narcotic Type</label>'+
                                                     '<div class="col-sm-3">'+
                                                             '<select class="form-control select2 narcotic_type_certification" disabled>'+
-                                                                '<option value="'+value.drug_id+'" selected>'+value.drug_name+'</option>'+
+                                                                '<option value="'+value.drug_id+'" data-display="'+value.display+'" selected>'+value.drug_name+'</option>'+
                                                             '</select>'+
                                                     '</div>'+
                                             '</div>'+
@@ -370,7 +370,7 @@
                                 $(".date").datepicker({
                                                 endDate:'0',
                                                 format: 'dd-mm-yyyy'
-                                }); // Initialization of Date picker For The Disposal Screen
+                                }); // Initialization of Date picker For The Certification Screen
                                 
                                 $("#seizure_date").val(obj['case_details']['0'].date_of_seizure).attr('readonly',true);											
                                 $("#storage").prepend("<option value='"+obj['case_details']['0'].storage_location_id+"' selected>"+obj['case_details']['0'].storage_name+"</option>").attr('disabled',true);
@@ -396,6 +396,8 @@
 		$(document).on("change",".narcotic_type_certification", function(){	
 
             var narcotic=$(this).val();
+            var display = $(this).find(':selected').data('display');
+
             // If div structure changes, following code will not work
             var element = $(this).parent().parent().next().find(".sample_weighing_unit");
 
@@ -406,7 +408,8 @@
                     url:"magistrate_entry_form/narcotic_units",
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'),
-                        narcotic: narcotic
+                        narcotic: narcotic,
+                        display:display
                     },
                     success:function(resonse){                        
                         var obj=$.parseJSON(resonse)
@@ -495,24 +498,27 @@
           
           var obj;
 
-        $.ajax({
-              type:"POST",
-              url:"magistrate_entry_form/fetch_more_details",
-              data:{
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                ps_id:ps_id,
-                case_no:case_no,
-                case_year:case_year
-              },
-              success:function(response){
-                obj = $.parseJSON(response);  
-                console.log(obj);                         
-              },
-              error:function(response){
-                console.log(response);
-              },
-              async: false
-        }) 
+    // fetch case details only when the child row is hide
+        if(!row.child.isShown()){ 
+
+                $.ajax({
+                    type:"POST",
+                    url:"magistrate_entry_form/fetch_more_details",
+                    data:{
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        ps_id:ps_id,
+                        case_no:case_no,
+                        case_year:case_year
+                    },
+                    success:function(response){
+                        obj = $.parseJSON(response);              
+                    },
+                    error:function(response){
+                        console.log(response);
+                    },
+                    async: false
+                }) 
+        }
 
         if(row.child.isShown() ) {
             element.attr("src","images/details_open.png");
@@ -548,6 +554,7 @@
                                         '<th>Date of Certification</th>'+
                                         '<th>Sample Quantity</th>'+
                                         '<th>Magistrate Remarks</th>'+
+                                        '<th>Disposal Status</th>'+
                                         '<th>Date of Disposal</th>'+
                                         '<th>Disposal Quantity</th>'+
                                     '</tr>'+
@@ -577,6 +584,9 @@
                                     value.magistrate_remarks+
                                 '</td>'+
                                 '<td>'+
+                                    value.disposal_flag+
+                                '</td>'+
+                                '<td>'+
                                     value.date_of_disposal+
                                 '</td>'+
                                 '<td>'+
@@ -603,6 +613,8 @@
 
         // If div structure changes, following code will not work :: STARTS
         var narcotic_type = $(this).parent().parent().prev().prev().prev().find(".narcotic_type_certification").val();
+
+        var element = $(this);
 
         var element_sample_quantity = $(this).parent().parent().prev().prev().find(".sample_quantity");
         var sample_quantity = element_sample_quantity.val();
@@ -662,9 +674,12 @@
                                         },
                                         success:function(response){
                                             swal("Certification Successfully Done","","success");
-                                            setTimeout(function(){
-                                                window.location.reload();
-                                            },2000);
+                                            element_sample_quantity.attr('readonly',true);
+                                            element_sample_unit.attr('disabled',true);
+                                            element_certification_date.attr('readonly',true);
+                                            element_magistrate_remarks.attr('readonly',true);
+                                            element_verification_statement.attr('readonly',true);
+                                            element.hide();
                                         },
                                         error:function(response){
                                             console.log(response);
