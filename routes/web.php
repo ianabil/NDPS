@@ -250,6 +250,20 @@
 
     });
 
+
+    Route::group(['middleware' => ['auth','special_court']], function () {
+
+        Route::get('dashboard_special_court','SpecialCourtController@index_dashboard');
+       
+        Route::post('dashboard_special_court/monthly_report_status',
+        'SpecialCourtController@monthly_report_status');
+
+        Route::post('dashboard_special_court/fetch_more_details',
+        'SpecialCourtController@fetch_case_details');
+
+    });
+
+
     //update password:start
 
     Route::get('update_password', function () {

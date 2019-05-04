@@ -24,6 +24,8 @@
                 <a href="dashboard" class="logo">
             @elseif(Auth::check() && Auth::user()->user_type == 'magistrate')
                 <a href="magistrate_entry_form" class="logo"> 
+            @elseif(Auth::check() && Auth::user()->user_type == 'special_court')
+                <a href="dashboard_special_court" class="logo"> 
             @endif  
                 <span class="logo-lg"><b>NDPS</b>
             </a>

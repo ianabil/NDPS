@@ -62,7 +62,8 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'stakeholder' => 'App\Http\Middleware\Stakeholder',
         'high_court' => 'App\Http\Middleware\High_Court',
-        'magistrate' => 'App\Http\Middleware\Magistrate'
+        'magistrate' => 'App\Http\Middleware\Magistrate',
+        'special_court' => 'App\Http\Middleware\Special_COurt'
     ];
 
     /**

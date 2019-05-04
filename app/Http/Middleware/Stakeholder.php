@@ -22,6 +22,8 @@ class Stakeholder
             return redirect('/dashboard');
         else if(Auth::check() && Auth::user()->user_type=='magistrate')
             return redirect('magistrate_entry_form');
+        else if(Auth::check() && Auth::user()->user_type=='special_court')
+            return redirect('dashboard_special_court');
 
     }
 }

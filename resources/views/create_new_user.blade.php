@@ -62,6 +62,7 @@
                     <option value="">Select One Option. . . </option>
                     <option value="stakeholder">Stakeholder</option>
                     <option value="magistrate">Judicial Magistrate</option>
+                    <option value="special_court">Special Court</option>
                     <option value="high_court">Calcutta High Court</option>
                 </select>
             </div>
@@ -84,6 +85,17 @@
                     <option value="">Select One Option. . . </option>
                     @foreach ($data['court_details'] as $court)
                         <option value="{{$court->court_id}}">{{$court->court_name}}</option>
+                    @endforeach
+                </select>
+            </div>
+            <!--/col-->
+
+            <div class="col-md-3" id="div_district" style="display:none">
+                <label>District Name</label>
+                <select class="form-control select2" name="district" id="district">
+                    <option value="">Select One Option. . . </option>
+                    @foreach ($data['district_details'] as $district)
+                        <option value="{{$district->district_id}}">{{$district->district_name}}</option>
                     @endforeach
                 </select>
             </div>
@@ -121,10 +133,14 @@
                         var user_type = $("#user_type option:selected").val();
                         var stakeholder_name = $("#stakeholder_name option:selected").val();
                         var court_name = $("#court_name option:selected").val();
+                        var district_name = $("#district option:selected").val();
+
                         if(user_type=="stakeholder")
                             var user_name = $("#stakeholder_name option:selected").text();
                         else if(user_type=="magistrate")
                             var user_name = $("#court_name option:selected").text();
+                        else if(user_type=="special_court")
+                            var user_name = "Special Court, "+$("#district option:selected").text();
                         else if(user_type=="high_court")
                             var user_name = 'Calcutta High Court';
                         
@@ -141,7 +157,8 @@
                                 password_confirmation: password_confirmation,
                                 user_type:user_type,
                                 stakeholder_name:stakeholder_name,
-                                court_name:court_name
+                                court_name:court_name,
+                                district_name:district_name
                         },
 
                         success:function (response)
@@ -167,8 +184,10 @@
                                 swal("Cannot Create New User", ""+response.responseJSON.errors.user_type['0'], "error");
                             else if(response.responseJSON.errors.hasOwnProperty('stakeholder_name'))
                                 swal("Cannot Create New User", ""+response.responseJSON.errors.stakeholder_name['0'], "error");
-                                else if(response.responseJSON.errors.hasOwnProperty('court_name'))
+                            else if(response.responseJSON.errors.hasOwnProperty('court_name'))
                                 swal("Cannot Create New User", ""+response.responseJSON.errors.court_name['0'], "error");
+                            else if(response.responseJSON.errors.hasOwnProperty('district_name'))
+                                swal("Cannot Create New User", ""+response.responseJSON.errors.district_name['0'], "error");
                                     
                         }
                     })
@@ -181,10 +200,22 @@
                 if(user_type=="magistrate"){
                     $("#div_agency").hide();
                     $("#div_court").show();
+                    $("#div_district").hide();
                 }
                 else if(user_type=="stakeholder"){
                     $("#div_agency").show();
                     $("#div_court").hide();
+                    $("#div_district").hide();
+                }
+                else if(user_type=="special_court"){
+                    $("#div_agency").hide();
+                    $("#div_court").hide();
+                    $("#div_district").show();
+                }
+                else if(user_type=="high_court"){
+                    $("#div_agency").hide();
+                    $("#div_court").hide();
+                    $("#div_district").hide();
                 }
             })
 

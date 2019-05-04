@@ -903,6 +903,11 @@ class MasterMaintenanceController extends Controller
                                     ->orderBy('court_name')
                                     ->get();
 
+            $data['district_details'] = district::select('district_id','district_name')
+                                        ->distinct()
+                                        ->orderBy('district_name')
+                                        ->get();
+
             return view('create_new_user', compact('data'));
         }
             
@@ -911,13 +916,14 @@ class MasterMaintenanceController extends Controller
 
             $this->validate ( $request, [ 
                 'user_id' => 'required|unique:users,user_id|max:30',
-                'user_name' => 'required|max:255',
+                'user_name' => 'required|max:255|unique:users,user_name',
                 'password' => 'required|confirmed|max:255',
                 'user_type' => 'required|max:30',
-                'stakeholder_name' => 'nullable|integer',
-                'court_name' => 'nullable|integer',
-                'email_id' => 'nullable|email|max:100',
-                'contact_no' => 'nullable|integer'         
+                'stakeholder_name' => 'nullable|integer|unique:users,stakeholder_id',
+                'court_name' => 'nullable|integer|unique:users,court_id',
+                'district_name' => 'nullable|integer|unique:users,district_id',
+                'email_id' => 'nullable|email|max:100|unique:users,email',
+                'contact_no' => 'nullable|integer|unique:users,contact_no'         
             ] ); 
 
 
@@ -927,6 +933,7 @@ class MasterMaintenanceController extends Controller
             $user_type = $request->input('user_type');
             $stakeholder_name = $request->input('stakeholder_name');
             $court_name = $request->input('court_name');
+            $district_name = $request->input('district_name');
             $email = $request->input('email_id');
             $phno = $request->input('contact_no');
             $created_at = Carbon::today();
@@ -938,6 +945,7 @@ class MasterMaintenanceController extends Controller
                     'password' => $password,
                     'stakeholder_id' => $stakeholder_name,
                     'court_id' => $court_name,
+                    'district_id' => $district_name,
                     'email' => $email,
                     'contact_no' => $phno,
                     'user_type' => $user_type,
