@@ -257,15 +257,31 @@ class entry_formController extends Controller
 
         $narcotic = $request->input('narcotic'); 
         $flag_other_narcotic = $request->input('flag_other_narcotic'); 
+        $display = $request->input('display'); 
 
-        if($flag_other_narcotic==0){
-                $data['units']=Narcotic_unit::join('units',"narcotic_units.unit_id","=","units.unit_id")
-                                ->select('units.unit_id','unit_name')
-                                ->where('narcotic_id','=', $narcotic )
-                                ->get();
+        // This part is for bringing units in the seizure screen
+        if(!empty($flag_other_narcotic)){
+            if($flag_other_narcotic==0){
+                    $data['units']=Narcotic_unit::join('units',"narcotic_units.unit_id","=","units.unit_id")
+                                    ->select('units.unit_id','unit_name')
+                                    ->where('narcotic_id','=', $narcotic )
+                                    ->get();
+            }
+            else if($flag_other_narcotic==1){
+                    $data['units']=Unit::get();
+            }
         }
-        else if($flag_other_narcotic==1){
-                $data['units']=Unit::get();
+        // This part is for bringing units in the disposal screen
+        else if(!empty($display)){
+            if($display=='Y'){
+                $data['units']=Narcotic_unit::join('units',"narcotic_units.unit_id","=","units.unit_id")
+                                        ->select('units.unit_id','unit_name')
+                                        ->where('narcotic_id','=', $narcotic )
+                                        ->get();
+            }
+            else if($display=='N'){
+                $data['units']= Unit::get();
+            }
         }
 
         echo json_encode($data);
@@ -289,7 +305,7 @@ class entry_formController extends Controller
                         ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
                         ->join('districts','seizures.district_id','=','districts.district_id')
                         ->where([['seizures.ps_id',$ps],['seizures.case_no',$case_no],['seizures.case_year',$case_year]])                        
-                        ->select('drug_name','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
+                        ->select('drug_name','narcotics.display','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
                                 'u1.unit_name AS seizure_unit','date_of_seizure','date_of_disposal',
                                 'disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit','storage_name',
                                 'court_name','districts.district_id','district_name','date_of_certification',

@@ -471,6 +471,7 @@
 		$(document).on("change",".narcotic_type_disposal", function(){	
 
 				var narcotic=$(this).val();
+				var display = $(this).find(':selected').data('display');
 				// If div structure changes, following code will not work
 				var element = $(this).parent().parent().next().find(".disposal_weighing_unit");
 
@@ -481,7 +482,8 @@
 										url:"entry_form/narcotic_units",
 										data: {
 											_token: $('meta[name="csrf-token"]').attr('content'),
-											narcotic: narcotic
+											narcotic: narcotic,
+											display:display
 										},
 										success:function(resonse){                        
 											var obj=$.parseJSON(resonse)
@@ -607,7 +609,7 @@
 																						'<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Narcotic Type</label>'+
 																						'<div class="col-sm-3">'+
 																								'<select class="form-control select2 narcotic_type_disposal" disabled>'+
-																									'<option value="'+value.drug_id+'" selected>'+value.drug_name+'</option>'+
+																									'<option value="'+value.drug_id+'" data-display="'+value.display+'" selected>'+value.drug_name+'</option>'+
 																								'</select>'+
 																						'</div>'+
 																				'</div>'+
