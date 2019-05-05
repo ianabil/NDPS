@@ -115,7 +115,7 @@ class MasterMaintenanceController extends Controller
                         $json_data = array(
                             "draw" => intval($request->input('draw')),
                             "recordsTotal" => intval($totalData),
-                            "recordFiltered" =>intval($totalFiltered),
+                            "recordsFiltered" =>intval($totalFiltered),
                             "data" => $data
                         );
                 
@@ -246,7 +246,7 @@ class MasterMaintenanceController extends Controller
                             $json_data = array(
                                 "draw" => intval($request->input('draw')),
                                 "recordsTotal" => intval($totalData),
-                                "recordFiltered" =>intval($totalFiltered),
+                                "recordsFiltered" =>intval($totalFiltered),
                                 "data" => $data
                             );
                     
@@ -408,7 +408,7 @@ class MasterMaintenanceController extends Controller
                         $json_data = array(
                             "draw" => intval($request->input('draw')),
                             "recordsTotal" => intval($totalData),
-                            "recordFiltered" =>intval($totalFiltered),
+                            "recordsFiltered" =>intval($totalFiltered),
                             "data" => $data
                         );
                 
@@ -558,7 +558,7 @@ class MasterMaintenanceController extends Controller
                         $json_data = array(
                             "draw" => intval($request->input('draw')),
                             "recordsTotal" => intval($totalData),
-                            "recordFiltered" =>intval($totalFiltered),
+                            "recordsFiltered" =>intval($totalFiltered),
                             "data" => $data
                         );
                 
@@ -699,7 +699,7 @@ class MasterMaintenanceController extends Controller
                             $json_data = array(
                                 "draw" => intval($request->input('draw')),
                                 "recordsTotal" => intval($totalData),
-                                "recordFiltered" =>intval($totalFiltered),
+                                "recordsFiltered" =>intval($totalFiltered),
                                 "data" => $data
                             );
                     
@@ -822,7 +822,7 @@ class MasterMaintenanceController extends Controller
                         $json_data = array(
                             "draw" => intval($request->input('draw')),
                             "recordsTotal" => intval($totalData),
-                            "recordFiltered" =>intval($totalFiltered),
+                            "recordsFiltered" =>intval($totalFiltered),
                             "data" => $data
                         );
                 

@@ -186,15 +186,15 @@
 
        
 
-       //Composite Report ::Starts
+       //Composite Search ::Starts
 
-       Route::get('composite_report',
-       'MonthlyReportController@composite_report_index');
+       Route::get('composite_search_highcourt',
+       'SearchController@show_highcourt_search_index');
 
-       Route::post('composite_report/show_report',
-       'MonthlyReportController@show_composite_report');
+       Route::post('composite_search_highcourt/search',
+       'SearchController@show_highcourt_search_result');
 
-       //Composite Report ::Ends
+       //Composite Search ::Ends
 
     });
 
@@ -207,8 +207,11 @@
 
         Route::post('entry_form/narcotic_units','entry_formController@narcotic_units');
 
-        Route::post('entry_form/district',
+        Route::post('entry_form/fetch_court',
         'entry_formController@district_wise_court');
+
+        Route::post('entry_form/fetch_district',
+        'entry_formController@ps_wise_district');
 
         Route::post('entry_form/fetch_case_details','entry_formController@fetch_case_details');
 
@@ -216,8 +219,6 @@
 
         Route::post('entry_form/submission_validation',
         'entry_formController@submission_validation');
-
-        Route::get('post_submission_preview','entry_formController@post_submission_preview');
 
        //Entry form::end
 

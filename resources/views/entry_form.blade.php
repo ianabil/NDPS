@@ -389,7 +389,7 @@
 		
 				$.ajax({
 								type: "POST",
-								url:"entry_form/district",
+								url:"entry_form/fetch_court",
 								data: {
 									_token: $('meta[name="csrf-token"]').attr('content'),
 									district: district
@@ -712,6 +712,28 @@
 			/* Fetching Case Details On Other Events Too :: STARTS */
 				$(document).on("change","#ps", function(){
 						$("#case_year").trigger("change");
+					
+						var ps=$(this).val();
+						$("#district").children('option:not(:first)').remove();
+						
+								$.ajax({
+												type: "POST",
+												url:"entry_form/fetch_district",
+												data: {
+													_token: $('meta[name="csrf-token"]').attr('content'),
+													ps: ps
+												},
+												success:function(resonse){                        
+													var obj=$.parseJSON(resonse)
+													
+													$.each(obj['ps_wise_district'],function(index,value){							
+														$("#district").append('<option value="'+value.district_id+'" selected>'+value.district_name+'</option>');
+														$("#district").attr("disabled",true);
+													})
+
+													$("#district").trigger("change");
+												}
+								});
 				})
 
 				$(document).on("keyup","#case_no", function(){

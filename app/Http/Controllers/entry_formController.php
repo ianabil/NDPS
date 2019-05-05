@@ -34,12 +34,13 @@ class entry_formController extends Controller
 
         $data = array();
         
-        $data['ps'] = Ps_detail::select('ps_id','ps_name')->get();
+        $data['ps'] = Ps_detail::select('ps_id','ps_name')
+                                ->get();
         $data['narcotics'] = Narcotic::where('display','Y')
                                         ->select('drug_id','drug_name')
-                                        ->distinct()
                                         ->get();
-        $data['districts'] = District::select('district_id','district_name')->get();
+        $data['districts'] = District::select('district_id','district_name')
+                                        ->get();
         $data['storages'] = Storage_detail::where('display','Y')
                                             ->select('storage_id','storage_name')
                                             ->get(); 
@@ -252,27 +253,44 @@ class entry_formController extends Controller
 
     }
 
+    // PS wise District fetching
+    public function ps_wise_district(Request $request){
+
+        $ps = $request->input('ps'); 
+
+        $data['ps_wise_district']=Ps_detail::join("districts","ps_details.district_id","=","districts.district_id")
+                                    ->where('ps_id','=', $ps )
+                                    ->get();
+
+          
+
+        echo json_encode($data);
+
+
+    }
+
     // Narcotic wise unit fetching
     public function narcotic_units(Request $request){
 
         $narcotic = $request->input('narcotic'); 
         $flag_other_narcotic = $request->input('flag_other_narcotic'); 
         $display = $request->input('display'); 
-
+        
         // This part is for bringing units in the seizure screen
-        if(!empty($flag_other_narcotic)){
+        if($flag_other_narcotic!=""){
             if($flag_other_narcotic==0){
                     $data['units']=Narcotic_unit::join('units',"narcotic_units.unit_id","=","units.unit_id")
                                     ->select('units.unit_id','unit_name')
                                     ->where('narcotic_id','=', $narcotic )
                                     ->get();
+                                    
             }
             else if($flag_other_narcotic==1){
                     $data['units']=Unit::get();
             }
         }
         // This part is for bringing units in the disposal screen
-        else if(!empty($display)){
+        else if($display!=""){
             if($display=='Y'){
                 $data['units']=Narcotic_unit::join('units',"narcotic_units.unit_id","=","units.unit_id")
                                         ->select('units.unit_id','unit_name')
@@ -364,23 +382,7 @@ class entry_formController extends Controller
         
         return 1;
         
-    }
-
+    }    
     
     
-    public function submission_validation(Request $request){
-        
-        $month_of_report = date('Y-m-d',strtotime('01-'.$request->input('month_of_report'))); 
-        $submit_flag='S';
-        $agency_id=Auth::user()->stakeholder_id;
-        $month_of_report=Seizure::where([['month_of_report','=', $month_of_report], 
-                                    ['submit_flag','=', $submit_flag ],
-                                    ['agency_id','=', $agency_id ]])
-                                    ->count();
-
-    
-        echo json_encode($month_of_report);
-
-    }
-
 }

@@ -91,10 +91,13 @@
                             </a>
                             <ul class="treeview-menu">
                                 @if(Auth::check() && Auth::user()->user_type == 'high_court')
-                                    <li><a href="composite_report">Composite Report</a></li>
-                                    <li><a href="disposed_undisposed_tally">Disposed Undisposed Tally</a></li>
+                                    <li><a href="composite_search_highcourt">Composite Search</a></li>
                                 @elseif(Auth::check() && Auth::user()->user_type == 'stakeholder')
-                                    <li><a href="previous_report_view">Previously Submitted Report</a></li>
+                                    <li><a href="composite_search_stakeholder">Composite Search</a></li>
+                                @elseif(Auth::check() && Auth::user()->user_type == 'magistrate')
+                                    <li><a href="composite_search_magistrate">Composite Search</a></li>
+                                @elseif(Auth::check() && Auth::user()->user_type == 'special_court')
+                                    <li><a href="composite_search_specialcourt">Composite Search</a></li>
                                 @endif
                             </ul>
                         </li>
