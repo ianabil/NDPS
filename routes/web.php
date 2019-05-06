@@ -194,6 +194,9 @@
        Route::post('composite_search_highcourt/search',
        'SearchController@show_highcourt_search_result');
 
+       Route::post('composite_search_highcourt/fetch_more_details',
+        'SearchController@fetch_case_details');
+
        //Composite Search ::Ends
 
     });
@@ -216,19 +219,10 @@
         Route::post('entry_form/fetch_case_details','entry_formController@fetch_case_details');
 
         Route::post('entry_form/dispose','entry_formController@dispose');
-
-        Route::post('entry_form/submission_validation',
-        'entry_formController@submission_validation');
+       
 
        //Entry form::end
-
-        //Stakeholder's Previous Report::start
-            
-        Route::get('previous_report_view', 'MonthlyReportController@index_previous_report');
-                
-        Route::post('stakeholder/previous_report','MonthlyReportController@show_previous_report');
-
-        //Stakeholder's Previous Report::end
+        
 
     });
 
