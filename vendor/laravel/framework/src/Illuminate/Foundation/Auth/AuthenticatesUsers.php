@@ -17,7 +17,7 @@ trait AuthenticatesUsers
      */
     public function showLoginForm()
     {
-        return view('auth.login');
+        return view('welcome');
     }
 
     /**
@@ -118,7 +118,17 @@ trait AuthenticatesUsers
      */
     protected function authenticated(Request $request, $user)
     {
-        //
+        if($user->user_type=='stakeholder'){
+            return redirect('entry_form') ;
+        }elseif($user->user_type=='high_court'){
+            return redirect('dashboard') ;
+        }
+        elseif($user->user_type=='magistrate'){
+            return redirect('magistrate_entry_form');
+        }
+        elseif($user->user_type=='special_court'){
+            return redirect('dashboard_special_court');
+        }
     }
 
     /**
@@ -143,7 +153,7 @@ trait AuthenticatesUsers
      */
     public function username()
     {
-        return 'email';
+        return 'user_id';
     }
 
     /**

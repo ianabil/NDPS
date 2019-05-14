@@ -22,4 +22,13 @@
     <script src="{{asset('js/moment.min.js')}}"></script>
     <!-- Date Range Picker -->    
     <script src="{{asset('js/daterangepicker.min.js')}}"></script>
-   
+    <!-- For Data Table Buttons STARTS -->
+    <script src="{{asset('js/dataTables.buttons.min.js')}}"></script>
+    <script src="{{asset('js/buttons.flash.min.js')}}"></script>
+    <script src="{{asset('js/jszip.min.js')}}"></script>
+    <script src="{{asset('js/pdfmake.min.js')}}"></script>
+    <script src="{{asset('js/vfs_fonts.js')}}"></script>
+    <script src="{{asset('js/buttons.html5.min.js')}}"></script>
+    <script src="{{asset('js/buttons.print.min.js')}}"></script>
+    <script src="{{asset('js/buttons.colVis.min.js')}}"></script>
+    <!-- For Data Table Buttons ENDS -->

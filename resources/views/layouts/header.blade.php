@@ -16,11 +16,22 @@
 <body class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
         <header class="main-header">
+        
             <!-- Logo -->
-            <a href="dashboard" class="logo">
-                <!-- logo for regular state and mobile devices -->
-                <span class="logo-lg"><b>NDPS</b></span>
+            @if(Auth::check() && Auth::user()->user_type == 'stakeholder')
+                <a href="entry_form" class="logo"> 
+            @elseif(Auth::check() && Auth::user()->user_type == 'high_court')
+                <a href="dashboard" class="logo">
+            @elseif(Auth::check() && Auth::user()->user_type == 'magistrate')
+                <a href="magistrate_entry_form" class="logo"> 
+            @elseif(Auth::check() && Auth::user()->user_type == 'special_court')
+                <a href="dashboard_special_court" class="logo"> 
+            @endif  
+                <span class="logo-lg"><b>NDPS</b>
             </a>
+        </span>
+            </a>
+            
             <nav class="navbar navbar-static-top">
                 <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
                     <span class="sr-only">Toggle navigation</span>
@@ -30,14 +41,20 @@
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 <img src="{{asset('images/FacelessMan.png')}}" class="user-image" alt="User Image">
-                                <span class="hidden-xs">&nbsp; </span>
+                                <span class="hidden-xs">
+                                        @if(Auth::check())
+                                            {{ Auth::user()->user_name }}
+                                        @endif
+                                </span>
                             </a>
                             <ul class="dropdown-menu">
                                 <!-- User image -->
                                 <li class="user-header">
                                     <img src="{{asset('images/FacelessMan.png')}}" class="img-circle" alt="User Image">
                                     <p>
-                                        &nbsp;
+                                        @if(Auth::check())
+                                            {{ Auth::user()->user_name }}
+                                        @endif
                                     </p>
                                 </li>
 
@@ -47,9 +64,9 @@
                                         <a href="update_password" class="btn btn-primary btn-flat">Update Password</a>
                                     </div>
                                     <div class="pull-right">
-                                        <a href="#"  class="btn btn-danger btn-flat"  onclick="event.preventDefault();
+                                        <a href="{{ route('logout') }}"  class="btn btn-danger btn-flat"  onclick="event.preventDefault();
                                         document.getElementById('logout-form').submit();">Sign out</a>
-                                        <form id="logout-form" action="#" method="POST" style="display: none;">
+                                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                             @csrf
                                         </form>
                                     </div>
@@ -68,36 +85,41 @@
             <section class="sidebar">
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <ul class="sidebar-menu" data-widget="tree">
-                   
-
-               
                         <li class="treeview">
                             <a href="#"><i class="fa fa-search-minus"></i>
                                 <span>Reports/Enquiry</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="#">#</a></li>
-                                <li><a href="#">#</a></li>
-
+                                @if(Auth::check() && Auth::user()->user_type == 'high_court')
+                                    <li><a href="composite_search_highcourt">Composite Search</a></li>
+                                    <li><a href="disposed_undisposed_tally">Disposed Undisposed Tally</a></li>
+                                @elseif(Auth::check() && Auth::user()->user_type == 'stakeholder')
+                                    <li><a href="composite_search_stakeholder">Composite Search</a></li>
+                                @elseif(Auth::check() && Auth::user()->user_type == 'magistrate')
+                                    <li><a href="composite_search_magistrate">Composite Search</a></li>
+                                @elseif(Auth::check() && Auth::user()->user_type == 'special_court')
+                                    <li><a href="composite_search_specialcourt">Composite Search</a></li>
+                                @endif
                             </ul>
                         </li>
-                    
+                        
+                    @if(Auth::check() && Auth::user()->user_type == 'high_court')
                         <li class="header"></li>
                         <li class="treeview">
                             <a href="#">
                                 <i class="fa fa-edit"></i>
-                                <span>Seizure Maintainance</span>
+                                <span>Master Maintenance</span>
                                 <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>District Master Maintainance</span></a></li>
-                                <li><a href="#"><i class="fa fa-circle-o text-yellow"></i> <span>Court Master Maintainance</span></a></li>
-                                <li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>PS Master Maintainance</span></a></li>
-                                <li><a href="#"><i class="fa fa-circle-o text-violate"></i> <span>Agency Master Maintainance</span></a></li>
-                                <li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>Magistrate Master Maintainance</span></a></li>
-                                <li><a href="#"><i class="fa fa-circle-o text-green"></i> <span>Storage Master Maintainance</span></a></li>                                
-                                <li><a href="#"><i class="fa fa-circle-o text-purple"></i> <span>Drug Master Maintainance</span></a></li>
-                            </ul>
+                                <li><a href="district_view"><i class="fa fa-circle-o text-red"></i> <span>District Master Maintenance</span></a></li>
+                                <li><a href="court_view"><i class="fa fa-circle-o text-yellow"></i> <span>Court Master Maintenance</span></a></li>
+                                <li><a href="stakeholder_view"><i class="fa fa-circle-o text-violate"></i> <span>Stakeholder Master Maintenance</span></a></li>
+                                <li><a href="narcotic_view"><i class="fa fa-circle-o text-green"></i> <span>Narcotic Master Maintenance</span></a></li>
+                                <li><a href="unit_view"><i class="fa fa-circle-o text-black"></i> <span>Unit Master Maintenance</span></a></li>
+                                <li><a href="ps_view"><i class="fa fa-circle-o text-blue"></i> <span>PS Master Maintenance</span></a></li>
+                                <li><a href="storage_view"><i class="fa fa-circle-o text-brown"></i> <span>Storage Master Maintenance</span></a></li>
+                             </ul>
                         </li>
 
                         <li class="header"></li>
@@ -106,12 +128,11 @@
                                 <span>User Maintainance</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="#">User Creation</a></li>
-                                <li><a href="#">Block User</a></li>
-
+                                <li><a href="create_new_user">User Creation</a></li>
+                                <li><a href="#">Remove User</a></li>
                             </ul>
                         </li>
-                   
+                    @endif
                    
 
                 </ul>

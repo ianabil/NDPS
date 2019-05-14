@@ -1,11 +1,31 @@
-@extends('errors::illustrated-layout')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Page Not Found</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-@section('code', '503')
-@section('title', __('Service Unavailable'))
+  @include('layouts.css_links')
 
-@section('image')
-    <div style="background-image: url({{ asset('/svg/503.svg') }});" class="absolute pin bg-cover bg-no-repeat md:bg-left lg:bg-center">
+</head>
+
+<body style="font-family:'Times New Roman', Times, serif;">
+<div class="container-fluid" style="margin-top:6%;">
+  <div class="row">
+    <div class="col-sm-offset-2 col-sm-8 text-center"><h1>NDPS PORTAL IS UNDER MAINTAINANCE</h1></div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-sm-offset-3 col-sm-8 text-center">  
+        <img src="{{asset('images/maintenance-final.gif')}}" alt="site is under maintainance" class="img-responsive">
     </div>
-@endsection
+  </div>
+  
+</div>
 
-@section('message', __($exception->getMessage() ?: 'Sorry, we are doing some maintenance. Please check back soon.'))
+
+</body>
+
+    @include('layouts.js_links')
+
+</html>
