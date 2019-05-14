@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUsersArchiveTable extends Migration
+class CreateUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateUsersArchiveTable extends Migration
      */
     public function up()
     {
-        Schema::create('users_archive', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->increments('id');
             $table->string('user_id')->unique();
-            $table->string('user_name');
+            $table->string('user_name')->unique();
             $table->string('password');
             $table->integer('stakeholder_id')->unique()->nullable(true);
             $table->integer('court_id')->unique()->nullable(true);
@@ -31,11 +31,8 @@ class CreateUsersArchiveTable extends Migration
 
             $table->foreign('stakeholder_id')->references('agency_id')->on('agency_details');
             $table->foreign('court_id')->references('court_id')->on('court_details');
-<<<<<<< HEAD
             $table->foreign('district_id')->references('district_id')->on('districts');
-=======
->>>>>>> a420916e97187ce0a49de4bbf7963ba17c497bb1
-        });
+         });
     }
 
     /**
@@ -45,6 +42,6 @@ class CreateUsersArchiveTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users_archieve');
+        Schema::dropIfExists('users');
     }
 }
