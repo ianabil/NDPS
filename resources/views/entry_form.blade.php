@@ -87,7 +87,16 @@
 											</select>
 										</div>										
 									</div>
+
+									<div class="form-group required row">	
+										<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Date of Seizure</label>
+										<div class="col-sm-3">											
+											<input type="text" class="form-control date seizure_date" placeholder="Choose Date" autocomplete="off">
+										</div>
+									</div>
+
 								</div>
+								
 
 								<div class="form-group required row">	
 										<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Place of Storage</label>
@@ -114,12 +123,6 @@
 										<div class="col-sm-2">											
 											<textarea class="form-control" id="remark" ></textarea>
 										</div>
-										
-										<label class="col-sm-2 col-sm-offset-2 col-form-label-sm control-label" style="font-size:medium">Date of Seizure</label>
-										<div class="col-sm-3">											
-											<input type="text" class="form-control date" placeholder="Choose Date" id="seizure_date" autocomplete="off">
-										</div>
-
 								</div>
 
 								<hr>
@@ -242,6 +245,10 @@
 																	alt:"remove",
 																	id:""});
 				$(".seizure_quantity:last").val('');
+				$(".date").datepicker({
+                endDate:'0',
+                format: 'dd-mm-yyyy'
+         }); // Date picker re-initialization
 				
 			})
 		/*If multiple narcotics are seized in a same case :: ENDS*/
@@ -259,6 +266,7 @@
 		var narcotic_type = new Array();
 		var seizure_quantity = new Array();
 		var seizure_weighing_unit = new Array();
+		var seizure_date = new Array();
 		var flag_other_narcotic = new Array();
 		var other_narcotic_name = new Array();	
 		
@@ -283,6 +291,11 @@
 					seizure_weighing_unit.push($(this).val());
 				})
 
+				seizure_date = [];
+				$(".seizure_date").each(function(){
+					seizure_date.push($(this).val());
+				})
+
 				flag_other_narcotic = [];
 				$(".flag_other_narcotic").each(function(){
 					flag_other_narcotic.push($(this).val());
@@ -296,8 +309,7 @@
 				
 				var flag_other_storage = $(".flag_other_storage").val();
 				var other_storage_name = $(".other_storage_name").val();
-				
-				var seizure_date = $("#seizure_date").val();				
+							
 				var storage = $("#storage option:selected").val();
 				var remark = $("#remark").val();
 				var district = $("#district option:selected").val();
@@ -315,11 +327,7 @@
 				else if(case_year==""){
 					swal("Invalid Input","Please Select Case Year.","error");
 					return false;
-				}				
-				else if(seizure_date==""){
-					swal("Invalid Input","Please Insert Date of Seizure","error");
-					return false;
-				}				
+				}
 				else if(storage==""){
 					swal("Invalid Input","Please Select Place of Storage of Seizure","error");
 					return false;
@@ -538,7 +546,28 @@
 															'<div class="col-sm-3">'+
 																	'<input class="form-control" type="text" value="'+value.quantity_of_drug+' '+value.seizure_unit+'" disabled>'+										
 															'</div>'+
-														'</div>';		
+													'</div>'+
+													
+													'<div class="form-group required row">'+
+														'<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Date of Seizure</label>'+
+														'<div class="col-sm-3">'+
+															'<input type="text" class="form-control date seizure_date" value="'+value.date_of_seizure+'" disabled>'+
+														'</div>';	
+
+													if(index==obj['case_details'].length-1){
+														str_case_details+=
+															'<div class="col-sm-1 col-sm-offset-1 div_add_new_seizure">'+
+																'<button type="button" class="btn btn-info btn-md add_new_seizure">New Seizure</button>'+
+															'</div>'+
+														
+														'</div>'+														
+														'<hr>';	
+														}	
+														else{
+															str_case_details+=
+																'</div>'+														
+															'<hr>';	
+														}
 
 													if(value.certification_flag=='Y'){
 															str_certification_details+=""+

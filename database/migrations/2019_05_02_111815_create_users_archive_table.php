@@ -31,10 +31,7 @@ class CreateUsersArchiveTable extends Migration
 
             $table->foreign('stakeholder_id')->references('agency_id')->on('agency_details');
             $table->foreign('court_id')->references('court_id')->on('court_details');
-<<<<<<< HEAD
             $table->foreign('district_id')->references('district_id')->on('districts');
-=======
->>>>>>> a420916e97187ce0a49de4bbf7963ba17c497bb1
         });
     }
 

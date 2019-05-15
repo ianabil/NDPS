@@ -72,7 +72,8 @@ class entry_formController extends Controller
             'case_year' => 'required|integer',
             'narcotic_type' => 'required|array',
             'narcotic_type.*' => 'required|integer',
-            'seizure_date' => 'required|date',
+            'seizure_date' => 'required|array',
+            'seizure_date.*' => 'required|date',
             'seizure_quantity' => 'required|array',
             'seizure_quantity.*' => 'required',
             'seizure_weighing_unit' => 'required|array',
@@ -95,7 +96,8 @@ class entry_formController extends Controller
         $case_no = $request->input('case_no'); 
         $case_year = $request->input('case_year'); 
         $narcotic_type = $request->input('narcotic_type'); 
-        $seizure_date = Carbon::parse($request->input('seizure_date'))->format('Y-m-d'); 
+        //$seizure_date = Carbon::parse($request->input('seizure_date'))->format('Y-m-d'); 
+        $seizure_date = $request->input('seizure_date'); 
         $seizure_quantity =$request->input('seizure_quantity'); 
         $seizure_weighing_unit = $request->input('seizure_weighing_unit');
         $storage = $request->input('storage');
@@ -171,7 +173,7 @@ class entry_formController extends Controller
                         'drug_id'=> $narcotic_type[$i],
                         'quantity_of_drug'=>$seizure_quantity[$i],
                         'seizure_quantity_weighing_unit_id'=>$seizure_weighing_unit[$i],
-                        'date_of_seizure'=>date('Y-m-d', strtotime($seizure_date)),
+                        'date_of_seizure'=>date('Y-m-d', strtotime($seizure_date[$i])),
                         'storage_location_id'=>$storage,
                         'stakeholder_id'=>$agency_id,
                         'district_id'=>$district,
