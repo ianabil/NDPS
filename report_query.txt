@@ -1,0 +1,15 @@
+SELECT 
+       drug_name,
+       SUM(A) disposal_quantity,
+       SUM(B) undisposed_quantity
+FROM 
+(
+       select drug_name, 
+              CASE 
+					WHEN disposal_flag = 'Y' THEN disposal_quantity ELSE 0 END as A,
+			  CASE
+					WHEN disposal_flag = 'Y' THEN quantity_of_drug-quantity_of_sample-disposal_quantity 
+					ELSE quantity_of_drug-coalesce(quantity_of_sample, 0) END as B
+       from  seizures inner join narcotics on seizures.drug_id = narcotics.drug_id
+) t
+GROUP BY drug_name
