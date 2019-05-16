@@ -194,17 +194,15 @@
        Route::post('composite_search_highcourt/fetch_more_details',
         'SearchController@fetch_case_details');
 
-        Route::get('disposed_undisposed_tally',function(){
-            return view ('disposed_undisposed_tally');
-        });
-
+       
 
        //Composite Search ::Ends
 
        // Disposed Undisposed Tally :Starts
 
-       Route::get('disposed_undisposed_tally',
-       'SearchController@fetch_data_index');
+       Route::get('disposed_undisposed_tally',function(){
+        return view ('disposed_undisposed_tally');
+    });
 
        // Disposed Undisposed Tally Ends
 

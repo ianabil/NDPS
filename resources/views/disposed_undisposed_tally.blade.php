@@ -11,106 +11,32 @@
     <!-- /.box-header -->
     <div class="box-body">
         <div class="form-group row">
-            <label class="col-sm-1 col-form-label-sm control-label" style="font-size:medium">Stakeholder</label>
-            <div class="col-sm-3">
-                <select class="form-control select2" id="stakeholder" autocomplete="off">
-                    <option value="">Select an option...</option>
-                    @foreach($data['stakeholder'] as $stakeholder)
-                        <option value="{{$stakeholder->agency_id}}">{{$stakeholder->agency_name}}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <label class="col-sm-1 col-form-label-sm control-label" style="font-size:medium">NDPS Court</label>
-            <div class="col-sm-3">
-                <select class="form-control select2" id="court" autocomplete="off">
-                    <option value="">Select an option...</option>
-                        @foreach($data['court'] as $court)
-                            <option value="{{$court->court_id}}">{{$court->court_name}}</option>
-                        @endforeach
-                </select>
-            </div>
-
-            <label class="col-sm-1 col-form-label-sm control-label" style="font-size:medium">District</label>
-            <div class="col-sm-3">
-                <select class="form-control select2" id="district" autocomplete="off">
-                    <option value="">Select an option...</option>
-                    @foreach($data['district'] as $district)
-                        <option value="{{$district->district_id}}">{{$district->district_name}}</option>
-                    @endforeach
-                </select>
+            <label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Type of Report:</label>
+            <div class="form-check form-check-inline"> 
+                <label class="form-check-label" for="district_court_report" style="font-size:medium">District & Court Wise Report</label>
+                <input class="form-check-input" type="radio" name="report" id="district_court_report" value="district_court_report">
+       
+                <label class="form-check-label" for="stakeholder_report" style="font-size:medium; margin-left:2%">Stakeholder Wise Report</label>
+                <input class="form-check-input col-sm-offset-1" type="radio" name="report" id="stakeholder_report" value="stakeholder_report">
+         
+                <label class="form-check-label" for="malkhana_report" style="font-size:medium; margin-left:2%">Storage Wise Report</label>
+                <input class="form-check-input " type="radio" name="report" id="malkhana_report" value="malkhana_report">
             </div>
         </div>
 
-        
         <br>
 
-
         <div class="form-group row">
-                <label class="col-sm-1 col-form-label-sm control-label" style="font-size:medium">Narcotic Type</label>
-                <div class="col-sm-3">
-                    <select class="form-control select2" id="narcotic" autocomplete="off">
-                        <option value="">Select an option...</option>
-                        @foreach($data['narcotic'] as $narcotic)
-                            <option value="{{$narcotic->drug_id}}">{{$narcotic->drug_name}}</option>
-                        @endforeach
-                    </select>
-                </div>
-    
-                <label class="col-sm-1 col-form-label-sm control-label" style="font-size:medium">Malkhana</label>
-                <div class="col-sm-3">
-                    <select class="form-control select2" id="storage" autocomplete="off">
-                        <option value="">Select an option...</option>
-                        @foreach($data['storage'] as $storage)
-                            <option value="{{$storage->storage_id}}">{{$storage->storage_name}}</option>
-                        @endforeach
-                    </select>
-                </div> 
-                
-                <label class="col-sm-1 col-form-label-sm control-label" style="font-size:medium">Seizure Date</label>
-                <div class="col-sm-3">
-                    <input type="text" class="form-control date_range" id="seizure_date" placeholder="Date Range">
-                </div>
-
-            </div>
-    
-            
-            <br>
-         
-
-        
-        <div class="form-group row">            
-            <label class="col-sm-1 col-form-label-sm control-label" style="font-size:medium">Certification Date</label>
+            <label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Date Range</label>
             <div class="col-sm-3">
                 <input type="text" class="form-control date_range" id="certification_date"  placeholder="Date Range">
             </div>
 
-            <label class="col-sm-1 col-form-label-sm control-label" style="font-size:medium">Disposal Date</label>
-            <div class="col-sm-3">
-                <input type="text" class="form-control date_range" id="disposal_date"  placeholder="Date Range">
+            <div class="col-sm-4 col-sm-offset-1" style="margin-top:-1.5%">
+                <button type="button" class="button btn-success btn-sm" style="margin-top:15px" id="search_report">GENERATE REPORT</button>
+                <button type="button" class="button btn-danger btn-sm" style="margin-top:15px" id="reset">RESET</button>
             </div>
-
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" id="certified" type="checkbox" value="certified" checked>
-                <label class="form-check-label" style="font-size:medium">
-                    Certified Cases
-                </label>
-    
-                <input class="form-check-input" id="disposed" type="checkbox" value="disposed" checked>
-                <label class="form-check-label" style="font-size:medium">
-                    Disposed Cases
-                </label>
-            </div>
-        
-        </div>
-
-        
-        <br>     
-        
-        <div class="col-md-4 col-sm-offset-4">
-            <button type="button" class="button btn-success btn-lg" style="margin-top:15px" id="search_report">SEARCH REPORT</button>
-            <button type="button" class="button btn-danger btn-lg" style="margin-top:15px" id="reset">RESET</button>
-        </div>
+        </div>   
 
     </div>
     <!-- /.box-body -->

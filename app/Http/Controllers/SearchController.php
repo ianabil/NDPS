@@ -373,35 +373,7 @@ class SearchController extends Controller
 
     /*Disposed Undisposed Tally :Start */
 
-        //Fetching values from data base
-
-        public function fetch_data_index(Request $request)
-        {
-            $data=array();
-            
-            $data['stakeholder']= Agency_detail::select('agency_id','agency_name')
-                                ->orderBY('agency_name')
-                                ->get();
-
-            $data['court']= Court_detail::select('court_id','court_name')
-                            ->orderBY('court_name')
-                            ->get();
-
-            $data['district']= District::select('district_id','district_name')
-                               ->orderBY('district_name')
-                               ->get();
-                               
-            $data['narcotic']= Narcotic::select('drug_id','drug_name')
-                               ->orderBY('drug_name')
-                               ->get();
-
-            $data['storage']= Storage_detail::select('storage_id','storage_name')
-                              ->orderBY('storage_name')
-                              ->get();
-
-            return view('disposed_undisposed_tally',compact('data'));
-        }
-
+       
 
     /*Disposed Undisposed Tally :End */
 }
