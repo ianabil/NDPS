@@ -371,9 +371,440 @@ class SearchController extends Controller
     /* Searching Mechanism For High Court End :: ENDS */
 
 
+
+
     /*Disposed Undisposed Tally :Start */
 
-       
+    public function calhc_district_court_report(Request $request){
+        $this->validate( $request, [ 
+            'from_date' => 'required|date',
+            'to_date' => 'required|date',
+        ]); 
+
+        $from_date = $request->input('from_date');
+        $to_date = $request->input('to_date');
+        
+        // For dataTable :: STARTS
+        $columns = array( 
+            0 =>'DISTRICT ID',
+            1=>'More Details',
+            2=>'Sl No',
+            3=>'District Name',
+            4 =>'Narcotic Type',
+            5 =>'Disposed Quantity',
+            6 =>'Undisposed Quantity'
+        );
+
+        $limit = $request->input('length'); // For No. of rows per page
+        $start = $request->input('start');
+        $order = $columns[$request->input('order.0.column')];
+        $dir = $request->input('order.0.dir');
+
+        $districts = District::select('district_id','district_name')
+                                        ->limit($limit)
+                                        ->offset($start)
+                                        ->orderBy('district_name')
+                                        ->get();
+
+        $totalData = District::count();
+        $totalFiltered = $totalData;
+
+
+        $record = array();
+
+        $report['Sl No'] = $start;
+
+        foreach($districts as $district){
+            //More Details
+            $report['More Details'] = '<img src="images/details_open.png" style="cursor:pointer" class="more_details" alt="More Details">';
+
+            //SL No.
+            $report['Sl No'] ++; 
+
+            // District ID
+            $report['DISTRICT ID'] = $district->district_id;
+
+            // District Name
+            $report['District Name'] = $district->district_name;
+
+
+            $sql = "SELECT drug_name,SUM(A) disposal_quantity,SUM(B) undisposed_quantity,quantity_unit_name as unit_name
+                FROM
+                (
+                    select drug_name, quantity_unit_name,
+                            CASE 
+                                    WHEN disposal_flag = 'Y' THEN disposal ELSE 0 END as A,
+                            CASE
+                                    WHEN disposal_flag = 'Y' THEN seizure-sample-disposal 
+                                    ELSE seizure-coalesce(sample, 0) END as B
+                    FROM
+                    (
+                        SELECT 
+                            drug_name, disposal_flag,seizure,disposal,sample,quantity_unit_name
+                            FROM 
+                            (
+                                select drug_name, disposal_flag, 
+                                        CASE    WHEN u1.unit_degree = 2 THEN                   quantity_of_drug/1000 
+                                                WHEN u1.unit_degree = 1 THEN quantity_of_drug/1000000
+                                                WHEN u1.unit_degree = 3 THEN quantity_of_drug
+                                                WHEN u1.unit_degree = 0 THEN quantity_of_drug
+                                                END AS seizure,
+                
+                                        CASE    WHEN u1.unit_name ilike 'g%m'  THEN             'KG'
+                                                WHEN u1.unit_name ilike 'l%e' OR u1.unit_name ilike 'm%l'  THEN 'KL'
+                                                ELSE u1.unit_name
+                                                END AS quantity_unit_name,
+                                                
+                
+                                        CASE 	WHEN u2.unit_degree = 2 THEN                   disposal_quantity/1000
+                                                WHEN u2.unit_degree = 1 THEN disposal_quantity/1000000
+                                                WHEN u2.unit_degree = 3 THEN disposal_quantity
+                                                WHEN u2.unit_degree = 0 THEN disposal_quantity
+                                                END AS disposal,
+                                        
+                
+                                        CASE 	WHEN u3.unit_degree = 2 THEN                   quantity_of_sample/1000
+                                                WHEN u3.unit_degree = 1 THEN quantity_of_sample/1000000
+                                                WHEN u3.unit_degree = 3 THEN quantity_of_sample
+                                                WHEN u3.unit_degree = 0 THEN quantity_of_sample
+                                                END AS sample
+                
+                                        
+                                                
+                                from  seizures inner join narcotics on seizures.drug_id = narcotics.drug_id 
+                                inner join units as u1 on seizures.seizure_quantity_weighing_unit_id=u1.unit_id 
+                                left join units as u2  on seizures.disposal_quantity_weighing_unit_id=u2.unit_id 
+                                left join units as u3  on seizures.sample_quantity_weighing_unit_id=u3.unit_id 
+                                where district_id=".$district->district_id." AND seizures.created_at BETWEEN '".$from_date."' AND '".$to_date."'
+                            ) a
+                    )b
+                )c GROUP BY drug_name,quantity_unit_name";
+
+            $data = DB::select($sql);
+
+            $report['Narcotic Type'] = "<ul type='square'>";
+            $report['Disposed Quantity'] = "<ul type='square'>";
+            $report['Undisposed Quantity'] = "<ul type='square'>";
+
+            foreach($data as $seizure){
+                $report['Narcotic Type'] .= "<li>".$seizure->drug_name."</li>";
+                if($seizure->disposal_quantity==0)
+                    $report['Disposed Quantity'] .= "<li>NIL</li>";
+                else
+                    $report['Disposed Quantity'] .= "<li>".$seizure->disposal_quantity." ".$seizure->unit_name."</li>";
+                
+                if($seizure->undisposed_quantity==0)
+                    $report['Undisposed Quantity'] .= "<li>NIL</li>";
+                else
+                $report['Undisposed Quantity'] .= "<li>".$seizure->undisposed_quantity." ".$seizure->unit_name."</li>";
+            }
+
+            $report['Narcotic Type'] .= "</ul>";
+            $report['Disposed Quantity'] .= "</ul>";
+            $report['Undisposed Quantity'] .= "</ul>";
+
+            $record[] = $report;
+
+        }
+
+        $json_data = array(
+            "draw" => intval($request->input('draw')),
+            "recordsTotal" => intval($totalData['0']['count']),
+            "recordsFiltered" =>intval($totalFiltered),
+            "data" => $record
+        );
+
+        echo json_encode($json_data);
+
+    }
+
+
+    public function calhc_stakeholder_report(Request $request){
+        $this->validate( $request, [ 
+            'from_date' => 'required|date',
+            'to_date' => 'required|date',
+        ]); 
+
+        $from_date = $request->input('from_date');
+        $to_date = $request->input('to_date');
+        
+        // For dataTable :: STARTS
+        $columns = array( 
+            0 =>'STAKEHOLDER ID',
+            1=>'More Details',
+            2=>'Sl No',
+            3=>'Stakeholder Name',
+            4 =>'Narcotic Type',
+            5 =>'Disposed Quantity',
+            6 =>'Undisposed Quantity'
+        );
+
+        $limit = $request->input('length'); // For No. of rows per page
+        $start = $request->input('start');
+        $order = $columns[$request->input('order.0.column')];
+        $dir = $request->input('order.0.dir');
+
+        $stakeholders = Ps_detail::select('ps_id','ps_name')
+                                        ->limit($limit)
+                                        ->offset($start)
+                                        ->orderBy('ps_name')
+                                        ->get();
+
+        $totalData = Ps_detail::count();
+        $totalFiltered = $totalData;
+
+
+        $record = array();
+
+        $report['Sl No'] = $start;
+
+        foreach($stakeholders as $stakeholder){
+            //More Details
+            $report['More Details'] = '<img src="images/details_open.png" style="cursor:pointer" class="more_details" alt="More Details">';
+
+            //SL No.
+            $report['Sl No'] ++; 
+
+            // District ID
+            $report['STAKEHOLDER ID'] = $stakeholder->ps_id;
+
+            // District Name
+            $report['Stakeholder Name'] = $stakeholder->ps_name;
+
+
+            $sql = "SELECT drug_name,SUM(A) disposal_quantity,SUM(B) undisposed_quantity,quantity_unit_name as unit_name
+                FROM
+                (
+                    select drug_name, quantity_unit_name,
+                            CASE 
+                                    WHEN disposal_flag = 'Y' THEN disposal ELSE 0 END as A,
+                            CASE
+                                    WHEN disposal_flag = 'Y' THEN seizure-sample-disposal 
+                                    ELSE seizure-coalesce(sample, 0) END as B
+                    FROM
+                    (
+                        SELECT 
+                            drug_name, disposal_flag,seizure,disposal,sample,quantity_unit_name
+                            FROM 
+                            (
+                                select drug_name, disposal_flag, 
+                                        CASE    WHEN u1.unit_degree = 2 THEN                   quantity_of_drug/1000 
+                                                WHEN u1.unit_degree = 1 THEN quantity_of_drug/1000000
+                                                WHEN u1.unit_degree = 3 THEN quantity_of_drug
+                                                WHEN u1.unit_degree = 0 THEN quantity_of_drug
+                                                END AS seizure,
+                
+                                        CASE    WHEN u1.unit_name ilike 'g%m'  THEN             'KG'
+                                                WHEN u1.unit_name ilike 'l%e' OR u1.unit_name ilike 'm%l'  THEN 'KL'
+                                                ELSE u1.unit_name
+                                                END AS quantity_unit_name,
+                                                
+                
+                                        CASE 	WHEN u2.unit_degree = 2 THEN                   disposal_quantity/1000
+                                                WHEN u2.unit_degree = 1 THEN disposal_quantity/1000000
+                                                WHEN u2.unit_degree = 3 THEN disposal_quantity
+                                                WHEN u2.unit_degree = 0 THEN disposal_quantity
+                                                END AS disposal,
+                                        
+                
+                                        CASE 	WHEN u3.unit_degree = 2 THEN                   quantity_of_sample/1000
+                                                WHEN u3.unit_degree = 1 THEN quantity_of_sample/1000000
+                                                WHEN u3.unit_degree = 3 THEN quantity_of_sample
+                                                WHEN u3.unit_degree = 0 THEN quantity_of_sample
+                                                END AS sample
+                
+                                        
+                                                
+                                from  seizures inner join narcotics on seizures.drug_id = narcotics.drug_id 
+                                inner join units as u1 on seizures.seizure_quantity_weighing_unit_id=u1.unit_id 
+                                left join units as u2  on seizures.disposal_quantity_weighing_unit_id=u2.unit_id 
+                                left join units as u3  on seizures.sample_quantity_weighing_unit_id=u3.unit_id 
+                                where ps_id=".$stakeholder->ps_id." AND seizures.created_at BETWEEN '".$from_date."' AND '".$to_date."'
+                            ) a
+                    )b
+                )c GROUP BY drug_name,quantity_unit_name";
+
+            $data = DB::select($sql);
+
+            $report['Narcotic Type'] = "<ul type='square'>";
+            $report['Disposed Quantity'] = "<ul type='square'>";
+            $report['Undisposed Quantity'] = "<ul type='square'>";
+
+            foreach($data as $seizure){
+                $report['Narcotic Type'] .= "<li>".$seizure->drug_name."</li>";
+                if($seizure->disposal_quantity==0)
+                    $report['Disposed Quantity'] .= "<li>NIL</li>";
+                else
+                    $report['Disposed Quantity'] .= "<li>".$seizure->disposal_quantity." ".$seizure->unit_name."</li>";
+                
+                if($seizure->undisposed_quantity==0)
+                    $report['Undisposed Quantity'] .= "<li>NIL</li>";
+                else
+                $report['Undisposed Quantity'] .= "<li>".$seizure->undisposed_quantity." ".$seizure->unit_name."</li>";
+            }
+
+            $report['Narcotic Type'] .= "</ul>";
+            $report['Disposed Quantity'] .= "</ul>";
+            $report['Undisposed Quantity'] .= "</ul>";
+
+            $record[] = $report;
+
+        }
+
+        $json_data = array(
+            "draw" => intval($request->input('draw')),
+            "recordsTotal" => intval($totalData['0']['count']),
+            "recordsFiltered" =>intval($totalFiltered),
+            "data" => $record
+        );
+
+        echo json_encode($json_data);
+
+    }
+
+
+    public function calhc_storage_report(Request $request){
+        $this->validate( $request, [ 
+            'from_date' => 'required|date',
+            'to_date' => 'required|date',
+        ]); 
+
+        $from_date = $request->input('from_date');
+        $to_date = $request->input('to_date');
+        
+        // For dataTable :: STARTS
+        $columns = array( 
+            0 =>'STORAGE ID',
+            1=>'More Details',
+            2=>'Sl No',
+            3=>'Storage Name',
+            4 =>'Narcotic Type',
+            5 =>'Disposed Quantity',
+            6 =>'Undisposed Quantity'
+        );
+
+        $limit = $request->input('length'); // For No. of rows per page
+        $start = $request->input('start');
+        $order = $columns[$request->input('order.0.column')];
+        $dir = $request->input('order.0.dir');
+
+        $stakeholders = Ps_detail::select('ps_id','ps_name')
+                                        ->limit($limit)
+                                        ->offset($start)
+                                        ->orderBy('ps_name')
+                                        ->get();
+
+        $totalData = Ps_detail::count();
+        $totalFiltered = $totalData;
+
+
+        $record = array();
+
+        $report['Sl No'] = $start;
+
+        foreach($storages as $storage){
+            //More Details
+            $report['More Details'] = '<img src="images/details_open.png" style="cursor:pointer" class="more_details" alt="More Details">';
+
+            //SL No.
+            $report['Sl No'] ++; 
+
+            // District ID
+            $report['STORAGE ID'] = $storage->storage_id;
+
+            // District Name
+            $report['Storage Name'] = $storage->storage_name;
+
+
+            $sql = "SELECT drug_name,SUM(A) disposal_quantity,SUM(B) undisposed_quantity,quantity_unit_name as unit_name
+                FROM
+                (
+                    select drug_name, quantity_unit_name,
+                            CASE 
+                                    WHEN disposal_flag = 'Y' THEN disposal ELSE 0 END as A,
+                            CASE
+                                    WHEN disposal_flag = 'Y' THEN seizure-sample-disposal 
+                                    ELSE seizure-coalesce(sample, 0) END as B
+                    FROM
+                    (
+                        SELECT 
+                            drug_name, disposal_flag,seizure,disposal,sample,quantity_unit_name
+                            FROM 
+                            (
+                                select drug_name, disposal_flag, 
+                                        CASE    WHEN u1.unit_degree = 2 THEN                   quantity_of_drug/1000 
+                                                WHEN u1.unit_degree = 1 THEN quantity_of_drug/1000000
+                                                WHEN u1.unit_degree = 3 THEN quantity_of_drug
+                                                WHEN u1.unit_degree = 0 THEN quantity_of_drug
+                                                END AS seizure,
+                
+                                        CASE    WHEN u1.unit_name ilike 'g%m'  THEN             'KG'
+                                                WHEN u1.unit_name ilike 'l%e' OR u1.unit_name ilike 'm%l'  THEN 'KL'
+                                                ELSE u1.unit_name
+                                                END AS quantity_unit_name,
+                                                
+                
+                                        CASE 	WHEN u2.unit_degree = 2 THEN                   disposal_quantity/1000
+                                                WHEN u2.unit_degree = 1 THEN disposal_quantity/1000000
+                                                WHEN u2.unit_degree = 3 THEN disposal_quantity
+                                                WHEN u2.unit_degree = 0 THEN disposal_quantity
+                                                END AS disposal,
+                                        
+                
+                                        CASE 	WHEN u3.unit_degree = 2 THEN                   quantity_of_sample/1000
+                                                WHEN u3.unit_degree = 1 THEN quantity_of_sample/1000000
+                                                WHEN u3.unit_degree = 3 THEN quantity_of_sample
+                                                WHEN u3.unit_degree = 0 THEN quantity_of_sample
+                                                END AS sample
+                
+                                        
+                                                
+                                from  seizures inner join narcotics on seizures.drug_id = narcotics.drug_id 
+                                inner join units as u1 on seizures.seizure_quantity_weighing_unit_id=u1.unit_id 
+                                left join units as u2  on seizures.disposal_quantity_weighing_unit_id=u2.unit_id 
+                                left join units as u3  on seizures.sample_quantity_weighing_unit_id=u3.unit_id 
+                                where storage_id=".$storage->storage_id." AND seizures.created_at BETWEEN '".$from_date."' AND '".$to_date."'
+                            ) a
+                    )b
+                )c GROUP BY drug_name,quantity_unit_name";
+
+            $data = DB::select($sql);
+
+            $report['Narcotic Type'] = "<ul type='square'>";
+            $report['Disposed Quantity'] = "<ul type='square'>";
+            $report['Undisposed Quantity'] = "<ul type='square'>";
+
+            foreach($data as $seizure){
+                $report['Narcotic Type'] .= "<li>".$seizure->drug_name."</li>";
+                if($seizure->disposal_quantity==0)
+                    $report['Disposed Quantity'] .= "<li>NIL</li>";
+                else
+                    $report['Disposed Quantity'] .= "<li>".$seizure->disposal_quantity." ".$seizure->unit_name."</li>";
+                
+                if($seizure->undisposed_quantity==0)
+                    $report['Undisposed Quantity'] .= "<li>NIL</li>";
+                else
+                $report['Undisposed Quantity'] .= "<li>".$seizure->undisposed_quantity." ".$seizure->unit_name."</li>";
+            }
+
+            $report['Narcotic Type'] .= "</ul>";
+            $report['Disposed Quantity'] .= "</ul>";
+            $report['Undisposed Quantity'] .= "</ul>";
+
+            $record[] = $report;
+
+        }
+
+        $json_data = array(
+            "draw" => intval($request->input('draw')),
+            "recordsTotal" => intval($totalData['0']['count']),
+            "recordsFiltered" =>intval($totalFiltered),
+            "data" => $record
+        );
+
+        echo json_encode($json_data);
+
+    }
 
     /*Disposed Undisposed Tally :End */
 }

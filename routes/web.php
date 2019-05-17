@@ -194,15 +194,23 @@
        Route::post('composite_search_highcourt/fetch_more_details',
         'SearchController@fetch_case_details');
 
-       
-
        //Composite Search ::Ends
+
 
        // Disposed Undisposed Tally :Starts
 
        Route::get('disposed_undisposed_tally',function(){
-        return view ('disposed_undisposed_tally');
-    });
+            return view ('disposed_undisposed_tally');
+       });
+
+       Route::post('disposed_undisposed_tally/district_court_report',
+        'SearchController@calhc_district_court_report');
+
+        Route::post('disposed_undisposed_tally/stakeholder_report',
+        'SearchController@calhc_stakeholder_report');
+
+        Route::post('disposed_undisposed_tally/storage_report',
+        'SearchController@calhc_storage_report');
 
        // Disposed Undisposed Tally Ends
 
