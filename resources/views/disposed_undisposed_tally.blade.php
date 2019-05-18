@@ -137,7 +137,7 @@
                     <th style="display:none">STORAGE ID </th>
                     <th></th>
                     <th>Sl No.</th>
-                    <th>District Name</th>
+                    <th>Storage Name</th>
                     <th>Narcotic Type</th>                                    
                     <th>Disposed Quantity</th>
                     <th>Undisposed Quantity</th>
