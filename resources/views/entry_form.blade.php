@@ -374,7 +374,7 @@
 													success:function(response){
 														swal("Application For Certification Successfully Submitted","","success");
 														setTimeout(function(){
-																window.location.reload();
+																window.location.reload(true);
 														},2000);
 													},
 													error:function(response){

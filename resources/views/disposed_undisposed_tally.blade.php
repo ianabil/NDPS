@@ -29,7 +29,7 @@
         <div class="form-group row">
             <label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Date Range</label>
             <div class="col-sm-3">
-                <input type="text" class="form-control date_range" id="date_range" placeholder="Date Range">
+                <input type="text" class="form-control date_range" id="date_range" placeholder="Date Range" autocomplete="off">
             </div>
 
             <div class="col-sm-4 col-sm-offset-1" style="margin-top:-1.5%">
@@ -103,7 +103,6 @@
                 <thead>
                     <tr>
                     <th style="display:none">STAKEHOLDER ID </th>
-                    <th></th>
                     <th>Sl No.</th>
                     <th>Stakeholder Name</th>
                     <th>Narcotic Type</th>                                    
@@ -204,8 +203,14 @@
                 var report_type_selected = $('input[name=report]').is(':checked');
                 var report_type = $('input[name=report]:checked').val();
 
+                var date_range = $("#date_range").val();
+
                 if(!report_type_selected){
                     swal("Invalid Input","Please Select A Type of Report","error");
+                    return false;
+                }
+                else if(date_range==""){
+                    swal("Invalid Input","Please Select A Date Range","error");
                     return false;
                 }
                 else if(from_date=="" || to_date ==""){
@@ -215,11 +220,13 @@
                 else if(report_type=="district_court_report"){
                     $('#district_court_report').DataTable().destroy();
                     $("#district_court_search_result").show();
+                    $("#storage_search_result").hide();
+                    $("#stakeholder_search_result").hide();
 
                     table = $("#district_court_report").DataTable({ 
                         "processing": true,
                         "serverSide": true,
-                        "searching": false,
+                        "searching": true,
                         "paging" : true,
                         "ajax": {
                         "url": "disposed_undisposed_tally/district_court_report",
@@ -246,12 +253,14 @@
                 }
                 else if(report_type=="stakeholder_report"){
                     $('#stakeholder_report').DataTable().destroy();
+                    $("#district_court_search_result").hide();
+                    $("#storage_search_result").hide();
                     $("#stakeholder_search_result").show();
 
                     table = $("#stakeholder_report").DataTable({ 
                         "processing": true,
                         "serverSide": true,
-                        "searching": false,
+                        "searching": true,
                         "paging" : true,
                         "ajax": {
                         "url": "disposed_undisposed_tally/stakeholder_report",
@@ -265,7 +274,6 @@
                         "columns": [  
                             {"class":"stakeholder_id",
                              "data":"STAKEHOLDER ID"},
-                            {"data": "More Details"}, 
                             {"data": "Sl No"},         
                             {"data": "Stakeholder Name"},
                             {"data": "Narcotic Type"},
@@ -279,11 +287,13 @@
                 else if(report_type=="malkhana_report"){
                     $('#storage_report').DataTable().destroy();
                     $("#storage_search_result").show();
+                    $("#district_court_search_result").hide();
+                    $("#stakeholder_search_result").hide();
 
                     table = $("#storage_report").DataTable({ 
                         "processing": true,
                         "serverSide": true,
-                        "searching": false,
+                        "searching": true,
                         "paging" : true,
                         "ajax": {
                         "url": "disposed_undisposed_tally/storage_report",
@@ -312,5 +322,102 @@
             });
             // Report Code :: ENDS
 
+
+            // Fetching More Details
+            $(document).on("click",".more_details",function(){  
+                var report_type = $('input[name=report]:checked').val();
+
+                // Fetching More Detailed Report About Any District :: STARTS
+                if(report_type=="district_court_report"){
+                    var element = $(this);        
+                    var tr = element.closest('tr');
+                    var row = table.row(tr);
+                    var row_data = table.row(tr).data();
+
+                    var district_id = row_data['DISTRICT ID'];
+
+                    var obj;
+
+                    // fetch case details only when the child row is hide
+                    if(!row.child.isShown()){ 
+
+                        $.ajax({
+                            type:"POST",
+                            url:"disposed_undisposed_tally/fetch_more_details_district_court_report",
+                            data:{
+                                _token: $('meta[name="csrf-token"]').attr('content'),
+                                district_id:district_id,
+                                from_date:from_date,
+                                to_date:to_date
+                            },
+                            success:function(response){
+                                obj = $.parseJSON(response); 
+                            },
+                            error:function(response){
+                                console.log(response);
+                            },
+                            async: false
+                        }) 
+                    }
+
+                    if(row.child.isShown() ) {
+                        element.attr("src","images/details_open.png");
+                        row.child.hide();
+                    }
+                    else {
+                        element.attr("src","images/details_close.png");
+
+                        var child_string ="";            
+                        child_string += '<table class="table table-bordered table-responsive">'+
+                                        '<thead>'+
+                                            '<tr>'+
+                                                '<th>Sl No.</th>'+
+                                                '<th style="display:none">Court ID</th>'+
+                                                '<th>NDPS Court</th>'+
+                                                '<th>Narcotic Type</th>'+                                        
+                                                '<th>Disposed Quantity</th>'+
+                                                '<th>Undisposed Quantity</th>'+
+                                            '</tr>'+
+                                        '</thead>'+
+                                        
+                                    '<tbody>';
+
+                        $.each(obj,function(key,value){
+                        child_string += ""+
+                            '<tr class="info">'+ 
+                                '<td>'+
+                                    value.sl_no+
+                                '</td>'+
+                                '<td class="court_id" style="display:none">'+
+                                    value.court_id+
+                                '</td>'+
+                                '<td>'+
+                                    value.court_name+
+                                '</td>'+
+                                '<td>'+
+                                    value.narcotic_type+
+                                '</td>'+                               
+                                '<td>'+
+                                    value.disposed_quantity+
+                                '</td>'+
+                                '<td>'+
+                                    value.undisposed_quantity+
+                                '</td>'+
+                            '</tr>';
+                        })
+
+                        child_string +='</tbody></table>';
+
+                        row.child(child_string).show();
+                    }
+                }
+                // Fetching More Detailed Report About Any District :: ENDS
+                
+                // Fetching More Detailed Report About Any District :: STARTS
+                else if(report_type=="storage_report"){
+
+                }
+            })
+            
         })
     </script>

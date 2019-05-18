@@ -165,7 +165,7 @@
                         {
                             swal("New User Created ","","success");
                             setTimeout(function(){
-					            window.location.reload();
+					            window.location.reload(true);
 				            },1700);   
                         },
                         error:function(response) {  

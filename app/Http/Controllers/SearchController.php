@@ -400,14 +400,30 @@ class SearchController extends Controller
         $order = $columns[$request->input('order.0.column')];
         $dir = $request->input('order.0.dir');
 
-        $districts = District::select('district_id','district_name')
+        $totalData = District::count();
+        $totalFiltered = $totalData;
+
+        if(empty($request->input('search.value'))){
+            $districts = District::select('district_id','district_name')
+                                        ->limit($limit)
+                                        ->offset($start)
+                                        ->orderBy('district_name')
+                                        ->get();
+        }
+        else{
+            $search = $request->input('search.value');
+
+            $districts = District::where('district_name','ilike',"%{$search}%")
+                                        ->select('district_id','district_name')
                                         ->limit($limit)
                                         ->offset($start)
                                         ->orderBy('district_name')
                                         ->get();
 
-        $totalData = District::count();
-        $totalFiltered = $totalData;
+            $totalFiltered = District::where('district_name','ilike',"%{$search}%")
+                                        ->count();
+
+        }
 
 
         $record = array();
@@ -415,9 +431,6 @@ class SearchController extends Controller
         $report['Sl No'] = $start;
 
         foreach($districts as $district){
-            //More Details
-            $report['More Details'] = '<img src="images/details_open.png" style="cursor:pointer" class="more_details" alt="More Details">';
-
             //SL No.
             $report['Sl No'] ++; 
 
@@ -482,6 +495,12 @@ class SearchController extends Controller
 
             $data = DB::select($sql);
 
+            // For More Details Button
+            if(sizeof($data)>0)
+                $report['More Details'] = '<img src="images/details_open.png" style="cursor:pointer" class="more_details" alt="More Details">';
+            else
+                $report['More Details'] =   '';    
+
             $report['Narcotic Type'] = "<ul type='square'>";
             $report['Disposed Quantity'] = "<ul type='square'>";
             $report['Undisposed Quantity'] = "<ul type='square'>";
@@ -509,7 +528,7 @@ class SearchController extends Controller
 
         $json_data = array(
             "draw" => intval($request->input('draw')),
-            "recordsTotal" => intval($totalData['0']['count']),
+            "recordsTotal" => intval($totalData),
             "recordsFiltered" =>intval($totalFiltered),
             "data" => $record
         );
@@ -531,12 +550,11 @@ class SearchController extends Controller
         // For dataTable :: STARTS
         $columns = array( 
             0 =>'STAKEHOLDER ID',
-            1=>'More Details',
-            2=>'Sl No',
-            3=>'Stakeholder Name',
-            4 =>'Narcotic Type',
-            5 =>'Disposed Quantity',
-            6 =>'Undisposed Quantity'
+            1=>'Sl No',
+            2=>'Stakeholder Name',
+            3 =>'Narcotic Type',
+            4 =>'Disposed Quantity',
+            5 =>'Undisposed Quantity'
         );
 
         $limit = $request->input('length'); // For No. of rows per page
@@ -544,14 +562,30 @@ class SearchController extends Controller
         $order = $columns[$request->input('order.0.column')];
         $dir = $request->input('order.0.dir');
 
-        $stakeholders = Ps_detail::select('ps_id','ps_name')
+        $totalData = Ps_detail::count();
+        $totalFiltered = $totalData;
+
+        if(empty($request->input('search.value'))){
+            $stakeholders = Ps_detail::select('ps_id','ps_name')
                                         ->limit($limit)
                                         ->offset($start)
                                         ->orderBy('ps_name')
-                                        ->get();
+                                        ->get();       
+        }
+        else{
+            $search = $request->input('search.value');
 
-        $totalData = Ps_detail::count();
-        $totalFiltered = $totalData;
+            $stakeholders = Ps_detail::where('ps_name','ilike',"%{$search}%")
+                                        ->select('ps_id','ps_name')
+                                        ->limit($limit)
+                                        ->offset($start)
+                                        ->orderBy('ps_name')
+                                        ->get();   
+
+            $totalFiltered = Ps_detail::where('ps_name','ilike',"%{$search}%")
+                                        ->count();
+
+        }
 
 
         $record = array();
@@ -559,9 +593,6 @@ class SearchController extends Controller
         $report['Sl No'] = $start;
 
         foreach($stakeholders as $stakeholder){
-            //More Details
-            $report['More Details'] = '<img src="images/details_open.png" style="cursor:pointer" class="more_details" alt="More Details">';
-
             //SL No.
             $report['Sl No'] ++; 
 
@@ -569,7 +600,7 @@ class SearchController extends Controller
             $report['STAKEHOLDER ID'] = $stakeholder->ps_id;
 
             // District Name
-            $report['Stakeholder Name'] = $stakeholder->ps_name;
+            $report['Stakeholder Name'] = $stakeholder->ps_name. " PS";
 
 
             $sql = "SELECT drug_name,SUM(A) disposal_quantity,SUM(B) undisposed_quantity,quantity_unit_name as unit_name
@@ -653,7 +684,7 @@ class SearchController extends Controller
 
         $json_data = array(
             "draw" => intval($request->input('draw')),
-            "recordsTotal" => intval($totalData['0']['count']),
+            "recordsTotal" => intval($totalData),
             "recordsFiltered" =>intval($totalFiltered),
             "data" => $record
         );
@@ -688,24 +719,37 @@ class SearchController extends Controller
         $order = $columns[$request->input('order.0.column')];
         $dir = $request->input('order.0.dir');
 
-        $stakeholders = Ps_detail::select('ps_id','ps_name')
+        $totalData = Storage_detail::count();
+        $totalFiltered = $totalData;
+
+        if(empty($request->input('search.value'))){
+            $storages = Storage_detail::select('storage_id','storage_name')
                                         ->limit($limit)
                                         ->offset($start)
-                                        ->orderBy('ps_name')
+                                        ->orderBy('storage_name')
                                         ->get();
+        }
+        else{
+            $search = $request->input('search.value');
 
-        $totalData = Ps_detail::count();
-        $totalFiltered = $totalData;
+            $storages = Storage_detail::where('storage_name','ilike',"%{$search}%")
+                                        ->select('storage_id','storage_name')
+                                        ->limit($limit)
+                                        ->offset($start)
+                                        ->orderBy('storage_name')
+                                        ->get(); 
+
+            $totalFiltered = Storage_detail::where('storage_name','ilike',"%{$search}%")
+                                        ->count();
+
+        }
 
 
         $record = array();
 
         $report['Sl No'] = $start;
 
-        foreach($storages as $storage){
-            //More Details
-            $report['More Details'] = '<img src="images/details_open.png" style="cursor:pointer" class="more_details" alt="More Details">';
-
+        foreach($storages as $storage){           
             //SL No.
             $report['Sl No'] ++; 
 
@@ -732,26 +776,26 @@ class SearchController extends Controller
                             FROM 
                             (
                                 select drug_name, disposal_flag, 
-                                        CASE    WHEN u1.unit_degree = 2 THEN                   quantity_of_drug/1000 
+                                        CASE    WHEN u1.unit_degree = 2 THEN quantity_of_drug/1000 
                                                 WHEN u1.unit_degree = 1 THEN quantity_of_drug/1000000
                                                 WHEN u1.unit_degree = 3 THEN quantity_of_drug
                                                 WHEN u1.unit_degree = 0 THEN quantity_of_drug
                                                 END AS seizure,
                 
-                                        CASE    WHEN u1.unit_name ilike 'g%m'  THEN             'KG'
+                                        CASE    WHEN u1.unit_name ilike 'g%m'  THEN  'KG'
                                                 WHEN u1.unit_name ilike 'l%e' OR u1.unit_name ilike 'm%l'  THEN 'KL'
                                                 ELSE u1.unit_name
                                                 END AS quantity_unit_name,
                                                 
                 
-                                        CASE 	WHEN u2.unit_degree = 2 THEN                   disposal_quantity/1000
+                                        CASE 	WHEN u2.unit_degree = 2 THEN disposal_quantity/1000
                                                 WHEN u2.unit_degree = 1 THEN disposal_quantity/1000000
                                                 WHEN u2.unit_degree = 3 THEN disposal_quantity
                                                 WHEN u2.unit_degree = 0 THEN disposal_quantity
                                                 END AS disposal,
                                         
                 
-                                        CASE 	WHEN u3.unit_degree = 2 THEN                   quantity_of_sample/1000
+                                        CASE 	WHEN u3.unit_degree = 2 THEN quantity_of_sample/1000
                                                 WHEN u3.unit_degree = 1 THEN quantity_of_sample/1000000
                                                 WHEN u3.unit_degree = 3 THEN quantity_of_sample
                                                 WHEN u3.unit_degree = 0 THEN quantity_of_sample
@@ -763,12 +807,18 @@ class SearchController extends Controller
                                 inner join units as u1 on seizures.seizure_quantity_weighing_unit_id=u1.unit_id 
                                 left join units as u2  on seizures.disposal_quantity_weighing_unit_id=u2.unit_id 
                                 left join units as u3  on seizures.sample_quantity_weighing_unit_id=u3.unit_id 
-                                where storage_id=".$storage->storage_id." AND seizures.created_at BETWEEN '".$from_date."' AND '".$to_date."'
+                                where storage_location_id=".$storage->storage_id." AND seizures.created_at BETWEEN '".$from_date."' AND '".$to_date."'
                             ) a
                     )b
                 )c GROUP BY drug_name,quantity_unit_name";
 
             $data = DB::select($sql);
+            
+            // For More Details Button
+            if(sizeof($data)>0)
+                $report['More Details'] = '<img src="images/details_open.png" style="cursor:pointer" class="more_details" alt="More Details">';
+            else
+                $report['More Details'] =   '';    
 
             $report['Narcotic Type'] = "<ul type='square'>";
             $report['Disposed Quantity'] = "<ul type='square'>";
@@ -797,12 +847,117 @@ class SearchController extends Controller
 
         $json_data = array(
             "draw" => intval($request->input('draw')),
-            "recordsTotal" => intval($totalData['0']['count']),
+            "recordsTotal" => intval($totalData),
             "recordsFiltered" =>intval($totalFiltered),
             "data" => $record
         );
 
         echo json_encode($json_data);
+
+    }
+
+
+    public function calhc_fetch_more_details_district_court_report(Request $request){
+        $district_id = $request->input('district_id');
+        $from_date = $request->input('from_date');
+        $to_date = $request->input('to_date');
+
+        $courts = Court_detail::where('district_id',$district_id)
+                                ->select('court_id','court_name')
+                                ->orderBy('court_name')
+                                ->get();
+        $record = array();
+
+        foreach($courts as $key=>$court){            
+            $report['sl_no'] = ++$key;
+            $report['court_id'] = $court->court_id;
+            $report['court_name'] = $court->court_name;
+
+                $sql = "SELECT drug_name,SUM(A) disposal_quantity,SUM(B) undisposed_quantity,quantity_unit_name as unit_name
+                        FROM
+                        (
+                            select drug_name, quantity_unit_name,
+                                    CASE 
+                                            WHEN disposal_flag = 'Y' THEN disposal ELSE 0 END as A,
+                                    CASE
+                                            WHEN disposal_flag = 'Y' THEN seizure-sample-disposal 
+                                            ELSE seizure-coalesce(sample, 0) END as B
+                            FROM
+                            (
+                                SELECT 
+                                    drug_name, disposal_flag,seizure,disposal,sample,quantity_unit_name
+                                    FROM 
+                                    (
+                                        select drug_name, disposal_flag, 
+                                                CASE    WHEN u1.unit_degree = 2 THEN quantity_of_drug/1000 
+                                                        WHEN u1.unit_degree = 1 THEN quantity_of_drug/1000000
+                                                        WHEN u1.unit_degree = 3 THEN quantity_of_drug
+                                                        WHEN u1.unit_degree = 0 THEN quantity_of_drug
+                                                        END AS seizure,
+                        
+                                                CASE    WHEN u1.unit_name ilike 'g%m'  THEN  'KG'
+                                                        WHEN u1.unit_name ilike 'l%e' OR u1.unit_name ilike 'm%l'  THEN 'KL'
+                                                        ELSE u1.unit_name
+                                                        END AS quantity_unit_name,
+                                                        
+                        
+                                                CASE 	WHEN u2.unit_degree = 2 THEN disposal_quantity/1000
+                                                        WHEN u2.unit_degree = 1 THEN disposal_quantity/1000000
+                                                        WHEN u2.unit_degree = 3 THEN disposal_quantity
+                                                        WHEN u2.unit_degree = 0 THEN disposal_quantity
+                                                        END AS disposal,
+                                                
+                        
+                                                CASE 	WHEN u3.unit_degree = 2 THEN quantity_of_sample/1000
+                                                        WHEN u3.unit_degree = 1 THEN quantity_of_sample/1000000
+                                                        WHEN u3.unit_degree = 3 THEN quantity_of_sample
+                                                        WHEN u3.unit_degree = 0 THEN quantity_of_sample
+                                                        END AS sample
+                        
+                                                
+                                                        
+                                        from  seizures inner join narcotics on seizures.drug_id = narcotics.drug_id 
+                                        inner join units as u1 on seizures.seizure_quantity_weighing_unit_id=u1.unit_id 
+                                        left join units as u2  on seizures.disposal_quantity_weighing_unit_id=u2.unit_id 
+                                        left join units as u3  on seizures.sample_quantity_weighing_unit_id=u3.unit_id 
+                                        where seizures.certification_court_id=".$court->court_id." AND seizures.created_at BETWEEN '".$from_date."' AND '".$to_date."'
+                                    ) a
+                            )b
+                        )c GROUP BY drug_name,quantity_unit_name";
+
+                $data = DB::select($sql);
+
+                $report['narcotic_type'] = "<ul type='square'>";
+                $report['disposed_quantity'] = "<ul type='square'>";
+                $report['undisposed_quantity'] = "<ul type='square'>";
+
+                foreach($data as $seizure){
+                    $report['narcotic_type'] .= "<li>".$seizure->drug_name."</li>";
+                    if($seizure->disposal_quantity==0)
+                        $report['disposed_quantity'] .= "<li>NIL</li>";
+                    else
+                        $report['disposed_quantity'] .= "<li>".$seizure->disposal_quantity." ".$seizure->unit_name."</li>";
+                    
+                    if($seizure->undisposed_quantity==0)
+                        $report['undisposed_quantity'] .= "<li>NIL</li>";
+                    else
+                    $report['undisposed_quantity'] .= "<li>".$seizure->undisposed_quantity." ".$seizure->unit_name."</li>";
+                }
+    
+                $report['narcotic_type'] .= "</ul>";
+                $report['disposed_quantity'] .= "</ul>";
+                $report['undisposed_quantity'] .= "</ul>";
+
+                $record[] = $report;
+    
+        }
+
+        echo json_encode($record);
+
+    }
+
+
+    public function calhc_fetch_more_details_storage_report(Request $request){
 
     }
 
