@@ -413,10 +413,91 @@
                 }
                 // Fetching More Detailed Report About Any District :: ENDS
                 
-                // Fetching More Detailed Report About Any District :: STARTS
-                else if(report_type=="storage_report"){
+                // Fetching More Detailed Report About Any Storage :: STARTS
+                else if(report_type=="malkhana_report"){
+                    var element = $(this);        
+                    var tr = element.closest('tr');
+                    var row = table.row(tr);
+                    var row_data = table.row(tr).data();
 
+                    var storage_id = row_data['STORAGE ID'];
+
+                    var obj;
+
+                    // fetch case details only when the child row is hide
+                    if(!row.child.isShown()){ 
+
+                        $.ajax({
+                            type:"POST",
+                            url:"disposed_undisposed_tally/fetch_more_details_storage_report",
+                            data:{
+                                _token: $('meta[name="csrf-token"]').attr('content'),
+                                storage_id:storage_id,
+                                from_date:from_date,
+                                to_date:to_date
+                            },
+                            success:function(response){
+                                obj = $.parseJSON(response); 
+                            },
+                            error:function(response){
+                                console.log(response);
+                            },
+                            async: false
+                        }) 
+                    }
+
+                    if(row.child.isShown() ) {
+                        element.attr("src","images/details_open.png");
+                        row.child.hide();
+                    }
+                    else {
+                        element.attr("src","images/details_close.png");
+
+                        var child_string ="";            
+                        child_string += '<table class="table table-bordered table-responsive">'+
+                                        '<thead>'+
+                                            '<tr>'+
+                                                '<th>Sl No.</th>'+
+                                                '<th style="display:none">Stakeholder ID</th>'+
+                                                '<th>Stakeholder</th>'+
+                                                '<th>Narcotic Type</th>'+                                        
+                                                '<th>Disposed Quantity</th>'+
+                                                '<th>Undisposed Quantity</th>'+
+                                            '</tr>'+
+                                        '</thead>'+
+                                        
+                                    '<tbody>';
+
+                        $.each(obj,function(key,value){
+                        child_string += ""+
+                            '<tr class="info">'+ 
+                                '<td>'+
+                                    value.sl_no+
+                                '</td>'+
+                                '<td class="court_id" style="display:none">'+
+                                    value.stakeholder_id+
+                                '</td>'+
+                                '<td>'+
+                                    value.stakeholder_name+
+                                '</td>'+
+                                '<td>'+
+                                    value.narcotic_type+
+                                '</td>'+                               
+                                '<td>'+
+                                    value.disposed_quantity+
+                                '</td>'+
+                                '<td>'+
+                                    value.undisposed_quantity+
+                                '</td>'+
+                            '</tr>';
+                        })
+
+                        child_string +='</tbody></table>';
+
+                        row.child(child_string).show();
+                    }
                 }
+                // Fetching More Detailed Report About Any Storage :: ENDS
             })
             
         })
