@@ -231,6 +231,8 @@
 
         Route::post('entry_form/narcotic_units','entry_formController@narcotic_units');
 
+        Route::post('entry_form/fetch_narcotics','entry_formController@fetch_narcotics');
+
         Route::post('entry_form/fetch_court',
         'entry_formController@district_wise_court');
 

@@ -384,7 +384,17 @@ class entry_formController extends Controller
         
         return 1;
         
-    }    
+    }   
+    
+    
+    // Fetching all narcotics
+    public function fetch_narcotics(Request $request){
+        $data = Narcotic::where('display','Y')
+                        ->select('drug_id','drug_name')
+                        ->get();
+
+        echo json_encode($data);
+    }
     
     
 }

@@ -253,11 +253,103 @@
 			})
 		/*If multiple narcotics are seized in a same case :: ENDS*/
 
+		/*If multiple narcotics are entered after first time submission of seizure details :: STARTS*/			
+			$(document).on("click","#seizure_add_more", function(){
+				$(".div_add_more_seizure:first").clone().find('.div_other_narcotic_type').hide().end().insertAfter(".div_add_more_seizure:last");
+				$(".seizure_add_more:last").attr({src:"images/details_close.png",
+																  class:"remove_add_more_seizure", 
+																	alt:"remove",
+																	id:""});
+				$(".seizure_quantity:last").val('');
+				$(".date").datepicker({
+                endDate:'0',
+                format: 'dd-mm-yyyy'
+         }); // Date picker re-initialization
+				
+			})
+		/*If multiple narcotics are entered after first time submission of seizure details :: ENDS*/
+
+			/*If multiple narcotics are seized in a same case :: STARTS*/
+			$(document).on("click","#add_new_seizure", function(){
+					var obj;
+					var str_narcotic_list = "";
+
+					$.ajax({
+						type:"POST",
+						url:"entry_form/fetch_narcotics",
+						async: false,
+						data:{_token: $('meta[name="csrf-token"]').attr('content')},
+						success:function(response){
+							obj = $.parseJSON(response);							
+							$.each(obj,function(key,value){
+									str_narcotic_list=str_narcotic_list+'<option value="'+value.drug_id+'">'+value.drug_name+'</option>';
+							})							
+						}
+					})
+					
+				
+
+				var str_narcotic_details = 
+						'<div class="div_add_more_seizure">'+
+									'<div class="form-group required row">'+
+										'<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Nature of Narcotic</label>'+
+										'<div class="col-sm-3">'+
+											'<select class="form-control narcotic_type" autocomplete="off">'+
+												'<option value="" selected>Select An Option</option>'+str_narcotic_list+												
+												'<option value="999">Other</option>'+
+											'</select>'+
+										'</div>'+
+
+										'<div class="col-sm-1 div_img_add_more">'+
+											'<img src="{{asset("images/details_open.png")}}" style="cursor:pointer" class="seizure_add_more" alt="seizure_add_more" id="seizure_add_more">'+
+										'</div>'+
+
+										'<div class="col-sm-3 div_other_narcotic_type" style="display:none">'+
+												'<input class="form-control other_narcotic_name" type="text" placeholder="Narcotic Name" autocomplete="off">'+
+												'<input class="form-control flag_other_narcotic" type="number" style="display:none" autocomplete="off">'+
+										'</div>'+
+
+									'</div>'+
+
+									'<div class="form-group required row">'+
+										'<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Quantity of Seizure</label>'+
+										'<div class="col-sm-3">'+
+											'<input class="form-control seizure_quantity" type="number" autocomplete="off">'+
+										'</div>'+
+
+										'<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Weighing Unit</label>'+
+										'<div class="col-sm-2">'+
+											'<select class="form-control seizure_weighing_unit" autocomplete="off">'+
+												'<option value="" selected>Select An Option</option>'+
+											'</select>'+
+										'</div>'+
+									'</div>'+
+
+									'<div class="form-group required row">'+
+										'<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Date of Seizure</label>'+
+										'<div class="col-sm-3">'+
+											'<input type="text" class="form-control date seizure_date" placeholder="Choose Date" autocomplete="off">'+
+										'</div>'+
+									'</div>'+
+
+								'</div>'+
+								'<hr>';
+
+					$(str_narcotic_details).insertAfter(".div_add_more:last");
+			})
+		/*If multiple narcotics are seized in a same case :: ENDS*/
+
 
 		/*If multiple narcotics are seized in a same case and want to remove one :: STARTS*/
 		$(document).on("click",".remove", function(){
 				count --;
 				$(this).closest(".div_add_more").remove();
+		})
+		/*If multiple narcotics are seized in a same case and want to remove one :: ENDS*/
+
+		/*If multiple narcotics are seized in a same case and want to remove one :: STARTS*/
+		$(document).on("click",".remove_add_more_seizure", function(){
+				$(this).closest(".div_add_more_seizure").remove();
 		})
 		/*If multiple narcotics are seized in a same case and want to remove one :: ENDS*/
 
@@ -557,7 +649,7 @@
 													if(index==obj['case_details'].length-1){
 														str_case_details+=
 															'<div class="col-sm-1 col-sm-offset-1 div_add_new_seizure">'+
-																'<button type="button" class="btn btn-info btn-md add_new_seizure">New Seizure</button>'+
+																'<button type="button" class="btn btn-info btn-md add_new_seizure" id="add_new_seizure">New Seizure</button>'+
 															'</div>'+
 														
 														'</div>'+														
