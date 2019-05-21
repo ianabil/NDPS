@@ -30,7 +30,7 @@ class entry_formController extends Controller
      */
     public function index()
     {
-        $agency_id =Auth::user()->stakeholder_id;
+        $agency_id =Auth::user()->agency_id;
 
         $data = array();
         
@@ -106,7 +106,7 @@ class entry_formController extends Controller
         $court = $request->input('court');
         $certification_flag='N';
         $disposal_flag='N';
-        $agency_id= Auth::user()->stakeholder_id;
+        $agency_id= Auth::user()->agency_id;
         $user_name=Auth::user()->user_name;
         $update_date = Carbon::today();  
         $uploaded_date = Carbon::today();  
@@ -175,7 +175,7 @@ class entry_formController extends Controller
                         'seizure_quantity_weighing_unit_id'=>$seizure_weighing_unit[$i],
                         'date_of_seizure'=>date('Y-m-d', strtotime($seizure_date[$i])),
                         'storage_location_id'=>$storage,
-                        'stakeholder_id'=>$agency_id,
+                        'agency_id'=>$agency_id,
                         'district_id'=>$district,
                         'certification_court_id'=>$court,
                         'certification_flag'=>$certification_flag,
@@ -316,7 +316,7 @@ class entry_formController extends Controller
         $case_year = $request->input('case_year');
 
         $data['case_details'] = Seizure::join('ps_details','seizures.ps_id','=','ps_details.ps_id')
-                        ->join('agency_details','seizures.stakeholder_id','=','agency_details.agency_id')
+                        ->join('agency_details','seizures.agency_id','=','agency_details.agency_id')
                         ->join('narcotics','seizures.drug_id','=','narcotics.drug_id')
                         ->join('units AS u1','seizures.seizure_quantity_weighing_unit_id','=','u1.unit_id')
                         ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
@@ -426,7 +426,7 @@ class entry_formController extends Controller
         $remark = $request->input('remark');
         $certification_flag='N';
         $disposal_flag='N';
-        $agency_id= Auth::user()->stakeholder_id;
+        $agency_id= Auth::user()->agency_id;
         $user_name=Auth::user()->user_name;
         $update_date = Carbon::today();  
         $uploaded_date = Carbon::today(); 
@@ -466,7 +466,7 @@ class entry_formController extends Controller
                     'seizure_quantity_weighing_unit_id'=>$seizure_weighing_unit,
                     'date_of_seizure'=>Date('Y-m-d', strtotime($seizure_date)),
                     'storage_location_id'=>$storage,
-                    'stakeholder_id'=>$agency_id,
+                    'agency_id'=>$agency_id,
                     'district_id'=>$district,
                     'certification_court_id'=>$court,
                     'certification_flag'=>$certification_flag,

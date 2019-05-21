@@ -82,7 +82,7 @@ class SearchController extends Controller
         $select = "SELECT DISTINCT seizures.ps_id, case_no, case_year, 
         seizures.created_at, ps_name, agency_name FROM ps_details INNER JOIN
         seizures ON ps_details.ps_id = seizures.ps_id INNER JOIN agency_details
-        ON seizures.stakeholder_id = agency_details.agency_id";
+        ON seizures.agency_id = agency_details.agency_id";
 
         // Default WHERE condition
         $where = ' WHERE seizures.date_of_seizure IS NOT NULL';
@@ -107,7 +107,7 @@ class SearchController extends Controller
            $where = $where.' AND seizures.case_year ='.$case_year;
 
         if(!empty($stakeholder))
-            $where = $where.' AND seizures.stakeholder_id = '.$stakeholder;
+            $where = $where.' AND seizures.agency_id = '.$stakeholder;
 
         if(!empty($court))
             $where = $where.' AND seizures.certification_court_id = '.$court;
@@ -311,7 +311,7 @@ class SearchController extends Controller
         $case_year = $request->input('case_year');
 
         $case_details = Seizure::join('ps_details','seizures.ps_id','=','ps_details.ps_id')
-                                ->join('agency_details','seizures.stakeholder_id','=','agency_details.agency_id')
+                                ->join('agency_details','seizures.agency_id','=','agency_details.agency_id')
                                 ->join('narcotics','seizures.drug_id','=','narcotics.drug_id')
                                 ->join('units AS u1','seizures.seizure_quantity_weighing_unit_id','=','u1.unit_id')
                                 ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')

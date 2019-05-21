@@ -224,7 +224,7 @@
     });
 
 
-    Route::group(['middleware' => ['auth','stakeholder']], function () {
+    Route::group(['middleware' => ['auth','ps']], function () {
 
         //Entry form::start
         

@@ -54,7 +54,7 @@ class MonthlyReportController extends Controller
 
         // Fetching unique Case No. As Multiple Row May Exist For A Single Case No.
         $cases = Seizure::join('ps_details','seizures.ps_id','=','ps_details.ps_id')
-                        ->join('agency_details','seizures.stakeholder_id','=','agency_details.agency_id')
+                        ->join('agency_details','seizures.agency_id','=','agency_details.agency_id')
                         ->where([
                             ['seizures.created_at','>=',$start_date],
                             ['seizures.created_at','<=',$end_date]
@@ -190,7 +190,7 @@ class MonthlyReportController extends Controller
         $case_year = $request->input('case_year');
 
         $case_details = Seizure::join('ps_details','seizures.ps_id','=','ps_details.ps_id')
-                                ->join('agency_details','seizures.stakeholder_id','=','agency_details.agency_id')
+                                ->join('agency_details','seizures.agency_id','=','agency_details.agency_id')
                                 ->join('narcotics','seizures.drug_id','=','narcotics.drug_id')
                                 ->join('units AS u1','seizures.seizure_quantity_weighing_unit_id','=','u1.unit_id')
                                 ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
@@ -308,7 +308,7 @@ class MonthlyReportController extends Controller
 
     public function index_previous_report(){
         
-        $agency_details = Agency_detail::where('agency_id',Auth::user()->stakeholder_id)
+        $agency_details = Agency_detail::where('agency_id',Auth::user()->agency_id)
                                             ->get(); 
 
         return view('previous_report',compact('agency_details'));      
