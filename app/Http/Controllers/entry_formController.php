@@ -330,7 +330,7 @@ class entry_formController extends Controller
                                 'disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit','storage_name',
                                 'court_name','districts.district_id','district_name','date_of_certification',
                                 'certification_flag','quantity_of_sample','u2.unit_name AS sample_unit',
-                                'remarks','magistrate_remarks')
+                                'remarks','magistrate_remarks', 'storage_location_id', 'seizures.certification_court_id')
                         ->get();
 
         foreach($data['case_details'] as $case_details){
@@ -394,6 +394,92 @@ class entry_formController extends Controller
                         ->get();
 
         echo json_encode($data);
+    }
+
+    // Save New Seizure Details 
+    public function add_new_seizure_details(Request $request){
+
+        $this->validate( $request, [ 
+            'narcotic_type' => 'required|integer',
+            'seizure_date' => 'required|date',
+            'seizure_quantity' => 'required|numeric',
+            'seizure_weighing_unit' => 'required|integer',
+        ] ); 
+
+        
+        $ps = $request->input('ps');
+        $case_no = $request->input('case_no');
+        $case_year = $request->input('case_year');
+        $narcotic_type = $request->input('narcotic_type');
+        $seizure_date = Carbon::parse($request->input('seizure_date'))->format('Y-m-d');
+        $seizure_quantity = $request->input('seizure_quantity');
+        $seizure_weighing_unit = $request->input('seizure_weighing_unit');
+        $other_narcotic_name = $request->input('other_narcotic_name');
+        $flag_other_narcotic = $request->input('flag_other_narcotic');
+        $narcotic_type = $request->input('narcotic_type');
+        $seizure_date = $request->input('seizure_date');
+        $seizure_quantity = $request->input('seizure_quantity');
+        $seizure_weighing_unit = $request->input('seizure_weighing_unit');
+        $storage = $request->input('storage');
+        $district = $request->input('district');
+        $court = $request->input('court');
+        $remark = $request->input('remark');
+        $certification_flag='N';
+        $disposal_flag='N';
+        $agency_id= Auth::user()->stakeholder_id;
+        $user_name=Auth::user()->user_name;
+        $update_date = Carbon::today();  
+        $uploaded_date = Carbon::today(); 
+
+        
+        if($flag_other_narcotic==1){
+
+            $count = Narcotic::where('drug_name','ILIKE',trim($other_narcotic_name))
+                                ->count();
+
+            if($count<1){
+
+                Narcotic::insert([
+                    'drug_name' => trim($other_narcotic_name),
+                    'display' => 'N',
+                    'created_at'=>Carbon::today(),
+                    'updated_at'=>Carbon::today()
+                ]);
+
+                $max_narcotic_value = Narcotic::max('drug_id');
+                $narcotic_type = $max_narcotic_value;
+            }
+            else{
+                $drug_id = Narcotic::where('drug_name','ILIKE',trim($other_narcotic_name))
+                                    ->max('drug_id');
+                $narcotic_type = $drug_id;
+            }
+        }
+
+        seizure::insert(
+                [
+                    'ps_id'=>$ps,
+                    'case_no'=>$case_no,
+                    'case_year'=>$case_year,
+                    'drug_id'=> $narcotic_type,
+                    'quantity_of_drug'=>$seizure_quantity,
+                    'seizure_quantity_weighing_unit_id'=>$seizure_weighing_unit,
+                    'date_of_seizure'=>Date('Y-m-d', strtotime($seizure_date)),
+                    'storage_location_id'=>$storage,
+                    'stakeholder_id'=>$agency_id,
+                    'district_id'=>$district,
+                    'certification_court_id'=>$court,
+                    'certification_flag'=>$certification_flag,
+                    'disposal_flag'=>$disposal_flag,
+                    'remarks'=>$remark,
+                    'user_name'=>$user_name,
+                    'created_at'=>$uploaded_date,
+                    'updated_at'=>$update_date
+                ]
+
+            );
+
+        return 1;
     }
     
     

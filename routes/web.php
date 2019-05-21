@@ -217,6 +217,7 @@
 
         Route::post('disposed_undisposed_tally/fetch_more_details_storage_report',
         'SearchController@calhc_fetch_more_details_storage_report');
+        
 
        // Disposed Undisposed Tally Ends
 
@@ -233,6 +234,8 @@
 
         Route::post('entry_form/fetch_narcotics','entry_formController@fetch_narcotics');
 
+        Route::post('entry_form/add_new_seizure_details','entry_formController@add_new_seizure_details');
+
         Route::post('entry_form/fetch_court',
         'entry_formController@district_wise_court');
 
@@ -241,8 +244,7 @@
 
         Route::post('entry_form/fetch_case_details','entry_formController@fetch_case_details');
 
-        Route::post('entry_form/dispose','entry_formController@dispose');
-       
+        Route::post('entry_form/dispose','entry_formController@dispose');               
 
        //Entry form::end
         
