@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Auth;
 
-class Ps
+class Stakeholder
 {
     /**
      * Handle an incoming request.
@@ -16,8 +16,10 @@ class Ps
      */
     public function handle($request, Closure $next)
     {
-        if(Auth::check() && Auth::user()->user_type=='ps')
+        if(Auth::check() && (Auth::user()->user_type=='ps' || Auth::user()->user_type=='agency'))
             return $next($request);
+        else if(Auth::check() && Auth::user()->user_type=='agency')
+            return redirect('dashboard_agency');
         else if(Auth::check() && Auth::user()->user_type=='high_court')
             return redirect('/dashboard');
         else if(Auth::check() && Auth::user()->user_type=='magistrate')

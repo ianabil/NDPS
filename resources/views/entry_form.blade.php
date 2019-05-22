@@ -28,10 +28,10 @@
 								<div class="form-group required row">
 									<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Case No.</label>
 									<div class="col-sm-3">
-										<select class="form-control select2" id="ps" autocomplete="off">
-											<option value="">Select PS</option>
-											@foreach($data['ps'] as $ps)
-												<option value="{{$ps->ps_id}}">{{$ps->ps_name}}</option>
+										<select class="form-control select2" id="stakeholder" autocomplete="off">
+											<option value="">Select Stakeholder's Name</option>
+											@foreach($data['stakeholders'] as $stakeholder)
+												<option value="{{$stakeholder->stakeholder_id}}">{{$stakeholder->stakeholder_name}}</option>
 											@endforeach
 										</select>
 									</div>
@@ -380,7 +380,7 @@
 
 		/* Save New Seizure After Inserting Seizure Details Once :: STARTS*/
 		$(document).on("click",".save",function(){
-					var ps = $("#ps option:selected").val();
+					var stakeholder = $("#stakeholder option:selected").val();
 					var case_no = $("#case_no").val();
 					var case_year = $("#case_year option:selected").val();							
 					var storage = $("#storage option:selected").val();
@@ -441,7 +441,7 @@
 													url:"entry_form/add_new_seizure_details", 
 													data: {
 														_token: $('meta[name="csrf-token"]').attr('content'),
-														ps:ps,
+														stakeholder:stakeholder,
 														case_no:case_no,
 														case_year:case_year,
 														narcotic_type:narcotic_type,
@@ -486,7 +486,7 @@
 		
 		$(document).on("click","#apply",function(){
 
-				var ps = $("#ps option:selected").val();
+				var stakeholder = $("#stakeholder option:selected").val();
 				var case_no = $("#case_no").val();
 				var case_year = $("#case_year").val();
 
@@ -530,8 +530,8 @@
 				var court = $("#court option:selected").val();
 
 
-				if(ps==""){
-					swal("Invalid Input","Please Select PS Name","error");
+				if(stakeholder==""){
+					swal("Invalid Input","Please Select Stakeholder's Name","error");
 					return false;
 				}
 				else if(case_no==""){
@@ -569,7 +569,7 @@
 													url:"entry_form", 
 													data: {
 														_token: $('meta[name="csrf-token"]').attr('content'),
-														ps:ps,
+														stakeholder:stakeholder,
 														case_no:case_no,
 														case_year:case_year,
 														narcotic_type:narcotic_type,
@@ -721,24 +721,24 @@
 
 			/*Fetching case details for a specific case :: STARTS */
 			$(document).on("change","#case_year", function(){
-					var ps = $("#ps option:selected").val();
+					var stakeholder = $("#stakeholder option:selected").val();
 					var case_no = $("#case_no").val();
 					var case_year = $("#case_year option:selected").val();
 
-					if(ps!="" && case_no!="" && case_year!=""){
+					if(stakeholder!="" && case_no!="" && case_year!=""){
 							$.ajax({
 								type:"POST",
 								url:"entry_form/fetch_case_details",
 								data:{
 									_token: $('meta[name="csrf-token"]').attr('content'),
-									ps:ps,
+									stakeholder:stakeholder,
 									case_no:case_no,
 									case_year:case_year
 								},
 								success:function(response){
 									var obj = $.parseJSON(response);
 									if(obj['case_details'].length>0){
-											$("#ps").attr('disabled',true);
+											$("#stakeholder").attr('disabled',true);
 											$("#case_no").attr('readonly',true);
 											$("#case_year").attr('disabled',true);
 
@@ -954,10 +954,10 @@
 			/*Fetching case details for a specific case :: ENDS */
 
 			/* Fetching Case Details On Other Events Too :: STARTS */
-				$(document).on("change","#ps", function(){
+				$(document).on("change","#stakeholder", function(){
 						$("#case_year").trigger("change");
 					
-						var ps=$(this).val();
+						var stakeholder=$(this).val();
 						$("#district").children('option:not(:first)').remove();
 						
 								$.ajax({
@@ -965,14 +965,13 @@
 												url:"entry_form/fetch_district",
 												data: {
 													_token: $('meta[name="csrf-token"]').attr('content'),
-													ps: ps
+													stakeholder:stakeholder
 												},
 												success:function(resonse){                        
 													var obj=$.parseJSON(resonse)
 													
-													$.each(obj['ps_wise_district'],function(index,value){							
-														$("#district").append('<option value="'+value.district_id+'" selected>'+value.district_name+'</option>');
-														$("#district").attr("disabled",true);
+													$.each(obj['stakeholder_wise_district'],function(index,value){							
+														$("#district").append('<option value="'+value.district_id+'">'+value.district_name+'</option>');														
 													})
 
 													$("#district").trigger("change");
@@ -988,7 +987,7 @@
 
 			/* Dispose :: STARTS*/
 			$(document).on("click",".dispose",function(){
-					var ps = $("#ps option:selected").val();
+					var stakeholder = $("#stakeholder option:selected").val();
 					var case_no = $("#case_no").val();
 					var case_year = $("#case_year option:selected").val();
 
@@ -1038,7 +1037,7 @@
 													url:"entry_form/dispose", 
 													data: {
 														_token: $('meta[name="csrf-token"]').attr('content'),
-														ps:ps,
+														stakeholder:stakeholder,
 														case_no:case_no,
 														case_year:case_year,
 														narcotic_type:narcotic_type,

@@ -224,7 +224,8 @@
     });
 
 
-    Route::group(['middleware' => ['auth','ps']], function () {
+    
+    Route::group(['middleware' => ['auth','stakeholder']], function () {
 
         //Entry form::start
         
@@ -240,7 +241,7 @@
         'entry_formController@district_wise_court');
 
         Route::post('entry_form/fetch_district',
-        'entry_formController@ps_wise_district');
+        'entry_formController@stakeholder_wise_district');
 
         Route::post('entry_form/fetch_case_details','entry_formController@fetch_case_details');
 
@@ -250,6 +251,7 @@
         
 
     });
+    
 
 
     Route::group(['middleware' => ['auth','magistrate']], function () {
