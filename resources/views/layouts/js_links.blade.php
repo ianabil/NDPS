@@ -32,3 +32,34 @@
     <script src="{{asset('js/buttons.print.min.js')}}"></script>
     <script src="{{asset('js/buttons.colVis.min.js')}}"></script>
     <!-- For Data Table Buttons ENDS -->
+
+    <!-- Session Timeout For Inactive Window STARTS -->
+    <script>
+        $(document).ready(function(){
+            var idle_time = 600000; // for 10 minutes
+            var idleSecondsCounter=1;
+
+            document.onclick = function() {
+                idleSecondsCounter = 0;
+            };
+
+            document.onmousemove = function() {
+                idleSecondsCounter = 0;
+            };
+
+            document.onkeypress = function() {
+                idleSecondsCounter = 0;
+            };
+
+            setInterval(function(){
+                if(idleSecondsCounter==1){
+                    $("#submit").trigger("click");
+                }
+                else{
+                    idleSecondsCounter = 1;
+                }
+            },idle_time)
+
+        })
+    </script>
+    <!-- Session Timeout For Inactive Window ENDS -->
