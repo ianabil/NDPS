@@ -228,6 +228,7 @@
                         "serverSide": true,
                         "searching": true,
                         "paging" : true,
+                        "scrollX": true,
                         "ajax": {
                         "url": "disposed_undisposed_tally/district_court_report",
                         "type": "POST",

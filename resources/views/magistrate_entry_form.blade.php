@@ -451,6 +451,7 @@
                     "serverSide": true,
                     "searching": false,
                     "paging" : false,
+                    "scrollX": true,
                     "ajax": {
                       "url": "magistrate_entry_form/monthly_report_status",
                       "type": "POST",

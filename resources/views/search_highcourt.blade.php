@@ -319,6 +319,7 @@
                     "serverSide": true,
                     "searching": false,
                     "paging" : true,
+                    "scrollX": true,
                     "ajax": {
                       "url": "composite_search_highcourt/search",
                       "type": "POST",
