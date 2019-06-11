@@ -13,9 +13,13 @@
 
     Route::get('/', function () {
         return view('welcome');
-    })->middleware('guest');;
+    })->middleware('guest');
 
     Auth::routes();
+
+    Route::get('faq', function(){
+        return view('faq');
+    })->middleware('auth');
         
 
     Route::group(['middleware' => ['auth','high_court']], function () {
