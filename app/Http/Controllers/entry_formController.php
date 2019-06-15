@@ -346,8 +346,8 @@ class entry_formController extends Controller
                         ->join('districts','seizures.district_id','=','districts.district_id')
                         ->where([['seizures.ps_id',$stakeholder],['seizures.case_no',$case_no],['seizures.case_year',$case_year]])                        
                         ->select('drug_name','narcotics.display','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
-                                'u1.unit_name AS seizure_unit','date_of_seizure','date_of_disposal',
-                                'disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit','storage_name',
+                                'u1.unit_name AS seizure_unit','u1.unit_degree AS seizure_unit_degree','date_of_seizure','date_of_disposal',
+                                'disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit', 'storage_name',
                                 'court_name','districts.district_id','district_name','date_of_certification',
                                 'certification_flag','quantity_of_sample','u2.unit_name AS sample_unit',
                                 'remarks','magistrate_remarks', 'storage_location_id', 'seizures.certification_court_id')

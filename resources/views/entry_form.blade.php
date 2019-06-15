@@ -758,7 +758,7 @@
 
 															'<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Quantity of Seizure</label>'+
 															'<div class="col-sm-3">'+
-																	'<input class="form-control" type="text" value="'+value.quantity_of_drug+' '+value.seizure_unit+'" disabled>'+										
+																	'<input class="form-control" type="text" data-seizure_unit_degree="'+value.seizure_unit_degree+'" value="'+value.quantity_of_drug+' '+value.seizure_unit+'" disabled>'+										
 															'</div>'+
 													'</div>'+
 													
