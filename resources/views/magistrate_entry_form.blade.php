@@ -102,7 +102,7 @@
 </div>
 
 
-<!-- Stakeholders' Report SUbmission Status -->
+<!-- Stakeholders' Report Submission Status -->
 <div class="row">
     <div class="box box-primary">
             <div class="box-header with-border">

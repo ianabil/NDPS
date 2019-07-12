@@ -12,8 +12,8 @@
 */
 
     Route::get('/', function () {
-        return view('welcome');
-    })->middleware('guest');
+        return redirect()->route('login');
+    });
 
     Auth::routes();
 
@@ -236,6 +236,10 @@
         Route::resource('entry_form','entry_formController');
 
         Route::post('entry_form/narcotic_units','entry_formController@narcotic_units');
+
+        Route::post('entry_form/monthly_report_status','entry_formController@monthly_report_status');
+
+        Route::post('entry_form/fetch_more_details','entry_formController@fetch_more_details');
 
         Route::post('entry_form/fetch_narcotics','entry_formController@fetch_narcotics');
 

@@ -64,10 +64,6 @@
         });
         // Session Timeout For Inactive Window ENDS
 
-        // Session Timeout For Closing Window STARTS
-        $(window).on('beforeunload', function(){
-            $("#submit").trigger("click");
-        });
-        // Session Timeout For Closing Window ENDS
+        
     </script>
     
