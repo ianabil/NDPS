@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
-    <title>NDPS</title>
+    <title>DDMS</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"> 
     @include('layouts.css_links')
@@ -36,6 +36,7 @@
                 <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
                     <span class="sr-only">Toggle navigation</span>
                 </a>
+                
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav">
                         <li class="dropdown user user-menu">
@@ -133,8 +134,11 @@
                             </ul>
                         </li>
                     @endif
-                   
 
+                    <li class="header"></li>
+                    <li>
+                        <a href="faq"><i class="fa fa-book" aria-hidden="true"></i><span><strong>Frequently Asked Question</strong></span></a></li>
+                    </li>                    
                 </ul>
             </section>
             <!-- /.sidebar -->
@@ -150,14 +154,6 @@
             <!-- /.content -->
         </div>
         <!-- /.content-wrapper -->
-
-         <!-- For Session Timeout For Inactive Window STARTS -->
-        <div style="display:none;">
-            <form id="logout-form" action="{{ route('logout') }}" method="POST">
-                @csrf
-                <input type="submit" id="submit">
-            </form>
-        </div>
-        <!-- For Session Timeout For Inactive Window ENDS -->
+         
         
         @include('layouts.js_links')

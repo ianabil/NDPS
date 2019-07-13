@@ -102,7 +102,7 @@
 </div>
 
 
-<!-- Stakeholders' Report SUbmission Status -->
+<!-- Stakeholders' Report Submission Status -->
 <div class="row">
     <div class="box box-primary">
             <div class="box-header with-border">
@@ -451,6 +451,7 @@
                     "serverSide": true,
                     "searching": false,
                     "paging" : false,
+                    "scrollX": true,
                     "ajax": {
                       "url": "magistrate_entry_form/monthly_report_status",
                       "type": "POST",

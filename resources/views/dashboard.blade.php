@@ -108,6 +108,7 @@
                     "serverSide": true,
                     "searching": false,
                     "paging" : false,
+                    "scrollX": true,
                     "ajax": {
                       "url": "dashboard/monthly_report_status",
                       "type": "POST",

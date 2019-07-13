@@ -8,7 +8,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>NDPS</title>
+    <title>DDMS</title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
@@ -71,7 +71,13 @@
                                             <button type="submit" class="btn btn-primary">
                                                 {{ __('Login') }}
                                             </button>
-                                        </div>
+
+                                            @if (Route::has('password.request'))
+                                            <a class="btn btn-link" href="{{ route('password.request') }}">
+                                                {{ __('Forgot Your Password?') }}
+                                            </a>
+                                            @endif
+                                        </div>                                        
                                     </div>
                                 </form>
                             </div>
