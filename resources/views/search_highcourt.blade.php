@@ -189,9 +189,12 @@
     <!-- /.box -->
 </div>
     
-    
-    
-@endsection
+
+<!--Closing that has been openned in the header.blade.php -->
+</section>
+<!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
 
     
 <script src="{{asset('js/jquery/jquery.min.js')}}"></script>
@@ -200,8 +203,6 @@
         $(document).ready(function() {
             $(".date").datepicker(); // Date picker initialization            
             $(".select2").select2(); // Select-2 initialization
-            //$("#search_result_data").dataTable(); // DataTable Initialization
-
             
             // For Seizure Date Range Picker :: STARTS            
             var seizure_from_date;
@@ -495,6 +496,4 @@
         });
     </script>
 
-    </body>
-
-    </html>
+    @endsection

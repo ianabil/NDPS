@@ -14,6 +14,7 @@
     <script src="{{asset('js/Sweet Alert/sweetalert.min.js')}}"></script>
     <!-- Data Table -->
     <script src="{{asset('js/dataTables.min.js')}}"></script>
+    <script src="{{asset('js/dataTables.responsive.min.js')}}"></script>
     <!-- Select-2 -->
     <script src="{{asset('js/select2.min.js')}}"></script>
     <!-- Date Picker -->    
@@ -23,7 +24,7 @@
     <!-- Date Range Picker -->    
     <script src="{{asset('js/daterangepicker.min.js')}}"></script>
     <!-- For Data Table Buttons STARTS -->
-    <script src="{{asset('js/dataTables.buttons.min.js')}}"></script>
+    <script src="{{asset('js/dataTables.buttons.min.js')}}"></script>        
     <script src="{{asset('js/buttons.flash.min.js')}}"></script>
     <script src="{{asset('js/jszip.min.js')}}"></script>
     <script src="{{asset('js/pdfmake.min.js')}}"></script>

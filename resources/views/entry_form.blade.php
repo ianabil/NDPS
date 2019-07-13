@@ -241,7 +241,7 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <table class="table table-bordered table-responsive display" style="white-space:nowrap;">
+              <table class="table table-bordered table-responsive display" style="width:100%">
                 <thead>
                   <tr>
                     <th style="display:none">STAKEHOLDER ID </th>
@@ -271,8 +271,14 @@
       <br>Loading..
 </div>
    
-   <!--loader ends-->
-@endsection
+<!--loader ends-->
+
+
+<!--Closing that has been openned in the header.blade.php -->
+</section>
+<!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
 
 
 <script src="{{asset('js/jquery/jquery.min.js')}}"></script>
@@ -1190,7 +1196,6 @@
 							"serverSide": true,
 							"searching": false,
 							"paging" : false,
-							"scrollX": true,
 							"ajax": {
 							"url": "entry_form/monthly_report_status",
 							"type": "POST",
@@ -1221,6 +1226,7 @@
 				table.column( 1 ).visible( false ); // Hiding the Stakeholder Type column
 				table.column( 2 ).visible( false ); // Hiding the Case No. column
 				table.column( 3 ).visible( false ); // Hiding the Case Year column
+				
 		}
 
 		var month_of_report = $(".month_of_report").val();    
@@ -1356,5 +1362,5 @@
 
 	
 </script>
-</body>
-</html>
+
+@endsection

@@ -146,14 +146,17 @@
 <!--loader starts-->
 
 <div class="col-md-offset-5 col-md-3" id="wait" style="display:none;">
-<img src='images/loader.gif'width="25%" height="10%" />
-  <br>Loading..
+    <img src='images/loader.gif'width="25%" height="10%" />
+    <br>Loading..
 </div>
 
 <!--loader ends-->
 
-<!-- / Main Content -->
-@endsection
+<!--Closing that has been openned in the header.blade.php -->
+</section>
+<!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
 
 
 <script src="{{asset('js/jquery/jquery.min.js')}}"></script>
@@ -451,7 +454,6 @@
                     "serverSide": true,
                     "searching": false,
                     "paging" : false,
-                    "scrollX": true,
                     "ajax": {
                       "url": "magistrate_entry_form/monthly_report_status",
                       "type": "POST",
@@ -712,3 +714,5 @@
 });
 
 </script>
+
+@endsection
