@@ -581,13 +581,31 @@ class entry_formController extends Controller
             $report['Sl No'] +=1;
             
 
-            //Case_No
-            if($case->ps_id!=null){
-                $report['Case_No'] = $case->ps_name." / ".$case->case_no." / ".$case->case_year;
+            //If Case Initiated By Any Agency Other Than NCB
+            if($case->ps_id!=null && $case->agency_id!=null){
+                //If submitted date is within 10 days of present date, a new marker will be shown
+                if(((strtotime(date('Y-m-d')) - strtotime($case->created_at)) / (60*60*24) <=10))
+                    $report['Case_No'] = "<strong>".$case->ps_name."</strong><br>(Case Initiated By: ".$case->agency_name.")<small class='label pull-right bg-blue'>new</small>";
+                else
+                    $report['Case_No'] = "<strong>".$case->ps_name."</strong><br>(Case Initiated By: ".$case->agency_name.")";
             }
-            else{
-                $report['Case_No'] = $case->agency_name." / ".$case->case_no." / ".$case->case_year;
+            //If Case Initiated By Any PS
+            else if($case->ps_id!=null && $case->agency_id==null){
+                //If submitted date is within 10 days of present date, a new marker will be shown
+                if(((strtotime(date('Y-m-d')) - strtotime($case->created_at)) / (60*60*24) <=10))
+                    $report['Case_No'] = "<strong>".$case->ps_name."</strong><small class='label pull-right bg-blue'>new</small>";
+                else
+                    $report['Case_No'] = "<strong>".$case->ps_name."</strong>";
             }
+            //If Case Initiated By NCB
+            else if($case->ps_id==null){
+                //If submitted date is within 10 days of present date, a new marker will be shown
+                if(((strtotime(date('Y-m-d')) - strtotime($case->created_at)) / (60*60*24) <=10))
+                    $report['Case_No'] = "<strong>".$case->agency_name."</strong> <small class='label pull-right bg-blue'>new</small>";
+                else
+                    $report['Case_No'] = "<strong>".$case->agency_name."</strong>";
+            }
+
 
             // Fetching details of respective Case No.  
             if($case->ps_id!=null){ 
