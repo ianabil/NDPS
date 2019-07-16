@@ -50,7 +50,7 @@
 										</div>
 									</div>
 
-									<div class="form-group required row">
+									<div class="form-group required row" @if(Auth::user()->user_type=="agency" && Auth::user()->user_name=="NCB") style="display:none" @endif>
 										<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Case Initiated By</label>
 										<div class="col-sm-2">
 											@if(Auth::user()->user_type=="ps")
@@ -60,7 +60,7 @@
 													<option value="agency">Any Agency</option>
 												</select>
 											@elseif(Auth::user()->user_type=="agency" && Auth::user()->user_name=="NCB")
-												<select class="form-control select2" id="case_initiated_by" autocomplete="off" disabled>	
+												<select class="form-control select2" id="case_initiated_by" autocomplete="off">	
 													<option value="self">Self</option>
 												</select>
 											@endif
@@ -241,7 +241,7 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <table class="table table-bordered table-responsive display" style="width:100%">
+              <table class="table table-bordered table-responsive display" style="width:100%; white-space:nowrap;">
                 <thead>
                   <tr>
                     <th style="display:none">STAKEHOLDER ID </th>

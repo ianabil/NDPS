@@ -187,7 +187,7 @@
 
        
 
-       //Composite Search ::Starts
+       //Composite Search High Court::Starts
 
        Route::get('composite_search_highcourt',
        'SearchController@show_highcourt_search_index');
@@ -198,7 +198,7 @@
        Route::post('composite_search_highcourt/fetch_more_details',
         'SearchController@fetch_case_details');
 
-       //Composite Search ::Ends
+       //Composite Search High Court::Ends
 
 
        // Disposed Undisposed Tally :Starts
@@ -237,10 +237,6 @@
 
         Route::post('entry_form/narcotic_units','entry_formController@narcotic_units');
 
-        Route::post('entry_form/monthly_report_status','entry_formController@monthly_report_status');
-
-        Route::post('entry_form/fetch_more_details','entry_formController@fetch_more_details');
-
         Route::post('entry_form/fetch_narcotics','entry_formController@fetch_narcotics');
 
         Route::post('entry_form/add_new_seizure_details','entry_formController@add_new_seizure_details');
@@ -256,6 +252,30 @@
         Route::post('entry_form/dispose','entry_formController@dispose');               
 
        //Entry form::end
+
+
+       // Monthly Report :: STARTS
+
+       Route::post('entry_form/monthly_report_status','entry_formController@monthly_report_status');
+
+       Route::post('entry_form/fetch_more_details','entry_formController@fetch_more_details');
+
+       // Monthly Report :: ENDS
+
+       
+
+       //Composite Search Stakeholder:: STARTS
+
+       Route::get('composite_search_stakeholder',
+       'SearchController@show_stakeholder_search_index');
+
+       Route::post('composite_search_stakeholder/search',
+       'SearchController@show_stakeholder_search_result');
+
+       Route::post('composite_search_stakeholder/fetch_more_details',
+        'SearchController@fetch_case_details_stakeholder');
+
+       //Composite Search Stakeholder:: ENDS
         
 
     });
