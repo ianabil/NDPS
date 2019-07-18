@@ -21,7 +21,12 @@
 							<li style="border-style:outset; pointer-events:none;opacity:0.3;" id="li_disposal"><a href="#disposal" data-toggle="tab"><strong style="font-size:large">Disposal Details</strong></a></li>
 						</ul>
 						
-						<br><hr>
+						<br>
+
+						<div class="alert alert-info" id="case_no_string" role="alert" style="display:none; width:90%; background-color:#337ab7">						
+						</div>
+
+						<hr>						
 
 						<div class="tab-content clearfix">
 							<!-- Seizure Details Form :: STARTS -->
@@ -331,9 +336,9 @@
 			count++;
 			$(".div_add_more:first").clone().find('.div_other_narcotic_type').hide().end().insertAfter(".div_add_more:last");
 			$(".add_more:last").attr({src:"images/details_close.png",
-																class:"remove", 
-																alt:"remove",
-																id:""});
+										class:"remove", 
+										alt:"remove",
+										id:""});
 			$(".seizure_quantity:last").val('');
 			$(".date").datepicker({
 			endDate:'0',
@@ -360,9 +365,9 @@
 		$(document).on("click","#seizure_add_more", function(){
 			$(".div_add_more_seizure:first").clone().find('.div_other_narcotic_type').hide().end().insertAfter(".div_add_more_seizure:last");
 			$(".seizure_add_more:last").attr({src:"images/details_close.png",
-																class:"remove_add_more_seizure", 
-																alt:"remove",
-																id:""});
+												class:"remove_add_more_seizure", 
+												alt:"remove",
+												id:""});
 			$(".seizure_quantity:last").val('');
 			$(".date").datepicker({
 			endDate:'0',
@@ -843,9 +848,12 @@
 			$(document).on("change","#case_year", function(){
 					var stakeholder = $("#stakeholder option:selected").val();
 					var case_no = $("#case_no").val();
-					var case_year = $("#case_year option:selected").val();
+					var case_year = $("#case_year option:selected").val();					
 
 					if(stakeholder!="" && case_no!="" && case_year!=""){
+						var case_no_string = "Case No. : "+$("#stakeholder option:selected").text()+" / "+case_no+" / "+case_year;
+						$("#case_no_string").html(case_no_string).show();
+
 							$.ajax({
 								type:"POST",
 								url:"entry_form/fetch_case_details",
