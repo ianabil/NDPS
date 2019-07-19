@@ -291,7 +291,7 @@ class entry_formController extends Controller
                         ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
                         ->join('districts','seizures.district_id','=','districts.district_id')
                         ->where([['seizures.ps_id',$stakeholder],['seizures.case_no',$case_no],['seizures.case_year',$case_year]])                        
-                        ->select('drug_name','narcotics.display','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
+                        ->select('agency_id','drug_name','narcotics.display','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
                                 'u1.unit_name AS seizure_unit','u1.unit_degree AS seizure_unit_degree','date_of_seizure','date_of_disposal',
                                 'disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit', 'storage_name',
                                 'court_name','districts.district_id','district_name','date_of_certification',
@@ -514,13 +514,15 @@ class entry_formController extends Controller
             6 =>'Case_No',
             7 =>'Narcotic Type',
             8 =>'Certification Status',
-            9 =>'Disposal Status'
+            9 =>'Disposal Status',
+            10 => 'Magistrate' 
         );
 
         // Fetching unique Case No. As Multiple Row May Exist For A Single Case No.
         if($user_type=="ps"){
             $cases = Seizure::join('ps_details','seizures.ps_id','=','ps_details.ps_id')
                             ->leftjoin('agency_details','seizures.agency_id','=','agency_details.agency_id')
+                            ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
                             ->where([
                                 ['seizures.created_at','>=',$start_date],
                                 ['seizures.created_at','<=',$end_date],
@@ -531,13 +533,15 @@ class entry_formController extends Controller
                                 ['seizures.updated_at','<=',$end_date],
                                 ['seizures.ps_id',$ps_id]
                             ])
-                            ->select('seizures.ps_id','seizures.agency_id','case_no','case_year','seizures.created_at','ps_name','agency_name')
+                            ->select('seizures.ps_id','seizures.agency_id','case_no','case_year','seizures.created_at','ps_name','agency_name','court_name')
+                            ->orderBy('seizures.created_at','DESC')
                             ->distinct()
                             ->get();
         }
         else if($user_type=="agency"){
             $cases = Seizure::leftjoin('ps_details','seizures.ps_id','=','ps_details.ps_id')
                             ->join('agency_details','seizures.agency_id','=','agency_details.agency_id')
+                            ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
                             ->where([
                                 ['seizures.created_at','>=',$start_date],
                                 ['seizures.created_at','<=',$end_date],
@@ -548,7 +552,8 @@ class entry_formController extends Controller
                                 ['seizures.updated_at','<=',$end_date],
                                 ['seizures.agency_id',$agency_id]
                             ])
-                            ->select('seizures.ps_id','seizures.agency_id','case_no','case_year','seizures.created_at','ps_name','agency_name')
+                            ->select('seizures.ps_id','seizures.agency_id','case_no','case_year','seizures.created_at','ps_name','agency_name','court_name')
+                            ->orderBy('seizures.created_at','DESC')
                             ->distinct()
                             ->get();
         }
@@ -605,6 +610,9 @@ class entry_formController extends Controller
                 else
                     $report['Case_No'] = "<strong>".$case->agency_name." / ".$case->case_no." / ".$case->case_year."</strong>";
             }
+
+            // Designated Magistrate
+            $report['Magistrate'] = $case->court_name;
 
 
             // Fetching details of respective Case No.  
