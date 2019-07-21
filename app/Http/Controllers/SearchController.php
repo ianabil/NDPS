@@ -62,7 +62,7 @@ class SearchController extends Controller
         $ps = $request->input('ps');
         $case_no = $request->input('case_no');
         $case_year = $request->input('case_year');
-        $stakeholder = $request->input('stakeholder');
+        $agency = $request->input('agency');
         $court = $request->input('court'); 
         $district = $request->input('district');
         $narcotic_type = $request->input('narcotic_type');
@@ -78,11 +78,12 @@ class SearchController extends Controller
         /* Fetching values from view :: ENDS */
 
 
-        // Default SELECT query
+        // Default SELECT query        
         $select = "SELECT DISTINCT seizures.ps_id, seizures.agency_id, case_no, case_year, 
-        seizures.created_at, ps_name, agency_name FROM ps_details RIGHT OUTER JOIN
-        seizures ON ps_details.ps_id = seizures.ps_id LEFT OUTER JOIN agency_details
-        ON seizures.agency_id = agency_details.agency_id";
+        seizures.created_at, ps_name, agency_name, court_name 
+        FROM seizures LEFT OUTER JOIN ps_details ON seizures.ps_id = ps_details.ps_id 
+        LEFT OUTER JOIN agency_details ON seizures.agency_id = agency_details.agency_id
+        JOIN court_details ON seizures.certification_court_id=court_details.court_id";
 
         // Default WHERE condition
         $where = ' WHERE seizures.date_of_seizure IS NOT NULL';
@@ -100,8 +101,8 @@ class SearchController extends Controller
         if(!empty($case_year))
            $where = $where.' AND seizures.case_year ='.$case_year;
 
-        if(!empty($stakeholder))
-            $where = $where.' AND seizures.agency_id = '.$stakeholder;
+        if(!empty($agency))
+            $where = $where.' AND seizures.agency_id = '.$agency;
 
         if(!empty($court))
             $where = $where.' AND seizures.certification_court_id = '.$court;
@@ -126,13 +127,9 @@ class SearchController extends Controller
 
         if($certified_cases=="true")
             $where = $where." AND seizures.certification_flag ='Y'";
-        else
-            $where = $where." AND seizures.certification_flag ='N'";
 
         if($disposed_cases=="true")
             $where = $where." AND seizures.disposal_flag ='Y'";
-        else
-            $where = $where." AND seizures.disposal_flag ='N'";
 
         
         /* Building SELECT, WHERE clause of the sql query based on the 
@@ -150,14 +147,13 @@ class SearchController extends Controller
             7 =>'Case_No',
             8 =>'Narcotic Type',
             9 =>'Certification Status',
-            10 =>'Disposal Status'
+            10 =>'Disposal Status',
+            11 => 'Magistrate'
         );
 
 
         $limit = $request->input('length'); // For No. of rows per page
         $start = $request->input('start');
-        $order = $columns[$request->input('order.0.column')];
-        $dir = $request->input('order.0.dir');
 
         /* Setting the no. of rows returned from every sql query execution and 
            by skipping the no. of rows already displayed
@@ -209,14 +205,24 @@ class SearchController extends Controller
             // Serial Number incrementing for every row
             $report['Sl No'] +=1;
 
-            if($case->ps_id!=null){
+            //If Case Initiated By Any Agency Other Than NCB
+            if($case->ps_id!=null && $case->agency_id!=null){
                 //If submitted date is within 10 days of present date, a new marker will be shown
                 if(((strtotime(date('Y-m-d')) - strtotime($case->created_at)) / (60*60*24) <=10))
-                    $report['Stakeholder Name'] = "<strong>".$case->ps_name."</strong> <small class='label pull-right bg-blue'>new</small>";
+                    $report['Stakeholder Name'] = "<strong>".$case->ps_name."</strong><br>(Case Initiated By: ".$case->agency_name.")<small class='label pull-right bg-blue'>new</small>";
+                else
+                    $report['Stakeholder Name'] = "<strong>".$case->ps_name."</strong><br>(Case Initiated By: ".$case->agency_name.")";
+            }
+            //If Case Initiated By Any PS
+            else if($case->ps_id!=null && $case->agency_id==null){
+                //If submitted date is within 10 days of present date, a new marker will be shown
+                if(((strtotime(date('Y-m-d')) - strtotime($case->created_at)) / (60*60*24) <=10))
+                    $report['Stakeholder Name'] = "<strong>".$case->ps_name."</strong><small class='label pull-right bg-blue'>new</small>";
                 else
                     $report['Stakeholder Name'] = "<strong>".$case->ps_name."</strong>";
             }
-            else{
+            //If Case Initiated By NCB
+            else if($case->ps_id==null){
                 //If submitted date is within 10 days of present date, a new marker will be shown
                 if(((strtotime(date('Y-m-d')) - strtotime($case->created_at)) / (60*60*24) <=10))
                     $report['Stakeholder Name'] = "<strong>".$case->agency_name."</strong> <small class='label pull-right bg-blue'>new</small>";
@@ -231,6 +237,10 @@ class SearchController extends Controller
             else{
                 $report['Case_No'] = $case->agency_name." / ".$case->case_no." / ".$case->case_year;
             }
+
+            // Designated Magistrate
+            $report['Magistrate'] = $case->court_name;
+
 
             // Fetching details of respective Case No.  
             if($case->ps_id!=null){ 
@@ -435,7 +445,8 @@ class SearchController extends Controller
         }
 
         $data['stakeholders'] = Agency_detail::select('agency_id','agency_name')
-                                             ->orderBy('agency_name')
+                                            ->where('agency_name','not like','%NCB%')
+                                             ->orderBy('agency_name')                                             
                                              ->get();
 
         $data['narcotics'] = Narcotic::where('display','Y')
@@ -476,7 +487,7 @@ class SearchController extends Controller
         $ps = $request->input('ps');
         $case_no = $request->input('case_no');
         $case_year = $request->input('case_year');
-        $stakeholder = $request->input('stakeholder');
+        $agency = $request->input('agency');
         $court = $request->input('court'); 
         $district = $request->input('district');
         $narcotic_type = $request->input('narcotic_type');
@@ -494,9 +505,10 @@ class SearchController extends Controller
 
         // Default SELECT query
         $select = "SELECT DISTINCT seizures.ps_id, seizures.agency_id, case_no, case_year, 
-        seizures.created_at, ps_name, agency_name FROM ps_details RIGHT OUTER JOIN
-        seizures ON ps_details.ps_id = seizures.ps_id LEFT OUTER JOIN agency_details
-        ON seizures.agency_id = agency_details.agency_id";
+        seizures.created_at, ps_name, agency_name, court_name 
+        FROM seizures LEFT OUTER JOIN ps_details ON seizures.ps_id = ps_details.ps_id 
+        LEFT OUTER JOIN agency_details ON seizures.agency_id = agency_details.agency_id
+        JOIN court_details ON seizures.certification_court_id=court_details.court_id";
 
         // Default WHERE condition
         if(Auth::user()->user_type=="ps")
@@ -517,7 +529,7 @@ class SearchController extends Controller
         if(!empty($case_year))
            $where = $where.' AND seizures.case_year ='.$case_year;
 
-        if(!empty($agency))
+        if(!empty($agency) && Auth::user()->user_type=="ps")
             $where = $where.' AND seizures.agency_id = '.$agency;
 
         if(!empty($court))
@@ -543,13 +555,9 @@ class SearchController extends Controller
 
         if($certified_cases=="true")
             $where = $where." AND seizures.certification_flag ='Y'";
-        else
-            $where = $where." AND seizures.certification_flag ='N'";
 
         if($disposed_cases=="true")
             $where = $where." AND seizures.disposal_flag ='Y'";
-        else
-            $where = $where." AND seizures.disposal_flag ='N'";
 
         
         /* Building SELECT, WHERE clause of the sql query based on the 
@@ -567,14 +575,13 @@ class SearchController extends Controller
             7 =>'Case_No',
             8 =>'Narcotic Type',
             9 =>'Certification Status',
-            10 =>'Disposal Status'
+            10 =>'Disposal Status',
+            11 => 'Magistrate' 
         );
 
 
         $limit = $request->input('length'); // For No. of rows per page
         $start = $request->input('start');
-        $order = $columns[$request->input('order.0.column')];
-        $dir = $request->input('order.0.dir');
 
         /* Setting the no. of rows returned from every sql query execution and 
            by skipping the no. of rows already displayed
@@ -585,9 +592,8 @@ class SearchController extends Controller
             $limit_data='';
 
         // Data Fetched
-        //echo $select.$where.$orderBy;
-        $cases = DB::select($select.$where.$orderBy.$limit_data); 
-        
+        $cases = DB::select($select.$where.$orderBy.$limit_data);
+
         // For getting the total no. of data
         $select = "SELECT COUNT(DISTINCT (seizures.ps_id, case_no, case_year))
         FROM seizures";
@@ -650,6 +656,9 @@ class SearchController extends Controller
                 else
                     $report['Case_No'] = "<strong>".$case->agency_name." / ".$case->case_no." / ".$case->case_year."</strong>";
             }
+
+            // Designated Magistrate
+            $report['Magistrate'] = $case->court_name;
 
 
             // Fetching details of respective Case No.  
@@ -863,8 +872,6 @@ class SearchController extends Controller
 
         $limit = $request->input('length'); // For No. of rows per page
         $start = $request->input('start');
-        $order = $columns[$request->input('order.0.column')];
-        $dir = $request->input('order.0.dir');
 
         $totalData = District::count();
         $totalFiltered = $totalData;
@@ -1025,8 +1032,6 @@ class SearchController extends Controller
 
         $limit = $request->input('length'); // For No. of rows per page
         $start = $request->input('start');
-        $order = $columns[$request->input('order.0.column')];
-        $dir = $request->input('order.0.dir');
 
         $totalData = Ps_detail::count();
         $totalFiltered = $totalData;
@@ -1182,8 +1187,6 @@ class SearchController extends Controller
 
         $limit = $request->input('length'); // For No. of rows per page
         $start = $request->input('start');
-        $order = $columns[$request->input('order.0.column')];
-        $dir = $request->input('order.0.dir');
 
         $totalData = Storage_detail::count();
         $totalFiltered = $totalData;
@@ -1583,5 +1586,161 @@ class SearchController extends Controller
 
     }
 
+    
+    public function calhc_narcotic_district_report(Request $request){
+        $this->validate( $request, [ 
+            'from_date' => 'required|date',
+            'to_date' => 'required|date',
+        ]); 
+
+        $from_date = Carbon::parse($request->input('from_date'))->format('Y-m-d');
+        $to_date = Carbon::parse($request->input('to_date'))->format('Y-m-d');
+
+        // fetching all the narcotics
+        $narcotics = Narcotic::orderBy('drug_name')->where('display','Y')->get(); 
+
+        $record = array();
+
+        foreach($narcotics as $narcotic){
+
+            $sql = "SELECT district_name, SUM(A) disposal_quantity,SUM(coalesce(B,0)) undisposed_quantity,quantity_unit_name as unit_name
+                    FROM
+                        (
+                            SELECT district_name, quantity_unit_name, drug_name,
+                            CASE 
+                                    WHEN disposal_flag = 'Y' THEN disposal ELSE 0 END as A,
+                            CASE
+                                    WHEN disposal_flag = 'Y' THEN seizure-sample-disposal 
+                                    ELSE seizure-coalesce(sample, 0) END as B
+                            from 
+                            (
+                                select district_name, drug_name,
+                                CASE    WHEN u1.unit_degree = 2 THEN quantity_of_drug/1000 
+                                        WHEN u1.unit_degree = 1 THEN quantity_of_drug/1000000
+                                        WHEN u1.unit_degree = 3 THEN quantity_of_drug
+                                        WHEN u1.unit_degree = 0 THEN quantity_of_drug
+                                        END AS seizure,
+                                
+                                CASE    WHEN u1.unit_name ilike 'g%m'  THEN 'KG'
+                                        WHEN u1.unit_name ilike 'l%e' OR u1.unit_name ilike 'm%l'  THEN 'KL'
+                                        ELSE u1.unit_name
+                                        END AS quantity_unit_name,
+                                
+                                
+                                CASE    WHEN u2.unit_degree = 2 THEN disposal_quantity/1000
+                                        WHEN u2.unit_degree = 1 THEN disposal_quantity/1000000
+                                        WHEN u2.unit_degree = 3 THEN disposal_quantity
+                                        WHEN u2.unit_degree = 0 THEN disposal_quantity
+                                        END AS disposal,
+                                
+                                
+                                CASE    WHEN u3.unit_degree = 2 THEN quantity_of_sample/1000
+                                        WHEN u3.unit_degree = 1 THEN quantity_of_sample/1000000
+                                        WHEN u3.unit_degree = 3 THEN quantity_of_sample
+                                        WHEN u3.unit_degree = 0 THEN quantity_of_sample
+                                        END AS sample, disposal_flag
+                                
+                            
+                                from districts left join seizures on districts.district_id = seizures.district_id and seizures.drug_id = ".$narcotic->drug_id."
+                                left join narcotics on seizures.drug_id = narcotics.drug_id
+                                left join units as u1 on seizures.seizure_quantity_weighing_unit_id=u1.unit_id 
+                                left join units as u2  on seizures.disposal_quantity_weighing_unit_id=u2.unit_id 
+                                left join units as u3  on seizures.sample_quantity_weighing_unit_id=u3.unit_id 
+                                WHERE seizures.created_at BETWEEN '".$from_date."' AND '".$to_date."' OR seizures.created_at IS NULL
+                                ) a
+                        )b
+                    GROUP BY district_name,quantity_unit_name
+                    ORDER BY district_name";
+
+            $report['data'] = DB::select($sql);
+            $report['narcotic_name'] = $narcotic->drug_name;
+            
+            $record[] = $report;            
+
+        }
+
+        echo json_encode($record);
+
+    }
+
+
+    
+    public function calhc_narcotic_malkhana_report(Request $request){
+        $this->validate( $request, [ 
+            'from_date' => 'required|date',
+            'to_date' => 'required|date',
+        ]); 
+
+        $from_date = Carbon::parse($request->input('from_date'))->format('Y-m-d');
+        $to_date = Carbon::parse($request->input('to_date'))->format('Y-m-d');
+
+        // fetching all the narcotics
+        $narcotics = Narcotic::orderBy('drug_name')->where('display','Y')->get(); 
+
+        $record = array();
+
+        foreach($narcotics as $narcotic){
+
+            $sql = "SELECT storage_name, SUM(A) disposal_quantity,SUM(coalesce(B,0)) undisposed_quantity,quantity_unit_name as unit_name
+                    FROM
+                        (
+                            SELECT storage_name, quantity_unit_name, drug_name,
+                            CASE 
+                                    WHEN disposal_flag = 'Y' THEN disposal ELSE 0 END as A,
+                            CASE
+                                    WHEN disposal_flag = 'Y' THEN seizure-sample-disposal 
+                                    ELSE seizure-coalesce(sample, 0) END as B
+                            from 
+                            (
+                                select storage_name, drug_name,
+                                CASE    WHEN u1.unit_degree = 2 THEN quantity_of_drug/1000 
+                                        WHEN u1.unit_degree = 1 THEN quantity_of_drug/1000000
+                                        WHEN u1.unit_degree = 3 THEN quantity_of_drug
+                                        WHEN u1.unit_degree = 0 THEN quantity_of_drug
+                                        END AS seizure,
+                                
+                                CASE    WHEN u1.unit_name ilike 'g%m'  THEN 'KG'
+                                        WHEN u1.unit_name ilike 'l%e' OR u1.unit_name ilike 'm%l'  THEN 'KL'
+                                        ELSE u1.unit_name
+                                        END AS quantity_unit_name,
+                                
+                                
+                                CASE    WHEN u2.unit_degree = 2 THEN disposal_quantity/1000
+                                        WHEN u2.unit_degree = 1 THEN disposal_quantity/1000000
+                                        WHEN u2.unit_degree = 3 THEN disposal_quantity
+                                        WHEN u2.unit_degree = 0 THEN disposal_quantity
+                                        END AS disposal,
+                                
+                                
+                                CASE    WHEN u3.unit_degree = 2 THEN quantity_of_sample/1000
+                                        WHEN u3.unit_degree = 1 THEN quantity_of_sample/1000000
+                                        WHEN u3.unit_degree = 3 THEN quantity_of_sample
+                                        WHEN u3.unit_degree = 0 THEN quantity_of_sample
+                                        END AS sample, disposal_flag
+                                
+                            
+                                from storage_details left join seizures on storage_details.storage_id = seizures.storage_location_id and seizures.drug_id = ".$narcotic->drug_id."
+                                left join narcotics on seizures.drug_id = narcotics.drug_id
+                                left join units as u1 on seizures.seizure_quantity_weighing_unit_id=u1.unit_id 
+                                left join units as u2  on seizures.disposal_quantity_weighing_unit_id=u2.unit_id 
+                                left join units as u3  on seizures.sample_quantity_weighing_unit_id=u3.unit_id 
+                                WHERE seizures.created_at BETWEEN '".$from_date."' AND '".$to_date."' OR seizures.created_at IS NULL
+                                ) a
+                        )b 
+                    GROUP BY storage_name,quantity_unit_name
+                    ORDER BY storage_name";
+
+            $report['data'] = DB::select($sql);
+            $report['narcotic_name'] = $narcotic->drug_name;
+            
+            $record[] = $report;            
+
+        }
+
+        echo json_encode($record);
+
+    }
+
     /*Disposed Undisposed Tally :End */
 }
+

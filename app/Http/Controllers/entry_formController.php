@@ -56,7 +56,7 @@ class entry_formController extends Controller
                                             ->get(); 
 
         $data['agencies'] = Agency_detail::select('agency_id','agency_name')
-                                            ->where('agency_name', '<>', 'NCB')
+                                            ->where('agency_name', 'not like', '%NCB%')
                                             ->orderBy('agency_name')
                                             ->get(); 
 
@@ -282,7 +282,8 @@ class entry_formController extends Controller
         $user_type = Auth::user()->user_type;
         
         if($user_type=="ps"){
-            $data['case_details'] = Seizure::join('ps_details','seizures.ps_id','=','ps_details.ps_id')                        
+            $data['case_details'] = Seizure::join('ps_details','seizures.ps_id','=','ps_details.ps_id')
+                        ->leftjoin('agency_details','seizures.agency_id','=','agency_details.agency_id')
                         ->join('narcotics','seizures.drug_id','=','narcotics.drug_id')
                         ->join('units AS u1','seizures.seizure_quantity_weighing_unit_id','=','u1.unit_id')
                         ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
@@ -291,7 +292,7 @@ class entry_formController extends Controller
                         ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
                         ->join('districts','seizures.district_id','=','districts.district_id')
                         ->where([['seizures.ps_id',$stakeholder],['seizures.case_no',$case_no],['seizures.case_year',$case_year]])                        
-                        ->select('agency_id','drug_name','narcotics.display','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
+                        ->select('seizures.agency_id','seizures.ps_id','drug_name','narcotics.display','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
                                 'u1.unit_name AS seizure_unit','u1.unit_degree AS seizure_unit_degree','date_of_seizure','date_of_disposal',
                                 'disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit', 'storage_name',
                                 'court_name','districts.district_id','district_name','date_of_certification',
@@ -302,6 +303,7 @@ class entry_formController extends Controller
         }
         else if($user_type=="agency"){
             $data['case_details'] = Seizure::join('agency_details','seizures.agency_id','=','agency_details.agency_id')
+                        ->leftjoin('ps_details','seizures.ps_id','=','ps_details.ps_id')
                         ->join('narcotics','seizures.drug_id','=','narcotics.drug_id')
                         ->join('units AS u1','seizures.seizure_quantity_weighing_unit_id','=','u1.unit_id')
                         ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
@@ -310,7 +312,7 @@ class entry_formController extends Controller
                         ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
                         ->join('districts','seizures.district_id','=','districts.district_id')
                         ->where([['seizures.agency_id',$stakeholder],['seizures.case_no',$case_no],['seizures.case_year',$case_year]])                        
-                        ->select('drug_name','narcotics.display','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
+                        ->select('seizures.agency_id','seizures.ps_id','drug_name','narcotics.display','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
                                 'u1.unit_name AS seizure_unit','date_of_seizure','date_of_disposal',
                                 'disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit','storage_name',
                                 'court_name','districts.district_id','district_name','date_of_certification',

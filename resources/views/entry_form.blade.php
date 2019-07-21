@@ -242,7 +242,9 @@
                   <label class="box-title" style="font-size:25px; margin-left:30%">
                       Report For The Month Of :                  
 					  <input type="text" class="form-control month_of_report" style="width:20%; margin-left:3%" name="month_of_report" id="month_of_report" value="{{date('F',strtotime(date('d-m-Y'))).'-'.date('Y',strtotime(date('d-m-Y')))}}" autocomplete="off">
-					  <button type="button" class="btn btn-danger pull-right" id="add_new_case">Add New Case</button>
+					  @if(Auth::user()->user_type=='ps' || Auth::user()->user_name=='NCB')
+						  <button type="button" class="btn btn-danger pull-right" id="add_new_case">Add New Case</button>
+					  @endif
                   </label>
               </form>
               <div class="box-tools pull-right">
@@ -253,7 +255,7 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <table class="table table-bordered table-responsive display" style="width:100%; white-space:nowrap;">
+              <table class="table table-bordered table-responsive display" style="width:100%;">
                 <thead>
                   <tr>
                     <th style="display:none">STAKEHOLDER ID </th>
@@ -1234,11 +1236,12 @@
 
 				$('.table').DataTable().destroy();
 
-				table = $(".table").DataTable({ 
+				table = $(".table").DataTable({
 							"processing": true,
 							"serverSide": true,
 							"searching": false,
 							"paging" : false,
+							"ordering" : false,
 							"ajax": {
 							"url": "entry_form/monthly_report_status",
 							"type": "POST",
@@ -1258,7 +1261,8 @@
 							"data":"Case Year"},
 						{"data":"More Details"}, 
 						{"data": "Sl No"},
-						{"data": "Case_No"},
+						{"data": "Case_No",
+						"width":"20%"},
 						{"data": "Magistrate"},
 						{"data": "Narcotic Type"},
 						{"data": "Certification Status"},
@@ -1340,24 +1344,25 @@
 								'</table>'+
 
 								'<br>'+
-				
-								'<table class="table table-bordered table-responsive">'+
-									'<thead>'+
-										'<tr>'+
-											'<th>Narcotic Type</th>'+
-											'<th>Seizure Quantity</th>'+ 
-											'<th>Date of Seizure</th>'+                                       
-											'<th>Certification Status</th>'+
-											'<th>Date of Certification</th>'+
-											'<th>Sample Quantity</th>'+
-											'<th>Magistrate Remarks</th>'+
-											'<th>Disposal Status</th>'+
-											'<th>Date of Disposal</th>'+
-											'<th>Disposal Quantity</th>'+
-										'</tr>'+
-									'</thead>'+
-									
-									'<tbody>';
+								
+								'<div style="width:85%; overflow-x:scroll">'+
+									'<table class="table table-bordered table-responsive" style="white-space:nowrap;">'+
+										'<thead>'+
+											'<tr>'+
+												'<th>Narcotic Type</th>'+
+												'<th>Seizure Quantity</th>'+ 
+												'<th>Date of Seizure</th>'+                                       
+												'<th>Certification Status</th>'+
+												'<th>Date of Certification</th>'+
+												'<th>Sample Quantity</th>'+
+												'<th>Magistrate Remarks</th>'+
+												'<th>Disposal Status</th>'+
+												'<th>Date of Disposal</th>'+
+												'<th>Disposal Quantity</th>'+
+											'</tr>'+
+										'</thead>'+
+										
+										'<tbody>';
 
 				$.each(obj,function(key,value){
 					child_string += ""+
@@ -1395,7 +1400,7 @@
 								'</tr>';
 				})
 
-				child_string +='</tbody></table>';
+				child_string +='</tbody></table></div>';
 
 				row.child(child_string).show();
 			}

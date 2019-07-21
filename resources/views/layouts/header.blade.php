@@ -149,6 +149,15 @@
             <!-- /.sidebar -->
         </aside>
 
+        <!-- this will be used to logout after being inactive for 5 minutes -->
+        <div style="display:none;">
+            <form id="logout-form" action="{{ route('logout') }}" method="POST">
+                @csrf
+                <input type="submit" id="submit">
+            </form>
+        </div>
+             
+
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
 

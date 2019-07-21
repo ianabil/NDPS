@@ -220,7 +220,13 @@
         'SearchController@calhc_fetch_more_details_district_court_report');
 
         Route::post('disposed_undisposed_tally/fetch_more_details_storage_report',
-        'SearchController@calhc_fetch_more_details_storage_report');
+        'SearchController@calhc_fetch_more_details_storage_report');       
+
+        Route::post('disposed_undisposed_tally/narcotic_district_wise_report',
+        'SearchController@calhc_narcotic_district_report');
+
+        Route::post('disposed_undisposed_tally/narcotic_malkhana_wise_report',
+        'SearchController@calhc_narcotic_malkhana_report');
         
 
        // Disposed Undisposed Tally Ends

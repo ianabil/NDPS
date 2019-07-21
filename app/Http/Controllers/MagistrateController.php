@@ -36,7 +36,7 @@ class MagistrateController extends Controller
                                 ->orderBy('ps_name')
                                 ->get();
         $data['agencies'] = Agency_detail::select('agency_id','agency_name')
-                                            ->where('agency_name','NCB')
+                                            ->where('agency_name','ilike','%NCB%')
                                             ->orderBy('agency_name')
                                             ->get();
         
