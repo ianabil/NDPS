@@ -140,6 +140,19 @@
                         </li>
                     @endif
 
+                    @if(Auth::check() && Auth::user()->user_type == 'special_court')
+                        <li class="header"></li>
+                        <li class="treeview">
+                            <a href="#"><i class="fa fa-pen"></i>
+                                <span>Legacy Data</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="legacy_data_entries"><i class="fa fa-circle-o text-yellow"></i><span>Insert Data</span></a></li>
+                                <li></i><a href=""><i class="fa fa-circle-o text-red"></i><span>Generate Report</span></a></li>
+                            </ul>
+                        </li>
+                    @endif
+
                     {{-- <li class="header"></li>
                     <li>
                         <a href="faq"><i class="fa fa-book" aria-hidden="true"></i><span><strong>Frequently Asked Question</strong></span></a></li>

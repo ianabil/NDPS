@@ -317,6 +317,9 @@
         Route::post('dashboard_special_court/fetch_more_details',
         'SpecialCourtController@fetch_case_details');
 
+        Route::resource('legacy_data_entries', 'LegacyDataController')
+        ->except(['create', 'edit','update','destroy','show']);
+
     });
 
 
