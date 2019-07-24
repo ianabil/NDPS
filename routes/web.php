@@ -320,6 +320,24 @@
         Route::resource('legacy_data_entries', 'LegacyDataController')
         ->except(['create', 'edit','update','destroy','show']);
 
+        Route::post('legacy_data_entries/narcotic_units','LegacyDataController@narcotic_units');
+
+        Route::post('legacy_data_entries/fetch_narcotics','LegacyDataController@fetch_narcotics');
+
+        Route::post('legacy_data_entries/add_new_seizure_details','LegacyDataController@add_new_seizure_details');
+
+        Route::post('legacy_data_entries/fetch_court',
+        'LegacyDataController@district_wise_court');
+
+        Route::post('legacy_data_entries/fetch_district',
+        'LegacyDataController@stakeholder_wise_district');
+
+        Route::post('legacy_data_entries/fetch_case_details','LegacyDataController@fetch_case_details');
+
+        Route::post('legacy_data_entries/certify','LegacyDataController@certify');
+
+        Route::post('legacy_data_entries/dispose','LegacyDataController@dispose');  
+
     });
 
 

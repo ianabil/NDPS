@@ -367,9 +367,9 @@
 										id:""});
 			$(".seizure_quantity:last").val('');
 			$(".date").datepicker({
-			endDate:'0',
-			format: 'dd-mm-yyyy'
-		}); // Date picker re-initialization
+				endDate:'0',
+				format: 'dd-mm-yyyy'
+			}); // Date picker re-initialization
 			
 		})
 	/*If multiple narcotics are seized in a same case :: ENDS*/
