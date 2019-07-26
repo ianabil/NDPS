@@ -4,7 +4,7 @@
 
 <div class="box box-default">
         <div class="box-header with-border" >
-            <h3 class="box-title" id="box-title" text-align="center"><strong>Legacy Data Entry For Seizure - Certification And Disposal Details of Narcotic Contrabands:</strong></h3>
+            <h3 class="box-title" id="box-title" text-align="center"><strong>Legacy Data Entry For Seizure Details of Narcotic Contraband(s):</strong></h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
@@ -168,30 +168,55 @@
                                 </div>
                             </div>
 
-							
-							
-							<div class="form-group" id="if_certified">
-								<!-- Content Will Come Dynamically -->
-							</div>
-
-							
-
-							<!-- Disposal Details Form :: STARTS -->
-							<div class="form-group" id="disposal">
-								<!-- Content Will Come Dynamically -->
-							</div>
-
                             <div class="col-sm-6 col-sm-offset-4" id="div_save_seizure">
 								<button type="button" class="btn btn-success btn-lg apply">Submit Seizure Details</button>                                
-                                <button type="button" class="btn btn-primary btn-lg reset">Reset</button>
+                                <button type="button" class="btn btn-danger btn-lg reset">Reset</button>
                             </div>
 
                         </form>
                     </div>
-                    <!-- Seizure Details Form :: ENDS -->
                 </div>
             </div>
         </div>
+</div>
+<!-- Seizure Details Form :: ENDS -->
+
+<div class="box box-default" id="div_certification" style="display:none">
+        <div class="box-header with-border" >
+            <h3 class="box-title" id="box-title" text-align="center"><strong>Certification Details of Seized Narcotic Contraband(s):</strong></h3>
+            <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+            </div>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <div class="container">							
+				<div class="form-group" id="if_certified">
+					<!-- Content Will Come Dynamically -->
+				</div>
+			</div>
+		</div>
+</div>
+
+
+<div class="box box-default" id="div_disposal" style="display:none">
+        <div class="box-header with-border" >
+            <h3 class="box-title" id="box-title" text-align="center"><strong>Dispoal Details of Seized Narcotic Contraband(s):</strong></h3>
+            <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+            </div>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <div class="container">	
+				<!-- Disposal Details Form :: STARTS -->
+				<div class="form-group" id="disposal">
+					<!-- Content Will Come Dynamically -->
+				</div>
+			</div>
+		</div>
 </div>
 
 
@@ -838,7 +863,7 @@
 														else{
 															str_case_details+=
 																'</div>'+														
-															'<hr style="border: 1px solid red; width:80%">';	
+															'<hr>';	
 														}
 
 													if(value.certification_flag=='Y'){
@@ -996,7 +1021,7 @@
 																'</div>'+
 															'</div>'+
 																		
-															'<hr style="border: 1px solid green; width:80%">';                                                        
+															'<hr>';                                                        
 														
 														
 													}
@@ -1006,7 +1031,10 @@
 
 											$(".div_add_more").html(str_case_details);
 											$("#if_certified").html(str_certification_details);
+											$("#div_certification").show();											
+
 											$("#disposal").html(str_disposal_details);
+											$("#div_disposal").show();
 
 											$(".date").datepicker({
 												endDate:'0',
@@ -1165,6 +1193,7 @@
 													element_magistrate_remarks.attr('readonly',true);
 													element_verification_statement.attr('readonly',true);
 													element.hide();
+													$("#case_year").trigger("change");													
 												},
 												error:function(response){
 													console.log(response);
@@ -1183,18 +1212,19 @@
 			/* Dispose :: STARTS*/
 			$(document).on("click",".dispose",function(){
 					var stakeholder = $("#stakeholder option:selected").val();
+					var stakeholder_type = $("#stakeholder option:selected").data('stakeholder_type');
 					var case_no = $("#case_no").val();
 					var case_year = $("#case_year option:selected").val();
 
 					var element = $(this);
 
 					// If div structure changes, following code will not work :: STARTS
-					var narcotic_type = $(this).parent().parent().prev().prev().find(".narcotic_type_disposal").val();
+					var narcotic_type = $(this).parent().parent().prev().prev().find(".narcotic_type").val();
 
 					var element_disposal_quantity = $(this).parent().parent().prev().find(".disposal_quantity");
 					var disposal_quantity = element_disposal_quantity.val();
 
-					var element_disposal_weighing_unit = $(this).parent().parent().prev().find(".disposal_weighing_unit");
+					var element_disposal_weighing_unit = $(this).parent().parent().prev().find(".seizure_weighing_unit");
 					var disposal_weighing_unit = element_disposal_weighing_unit.val();
 
 					var disposal_weighing_degree = element_disposal_weighing_unit.data('unit_degree');
@@ -1235,6 +1265,7 @@
 										data: {
 											_token: $('meta[name="csrf-token"]').attr('content'),
 											stakeholder:stakeholder,
+											stakeholder_type:stakeholder_type,
 											case_no:case_no,
 											case_year:case_year,
 											narcotic_type:narcotic_type,
@@ -1248,6 +1279,7 @@
 											element_disposal_weighing_unit.attr('disabled',true);
 											element_disposal_date.attr('readonly',true);
 											element.hide();
+											$("#case_year").trigger("change");
 										},
 										error:function(response){
 											console.log(response);

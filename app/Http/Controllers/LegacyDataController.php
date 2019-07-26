@@ -371,7 +371,7 @@ class LegacyDataController extends Controller
             'disposal_weighing_unit' => 'required|integer'
         ] ); 
 
-        $user_type = Auth::user()->user_type;        
+        $user_type = $request->input('stakeholder_type');        
          
         $case_no = $request->input('case_no'); 
         $case_year = $request->input('case_year');
@@ -401,7 +401,8 @@ class LegacyDataController extends Controller
         else if($user_type=="agency"){
             $agency_id = $request->input('stakeholder');
 
-            Seizure::where([['agency_id',$agency_id],
+            Seizure::where([
+                        ['agency_id',$agency_id],
                         ['case_no',$case_no],
                         ['case_year',$case_year],
                         ['drug_id',$narcotic_type]
