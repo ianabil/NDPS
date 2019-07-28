@@ -22,8 +22,7 @@
     })->middleware('auth');
         
 
-    Route::group(['middleware' => ['auth','high_court']], function () {
-
+    Route::group(['middleware' => ['auth','role_manager:high_court']], function () {
 
         //High Court Dashboard::start
         Route::get('dashboard','MonthlyReportController@index_dashboard');
@@ -235,7 +234,7 @@
 
 
     
-    Route::group(['middleware' => ['auth','stakeholder']], function () {
+    Route::group(['middleware' => ['auth','role_manager:ps|agency']], function () {
 
         //Entry form::start
         
@@ -288,7 +287,7 @@
     
 
 
-    Route::group(['middleware' => ['auth','magistrate']], function () {
+    Route::group(['middleware' => ['auth','role_manager:magistrate']], function () {
 
         Route::get('magistrate_entry_form','MagistrateController@show_magistrate_index');
 
@@ -307,7 +306,7 @@
     });
 
 
-    Route::group(['middleware' => ['auth','special_court']], function () {
+    Route::group(['middleware' => ['auth','role_manager:special_court']], function () {
 
         Route::get('dashboard_special_court','SpecialCourtController@index_dashboard');
        

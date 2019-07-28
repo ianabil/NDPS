@@ -29,6 +29,9 @@ class RedirectIfAuthenticated
         else if(Auth::guard($guard)->check() && Auth::user()->user_type=='special_court') {
             return redirect('dashboard_special_court');
         }
+        else if(Auth::guard($guard)->check() && Auth::user()->user_type=='admin') {
+            return redirect('dashboard');
+        }
 
 
 
