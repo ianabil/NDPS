@@ -30,18 +30,10 @@ class entry_formController extends Controller
 
         $data = array();
         
-        if($user_type=='ps'){
-            $ps_id = Auth::user()->ps_id;
-            $data['stakeholders'] = Ps_detail::where('ps_id',$ps_id)
-                                            ->select('ps_id as stakeholder_id','ps_name as stakeholder_name')
-                                            ->get();
-        }
-        else if($user_type=='agency'){
-            $agency_id = Auth::user()->agency_id;
-            $data['stakeholders'] = Agency_detail::where('agency_id',$agency_id)
-                                                ->select('agency_id as stakeholder_id','agency_name as stakeholder_name')
-                                                ->get();
-        }
+        $ps_id = Auth::user()->ps_id;
+        $data['stakeholders'] = Ps_detail::where('ps_id',$ps_id)
+                                        ->select('ps_id as stakeholder_id','ps_name as stakeholder_name')
+                                        ->get();        
 
         $data['narcotics'] = Narcotic::where('display','Y')
                                         ->select('drug_id','drug_name')
@@ -56,12 +48,41 @@ class entry_formController extends Controller
                                             ->get(); 
 
         $data['agencies'] = Agency_detail::select('agency_id','agency_name')
-                                            ->where('agency_name', 'not like', '%NCB%')
                                             ->orderBy('agency_name')
                                             ->get(); 
-
-        return view('entry_form',compact('data'));   
+    
+        return view('entry_form',compact('data'));  
+    
     }
+
+
+    public function index_non_fir_case()
+    {
+        $user_type = Auth::user()->user_type;
+
+        $data = array();
+        
+
+        $data['narcotics'] = Narcotic::where('display','Y')
+                                        ->select('drug_id','drug_name')
+                                        ->orderBy('drug_name')
+                                        ->get();
+        $data['districts'] = District::select('district_id','district_name')
+                                         ->orderBy('district_name')
+                                        ->get();
+        $data['storages'] = Storage_detail::where('display','Y')
+                                            ->select('storage_id','storage_name')
+                                            ->orderBy('storage_name')
+                                            ->get(); 
+
+        $data['agencies'] = Agency_detail::select('agency_id','agency_name')
+                                            ->orderBy('agency_name')
+                                            ->get(); 
+    
+        return view('non_fir_case',compact('data'));  
+    
+    }
+
 
     
     public function store(Request $request)
@@ -70,6 +91,7 @@ class entry_formController extends Controller
             'stakeholder' => 'required|integer',
             'case_no' => 'required|integer',
             'case_year' => 'required|integer',
+            'case_no_string' => 'required|max:255',
             'case_initiated_by' => 'required',
             'narcotic_type' => 'required|array',
             'narcotic_type.*' => 'required|exists:narcotics,drug_id',
@@ -101,10 +123,11 @@ class entry_formController extends Controller
         } 
 
         $case_no = $request->input('case_no'); 
-        $case_year = $request->input('case_year'); 
+        $case_year = $request->input('case_year');
+        $case_no_string = trim($request->input('case_no_string')); 
         $narcotic_type = $request->input('narcotic_type');         
         $seizure_date = $request->input('seizure_date'); 
-        $seizure_quantity =$request->input('seizure_quantity'); 
+        $seizure_quantity = $request->input('seizure_quantity'); 
         $seizure_weighing_unit = $request->input('seizure_weighing_unit');
         $storage = $request->input('storage');
         $remark = $request->input('remark');
@@ -175,6 +198,7 @@ class entry_formController extends Controller
                         'ps_id'=>$ps,
                         'case_no'=>$case_no,
                         'case_year'=>$case_year,
+                        'case_no_string'=>$case_no_string,
                         'drug_id'=> $narcotic_type[$i],
                         'quantity_of_drug'=>$seizure_quantity[$i],
                         'seizure_quantity_weighing_unit_id'=>$seizure_weighing_unit[$i],
@@ -275,13 +299,13 @@ class entry_formController extends Controller
 
     //Fetch case details of a specific case no.
     public function fetch_case_details(Request $request){
-        $stakeholder = $request->input('stakeholder');
-        $case_no = $request->input('case_no');
-        $case_year = $request->input('case_year');
-
         $user_type = Auth::user()->user_type;
         
         if($user_type=="ps"){
+            $stakeholder = $request->input('stakeholder');
+            $case_no = $request->input('case_no');
+            $case_year = $request->input('case_year');
+
             $data['case_details'] = Seizure::join('ps_details','seizures.ps_id','=','ps_details.ps_id')
                         ->leftjoin('agency_details','seizures.agency_id','=','agency_details.agency_id')
                         ->join('narcotics','seizures.drug_id','=','narcotics.drug_id')
@@ -291,7 +315,11 @@ class entry_formController extends Controller
                         ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
                         ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
                         ->join('districts','seizures.district_id','=','districts.district_id')
-                        ->where([['seizures.ps_id',$stakeholder],['seizures.case_no',$case_no],['seizures.case_year',$case_year]])                        
+                        ->where([
+                            ['seizures.ps_id',$stakeholder],
+                            ['seizures.case_no',$case_no],
+                            ['seizures.case_year',$case_year]
+                        ])                        
                         ->select('seizures.agency_id','seizures.ps_id','drug_name','narcotics.display','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
                                 'u1.unit_name AS seizure_unit','u1.unit_degree AS seizure_unit_degree','date_of_seizure','date_of_disposal',
                                 'disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit', 'storage_name',
@@ -302,6 +330,7 @@ class entry_formController extends Controller
 
         }
         else if($user_type=="agency"){
+            $case_no_string = $request->input('case_no_string');
             $data['case_details'] = Seizure::join('agency_details','seizures.agency_id','=','agency_details.agency_id')
                         ->leftjoin('ps_details','seizures.ps_id','=','ps_details.ps_id')
                         ->join('narcotics','seizures.drug_id','=','narcotics.drug_id')
@@ -311,7 +340,10 @@ class entry_formController extends Controller
                         ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
                         ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
                         ->join('districts','seizures.district_id','=','districts.district_id')
-                        ->where([['seizures.agency_id',$stakeholder],['seizures.case_no',$case_no],['seizures.case_year',$case_year]])                        
+                        ->where([
+                            ['seizures.agency_id',Auth::user()->agency_id],
+                            ['seizures.case_no_string',$case_no_string]
+                        ])                        
                         ->select('seizures.agency_id','seizures.ps_id','drug_name','narcotics.display','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
                                 'u1.unit_name AS seizure_unit','date_of_seizure','date_of_disposal',
                                 'disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit','storage_name',
@@ -535,7 +567,7 @@ class entry_formController extends Controller
                                 ['seizures.updated_at','<=',$end_date],
                                 ['seizures.ps_id',$ps_id]
                             ])
-                            ->select('seizures.ps_id','seizures.agency_id','case_no','case_year','seizures.created_at','ps_name','agency_name','court_name')
+                            ->select('seizures.ps_id','seizures.agency_id','case_no','case_year','case_no_string','seizures.created_at','ps_name','agency_name','court_name')
                             ->orderBy('seizures.created_at','DESC')
                             ->distinct()
                             ->get();
@@ -554,7 +586,7 @@ class entry_formController extends Controller
                                 ['seizures.updated_at','<=',$end_date],
                                 ['seizures.agency_id',$agency_id]
                             ])
-                            ->select('seizures.ps_id','seizures.agency_id','case_no','case_year','seizures.created_at','ps_name','agency_name','court_name')
+                            ->select('seizures.ps_id','seizures.agency_id','case_no','case_year','case_no_string','seizures.created_at','ps_name','agency_name','court_name')
                             ->orderBy('seizures.created_at','DESC')
                             ->distinct()
                             ->get();
@@ -588,29 +620,29 @@ class entry_formController extends Controller
             $report['Sl No'] +=1;
             
 
-            //Case No. :: If Case Initiated By Any Agency Other Than NCB
+            //Case No. :: If Case Initiated By Any Agency
             if($case->ps_id!=null && $case->agency_id!=null){
                 //If submitted date is within 10 days of present date, a new marker will be shown
                 if(((strtotime(date('Y-m-d')) - strtotime($case->created_at)) / (60*60*24) <=10))
-                    $report['Case_No'] = "<strong>".$case->ps_name." / ".$case->case_no." / ".$case->case_year."</strong><br>(Case Initiated By: ".$case->agency_name.")<small class='label pull-right bg-blue'>new</small>";
+                    $report['Case_No'] = "<strong>".$case->case_no_string."</strong><br>(Case Initiated By: ".$case->agency_name.")<small class='label pull-right bg-blue'>new</small>";
                 else
-                    $report['Case_No'] = "<strong>".$case->ps_name." / ".$case->case_no." / ".$case->case_year."</strong><br>(Case Initiated By: ".$case->agency_name.")";
+                    $report['Case_No'] = "<strong>".$case->case_no_string."</strong><br>(Case Initiated By: ".$case->agency_name.")";
             }
             //If Case Initiated By Any PS
             else if($case->ps_id!=null && $case->agency_id==null){
                 //If submitted date is within 10 days of present date, a new marker will be shown
                 if(((strtotime(date('Y-m-d')) - strtotime($case->created_at)) / (60*60*24) <=10))
-                    $report['Case_No'] = "<strong>".$case->ps_name." / ".$case->case_no." / ".$case->case_year."</strong><small class='label pull-right bg-blue'>new</small>";
+                    $report['Case_No'] = "<strong>".$case->case_no_string."</strong><small class='label pull-right bg-blue'>new</small>";
                 else
-                    $report['Case_No'] = "<strong>".$case->ps_name." / ".$case->case_no." / ".$case->case_year."</strong>";
+                    $report['Case_No'] = "<strong>".$case->case_no_string."</strong>";
             }
-            //If Case Initiated By NCB
+            //If Case Inserted By Agency
             else if($case->ps_id==null){
                 //If submitted date is within 10 days of present date, a new marker will be shown
                 if(((strtotime(date('Y-m-d')) - strtotime($case->created_at)) / (60*60*24) <=10))
-                    $report['Case_No'] = "<strong>".$case->agency_name." / ".$case->case_no." / ".$case->case_year."</strong> <small class='label pull-right bg-blue'>new</small>";
+                    $report['Case_No'] = "<strong>".$case->case_no_string."</strong> <small class='label pull-right bg-blue'>new</small>";
                 else
-                    $report['Case_No'] = "<strong>".$case->agency_name." / ".$case->case_no." / ".$case->case_year."</strong>";
+                    $report['Case_No'] = "<strong>".$case->case_no_string."</strong>";
             }
 
             // Designated Magistrate
@@ -622,7 +654,7 @@ class entry_formController extends Controller
                 $seizure_details = Seizure::join('narcotics','seizures.drug_id','=','narcotics.drug_id')
                                             ->join('units','seizures.seizure_quantity_weighing_unit_id','=','units.unit_id')                                        
                                             ->where([
-                                                ['seizures.ps_id',$case->ps_id],
+                                                ['seizures.case_no_string',$case->case_no_string],
                                                 ['case_no',$case->case_no],
                                                 ['case_year',$case->case_year]
                                             ])                                        
@@ -632,7 +664,7 @@ class entry_formController extends Controller
                 $seizure_details = Seizure::join('narcotics','seizures.drug_id','=','narcotics.drug_id')
                                             ->join('units','seizures.seizure_quantity_weighing_unit_id','=','units.unit_id')                                        
                                             ->where([
-                                                ['seizures.agency_id',$case->agency_id],
+                                                ['seizures.case_no_string',$case->case_no_string],
                                                 ['case_no',$case->case_no],
                                                 ['case_year',$case->case_year]
                                             ])                                        

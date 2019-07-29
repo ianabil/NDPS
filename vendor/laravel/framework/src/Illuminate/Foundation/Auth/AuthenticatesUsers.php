@@ -120,13 +120,14 @@ trait AuthenticatesUsers
     {
         if($user->user_type=='ps' || $user->user_type=='agency'){
             return redirect('entry_form') ;
-        }elseif($user->user_type=='high_court'){
+        }
+        else if($user->user_type=='high_court' || $user->user_type=='admin'){
             return redirect('dashboard') ;
         }
-        elseif($user->user_type=='magistrate'){
+        else if($user->user_type=='magistrate'){
             return redirect('magistrate_entry_form');
         }
-        elseif($user->user_type=='special_court'){
+        else if($user->user_type=='special_court'){
             return redirect('dashboard_special_court');
         }
     }

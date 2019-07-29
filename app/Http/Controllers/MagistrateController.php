@@ -206,7 +206,7 @@ class MagistrateController extends Controller
                             ['seizures.updated_at','<=',$end_date],
                             ['certification_court_id',$court_id]
                         ])
-                        ->select('seizures.ps_id','seizures.agency_id','case_no','case_year','seizures.created_at','ps_name','agency_name')
+                        ->select('seizures.ps_id','seizures.agency_id','case_no','case_year','case_no_string','seizures.created_at','ps_name','agency_name')
                         ->orderBy('seizures.created_at','DESC')
                         ->distinct()
                         ->get();
@@ -254,7 +254,7 @@ class MagistrateController extends Controller
                 else
                     $report['Stakeholder Name'] = "<strong>".$case->ps_name."</strong>";
             }
-            //If Case Initiated By NCB
+            //If Case Initiated By Agency
             else if($case->ps_id==null){
                 //If submitted date is within 10 days of present date, a new marker will be shown
                 if(((strtotime(date('Y-m-d')) - strtotime($case->created_at)) / (60*60*24) <=10))
@@ -263,12 +263,17 @@ class MagistrateController extends Controller
                     $report['Stakeholder Name'] = "<strong>".$case->agency_name."</strong>";
             }
 
-            //Case_No
-            if($case->ps_id!=null){
-                $report['Case_No'] = $case->ps_name." / ".$case->case_no." / ".$case->case_year;
+            //Case No. :: If Case Initiated By Any Agency
+            if($case->ps_id!=null && $case->agency_id!=null){
+                $report['Case_No'] = "<strong>".$case->case_no_string."</strong><br>(Case Initiated By: ".$case->agency_name.")";                
             }
-            else{
-                $report['Case_No'] = $case->agency_name." / ".$case->case_no." / ".$case->case_year;
+            //If Case Initiated By Any PS
+            else if($case->ps_id!=null && $case->agency_id==null){
+                $report['Case_No'] = "<strong>".$case->case_no_string."</strong>";                
+            }
+            //If Case Inserted By Agency
+            else if($case->ps_id==null){
+                $report['Case_No'] = "<strong>".$case->case_no_string."</strong>";
             }
 
             // Fetching details of respective Case No.  

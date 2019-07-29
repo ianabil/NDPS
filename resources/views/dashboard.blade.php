@@ -62,7 +62,7 @@
           </div>
           <!-- /.box-header -->
           <div class="box-body">
-            <<table class="table table-bordered table-responsive display" style="width:100%;">
+            <table class="table table-bordered table-responsive display" style="width:100%;">
               <thead>
                 <tr>
                     <th style="display:none">STAKEHOLDER ID </th>

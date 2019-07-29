@@ -28,19 +28,6 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token', 'user_type',
     ];
-
-    public function hasAnyRole($roles)
-    {
-        $user_role = User::where('user_id', Auth::user()->user_id)                            
-                            ->get();
-                            
-        foreach($roles as $role){
-            if($role==$user_role[0]['user_type'])
-                return true;
-        }
-
-        return false;
-
-    }
+    
 
 }

@@ -25,14 +25,14 @@
             <!-- Logo -->
             @if(Auth::check() && (Auth::user()->user_type == 'ps' || Auth::user()->user_type == 'agency'))
                 <a href="entry_form" class="logo"> 
-            @elseif(Auth::check() && Auth::user()->user_type == 'high_court')
+            @elseif(Auth::check() && (Auth::user()->user_type == 'high_court' || Auth::user()->user_type == 'admin'))
                 <a href="dashboard" class="logo">
             @elseif(Auth::check() && Auth::user()->user_type == 'magistrate')
                 <a href="magistrate_entry_form" class="logo"> 
             @elseif(Auth::check() && Auth::user()->user_type == 'special_court')
                 <a href="dashboard_special_court" class="logo"> 
             @endif  
-                <span class="logo-lg"><b>NDPS</b>
+                <span class="logo-lg"><b>DDMS</b>
             </a>
         </span>
             </a>
@@ -40,8 +40,7 @@
             <nav class="navbar navbar-static-top">
                 <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
                     <span class="sr-only">Toggle navigation</span>
-                </a>
-                
+                </a>                
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav">
                         <li class="dropdown user user-menu">
@@ -91,6 +90,18 @@
             <section class="sidebar">
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <ul class="sidebar-menu" data-widget="tree">
+                        @if(Auth::check() && Auth::user()->user_type == 'agency')
+                        <li class="treeview">
+                            <a href="#"><i class="fa fa-search-minus"></i>
+                                <span>Case Entry</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+                            </a> 
+                            <ul class="treeview-menu">
+                                <li><a href="non_fir_case">Entry Form</a></li>
+                            </ul>
+                        </li>
+                        <li class="header"></li>
+                        @endif
+                        
                         <li class="treeview">
                             <a href="#"><i class="fa fa-search-minus"></i>
                                 <span>Reports/Enquiry</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
@@ -109,7 +120,7 @@
                             </ul>
                         </li>
                         
-                    @if(Auth::check() && Auth::user()->user_type == 'high_court')
+                    @if(Auth::check() && Auth::user()->user_type == 'admin')
                         <li class="header"></li>
                         <li class="treeview">
                             <a href="#">

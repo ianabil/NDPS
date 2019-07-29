@@ -19,15 +19,19 @@ class RoleManager
         $roles = is_array($role)
             ? $role
             : explode('|', $role);
-            
+        
+        $user_role = Auth::user()->user_type;
+
         if(!Auth::check())
             return route('login');
-        else if (Auth::user()->hasAnyRole($roles)) {
-            return $next($request)->header('Cache-Control','no-cache, no-store, max-age=0, must-revalidate')
-            ->header('Pragma','no-cache')
-            ->header('Expires','Sun, 02 Jan 1990 00:00:00 GMT');
-        }
-        else
-            abort(403,"It seems you do not possess permission to access this page");   
+        
+        foreach($roles as $role){
+            if($role == $user_role)
+                return $next($request)->header('Cache-Control','no-cache, no-store, max-age=0, must-revalidate')
+                ->header('Pragma','no-cache')
+                ->header('Expires','Sun, 02 Jan 1990 00:00:00 GMT');
+        }        
+        
+        abort(403,"It seems you do not possess permission to access this page");   
     }
 }

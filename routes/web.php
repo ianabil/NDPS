@@ -22,7 +22,7 @@
     })->middleware('auth');
         
 
-    Route::group(['middleware' => ['auth','role_manager:high_court']], function () {
+    Route::group(['middleware' => ['auth','role_manager:high_court|admin']], function () {
 
         //High Court Dashboard::start
         Route::get('dashboard','MonthlyReportController@index_dashboard');
@@ -33,8 +33,57 @@
         Route::post('dashboard/fetch_more_details',
         'MonthlyReportController@fetch_case_details');
         //High Court Dashboard::end
+               
+
+       //Composite Search High Court::Starts
+
+       Route::get('composite_search_highcourt',
+       'SearchController@show_highcourt_search_index');
+
+       Route::post('composite_search_highcourt/search',
+       'SearchController@show_highcourt_search_result');
+
+       Route::post('composite_search_highcourt/fetch_more_details',
+        'SearchController@fetch_case_details');
+
+       //Composite Search High Court::Ends
 
 
+       // Disposed Undisposed Tally :Starts
+
+       Route::get('disposed_undisposed_tally',function(){
+            return view ('disposed_undisposed_tally');
+       });
+
+       Route::post('disposed_undisposed_tally/district_court_report',
+        'SearchController@calhc_district_court_report');
+
+        Route::post('disposed_undisposed_tally/stakeholder_report',
+        'SearchController@calhc_stakeholder_report');
+
+        Route::post('disposed_undisposed_tally/storage_report',
+        'SearchController@calhc_storage_report');
+
+        Route::post('disposed_undisposed_tally/fetch_more_details_district_court_report',
+        'SearchController@calhc_fetch_more_details_district_court_report');
+
+        Route::post('disposed_undisposed_tally/fetch_more_details_storage_report',
+        'SearchController@calhc_fetch_more_details_storage_report');       
+
+        Route::post('disposed_undisposed_tally/narcotic_district_wise_report',
+        'SearchController@calhc_narcotic_district_report');
+
+        Route::post('disposed_undisposed_tally/narcotic_malkhana_wise_report',
+        'SearchController@calhc_narcotic_malkhana_report');
+        
+
+       // Disposed Undisposed Tally Ends
+
+    });
+
+
+    // Master Maintainence
+    Route::group(['middleware' => ['auth','role_manager:admin']], function () {
         //Court ::start
         Route::get('court_view', 'MasterMaintenanceController@index_court');
 
@@ -52,13 +101,13 @@
         Route::post('master_maintenance_court_details/delete',
         'MasterMaintenanceController@destroy_court');
 
-         Route::post('master_maintenance_court/seizure_court_delete',
+        Route::post('master_maintenance_court/seizure_court_delete',
         'MasterMaintenanceController@destroy_seizure_court_record');
-       //Court ::end
+    //Court ::end
 
-      
-       //Stakeholder ::start
-      
+    
+    //Stakeholder ::start
+    
         Route::get('stakeholder_view', function(){
             return view ('stakeholder_view');
         });
@@ -80,7 +129,7 @@
 
         Route::post('master_maintenance_stakeholder/seizure_stakeholder_delete',
         'MasterMaintenanceController@destroy_seizure_stakeholder_record');
-       //Stakeholder ::end
+    //Stakeholder ::end
 
         //Narcotic ::start
         Route::get('narcotic_view', 'MasterMaintenanceController@index_narcotic');
@@ -119,7 +168,7 @@
         Route::post('master_maintenance_unit/delete',
         'MasterMaintenanceController@destroy_unit');
 
-         
+        
         Route::post('master_maintenance_unit/seizure_unit_delete',
         'MasterMaintenanceController@destroy_seizure_unit_record');
         //Unit::end
@@ -173,64 +222,19 @@
         Route::post('master_maintenance_storage/seizure_storage_delete',
         'MasterMaintenanceController@destroy_seizure_storage_record');
         //Storage :: End
-       
+    
 
         //User ::starts
-       Route::get('create_new_user', 
-       'MasterMaintenanceController@index_user_creation');
+        Route::get('create_new_user', 
+        'MasterMaintenanceController@index_user_creation');
 
-       Route::post('create_new_user/create', 
-       'MasterMaintenanceController@create_new_user');
-
-       //User::ends
-
-       
-
-       //Composite Search High Court::Starts
-
-       Route::get('composite_search_highcourt',
-       'SearchController@show_highcourt_search_index');
-
-       Route::post('composite_search_highcourt/search',
-       'SearchController@show_highcourt_search_result');
-
-       Route::post('composite_search_highcourt/fetch_more_details',
-        'SearchController@fetch_case_details');
-
-       //Composite Search High Court::Ends
-
-
-       // Disposed Undisposed Tally :Starts
-
-       Route::get('disposed_undisposed_tally',function(){
-            return view ('disposed_undisposed_tally');
-       });
-
-       Route::post('disposed_undisposed_tally/district_court_report',
-        'SearchController@calhc_district_court_report');
-
-        Route::post('disposed_undisposed_tally/stakeholder_report',
-        'SearchController@calhc_stakeholder_report');
-
-        Route::post('disposed_undisposed_tally/storage_report',
-        'SearchController@calhc_storage_report');
-
-        Route::post('disposed_undisposed_tally/fetch_more_details_district_court_report',
-        'SearchController@calhc_fetch_more_details_district_court_report');
-
-        Route::post('disposed_undisposed_tally/fetch_more_details_storage_report',
-        'SearchController@calhc_fetch_more_details_storage_report');       
-
-        Route::post('disposed_undisposed_tally/narcotic_district_wise_report',
-        'SearchController@calhc_narcotic_district_report');
-
-        Route::post('disposed_undisposed_tally/narcotic_malkhana_wise_report',
-        'SearchController@calhc_narcotic_malkhana_report');
+        Route::post('create_new_user/create', 
+        'MasterMaintenanceController@create_new_user');
+        //User::ends
         
-
-       // Disposed Undisposed Tally Ends
-
     });
+
+
 
 
     
@@ -283,6 +287,12 @@
        //Composite Search Stakeholder:: ENDS
         
 
+    });
+
+
+    // Non FIR Cases
+    Route::group(['middleware' => ['auth','role_manager:ps|agency']], function () {
+        Route::get('non_fir_case','entry_formController@index_non_fir_case');
     });
     
 

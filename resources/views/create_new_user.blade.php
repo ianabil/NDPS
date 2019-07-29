@@ -65,6 +65,7 @@
                     <option value="magistrate">Judicial Magistrate</option>
                     <option value="special_court">Special Court</option>
                     <option value="high_court">Calcutta High Court</option>
+                    <option value="admin">Admin</option>
                 </select>
             </div>
             <!--/col-->
@@ -81,7 +82,7 @@
             <!--/col-->
 
             <div class="col-md-3 form-group required" id="div_court" style="display:none">
-                <label class="control-label">NDPS Court</label>
+                <label class="control-label">Designated Magistrate</label>
                 <select class="form-control select2" name="court_name" id="court_name">
                     <option value="">Select One Option. . . </option>
                     @foreach ($data['court_details'] as $court)
@@ -92,7 +93,7 @@
             <!--/col-->
 
             <div class="col-md-3 form-group required" id="div_district" style="display:none">
-                <label class="control-label">District Name</label>
+                <label class="control-label">NDPS Court</label>
                 <select class="form-control select2" name="district" id="district">
                     <option value="">Select One Option. . . </option>
                     @foreach ($data['district_details'] as $district)
@@ -164,6 +165,8 @@
                             var user_name = "Special Court, "+$("#district option:selected").text();
                         else if(user_type=="high_court")
                             var user_name = 'Calcutta High Court';
+                        else if(user_type=="admin")
+                            var user_name = 'Admin';
                         
                     $.ajax({
 
