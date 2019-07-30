@@ -65,15 +65,12 @@
             <table class="table table-bordered table-responsive display" style="width:100%;">
               <thead>
                 <tr>
-                    <th style="display:none">STAKEHOLDER ID </th>
-                    <th style="display:none">STAKEHOLDER TYPE </th>
                     <th style="display:none">CASE NO </th>
-                    <th style="display:none">CASE YEAR </th>
                     <th></th>
                     <th>Sl No. </th>
                     <th>Stakeholder Name</th>
-                    <th>Case No.</th>   
-					<th>Designated Magistrate</th>                                 
+                    <th>Case No.</th>  
+                    <th>Designated Magistrate</th>                                    
                     <th>Nature of Narcotic</th>
                     <th>Certification Status</th>
                     <th>Disposal Status</th>
@@ -99,10 +96,10 @@
 
 	$(document).ready(function(){
 		var date=$(".month_of_report").datepicker({
-			        format: "MM-yyyy",
+			format: "MM-yyyy",
               viewMode: "months", 
               minViewMode: "months"
-            }); // Date picker initialization For Month of Report
+        }); // Date picker initialization For Month of Report
 
     var table;
     // This function will take month as an input and fetch corresponding report
@@ -124,15 +121,9 @@
                         month:month
                       }
                     },
-                    "columns": [  
-                        {"class":"stakeholder_id",
-                        "data":"Stakeholder ID"},
-                      {"class":"stakeholder_type",
-                        "data":"Stakeholder Type"},
+                    "columns": [                          
                       {"class":"case_no",
                         "data":"Case No"},
-                      {"class":"case_year",
-                        "data":"Case Year"},
                       {"data":"More Details"}, 
                       {"data": "Sl No"},         
                       {"data": "Stakeholder Name"},
@@ -145,10 +136,7 @@
                   ]
             });
 
-            table.column( 0 ).visible( false ); // Hiding the Stakeholder ID column
-            table.column( 1 ).visible( false ); // Hiding the Stakeholder Type column
-            table.column( 2 ).visible( false ); // Hiding the Case No. column
-            table.column( 3 ).visible( false ); // Hiding the Case Year column
+            table.column( 0 ).visible( false ); // Hiding the Case No column
     }
 
     var month_of_report = $(".month_of_report").val();    
@@ -168,10 +156,7 @@
           var row = table.row(tr);
           var row_data = table.row(tr).data();
 
-          var stakeholder_id = row_data['Stakeholder ID'];  
-          var stakeholder_type = row_data['Stakeholder Type']; 
-          var case_no = row_data['Case No'];
-          var case_year = row_data['Case Year'];
+          var case_no_string = row_data['Case No']; 
           
           var obj;
 
@@ -183,10 +168,7 @@
                     url:"dashboard/fetch_more_details",
                     data:{
                         _token: $('meta[name="csrf-token"]').attr('content'),
-                        stakeholder_id:stakeholder_id,
-                        stakeholder_type:stakeholder_type,
-                        case_no:case_no,
-                        case_year:case_year
+                        case_no_string:case_no_string
                     },
                     success:function(response){
                         obj = $.parseJSON(response);              

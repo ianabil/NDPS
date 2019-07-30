@@ -538,7 +538,7 @@
 				var stakeholder = {{Auth::user()->agency_id}};
 				var case_no = $("#case_no").val();
 				var case_year = $("#case_year").val();
-                var case_no_string = $("#stakeholder").val()+" / "+case_no+" / "+case_year;
+                var case_no_string = $.trim($("#stakeholder").val())+" / "+case_no+" / "+case_year;
 
 				var case_initiated_by = $("#case_initiated_by option:selected").val();
 
@@ -794,7 +794,7 @@
 					var case_year = $("#case_year option:selected").val();			
 
 					if(stakeholder!="" && case_no!="" && case_year!=""){
-						var case_no_string = $("#stakeholder").val()+" / "+case_no+" / "+case_year;
+						var case_no_string = $.trim($("#stakeholder").val())+" / "+case_no+" / "+case_year;
 						$("#case_no_string").html("Case No. : "+case_no_string).show();
 
 							$.ajax({
@@ -1043,12 +1043,19 @@
 				})
 			/* Fetching Case Details On Other Events Too :: ENDS */
 
+			// Preventing to insert any blank space in Case No. Initial field
+			$(document).on("keypress","input", function(e){
+				if(e.which === 32) 
+					return false;
+			})
+
 
 			/* Dispose :: STARTS*/
 			$(document).on("click",".dispose",function(){
 					var stakeholder = $("#stakeholder option:selected").val();
 					var case_no = $("#case_no").val();
 					var case_year = $("#case_year option:selected").val();
+					var case_no_string = $.trim($("#stakeholder").val())+" / "+case_no+" / "+case_year;
 
 					var element = $(this);
 
@@ -1101,6 +1108,7 @@
 											stakeholder:stakeholder,
 											case_no:case_no,
 											case_year:case_year,
+											case_no_string:case_no_string,
 											narcotic_type:narcotic_type,
 											disposal_date:disposal_date,
 											disposal_quantity:disposal_quantity,

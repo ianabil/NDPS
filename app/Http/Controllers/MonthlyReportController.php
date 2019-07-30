@@ -40,18 +40,15 @@ class MonthlyReportController extends Controller
         
         // For dataTable :: STARTS
         $columns = array( 
-            0 =>'Stakeholder ID',
-            1 =>'Stakeholder Type',
-            2=>'Case No',
-            3=>'Case Year',
-            4=>'More Details',
-            5=>'Sl No',
-            6=>'Stakeholder Name',
-            7 =>'Case_No',
-            8 =>'Narcotic Type',
-            9 =>'Certification Status',
-            10 =>'Disposal Status',
-            11 => 'Magistrate'
+            0 =>'Case No',
+            1=>'More Details',
+            2=>'Sl No',
+            3=>'Stakeholder Name',
+            4 =>'Case_No',
+            5 =>'Narcotic Type',
+            6 =>'Certification Status',
+            7 =>'Disposal Status',
+            8 => 'Magistrate'
         );
 
 
@@ -67,7 +64,8 @@ class MonthlyReportController extends Controller
                             ['seizures.updated_at','>=',$start_date],
                             ['seizures.updated_at','<=',$end_date]
                         ])
-                        ->select('seizures.ps_id','seizures.agency_id','case_no','case_year','seizures.created_at','ps_name','agency_name','court_name')
+                        ->select('seizures.ps_id','seizures.agency_id','case_no_string','seizures.created_at','ps_name','agency_name','court_name')
+                        ->orderBy('seizures.created_at','DESC')
                         ->distinct()
                         ->get();
         
@@ -75,22 +73,10 @@ class MonthlyReportController extends Controller
 
         $report['Sl No'] = 0;
         
-        foreach($cases as $case){
-            //Stakeholder ID and Stakeholder Type
-            if($case->ps_id!=null){
-                $report['Stakeholder ID'] = $case->ps_id;
-                $report['Stakeholder Type'] = "ps";
-            }
-            else{
-                $report['Stakeholder ID'] = $case->agency_id;
-                $report['Stakeholder Type'] = "agency";
-            }
+        foreach($cases as $case){            
 
             //Case No
-            $report['Case No'] = $case->case_no;
-
-            //Case Year
-            $report['Case Year'] = $case->case_year;
+            $report['Case No'] = $case->case_no_string;
 
             //More Details
             $report['More Details'] = '<img src="images/details_open.png" style="cursor:pointer" class="more_details" alt="More Details">';
@@ -98,7 +84,7 @@ class MonthlyReportController extends Controller
             // Serial Number incrementing for every row
             $report['Sl No'] +=1;
 
-            //If Case Initiated By Any Agency Other Than NCB
+            //If Case Initiated By Any Agency
             if($case->ps_id!=null && $case->agency_id!=null){
                 //If submitted date is within 10 days of present date, a new marker will be shown
                 if(((strtotime(date('Y-m-d')) - strtotime($case->created_at)) / (60*60*24) <=10))
@@ -114,7 +100,7 @@ class MonthlyReportController extends Controller
                 else
                     $report['Stakeholder Name'] = "<strong>".$case->ps_name."</strong>";
             }
-            //If Case Initiated By NCB
+            //If Case Initiated By Agency
             else if($case->ps_id==null){
                 //If submitted date is within 10 days of present date, a new marker will be shown
                 if(((strtotime(date('Y-m-d')) - strtotime($case->created_at)) / (60*60*24) <=10))
@@ -123,40 +109,18 @@ class MonthlyReportController extends Controller
                     $report['Stakeholder Name'] = "<strong>".$case->agency_name."</strong>";
             }
 
-
-            //Case_No
-            if($case->ps_id!=null){
-                $report['Case_No'] = $case->ps_name." / ".$case->case_no." / ".$case->case_year;
-            }
-            else{
-                $report['Case_No'] = $case->agency_name." / ".$case->case_no." / ".$case->case_year;
-            }
+            //Case No. :: If Case Initiated By Any Agency            
+            $report['Case_No'] = "<strong>".$case->case_no_string."</strong>";
 
             // Designated Magistrate
             $report['Magistrate'] = $case->court_name;
 
 
             // Fetching details of respective Case No.  
-            if($case->ps_id!=null){ 
-                $seizure_details = Seizure::join('narcotics','seizures.drug_id','=','narcotics.drug_id')
-                                            ->join('units','seizures.seizure_quantity_weighing_unit_id','=','units.unit_id')                                        
-                                            ->where([
-                                                ['seizures.ps_id',$case->ps_id],
-                                                ['case_no',$case->case_no],
-                                                ['case_year',$case->case_year]
-                                            ])                                        
-                                            ->get();
-            }
-            else{
-                $seizure_details = Seizure::join('narcotics','seizures.drug_id','=','narcotics.drug_id')
-                                            ->join('units','seizures.seizure_quantity_weighing_unit_id','=','units.unit_id')                                        
-                                            ->where([
-                                                ['seizures.agency_id',$case->agency_id],
-                                                ['case_no',$case->case_no],
-                                                ['case_year',$case->case_year]
-                                            ])                                        
-                                            ->get();
-            }
+            $seizure_details = Seizure::join('narcotics','seizures.drug_id','=','narcotics.drug_id')
+                                        ->join('units','seizures.seizure_quantity_weighing_unit_id','=','units.unit_id')                                        
+                                        ->where('case_no_string',$case->case_no_string)                                        
+                                        ->get();
             
             $certification_done_flag = 0;
             $certification_pending_flag = 0;
@@ -236,49 +200,22 @@ class MonthlyReportController extends Controller
     }
 
     public function fetch_case_details(Request $request){
-        $stakeholder_id = $request->input('stakeholder_id');
-        $stakeholder_type = $request->input('stakeholder_type');
-        $case_no = $request->input('case_no');
-        $case_year = $request->input('case_year');
-
-        if($stakeholder_type=='ps'){
-            $case_details = Seizure::join('ps_details','seizures.ps_id','=','ps_details.ps_id')
-                                    ->join('narcotics','seizures.drug_id','=','narcotics.drug_id')
-                                    ->join('units AS u1','seizures.seizure_quantity_weighing_unit_id','=','u1.unit_id')
-                                    ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
-                                    ->leftjoin('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
-                                    ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                                    ->leftjoin('court_details','seizures.certification_court_id','=','court_details.court_id')
-                                    ->where([
-                                        ['seizures.ps_id',$stakeholder_id],
-                                        ['case_no',$case_no],
-                                        ['case_year',$case_year]
-                                    ])
-                                    ->select('drug_name','quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',
-                                    'date_of_disposal','disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit',
-                                    'storage_name','court_name','date_of_certification','certification_flag','quantity_of_sample',
-                                    'u2.unit_name AS sample_unit','remarks','magistrate_remarks')
-                                    ->get();
-        }
-        else if($stakeholder_type=='agency'){
-            $case_details = Seizure::join('agency_details','seizures.agency_id','=','agency_details.agency_id')
-                                    ->join('narcotics','seizures.drug_id','=','narcotics.drug_id')
-                                    ->join('units AS u1','seizures.seizure_quantity_weighing_unit_id','=','u1.unit_id')
-                                    ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
-                                    ->leftjoin('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
-                                    ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                                    ->leftjoin('court_details','seizures.certification_court_id','=','court_details.court_id')
-                                    ->where([
-                                        ['seizures.agency_id',$stakeholder_id],
-                                        ['case_no',$case_no],
-                                        ['case_year',$case_year]
-                                    ])
-                                    ->select('drug_name','quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',
-                                    'date_of_disposal','disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit',
-                                    'storage_name','court_name','date_of_certification','certification_flag','quantity_of_sample',
-                                    'u2.unit_name AS sample_unit','remarks','magistrate_remarks')
-                                    ->get();
-        }
+        $case_no_string = $request->input('case_no_string');
+        
+        $case_details = Seizure::leftjoin('ps_details','seizures.ps_id','=','ps_details.ps_id')
+                                ->leftjoin('agency_details','seizures.agency_id','=','agency_details.agency_id')
+                                ->join('narcotics','seizures.drug_id','=','narcotics.drug_id')
+                                ->join('units AS u1','seizures.seizure_quantity_weighing_unit_id','=','u1.unit_id')
+                                ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
+                                ->leftjoin('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
+                                ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
+                                ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
+                                ->where('case_no_string',$case_no_string)  
+                                ->select('drug_name','quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',
+                                'date_of_disposal','disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit',
+                                'storage_name','court_name','date_of_certification','certification_flag','quantity_of_sample',
+                                'u2.unit_name AS sample_unit','remarks','magistrate_remarks')
+                                ->get();
                                 
         foreach($case_details as $case){
             $case['date_of_seizure'] = Carbon::parse($case['date_of_seizure'])->format('d-m-Y');

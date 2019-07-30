@@ -47,18 +47,15 @@ class SpecialCourtController extends Controller
         
         // For dataTable :: STARTS
         $columns = array( 
-            0 =>'Stakeholder ID',
-            1 =>'Stakeholder Type',
-            2=>'Case No',
-            3=>'Case Year',
-            4=>'More Details',
-            5=>'Sl No',
-            6=>'Stakeholder Name',
-            7 =>'Case_No',
-            8 =>'Narcotic Type',
-            9 =>'Certification Status',
-            10 =>'Disposal Status',
-            11 => 'Magistrate' 
+            0 =>'Case No',
+            1=>'More Details',
+            2=>'Sl No',
+            3=>'Stakeholder Name',
+            4 =>'Case_No',
+            5 =>'Narcotic Type',
+            6 =>'Certification Status',
+            7 =>'Disposal Status',
+            8 => 'Magistrate'
         );
 
 
@@ -76,7 +73,8 @@ class SpecialCourtController extends Controller
                             ['seizures.updated_at','<=',$end_date],
                             ['seizures.district_id',$district_id]
                         ])
-                        ->select('seizures.ps_id','seizures.agency_id','case_no','case_year','seizures.created_at','ps_name','agency_name','court_name')
+                        ->select('seizures.ps_id','seizures.agency_id','case_no_string','seizures.created_at','ps_name','agency_name','court_name')
+                        ->orderBy('seizures.created_at','DESC')
                         ->distinct()
                         ->get();
         
@@ -85,21 +83,8 @@ class SpecialCourtController extends Controller
         $report['Sl No'] = 0;
         
         foreach($cases as $case){
-            //Stakeholder ID and Stakeholder Type
-            if($case->ps_id!=null){
-                $report['Stakeholder ID'] = $case->ps_id;
-                $report['Stakeholder Type'] = "ps";
-            }
-            else{
-                $report['Stakeholder ID'] = $case->agency_id;
-                $report['Stakeholder Type'] = "agency";
-            }
-
             //Case No
-            $report['Case No'] = $case->case_no;
-
-            //Case Year
-            $report['Case Year'] = $case->case_year;
+            $report['Case No'] = $case->case_no_string;
 
             //More Details
             $report['More Details'] = '<img src="images/details_open.png" style="cursor:pointer" class="more_details" alt="More Details">';
@@ -107,7 +92,7 @@ class SpecialCourtController extends Controller
             // Serial Number incrementing for every row
             $report['Sl No'] +=1;
 
-            //If Case Initiated By Any Agency Other Than NCB
+            //If Case Initiated By Any Agency
             if($case->ps_id!=null && $case->agency_id!=null){
                 //If submitted date is within 10 days of present date, a new marker will be shown
                 if(((strtotime(date('Y-m-d')) - strtotime($case->created_at)) / (60*60*24) <=10))
@@ -123,7 +108,7 @@ class SpecialCourtController extends Controller
                 else
                     $report['Stakeholder Name'] = "<strong>".$case->ps_name."</strong>";
             }
-            //If Case Initiated By NCB
+            //If Case Initiated By Agency
             else if($case->ps_id==null){
                 //If submitted date is within 10 days of present date, a new marker will be shown
                 if(((strtotime(date('Y-m-d')) - strtotime($case->created_at)) / (60*60*24) <=10))
@@ -132,40 +117,19 @@ class SpecialCourtController extends Controller
                     $report['Stakeholder Name'] = "<strong>".$case->agency_name."</strong>";
             }
 
+            //Case No.         
+            $report['Case_No'] = "<strong>".$case->case_no_string."</strong>"; 
+
+
             // Designated Magistrate
             $report['Magistrate'] = $case->court_name;
 
 
-
-            //Case_No
-            if($case->ps_id!=null){
-                $report['Case_No'] = $case->ps_name." / ".$case->case_no." / ".$case->case_year;
-            }
-            else{
-                $report['Case_No'] = $case->agency_name." / ".$case->case_no." / ".$case->case_year;
-            }
-
             // Fetching details of respective Case No.  
-            if($case->ps_id!=null){ 
-                $seizure_details = Seizure::join('narcotics','seizures.drug_id','=','narcotics.drug_id')
-                                            ->join('units','seizures.seizure_quantity_weighing_unit_id','=','units.unit_id')                                        
-                                            ->where([
-                                                ['seizures.ps_id',$case->ps_id],
-                                                ['case_no',$case->case_no],
-                                                ['case_year',$case->case_year]
-                                            ])                                        
-                                            ->get();
-            }
-            else{
-                $seizure_details = Seizure::join('narcotics','seizures.drug_id','=','narcotics.drug_id')
-                                            ->join('units','seizures.seizure_quantity_weighing_unit_id','=','units.unit_id')                                        
-                                            ->where([
-                                                ['seizures.agency_id',$case->agency_id],
-                                                ['case_no',$case->case_no],
-                                                ['case_year',$case->case_year]
-                                            ])                                        
-                                            ->get();
-            }
+            $seizure_details = Seizure::join('narcotics','seizures.drug_id','=','narcotics.drug_id')
+                                        ->join('units','seizures.seizure_quantity_weighing_unit_id','=','units.unit_id')                                        
+                                        ->where('case_no_string',$case->case_no_string)                                        
+                                        ->get();
             
             $certification_done_flag = 0;
             $certification_pending_flag = 0;

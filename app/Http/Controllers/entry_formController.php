@@ -91,7 +91,7 @@ class entry_formController extends Controller
             'stakeholder' => 'required|integer',
             'case_no' => 'required|integer',
             'case_year' => 'required|integer',
-            'case_no_string' => 'required|max:255',
+            'case_no_string' => 'required',
             'case_initiated_by' => 'required',
             'narcotic_type' => 'required|array',
             'narcotic_type.*' => 'required|exists:narcotics,drug_id',
@@ -124,7 +124,7 @@ class entry_formController extends Controller
 
         $case_no = $request->input('case_no'); 
         $case_year = $request->input('case_year');
-        $case_no_string = trim($request->input('case_no_string')); 
+        $case_no_string = $request->input('case_no_string'); 
         $narcotic_type = $request->input('narcotic_type');         
         $seizure_date = $request->input('seizure_date'); 
         $seizure_quantity = $request->input('seizure_quantity'); 
@@ -372,19 +372,15 @@ class entry_formController extends Controller
     public function dispose(Request $request){
         
         $this->validate ( $request, [ 
-            'stakeholder' => 'required|integer',
-            'case_no' => 'required|integer',
-            'case_year' => 'required|integer',
+            'case_no_string' => 'required',
             'narcotic_type' => 'required|integer',
             'disposal_date' => 'required|date',
             'disposal_quantity' => 'required|numeric',
             'disposal_weighing_unit' => 'required|integer'
         ] ); 
 
-        $user_type = Auth::user()->user_type;        
-         
-        $case_no = $request->input('case_no'); 
-        $case_year = $request->input('case_year');
+        
+        $case_no_string = $request->input('case_no_string');
         $narcotic_type = $request->input('narcotic_type');
         $disposal_date = Carbon::parse($request->input('disposal_date'))->format('Y-m-d');
         $disposal_quantity = $request->input('disposal_quantity'); 
@@ -398,26 +394,9 @@ class entry_formController extends Controller
             'updated_at'=>Carbon::today()
         ];
 
-        if($user_type=="ps"){
-            $ps = $request->input('stakeholder');
-
-            Seizure::where([['ps_id',$ps],
-                        ['case_no',$case_no],
-                        ['case_year',$case_year],
-                        ['drug_id',$narcotic_type]
-                    ])->update($data);
         
-        }
-        else if($user_type=="agency"){
-            $agency_id = $request->input('stakeholder');
-
-            Seizure::where([['agency_id',$agency_id],
-                        ['case_no',$case_no],
-                        ['case_year',$case_year],
-                        ['drug_id',$narcotic_type]
-                    ])->update($data);
-        
-        }        
+        Seizure::where('case_no_string',$case_no_string)
+                ->update($data);    
         
         return 1;
         

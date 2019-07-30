@@ -30,23 +30,23 @@
                     <!-- Seizure Details Form :: STARTS -->
                     <div class="tab-pane active" id="seizure">
                         <form id="form_seizure">
-                            <div class="form-group required row">
-                                <label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Case</label>
-                                <div class="col-sm-3">
+                            <div class="form-group required row" id="div_case_no">
+                                <label class="col-sm-1 col-form-label-sm control-label" style="font-size:medium">Case</label>
+                                <div class="col-sm-2">
                                     <select class="form-control select2" id="stakeholder">
-                                        <option value="">Select Stakeholder</option>
+                                        <option value="">Select PS</option>
                                         @foreach($data['ps'] as $ps)
                                             <option data-stakeholder_type="ps" value="{{$ps->ps_id}}">{{$ps->ps_name}}</option>
-                                        @endforeach
-                                        @foreach($data['agencies'] as $agency)
-                                            <option data-stakeholder_type="agency" value="{{$agency->agency_id}}">{{$agency->agency_name}}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="col-sm-3">
-                                    <input class="form-control" type="number" id="case_no" placeholder="Case No.">
+                                    <input class="form-control" type="text" id="case_no_initial" placeholder="Case No. Initials (For non PS FIR cases)" autocomplete="off">                                                                                
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
+                                    <input class="form-control" type="number" id="case_no" placeholder="Case No. (In Numeric)">
+                                </div>
+                                <div class="col-sm-2">
                                     <select class="form-control select2" id="case_year">	
                                         <option value="">Select Year</option>					
                                         @for($i=Date('Y');$i>=1970;$i--)
@@ -110,11 +110,8 @@
             <div class="box-body">
                     <table class="table table-bordered table-responsive display" style="width:100%;">
                 <thead>
-                  <tr>
-                    <th style="display:none">STAKEHOLDER ID </th>
-                    <th style="display:none">STAKEHOLDER TYPE </th>
+                  <tr>                    
                     <th style="display:none">CASE NO </th>
-                    <th style="display:none">CASE YEAR </th>
                     <th></th>
                     <th>Sl No. </th>
                     <th>Stakeholder Name</th>
@@ -190,24 +187,39 @@
 
     /*LOADER*/
 
+    // Preventing to insert any blank space in Case No. Initial field
+    $(document).on("keypress","input", function(e){
+        if(e.which === 32) 
+            return false;
+    })
+
 
     /*Fetching case details for a specific case :: STARTS */
+    var case_no_string;
     $(document).on("change","#case_year", function(){
             var stakeholder = $("#stakeholder option:selected").val();
+            var case_no_initial = $.trim($("#case_no_initial").val());
             var stakeholder_type = $("#stakeholder option:selected").data('stakeholder_type');
             var case_no = $("#case_no").val();
             var case_year = $("#case_year option:selected").val();
 
-            if(stakeholder!="" && case_no!="" && case_year!=""){
+            if(stakeholder!="" && case_no_initial!=""){
+                swal("Invalid Input","PS and Case No. Initial Field (For non PS FIR cases) Can Not Have Data Together","error");
+                return false;
+            }
+
+            else if((stakeholder!="" || case_no_initial!="") && case_no!="" && case_year!=""){
+                if(stakeholder=="" && case_no_initial!="")
+                    case_no_string = case_no_initial+" / "+case_no+" / "+case_year;
+                else if(stakeholder!="" && case_no_initial=="")
+                    case_no_string = $("#stakeholder option:selected").text()+" / "+case_no+" / "+case_year;
+
                     $.ajax({
                         type:"POST",
                         url:"magistrate_entry_form/fetch_case_details",
                         data:{
                             _token: $('meta[name="csrf-token"]').attr('content'),
-                            stakeholder:stakeholder,
-                            stakeholder_type:stakeholder_type,
-                            case_no:case_no,
-                            case_year:case_year
+                            case_no_string:case_no_string
                         },
                         success:function(response){
                             var obj = $.parseJSON(response);
@@ -224,20 +236,18 @@
                                 var all_narcotic_disposal_flag = 0;
 
                                 if(obj['case_details']['0'].ps_id!=null && obj['case_details']['0'].agency_name!=null){
-                                    var case_no_string = "Case No. : "+$("#stakeholder option:selected").text()+" / "+case_no+" / "+case_year+" (Case initiated by: "+obj['case_details']['0'].agency_name+" )";
+                                    var case_no_string = "Case No. : "+obj['case_details']['0'].case_no_string+" (Case initiated by: "+obj['case_details']['0'].agency_name+" )";
                                     $("#case_no_string").html(case_no_string).show();
                                 }
-                                else if(obj['case_details']['0'].ps_id!=null && obj['case_details']['0'].agency_name==null){
-                                    var case_no_string = "Case No. : "+$("#stakeholder option:selected").text()+" / "+case_no+" / "+case_year;
-                                    $("#case_no_string").html(case_no_string).show();
-                                }
-                                else if(obj['case_details']['0'].ps_id==null && obj['case_details']['0'].agency_name==null){
-                                    var case_no_string = "Case No. : "+$("#stakeholder option:selected").text()+" / "+case_no+" / "+case_year;
+                                else{
+                                    var case_no_string = "Case No. : "+obj['case_details']['0'].case_no_string;
                                     $("#case_no_string").html(case_no_string).show();
                                 }
 
+                                $("#div_case_no").hide();
+
                                 $.each(obj['case_details'],function(index,value){
-                                    str_case_details+="<hr>"+
+                                    str_case_details+=
                                     '<div class="form-group required row">'+
                                             '<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Nature of Narcotic</label>'+
                                             '<div class="col-sm-3">'+
@@ -442,7 +452,7 @@
         $("#case_year").trigger("change");
     })
 
-    $(document).on("keyup","#case_no", function(){
+    $(document).on("focusout","#case_no", function(){
         $("#case_year").trigger("change");
     })
     /* Fetching Case Details On Other Events Too :: ENDS */
@@ -468,15 +478,9 @@
                         month:month
                       }
                     },
-                    "columns": [  
-                      {"class":"stakeholder_id",
-                        "data":"Stakeholder ID"},
-                      {"class":"stakeholder_type",
-                        "data":"Stakeholder Type"},
+                    "columns": [
                       {"class":"case_no",
                         "data":"Case No"},
-                      {"class":"case_year",
-                        "data":"Case Year"},
                       {"data":"More Details"}, 
                       {"data": "Sl No"},         
                       {"data": "Stakeholder Name"},
@@ -488,10 +492,7 @@
                   ]
             });
 
-            table.column( 0 ).visible( false ); // Hiding the Stakeholder ID column
-            table.column( 1 ).visible( false ); // Hiding the Stakeholder Type column
-            table.column( 2 ).visible( false ); // Hiding the Case No. column
-            table.column( 3 ).visible( false ); // Hiding the Case Year column
+            table.column( 0 ).visible( false ); // Hiding the Case No column
     }
 
     var month_of_report = $(".month_of_report").val();    
@@ -511,10 +512,7 @@
           var row = table.row(tr);
           var row_data = table.row(tr).data();
 
-          var stakeholder_id = row_data['Stakeholder ID'];  
-          var stakeholder_type = row_data['Stakeholder Type']; 
-          var case_no = row_data['Case No'];
-          var case_year = row_data['Case Year'];
+          var case_no_string = row_data['Case No']; 
           
           var obj;
 
@@ -526,10 +524,7 @@
                     url:"magistrate_entry_form/fetch_more_details",
                     data:{
                         _token: $('meta[name="csrf-token"]').attr('content'),
-                        stakeholder_id:stakeholder_id,
-                        stakeholder_type:stakeholder_type,
-                        case_no:case_no,
-                        case_year:case_year
+                        case_no_string:case_no_string
                     },
                     success:function(response){
                         obj = $.parseJSON(response);              
@@ -627,11 +622,6 @@
 
     /*Certify ::STARTS*/
     $(document).on("click",".certify",function(){
-        var stakeholder = $("#stakeholder option:selected").val();
-        var stakeholder_type = $("#stakeholder option:selected").data('stakeholder_type');
-        var case_no = $("#case_no").val();
-        var case_year = $("#case_year option:selected").val();
-
         var element = $(this);
 
         // If div structure changes, following code will not work :: STARTS
@@ -686,10 +676,7 @@
                                         url:"magistrate_entry_form/certify", 
                                         data: {
                                             _token: $('meta[name="csrf-token"]').attr('content'),
-                                            stakeholder:stakeholder,
-                                            stakeholder_type:stakeholder_type,
-                                            case_no:case_no,
-                                            case_year:case_year,
+                                            case_no_string:case_no_string,
                                             narcotic_type:narcotic_type,
                                             sample_quantity:sample_quantity,
                                             sample_weighing_unit:sample_unit,
