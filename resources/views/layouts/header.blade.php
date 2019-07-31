@@ -154,7 +154,7 @@
                     @if(Auth::check() && Auth::user()->user_type == 'special_court')
                         <li class="header"></li>
                         <li class="treeview">
-                            <a href="#"><i class="fa fa-pen"></i>
+                            <a href="#"><i class="fa fa-pencil"></i>
                                 <span>Legacy Data</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                             </a>
                             <ul class="treeview-menu">
@@ -180,7 +180,9 @@
                 <input type="submit" id="submit">
             </form>
         </div>
-             
+           
+        <!-- Go Top button -->
+        <div id="goTop"></div>  
 
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
@@ -190,4 +192,5 @@
                 @yield('content')
             
         
-        @include('layouts.js_links')
+        @include('layouts.js_links')        
+        

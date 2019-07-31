@@ -1,7 +1,8 @@
 <footer class="main-footer">
-    <div class="container">                
-       <strong>Designed & Developed By The Software Developers of 
-                Calcutta High Court.</strong> Copyright © {{Date('Y')}}
+    <div class="container" style="width:100%">                
+       <strong>Designed, Developed & Hosted by High Court Calcutta under Support 
+           & Guidance of National Informatics Centre.</strong> 
+           <div class="pull-right">Copyright © {{Date('Y')}} </div>
     </div>
     <!-- /.container -->
 </footer>

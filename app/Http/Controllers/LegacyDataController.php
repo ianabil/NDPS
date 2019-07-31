@@ -30,11 +30,6 @@ class LegacyDataController extends Controller
                                 ->orderBy('ps_name')
                                 ->get();
 
-        $data['stakeholders'] = Agency_detail::select('agency_id','agency_name')
-                                            ->where('agency_name','ilike','%NCB%')
-                                            ->orderBy('agency_name')
-                                            ->get();
-
         $data['narcotics'] = Narcotic::where('display','Y')
                                         ->select('drug_id','drug_name')
                                         ->orderBy('drug_name')
@@ -50,7 +45,6 @@ class LegacyDataController extends Controller
                                             ->get(); 
 
         $data['agencies'] = Agency_detail::select('agency_id','agency_name')
-                                            ->where('agency_name', 'not like', '%NCB%')
                                             ->orderBy('agency_name')
                                             ->get(); 
         

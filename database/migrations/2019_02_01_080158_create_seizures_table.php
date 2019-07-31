@@ -18,6 +18,7 @@ class CreateSeizuresTable extends Migration
             $table->integer('ps_id')->nullable(true); 
             $table->integer('case_no')->nullable(false);
             $table->integer('case_year')->nullable(false);
+            $table->string('case_no_string')->nullable(false);
             $table->integer('drug_id')->nullable(false);
             $table->double('quantity_of_drug',8,3)->nullable(false);  
             $table->integer('seizure_quantity_weighing_unit_id')->nullable(false);
@@ -37,6 +38,7 @@ class CreateSeizuresTable extends Migration
             $table->text('remarks')->nullable(true);
             $table->text('magistrate_remarks')->nullable(true);
             $table->string('user_name');
+            $table->string('legacy_data_flag')->default('N');
             $table->timestamps();
             
             $table->foreign('ps_id')->references('ps_id')->on('ps_details');

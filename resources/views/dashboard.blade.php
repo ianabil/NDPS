@@ -4,7 +4,7 @@
 <div class="row">    
     <div class="col-md-4 col-sm-6 col-xs-12">
         <div class="info-box bg-purple">
-            <span class="info-box-icon"><i class="ion ion-document-text" style="margin-top:20px"></i></span>
+            <span class="info-box-icon"><i class="fa fa-lock" style="margin-top:20px"></i></span>
 
             <div class="info-box-content">
               <span class="info-box-text"><strong>Total Seizure</strong></span>
@@ -17,7 +17,7 @@
 
     <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="info-box bg-red">
-                <span class="info-box-icon"><i class="far fa-thumbs-down" style="margin-top:20px"></i></span>
+                <span class="info-box-icon"><i class="fa fa-thumbs-down" style="margin-top:20px"></i></span>
     
                 <div class="info-box-content">
                   <span class="info-box-text"><strong>Total Undisposed</strong></span>                  
@@ -31,7 +31,7 @@
     
     <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="info-box bg-green">
-                <span class="info-box-icon"><i class="far fa-thumbs-up" style="margin-top:20px"></i></span>
+                <span class="info-box-icon"><i class="fa fa-thumbs-up" style="margin-top:20px"></i></span>
     
                 <div class="info-box-content">
                   <span class="info-box-text"><strong>Total Disposed</strong></span>
@@ -83,6 +83,7 @@
         <!-- /.box -->
 </div>
 
+
 <!--Closing that has been openned in the header.blade.php -->
 </section>
 <!-- /.content -->
@@ -97,9 +98,11 @@
 	$(document).ready(function(){
 		var date=$(".month_of_report").datepicker({
 			format: "MM-yyyy",
-              viewMode: "months", 
-              minViewMode: "months"
+            viewMode: "months", 
+            minViewMode: "months"
         }); // Date picker initialization For Month of Report
+
+        
 
     var table;
     // This function will take month as an input and fetch corresponding report

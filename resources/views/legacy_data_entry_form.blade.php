@@ -28,9 +28,6 @@
                                         @foreach($data['ps'] as $ps)
                                             <option data-stakeholder_type="ps" value="{{$ps->ps_id}}">{{$ps->ps_name}}</option>
                                         @endforeach
-                                        @foreach($data['stakeholders'] as $stakeholder)
-                                            <option data-stakeholder_type="agency" value="{{$stakeholder->agency_id}}">{{$stakeholder->agency_name}}</option>
-                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="col-sm-2">
@@ -228,7 +225,6 @@
 </div>
    
 <!--loader ends-->
-
 
 <!--Closing that has been openned in the header.blade.php -->
 </section>

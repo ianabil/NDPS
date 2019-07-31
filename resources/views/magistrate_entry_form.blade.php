@@ -137,6 +137,7 @@
 
 <!--loader ends-->
 
+
 <!--Closing that has been openned in the header.blade.php -->
 </section>
 <!-- /.content -->
@@ -154,6 +155,7 @@
                 endDate:'0',
                 format: 'dd-mm-yyyy'
          }); // Date picker initialization For All The Form Elements
+         
 
          var date=$(".month_of_report").datepicker({
 			  format: "MM-yyyy",

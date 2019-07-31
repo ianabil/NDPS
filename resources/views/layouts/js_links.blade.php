@@ -1,13 +1,13 @@
 <!-- jQuery 3 -->
-    <script src="{{asset('js/AdminLTE-2.4.5/bower_components/jquery/dist/jquery.min.js')}}"></script>
+    <script src="{{asset('js/jquery.min.js')}}"></script>
     <!-- Bootstrap 3.3.7 -->
-    <script src="{{asset('js/AdminLTE-2.4.5/bower_components/bootstrap/dist/js/bootstrap.min.js')}}"></script>
+    <script src="{{asset('js/bootstrap.min.js')}}"></script>
     <!-- SlimScroll -->
-    <script src="{{asset('js/AdminLTE-2.4.5/bower_components/jquery-slimscroll/jquery.slimscroll.min.js')}}"></script>
+    <script src="{{asset('js/jquery.slimscroll.min.js')}}"></script>
     <!-- FastClick -->
-    <script src="{{asset('js/AdminLTE-2.4.5/bower_components/fastclick/lib/fastclick.js')}}"></script>
+    <script src="{{asset('js/fastclick.js')}}"></script>
     <!-- AdminLTE App -->
-    <script src="{{asset('js/AdminLTE-2.4.5/dist/js/adminlte.min.js')}}"></script>
+    <script src="{{asset('js/adminlte.min.js')}}"></script>
     <!-- Sweet Alert-->
     <script src="{{asset('js/Sweet Alert/sweetalert.min.js')}}"></script>
     <!-- Data Table -->
@@ -32,6 +32,7 @@
     <script src="{{asset('js/buttons.colVis.min.js')}}"></script>
     <!-- For Data Table Buttons ENDS -->
 
+    <script src="{{asset('js/jquery.gotop.min.js')}}"></script>
     
     <script>
         // Session Timeout For Inactive Window STARTS
@@ -59,6 +60,9 @@
                     idleSecondsCounter = 1;
                 }
             },idle_time)
+
+            // Go Top button initialization
+            $("#goTop").goTop();
 
         });
         // Session Timeout For Inactive Window ENDS
