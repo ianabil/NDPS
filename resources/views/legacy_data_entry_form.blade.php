@@ -22,18 +22,21 @@
                         <form id="form_seizure">
                             <div class="form-group required row">
                                 <label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Case</label>
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <select class="form-control select2" id="stakeholder" autocomplete="off">
-                                        <option value="">Select Stakeholder</option>
+                                        <option value="">Select PS</option>
                                         @foreach($data['ps'] as $ps)
                                             <option data-stakeholder_type="ps" value="{{$ps->ps_id}}">{{$ps->ps_name}}</option>
                                         @endforeach
                                     </select>
-                                </div>
+								</div>
+								<div class="col-sm-3">
+									<input class="form-control" type="text" id="case_no_initial" placeholder="Case No. Initials (For non PS FIR cases)" autocomplete="off">                                                                                
+								</div>
                                 <div class="col-sm-2">
                                     <input class="form-control" type="number" id="case_no" placeholder="Case No." autocomplete="off">
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <select class="form-control select2" id="case_year" autocomplete="off">	
                                         <option value="">Select Year</option>					
                                         @for($i=Date('Y');$i>=1980;$i--)
@@ -48,7 +51,7 @@
                                 <div class="col-sm-2">
                                     <select class="form-control" id="case_initiated_by" autocomplete="off">
                                         <option value="">Select an option</option>												
-                                        <option value="self">Self</option>
+                                        <option value="ps">PS</option>
                                         <option value="agency">Any Agency</option>
                                     </select>
                                 </div>
@@ -295,7 +298,7 @@
 
 			if(case_initiated_by=="agency")
 				$("#div_case_initiated_by").show();
-			else if(case_initiated_by=="self")
+			else if(case_initiated_by=="ps")
 				$("#div_case_initiated_by").hide();
 		});
 		/*When Case Initiated By Any Agency :: ENDS*/
@@ -536,7 +539,7 @@
 		
 		$(document).on("click",".apply",function(){
 				var stakeholder = $("#stakeholder option:selected").val();
-				var stakeholder_type = $("#stakeholder option:selected").data('stakeholder_type');
+				var case_no_initial = $.trim($("#case_no_initial").val());
 				var agency_name;
 
 				if(stakeholder_type=="agency"){
@@ -549,9 +552,9 @@
 
 				var case_initiated_by = $("#case_initiated_by option:selected").val();
 
-				if(case_initiated_by=="self" && stakeholder_type=="ps")
+				if(case_initiated_by=="ps")
 					agency_name = null;
-				else if(case_initiated_by=="agency" && stakeholder_type=="ps")
+				else if(case_initiated_by=="agency")
 					agency_name = $("#agency_name option:selected").val();
 
 				narcotic_type = [];
@@ -1038,7 +1041,7 @@
 											}); // Initialization of Date picker For The Disposal Screen
 											
 											if(obj['case_details']['0'].ps_id!=null && obj['case_details']['0'].agency_id==null){
-												$("#case_initiated_by").val('self').attr('disabled',true);												
+												$("#case_initiated_by").val('ps').attr('disabled',true);												
 											}
 											else if(obj['case_details']['0'].ps_id!=null && obj['case_details']['0'].agency_id!=null){
 												$("#case_initiated_by").val('agency').attr('disabled',true);

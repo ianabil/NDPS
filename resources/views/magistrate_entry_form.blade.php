@@ -97,7 +97,7 @@
               <form class="form-inline">
                   <label class="box-title" style="font-size:25px; margin-left:30%">
                       Report For The Month Of :                  
-                      <input type="text" class="form-control month_of_report" style="width:20%; margin-left:3%" name="month_of_report" id="month_of_report" value="{{date('F',strtotime(date('d-m-Y'))).'-'.date('Y',strtotime(date('d-m-Y')))}}" autocomplete="off">
+                      <input type="text" class="form-control month_of_report" style="width:25%; margin-left:3%" name="month_of_report" id="month_of_report" value="{{date('F',strtotime(date('d-m-Y'))).'-'.date('Y',strtotime(date('d-m-Y')))}}" autocomplete="off">
                   </label>
               </form>
               <div class="box-tools pull-right">
@@ -108,20 +108,22 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
+                <div style="overflow-x:auto;">
                     <table class="table table-bordered table-responsive display" style="width:100%;">
-                <thead>
-                  <tr>                    
-                    <th style="display:none">CASE NO </th>
-                    <th></th>
-                    <th>Sl No. </th>
-                    <th>Stakeholder Name</th>
-                    <th>Case No.</th>                                    
-                    <th>Nature of Narcotic</th>
-                    <th>Certification Status</th>
-                    <th>Disposal Status</th>
-                  </tr>
-                </thead>
-              </table>
+                        <thead>
+                            <tr>                    
+                                <th style="display:none">CASE NO </th>
+                                <th></th>
+                                <th>Sl No. </th>
+                                <th>Stakeholder Name</th>
+                                <th>Case No.</th>                                    
+                                <th>Nature of Narcotic</th>
+                                <th>Certification Status</th>
+                                <th>Disposal Status</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
             <!-- /.box-body -->
           </div>
@@ -470,7 +472,6 @@
                     "processing": true,
                     "serverSide": true,
                     "searching": false,
-                    "paging" : false,
                     "ordering" : false,
                     "ajax": {
                       "url": "magistrate_entry_form/monthly_report_status",
@@ -559,24 +560,23 @@
 
                             '<br>'+
                             
-                            '<div style="width:85%; overflow-x:scroll">'+
-                                '<table class="table table-bordered table-responsive" style="white-space:nowrap;">'+
-                                    '<thead>'+
-                                        '<tr>'+
-                                            '<th>Narcotic Type</th>'+
-                                            '<th>Seizure Quantity</th>'+ 
-                                            '<th>Date of Seizure</th>'+                                       
-                                            '<th>Certification Status</th>'+
-                                            '<th>Date of Certification</th>'+
-                                            '<th>Sample Quantity</th>'+
-                                            '<th>Magistrate Remarks</th>'+
-                                            '<th>Disposal Status</th>'+
-                                            '<th>Date of Disposal</th>'+
-                                            '<th>Disposal Quantity</th>'+
-                                        '</tr>'+
-                                    '</thead>'+
-                                    
-                                    '<tbody>';
+                            '<table class="table table-bordered table-responsive" style="white-space:nowrap;">'+
+                                '<thead>'+
+                                    '<tr>'+
+                                        '<th>Narcotic Type</th>'+
+                                        '<th>Seizure Quantity</th>'+ 
+                                        '<th>Date of Seizure</th>'+                                       
+                                        '<th>Certification Status</th>'+
+                                        '<th>Date of Certification</th>'+
+                                        '<th>Sample Quantity</th>'+
+                                        '<th>Magistrate Remarks</th>'+
+                                        '<th>Disposal Status</th>'+
+                                        '<th>Date of Disposal</th>'+
+                                        '<th>Disposal Quantity</th>'+
+                                    '</tr>'+
+                                '</thead>'+
+                                
+                                '<tbody>';
 
             $.each(obj,function(key,value){
                 child_string += ""+
@@ -614,7 +614,7 @@
                             '</tr>';
             })
 
-            child_string +='</tbody></table></div>';
+            child_string +='</tbody></table>';
 
             row.child(child_string).show();
         }

@@ -326,6 +326,7 @@
         Route::post('dashboard_special_court/fetch_more_details',
         'SpecialCourtController@fetch_case_details');
 
+        // Legacy data entry :: STARTS
         Route::resource('legacy_data_entries', 'LegacyDataController')
         ->except(['create', 'edit','update','destroy','show']);
 
@@ -345,7 +346,20 @@
 
         Route::post('legacy_data_entries/certify','LegacyDataController@certify');
 
-        Route::post('legacy_data_entries/dispose','LegacyDataController@dispose');  
+        Route::post('legacy_data_entries/dispose','LegacyDataController@dispose');         
+        // Legacy data entry :: ENDS
+
+
+        //Composite Search Special Court:: STARTS
+       Route::get('composite_search_specialcourt',
+       'SearchController@show_special_court_search_index');
+
+       Route::post('composite_search_special_court/search',
+       'SearchController@show_special_court_search_result');
+
+       Route::post('composite_search_special_court/fetch_more_details',
+        'SearchController@fetch_case_details_special_court');
+       //Composite Search Special Court:: ENDS
 
     });
 

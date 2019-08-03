@@ -174,23 +174,22 @@
         </div>
         <!-- /.box-header -->
         <div class="box-body">
-            <<table class="table table-bordered table-responsive display" style="width:100%;">
-                <thead>
-                    <tr>
-                        <th style="display:none">STAKEHOLDER ID </th>
-                        <th style="display:none">STAKEHOLDER TYPE </th>
-                        <th style="display:none">CASE NO </th>
-                        <th style="display:none">CASE YEAR </th>
-                        <th></th>
-                        <th>Sl No. </th>
-                        <th>Case No.</th>    
-                        <th>Designated Magistrate</th>                                
-                        <th>Nature of Narcotic</th>
-                        <th>Certification Status</th>
-                        <th>Disposal Status</th>
-                    </tr>
-                </thead>
-            </table>
+            <div style="overflow-x:auto;">
+                <table class="table table-bordered table-responsive display" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th style="display:none">CASE NO </th>
+                            <th></th>
+                            <th>Sl No. </th>
+                            <th>Case No.</th>    
+                            <th>Designated Magistrate</th>                                
+                            <th>Nature of Narcotic</th>
+                            <th>Certification Status</th>
+                            <th>Disposal Status</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
         <!-- /.box-body -->
     </div>
@@ -346,8 +345,7 @@
                     "processing": true,
                     "serverSide": true,
                     "searching": false,
-                    "paging" : true,
-                    "ordering" : false,
+                    "ordering" : false,                
                     "ajax": {
                       "url": "composite_search_stakeholder/search",
                       "type": "POST",
@@ -372,14 +370,8 @@
                       }
                     },
                     "columns": [  
-                        {"class":"stakeholder_id",
-                        "data":"Stakeholder ID"},
-                      {"class":"stakeholder_type",
-                        "data":"Stakeholder Type"},
                       {"class":"case_no",
-                        "data":"Case No"},
-                      {"class":"case_year",
-                        "data":"Case Year"},
+                       "data":"Case No"},
                       {"data":"More Details"}, 
                       {"data": "Sl No"}, 
                       {"data": "Case_No",
@@ -391,10 +383,7 @@
                     ]
                 });
 
-                table.column( 0 ).visible( false ); // Hiding the Stakeholder ID column
-                table.column( 1 ).visible( false ); // Hiding the Stakeholder Type column
-                table.column( 2 ).visible( false ); // Hiding the Case No. column
-                table.column( 3 ).visible( false ); // Hiding the Case Year column
+                table.column( 0 ).visible( false ); // Hiding the Case No column
             });
             // Searching Code :: ENDS
 
@@ -405,12 +394,10 @@
                 var row = table.row(tr);
                 var row_data = table.row(tr).data();
 
-                var stakeholder_id = row_data['Stakeholder ID'];  
-                var stakeholder_type = row_data['Stakeholder Type']; 
-                var case_no = row_data['Case No'];
-                var case_year = row_data['Case Year'];
+                var case_no_string = row_data['Case No']; 
                 
                 var obj;
+
 
             // fetch case details only when the child row is hide
                 if(!row.child.isShown()){ 
@@ -420,10 +407,7 @@
                             url:"composite_search_stakeholder/fetch_more_details",
                             data:{
                                 _token: $('meta[name="csrf-token"]').attr('content'),
-                                stakeholder_id:stakeholder_id,
-                                stakeholder_type:stakeholder_type,
-                                case_no:case_no,
-                                case_year:case_year
+                                case_no_string:case_no_string
                             },
                             success:function(response){
                                 obj = $.parseJSON(response);              
@@ -460,24 +444,23 @@
 
                                     '<br>'+
                     
-                                    '<div style="width:85%; overflow-x:scroll">'+
-                                        '<table class="table table-bordered table-responsive" style="white-space:nowrap;">'+
-                                                '<thead>'+
-                                                    '<tr>'+
-                                                        '<th>Narcotic Type</th>'+
-                                                        '<th>Seizure Quantity</th>'+  
-                                                        '<th>Date of Seizure</th>'+                                       
-                                                        '<th>Certification Status</th>'+
-                                                        '<th>Date of Certification</th>'+
-                                                        '<th>Sample Quantity</th>'+
-                                                        '<th>Magistrate Remarks</th>'+
-                                                        '<th>Disposal Status</th>'+
-                                                        '<th>Date of Disposal</th>'+
-                                                        '<th>Disposal Quantity</th>'+
-                                                    '</tr>'+
-                                                '</thead>'+
-                                                
-                                                '<tbody>';
+                                    '<table class="table table-bordered table-responsive" style="white-space:nowrap;">'+
+                                        '<thead>'+
+                                            '<tr>'+
+                                                '<th>Narcotic Type</th>'+
+                                                '<th>Seizure Quantity</th>'+  
+                                                '<th>Date of Seizure</th>'+                                       
+                                                '<th>Certification Status</th>'+
+                                                '<th>Date of Certification</th>'+
+                                                '<th>Sample Quantity</th>'+
+                                                '<th>Magistrate Remarks</th>'+
+                                                '<th>Disposal Status</th>'+
+                                                '<th>Date of Disposal</th>'+
+                                                '<th>Disposal Quantity</th>'+
+                                            '</tr>'+
+                                        '</thead>'+
+                                        
+                                        '<tbody>';
 
                     $.each(obj,function(key,value){
                         child_string += ""+

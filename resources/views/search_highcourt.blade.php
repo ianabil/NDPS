@@ -21,9 +21,12 @@
                 </select>
             </div>
             <div class="col-sm-3">
+                <input class="form-control" type="text" id="case_no_initial" placeholder="Case No. Initials (For non PS FIR cases)" autocomplete="off">                                                                                
+            </div>
+            <div class="col-sm-2">
                 <input class="form-control" type="number" id="case_no" placeholder="Case No." autocomplete="off">
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <select class="form-control select2" id="case_year" autocomplete="off">	
                     <option value="">Select Year</option>					
                     @for($i=Date('Y');$i>=1980;$i--)
@@ -166,24 +169,23 @@
         </div>
         <!-- /.box-header -->
         <div class="box-body">
+            <div style="overflow-x:auto;">
                 <table class="table table-bordered table-responsive display" style="width:100%;">
-                <thead>
-                    <tr>
-                        <th style="display:none">STAKEHOLDER ID </th>
-                        <th style="display:none">STAKEHOLDER TYPE </th>
-                        <th style="display:none">CASE NO </th>
-                        <th style="display:none">CASE YEAR </th>
-                        <th></th>
-                        <th>Sl No. </th>
-                        <th>Stakeholder Name</th>
-                        <th>Case No.</th>    
-                        <th>Designated Magistrate</th>                                
-                        <th>Nature of Narcotic</th>
-                        <th>Certification Status</th>
-                        <th>Disposal Status</th>
-                    </tr>
-                </thead>
-            </table>
+                    <thead>
+                        <tr>
+                            <th style="display:none">CASE NO </th>
+                            <th></th>
+                            <th>Sl No. </th>
+                            <th>Stakeholder Name</th>
+                            <th>Case No.</th>    
+                            <th>Designated Magistrate</th>                                
+                            <th>Nature of Narcotic</th>
+                            <th>Certification Status</th>
+                            <th>Disposal Status</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
         <!-- /.box-body -->
     </div>
@@ -309,6 +311,7 @@
                 var ps = $("#ps option:selected").val();
                 var case_no = $("#case_no").val();
                 var case_year = $("#case_year option:selected").val();
+                var case_no_initial = $.trim($("#case_no_initial").val());
                 var stakeholder = $("#stakeholder option:selected").val();
                 var court = $("#court option:selected").val();
                 var district = $("#district option:selected").val();
@@ -316,6 +319,12 @@
                 var storage = $("#storage option:selected").val();
                 var certified_cases = $("#certified").is(":checked");
                 var disposed_cases = $("#disposed").is(":checked");
+
+                if(ps!="" && case_no_initial!=""){
+                    swal("Invalid Input","PS and Case No. Initial Field (For non PS FIR cases) Can Not Have Data Together","error");
+                    return false;
+                }
+
 
                 $('.table').DataTable().destroy();
                 $("#search_result").show();
@@ -329,7 +338,6 @@
                     "processing": true,
                     "serverSide": true,
                     "searching": false,
-                    "paging" : true,
                     "ordering" : false,
                     "ajax": {
                       "url": "composite_search_highcourt/search",
@@ -339,6 +347,7 @@
                         ps:ps,
                         case_no:case_no,
                         case_year:case_year,
+                        case_no_initial:case_no_initial,
                         stakeholder:stakeholder,
                         court:court,
                         district:district,
@@ -355,14 +364,8 @@
                       }
                     },
                     "columns": [  
-                        {"class":"stakeholder_id",
-                        "data":"Stakeholder ID"},
-                      {"class":"stakeholder_type",
-                        "data":"Stakeholder Type"},
                       {"class":"case_no",
-                        "data":"Case No"},
-                      {"class":"case_year",
-                        "data":"Case Year"},
+                      "data":"Case No"},
                       {"data":"More Details"}, 
                       {"data": "Sl No"},         
                       {"data": "Stakeholder Name"},
@@ -375,10 +378,7 @@
                     ]
                 });
 
-                table.column( 0 ).visible( false ); // Hiding the Stakeholder ID column
-                table.column( 1 ).visible( false ); // Hiding the Stakeholder Type column
-                table.column( 2 ).visible( false ); // Hiding the Case No. column
-                table.column( 3 ).visible( false ); // Hiding the Case Year column
+                table.column( 0 ).visible( false ); // Hiding the Case No column
             });
             // Searching Code :: ENDS
 
@@ -389,10 +389,7 @@
                 var row = table.row(tr);
                 var row_data = table.row(tr).data();
 
-                var stakeholder_id = row_data['Stakeholder ID'];  
-                var stakeholder_type = row_data['Stakeholder Type']; 
-                var case_no = row_data['Case No'];
-                var case_year = row_data['Case Year'];
+                var case_no_string = row_data['Case No']; 
                 
                 var obj;
 
@@ -404,10 +401,7 @@
                             url:"composite_search_highcourt/fetch_more_details",
                             data:{
                                 _token: $('meta[name="csrf-token"]').attr('content'),
-                                stakeholder_id:stakeholder_id,
-                                stakeholder_type:stakeholder_type,
-                                case_no:case_no,
-                                case_year:case_year
+                                case_no_string:case_no_string
                             },
                             success:function(response){
                                 obj = $.parseJSON(response);              
@@ -442,26 +436,25 @@
                                         '</tr>'+
                                     '</table>'+
 
-                                    '<br>'+
-                    
-                                    '<div style="width:85%; overflow-x:scroll">'+
-                                        '<table class="table table-bordered table-responsive" style="white-space:nowrap;">'+
-                                                '<thead>'+
-                                                    '<tr>'+
-                                                        '<th>Narcotic Type</th>'+
-                                                        '<th>Seizure Quantity</th>'+  
-                                                        '<th>Date of Seizure</th>'+                                       
-                                                        '<th>Certification Status</th>'+
-                                                        '<th>Date of Certification</th>'+
-                                                        '<th>Sample Quantity</th>'+
-                                                        '<th>Magistrate Remarks</th>'+
-                                                        '<th>Disposal Status</th>'+
-                                                        '<th>Date of Disposal</th>'+
-                                                        '<th>Disposal Quantity</th>'+
-                                                    '</tr>'+
-                                                '</thead>'+
-                                                
-                                                '<tbody>';
+                                    '<br>'+                    
+                                    
+                                    '<table class="table table-bordered table-responsive" style="white-space:nowrap;">'+
+                                            '<thead>'+
+                                                '<tr>'+
+                                                    '<th>Narcotic Type</th>'+
+                                                    '<th>Seizure Quantity</th>'+  
+                                                    '<th>Date of Seizure</th>'+                                       
+                                                    '<th>Certification Status</th>'+
+                                                    '<th>Date of Certification</th>'+
+                                                    '<th>Sample Quantity</th>'+
+                                                    '<th>Magistrate Remarks</th>'+
+                                                    '<th>Disposal Status</th>'+
+                                                    '<th>Date of Disposal</th>'+
+                                                    '<th>Disposal Quantity</th>'+
+                                                '</tr>'+
+                                            '</thead>'+
+                                            
+                                            '<tbody>';
 
                     $.each(obj,function(key,value){
                         child_string += ""+
@@ -499,7 +492,7 @@
                             '</tr>';
                     })
 
-                    child_string +='</tbody></table></div>';
+                    child_string +='</tbody></table>';
 
                     row.child(child_string).show();
                 }
