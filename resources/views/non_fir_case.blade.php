@@ -60,10 +60,7 @@
                                         <label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Agency Name</label>
                                         <div class="col-sm-2">
                                             <select class="form-control" id="agency_name" autocomplete="off">
-                                                <option value="">Select an option</option>
-                                                @foreach($data['agencies'] as $agency)
-                                                    <option value="{{$agency->agency_id}}">{{$agency->agency_name}}</option>
-                                                @endforeach
+                                                <option value="">Select an option</option>                                                
                                             </select>
                                         </div>
                                     </div>
@@ -164,22 +161,22 @@
                         <div class="tab-pane" id="certification">
                             <form id="form_certification">
                                 <div class="form-group required row">
-                                    <label class="col-sm-2 col-form-label-sm  control-label" style="font-size:medium">District</label>
+                                    <label class="col-sm-2 col-form-label-sm  control-label" style="font-size:medium">NDPS Court</label>
                                     <div class="col-sm-3">
-                                        <select class="form-control select2" id="district">
-                                            <option value="">Select An Option</option>
-                                            @foreach($data['districts'] as $district)
-                                                <option value="{{$district->district_id}}">{{$district->district_name}}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+										<select class="form-control select2" id="ndps_court">
+											<option value="">Select An Option</option>
+												@foreach($data['ndps_courts'] as $ndps_court)
+													<option data-district="{{$ndps_court->district_id}}" value="{{$ndps_court->ndps_court_id}}">{{$ndps_court->ndps_court_name}}</option>
+												@endforeach
+										</select>
+									</div>
 
-                                    <label class="col-sm-2 col-sm-offset-1 col-form-label-sm  control-label" style="font-size:medium">Designated Magistrate</label>
-                                    <div class="col-sm-3">											
-                                        <select class="form-control select2" id="court">
-                                            <option value="">Select An Option</option>
-                                        </select>
-                                    </div>
+									<label class="col-sm-2 col-sm-offset-1 col-form-label-sm  control-label" style="font-size:medium">Designated Magistrate</label>
+									<div class="col-sm-3">											
+										<select class="form-control select2" id="magistrate">
+											<option value="">Select An Option</option>
+										</select>
+									</div>
                                 </div>
 
                                 <hr>
@@ -583,8 +580,9 @@
 							
 				var storage = $("#storage option:selected").val();
 				var remark = $("#remark").val();
-				var district = $("#district option:selected").val();
-				var court = $("#court option:selected").val();
+				var district = $("#ndps_court option:selected").data('district');
+				var ndps_court = $("#ndps_court option:selected").val();
+				var certifying_court = $("#magistrate option:selected").val();
 
 
 				if(stakeholder==""){
@@ -611,12 +609,12 @@
 					swal("Invalid Input","Please Select Place of Storage of Seizure","error");
 					return false;
 				}
-				else if(district==""){
-					swal("Invalid Input","Please Select District","error");
+				else if(ndps_court==""){
+					swal("Invalid Input","Please Select NDPS Court","error");
 					return false;
 				}
-				else if(court==""){
-					swal("Invalid Input","Please Select NDPS Court","error");
+				else if(certifying_court==""){
+					swal("Invalid Input","Please Select Designated Magistrate","error");
 					return false;
 				}
 				else{
@@ -647,7 +645,8 @@
 										storage:storage,
 										remark:remark,
 										district:district,
-										court:court,
+										ndps_court:ndps_court,
+										certifying_court:certifying_court,
 										flag_other_narcotic:flag_other_narcotic,
 										other_narcotic_name:other_narcotic_name,
 										flag_other_storage:flag_other_storage,
@@ -672,14 +671,14 @@
 
 
 		/*Fetch list of court on correspondance to the selected district :: STARTS*/
-		$(document).on("change","#district", function(){	
+		$(document).on("change","#ndps_court", function(){	
 
-		var district=$(this).val();
-		$("#court").children('option:not(:first)').remove();
+		var district=$("#ndps_court option:selected").data('district');
+		$("#magistrate").children('option:not(:first)').remove();
 		
 				$.ajax({
 					type: "POST",
-					url:"entry_form/fetch_court",
+					url:"entry_form/fetch_certifying_court",
 					data: {
 						_token: $('meta[name="csrf-token"]').attr('content'),
 						district: district
@@ -687,7 +686,7 @@
 					success:function(resonse){                        
 						var obj=$.parseJSON(resonse)
 						$.each(obj['district_wise_court'],function(index,value){							
-							$("#court").append('<option value="'+value.court_id+'">'+value.court_name+'</option>');
+							$("#magistrate").append('<option value="'+value.court_id+'">'+value.court_name+'</option>');
 						})
 					}
 				});
@@ -1006,8 +1005,8 @@
 											$("#seizure_date").val(obj['case_details']['0'].date_of_seizure).attr('readonly',true);											
 											$("#storage").prepend("<option value='"+obj['case_details']['0'].storage_location_id+"' selected>"+obj['case_details']['0'].storage_name+"</option>").attr('disabled',true);
 											$("#remark").val(obj['case_details']['0'].remarks).attr('readonly',true);
-											$("#district").prepend("<option value='"+obj['case_details']['0'].district_id+"' selected>"+obj['case_details']['0'].district_name+"</option>").attr('disabled',true);
-											$("#court").prepend("<option value='"+obj['case_details']['0'].certification_court_id+"' selected>"+obj['case_details']['0'].court_name+"</option>").attr('disabled',true);
+											$("#ndps_court").prepend("<option value='"+obj['case_details']['0'].ndps_court_id+"' selected>"+obj['case_details']['0'].ndps_court_name+"</option>").attr('disabled',true);
+											$("#magistrate").prepend("<option value='"+obj['case_details']['0'].certification_court_id+"' selected>"+obj['case_details']['0'].court_name+"</option>").attr('disabled',true);
 											
 											$("#apply").hide();	
 											$(".narcotic_type_disposal").trigger("change");
@@ -1044,7 +1043,7 @@
 			/* Fetching Case Details On Other Events Too :: ENDS */
 
 			// Preventing to insert any blank space in Case No. Initial field
-			$(document).on("keypress","input", function(e){
+			$(document).on("keypress","#stakeholder", function(e){
 				if(e.which === 32) 
 					return false;
 			})

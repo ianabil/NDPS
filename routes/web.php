@@ -242,32 +242,29 @@
 
         //Entry form::start
         
-        Route::resource('entry_form','entry_formController');
+        Route::resource('entry_form','EntryFormController');
 
-        Route::post('entry_form/narcotic_units','entry_formController@narcotic_units');
+        Route::post('entry_form/narcotic_units','EntryFormController@narcotic_units');
 
-        Route::post('entry_form/fetch_narcotics','entry_formController@fetch_narcotics');
+        Route::post('entry_form/fetch_narcotics','EntryFormController@fetch_narcotics');
 
-        Route::post('entry_form/add_new_seizure_details','entry_formController@add_new_seizure_details');
+        Route::post('entry_form/add_new_seizure_details','EntryFormController@add_new_seizure_details');
 
-        Route::post('entry_form/fetch_court',
-        'entry_formController@district_wise_court');
+        Route::post('entry_form/fetch_certifying_court',
+        'EntryFormController@district_wise_court');
 
-        Route::post('entry_form/fetch_district',
-        'entry_formController@stakeholder_wise_district');
+        Route::post('entry_form/fetch_case_details','EntryFormController@fetch_case_details');
 
-        Route::post('entry_form/fetch_case_details','entry_formController@fetch_case_details');
-
-        Route::post('entry_form/dispose','entry_formController@dispose');               
+        Route::post('entry_form/dispose','EntryFormController@dispose');               
 
        //Entry form::end
 
 
        // Monthly Report :: STARTS
 
-       Route::post('entry_form/monthly_report_status','entry_formController@monthly_report_status');
+       Route::post('entry_form/monthly_report_status','EntryFormController@monthly_report_status');
 
-       Route::post('entry_form/fetch_more_details','entry_formController@fetch_more_details');
+       Route::post('entry_form/fetch_more_details','EntryFormController@fetch_more_details');
 
        // Monthly Report :: ENDS
 
@@ -292,7 +289,7 @@
 
     // Non FIR Cases
     Route::group(['middleware' => ['auth','role_manager:ps|agency']], function () {
-        Route::get('non_fir_case','entry_formController@index_non_fir_case');
+        Route::get('non_fir_case','EntryFormController@index_non_fir_case');
     });
     
 

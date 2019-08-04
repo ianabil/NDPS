@@ -81,23 +81,23 @@
             </div>
             <!--/col-->
 
-            <div class="col-md-3 form-group required" id="div_court" style="display:none">
+            <div class="col-md-3 form-group required" id="div_certifying_court" style="display:none">
                 <label class="control-label">Designated Magistrate</label>
-                <select class="form-control select2" name="court_name" id="court_name">
+                <select class="form-control select2" name="certifying_court" id="certifying_court">
                     <option value="">Select One Option. . . </option>
-                    @foreach ($data['court_details'] as $court)
-                        <option value="{{$court->court_id}}">{{$court->court_name}}</option>
+                    @foreach ($data['certifying_court_details'] as $certifying_court)
+                        <option value="{{$certifying_court->court_id}}">{{$certifying_court->court_name}}</option>
                     @endforeach
                 </select>
             </div>
             <!--/col-->
 
-            <div class="col-md-3 form-group required" id="div_district" style="display:none">
+            <div class="col-md-3 form-group required" id="div_ndps_court" style="display:none">
                 <label class="control-label">NDPS Court</label>
-                <select class="form-control select2" name="district" id="district">
+                <select class="form-control select2" name="ndps_court" id="ndps_court">
                     <option value="">Select One Option. . . </option>
-                    @foreach ($data['district_details'] as $district)
-                        <option value="{{$district->district_id}}">{{$district->district_name}}</option>
+                    @foreach ($data['ndps_court_details'] as $ndps_court)
+                        <option value="{{$ndps_court->ndps_court_id}}">{{$ndps_court->ndps_court_name}}</option>
                     @endforeach
                 </select>
             </div>
@@ -152,17 +152,17 @@
                         var user_type = $("#user_type option:selected").val();
                         var agency_name = $("#agency_name option:selected").val();
                         var ps_name = $("#ps option:selected").val();
-                        var court_name = $("#court_name option:selected").val();
-                        var district_name = $("#district option:selected").val();
+                        var certifying_court_name = $("#certifying_court option:selected").val();
+                        var ndps_court_name = $("#ndps_court option:selected").val();
 
                         if(user_type=="agency")
                             var user_name = $("#agency_name option:selected").text();
                         else if(user_type=="ps")
                             var user_name = $("#ps option:selected").text();
                         else if(user_type=="magistrate")
-                            var user_name = $("#court_name option:selected").text();
+                            var user_name = $("#certifying_court option:selected").text();
                         else if(user_type=="special_court")
-                            var user_name = "Special Court, "+$("#district option:selected").text();
+                            var user_name = $("#ndps_court option:selected").text();
                         else if(user_type=="high_court")
                             var user_name = 'Calcutta High Court';
                         else if(user_type=="admin")
@@ -182,8 +182,8 @@
                                 user_type:user_type,
                                 agency_name:agency_name,
                                 ps_name:ps_name,
-                                court_name:court_name,
-                                district_name:district_name
+                                certifying_court_name:certifying_court_name,
+                                ndps_court_name:ndps_court_name
                         },
 
                         success:function (response)
@@ -209,10 +209,10 @@
                                 swal("Cannot Create New User", ""+response.responseJSON.errors.user_type['0'], "error");
                             else if(response.responseJSON.errors.hasOwnProperty('stakeholder_name'))
                                 swal("Cannot Create New User", ""+response.responseJSON.errors.stakeholder_name['0'], "error");
-                            else if(response.responseJSON.errors.hasOwnProperty('court_name'))
-                                swal("Cannot Create New User", ""+response.responseJSON.errors.court_name['0'], "error");
-                            else if(response.responseJSON.errors.hasOwnProperty('district_name'))
-                                swal("Cannot Create New User", ""+response.responseJSON.errors.district_name['0'], "error");
+                            else if(response.responseJSON.errors.hasOwnProperty('certifying_court_name'))
+                                swal("Cannot Create New User", ""+response.responseJSON.errors.certifying_court_name['0'], "error");
+                            else if(response.responseJSON.errors.hasOwnProperty('ndps_court_name'))
+                                swal("Cannot Create New User", ""+response.responseJSON.errors.ndps_court_name['0'], "error");
                             else if(response.responseJSON.errors.hasOwnProperty('ps_name'))
                                 swal("Cannot Create New User", ""+response.responseJSON.errors.ps_name['0'], "error");
                                     
@@ -226,32 +226,32 @@
                 var user_type = $(this).val();
                 if(user_type=="magistrate"){
                     $("#div_agency").hide();
-                    $("#div_court").show();
-                    $("#div_district").hide();
+                    $("#div_certifying_court").show();
+                    $("#div_ndps_court").hide();
                     $("#div_ps").hide();
                 }
                 else if(user_type=="agency"){
                     $("#div_agency").show();
-                    $("#div_court").hide();
-                    $("#div_district").hide();
+                    $("#div_certifying_court").hide();
+                    $("#div_ndps_court").hide();
                     $("#div_ps").hide();
                 }
                 else if(user_type=="ps"){
                     $("#div_agency").hide();
-                    $("#div_court").hide();
-                    $("#div_district").hide();
+                    $("#div_certifying_court").hide();
+                    $("#div_ndps_court").hide();
                     $("#div_ps").show();
                 }
                 else if(user_type=="special_court"){
                     $("#div_agency").hide();
-                    $("#div_court").hide();
-                    $("#div_district").show();
+                    $("#div_certifying_court").hide();
+                    $("#div_ndps_court").show();
                     $("#div_ps").hide();
                 }
                 else if(user_type=="high_court"){
                     $("#div_agency").hide();
-                    $("#div_court").hide();
-                    $("#div_district").hide();
+                    $("#div_certifying_court").hide();
+                    $("#div_ndps_court").hide();
                     $("#div_ps").hide();
                 }
             })

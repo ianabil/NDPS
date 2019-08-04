@@ -173,17 +173,23 @@
 							<div class="tab-pane" id="certification">
 								<form id="form_certification">
 									<div class="form-group required row">
-										<label class="col-sm-2 col-form-label-sm  control-label" style="font-size:medium">District</label>
+										<label class="col-sm-2 col-form-label-sm  control-label" style="font-size:medium">NDPS Court</label>
 										<div class="col-sm-3">
-											<select class="form-control select2" id="district">
-												<option value="">Select An Option</option>												
+											<select class="form-control select2" id="ndps_court">
+												<option value="">Select An Option</option>
+												@foreach($data['ndps_courts'] as $ndps_court)
+													<option data-district="{{$ndps_court->district_id}}" value="{{$ndps_court->ndps_court_id}}">{{$ndps_court->ndps_court_name}}</option>
+												@endforeach
 											</select>
 										</div>
 
 										<label class="col-sm-2 col-sm-offset-1 col-form-label-sm  control-label" style="font-size:medium">Designated Magistrate</label>
 										<div class="col-sm-3">											
-											<select class="form-control select2" id="court">
+											<select class="form-control select2" id="magistrate">
 												<option value="">Select An Option</option>
+												@foreach($data['certifying_courts'] as $certifying_court)
+													<option value="{{$certifying_court->court_id}}">{{$certifying_court->court_name}}</option>
+												@endforeach
 											</select>
 										</div>
 									</div>
@@ -654,8 +660,9 @@
 							
 				var storage = $("#storage option:selected").val();
 				var remark = $("#remark").val();
-				var district = $("#district option:selected").val();
-				var court = $("#court option:selected").val();
+				var district = $("#ndps_court option:selected").data('district');
+				var ndps_court = $("#ndps_court option:selected").val();
+				var certifying_court = $("#magistrate option:selected").val();
 
 
 				if(stakeholder==""){
@@ -682,12 +689,12 @@
 					swal("Invalid Input","Please Select Place of Storage of Seizure","error");
 					return false;
 				}
-				else if(district==""){
-					swal("Invalid Input","Please Select District","error");
+				else if(ndps_court==""){
+					swal("Invalid Input","Please Select NDPS Court","error");
 					return false;
 				}
-				else if(court==""){
-					swal("Invalid Input","Please Select NDPS Court","error");
+				else if(certifying_court==""){
+					swal("Invalid Input","Please Select Designated Magistrate","error");
 					return false;
 				}
 				else{
@@ -718,7 +725,8 @@
 										storage:storage,
 										remark:remark,
 										district:district,
-										court:court,
+										ndps_court:ndps_court,
+										certifying_court:certifying_court,
 										flag_other_narcotic:flag_other_narcotic,
 										other_narcotic_name:other_narcotic_name,
 										flag_other_storage:flag_other_storage,
@@ -741,31 +749,7 @@
 		})
 		/*Apply For Certification :: ENDS*/
 
-
-		/*Fetch list of court on correspondance to the selected district :: STARTS*/
-		$(document).on("change","#district", function(){	
-
-		var district=$(this).val();
-		$("#court").children('option:not(:first)').remove();
 		
-				$.ajax({
-					type: "POST",
-					url:"entry_form/fetch_court",
-					data: {
-						_token: $('meta[name="csrf-token"]').attr('content'),
-						district: district
-					},
-					success:function(resonse){                        
-						var obj=$.parseJSON(resonse)
-						$.each(obj['district_wise_court'],function(index,value){							
-							$("#court").append('<option value="'+value.court_id+'">'+value.court_name+'</option>');
-						})
-					}
-				});
-
-		});
-		/*Fetch list of court on correspondance to the selected district :: ENDS*/
-
 
 		/*Fetch list of units on correspondance to the selected sezied narcotic type :: STARTS*/
 		$(document).on("change",".narcotic_type", function(){	
@@ -1079,8 +1063,8 @@
 											$("#seizure_date").val(obj['case_details']['0'].date_of_seizure).attr('readonly',true);											
 											$("#storage").prepend("<option value='"+obj['case_details']['0'].storage_location_id+"' selected>"+obj['case_details']['0'].storage_name+"</option>").attr('disabled',true);
 											$("#remark").val(obj['case_details']['0'].remarks).attr('readonly',true);
-											$("#district").prepend("<option value='"+obj['case_details']['0'].district_id+"' selected>"+obj['case_details']['0'].district_name+"</option>").attr('disabled',true);
-											$("#court").prepend("<option value='"+obj['case_details']['0'].certification_court_id+"' selected>"+obj['case_details']['0'].court_name+"</option>").attr('disabled',true);
+											$("#ndps_court").prepend("<option value='"+obj['case_details']['0'].ndps_court_id+"' selected>"+obj['case_details']['0'].ndps_court_name+"</option>").attr('disabled',true);
+											$("#magistrate").prepend("<option value='"+obj['case_details']['0'].certification_court_id+"' selected>"+obj['case_details']['0'].court_name+"</option>").attr('disabled',true);
 											
 											$("#apply").hide();	
 											$(".narcotic_type_disposal").trigger("change");
@@ -1109,27 +1093,6 @@
 			/* Fetching Case Details On Other Events Too :: STARTS */
 				$(document).on("change","#stakeholder", function(){
 						$("#case_year").trigger("change");
-					
-						var stakeholder=$(this).val();
-						$("#district").children('option:not(:first)').remove();
-						
-								$.ajax({
-									type: "POST",
-									url:"entry_form/fetch_district",
-									data: {
-										_token: $('meta[name="csrf-token"]').attr('content'),
-										stakeholder:stakeholder
-									},
-									success:function(resonse){                        
-										var obj=$.parseJSON(resonse)
-										
-										$.each(obj['stakeholder_wise_district'],function(index,value){							
-											$("#district").append('<option value="'+value.district_id+'">'+value.district_name+'</option>');														
-										})
-
-										$("#district").trigger("change");
-									}
-								});
 				})
 
 				$(document).on("keyup","#case_no", function(){

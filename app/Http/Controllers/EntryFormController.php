@@ -6,10 +6,10 @@ use Illuminate\Http\Request;
 
 use App\Narcotic;
 use App\Narcotic_unit;
-use App\District;
+use App\NdpsCourtDetail;
 use App\Unit;
 use App\Agency_detail;
-use App\Court_detail;
+use App\CertifyingCourtDetail;
 use App\Seizure;
 use App\Storage_detail;
 use App\Ps_detail;
@@ -21,7 +21,7 @@ use Auth;
 
 
 
-class entry_formController extends Controller
+class EntryFormController extends Controller
 {
     
     public function index()
@@ -39,9 +39,20 @@ class entry_formController extends Controller
                                         ->select('drug_id','drug_name')
                                         ->orderBy('drug_name')
                                         ->get();
-        $data['districts'] = District::select('district_id','district_name')
-                                         ->orderBy('district_name')
+
+        $data['ndps_courts'] = NdpsCourtDetail::join('ps_details','ps_details.district_id','=','ndps_court_details.district_id')
+                                        ->where('ps_details.ps_id',Auth::user()->ps_id)
+                                        ->select('ndps_court_id','ndps_court_name','ndps_court_details.district_id')
+                                         ->orderBy('ndps_court_name')
                                         ->get();
+
+        $data['certifying_courts'] = CertifyingCourtDetail::join('ps_details','ps_details.district_id','=','certifying_court_details.district_id')
+                                        ->where('ps_details.ps_id',Auth::user()->ps_id)
+                                        ->select('court_id','court_name')
+                                         ->orderBy('court_name')
+                                        ->get();
+
+        
         $data['storages'] = Storage_detail::where('display','Y')
                                             ->select('storage_id','storage_name')
                                             ->orderBy('storage_name')
@@ -67,18 +78,19 @@ class entry_formController extends Controller
                                         ->select('drug_id','drug_name')
                                         ->orderBy('drug_name')
                                         ->get();
-        $data['districts'] = District::select('district_id','district_name')
-                                         ->orderBy('district_name')
+        $data['ndps_courts'] = NdpsCourtDetail::select('ndps_court_id','ndps_court_name','ndps_court_details.district_id')
+                                    ->orderBy('ndps_court_name')
+                                    ->get();
+
+        $data['certifying_courts'] = CertifyingCourtDetail::select('court_id','court_name')
+                                        ->orderBy('court_name')
                                         ->get();
+
         $data['storages'] = Storage_detail::where('display','Y')
                                             ->select('storage_id','storage_name')
                                             ->orderBy('storage_name')
                                             ->get(); 
 
-        $data['agencies'] = Agency_detail::select('agency_id','agency_name')
-                                            ->orderBy('agency_name')
-                                            ->get(); 
-    
         return view('non_fir_case',compact('data'));  
     
     }
@@ -104,7 +116,8 @@ class entry_formController extends Controller
             'storage' => 'required|integer',
             'remark' => 'nullable|max:255',
             'district' => 'required|exists:districts,district_id',         
-            'court' => 'required|exists:court_details,court_id',
+            'ndps_court' => 'required|exists:ndps_court_details,ndps_court_id',
+            'certifying_court' => 'required|exists:certifying_court_details,court_id'
         ] ); 
        
         $user_type = Auth::user()->user_type;
@@ -132,7 +145,8 @@ class entry_formController extends Controller
         $storage = $request->input('storage');
         $remark = $request->input('remark');
         $district = $request->input('district'); 
-        $court = $request->input('court');
+        $ndps_court = $request->input('ndps_court');
+        $certifying_court = $request->input('certifying_court');
         $certification_flag='N';
         $disposal_flag='N';
         $user_name=Auth::user()->user_name;
@@ -206,7 +220,8 @@ class entry_formController extends Controller
                         'storage_location_id'=>$storage,
                         'agency_id'=>$agency_id,
                         'district_id'=>$district,
-                        'certification_court_id'=>$court,
+                        'ndps_court_id'=>$ndps_court,
+                        'certification_court_id'=>$certifying_court,
                         'certification_flag'=>$certification_flag,
                         'disposal_flag'=>$disposal_flag,
                         'remarks'=>$remark,
@@ -230,7 +245,7 @@ class entry_formController extends Controller
 
         $district = $request->input('district'); 
 
-        $data['district_wise_court']=Court_detail::
+        $data['district_wise_court']=CertifyingCourtDetail::
                                     where('district_id','=', $district )
                                     ->get();
 
@@ -238,27 +253,7 @@ class entry_formController extends Controller
 
     }
 
-    // PS wise District fetching
-    public function stakeholder_wise_district(Request $request){
-        $user_type = Auth::user()->user_type;
-
-        if($user_type=="ps"){
-
-            $stakeholder_id = $request->input('stakeholder'); 
-
-            $data['stakeholder_wise_district']=Ps_detail::join("districts","ps_details.district_id","=","districts.district_id")
-                                        ->where('ps_id','=', $stakeholder_id)
-                                        ->get();
-        }
-        else if($user_type=="agency"){
-            $data['stakeholder_wise_district']=District::orderBy('district_name')
-                                                ->get();
-        }
-
-        echo json_encode($data);
-
-    }
-
+    
     // Narcotic wise unit fetching
     public function narcotic_units(Request $request){
 
@@ -313,8 +308,8 @@ class entry_formController extends Controller
                         ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
                         ->leftjoin('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
                         ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                        ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
-                        ->join('districts','seizures.district_id','=','districts.district_id')
+                        ->join('certifying_court_details','seizures.certification_court_id','=','certifying_court_details.court_id')
+                        ->join('ndps_court_details','seizures.ndps_court_id','=','ndps_court_details.ndps_court_id')
                         ->where([
                             ['seizures.ps_id',$stakeholder],
                             ['seizures.case_no',$case_no],
@@ -323,7 +318,7 @@ class entry_formController extends Controller
                         ->select('seizures.agency_id','seizures.ps_id','drug_name','narcotics.display','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
                                 'u1.unit_name AS seizure_unit','u1.unit_degree AS seizure_unit_degree','date_of_seizure','date_of_disposal',
                                 'disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit', 'storage_name',
-                                'court_name','districts.district_id','district_name','date_of_certification',
+                                'court_name','ndps_court_details.ndps_court_id','ndps_court_name','date_of_certification',
                                 'certification_flag','quantity_of_sample','u2.unit_name AS sample_unit',
                                 'remarks','magistrate_remarks', 'storage_location_id', 'seizures.certification_court_id')
                         ->get();
@@ -338,16 +333,16 @@ class entry_formController extends Controller
                         ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
                         ->leftjoin('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
                         ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                        ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
-                        ->join('districts','seizures.district_id','=','districts.district_id')
+                        ->join('certifying_court_details','seizures.certification_court_id','=','certifying_court_details.court_id')
+                        ->join('ndps_court_details','seizures.ndps_court_id','=','ndps_court_details.ndps_court_id')
                         ->where([
                             ['seizures.agency_id',Auth::user()->agency_id],
-                            ['seizures.case_no_string',$case_no_string]
+                            ['seizures.case_no_string','ilike',$case_no_string]
                         ])                        
                         ->select('seizures.agency_id','seizures.ps_id','drug_name','narcotics.display','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
                                 'u1.unit_name AS seizure_unit','date_of_seizure','date_of_disposal',
                                 'disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit','storage_name',
-                                'court_name','districts.district_id','district_name','date_of_certification',
+                                'court_name','ndps_court_details.ndps_court_id','ndps_court_name','date_of_certification',
                                 'certification_flag','quantity_of_sample','u2.unit_name AS sample_unit',
                                 'remarks','magistrate_remarks', 'storage_location_id', 'seizures.certification_court_id')
                         ->get();

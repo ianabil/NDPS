@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePsDetailsArchive extends Migration
+class CreateCertifyingCourtDetailsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,13 @@ class CreatePsDetailsArchive extends Migration
      */
     public function up()
     {
-        Schema::create('ps_details_archive', function (Blueprint $table) {
-            $table->increments('ps_id');
-            $table->string('ps_name')->nullable(false);
+        Schema::create('certifying_court_details', function (Blueprint $table) {
+            $table->increments('court_id')->nullable(false);
+            $table->string('court_name')->nullable(false);
             $table->integer('district_id')->nullable(false);
-            $table->timestamps();
-
             $table->foreign('district_id')->references('district_id')->on('districts');
+
+            $table->timestamps();
         });
     }
 
@@ -30,6 +30,6 @@ class CreatePsDetailsArchive extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ps_details_archive');
+        Schema::dropIfExists('certifying_court_details');
     }
 }

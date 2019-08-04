@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 use App\Agency_detail;
-use App\Court_detail;
-use App\District;
+use App\CertifyingCourtDetail;
+use App\NdpsCourtDetail;
 use App\User;
 use Carbon\Carbon;
 use App\Seizure;
@@ -930,14 +930,12 @@ class MasterMaintenanceController extends Controller
                                     ->orderBy('ps_name')
                                     ->get();
 
-            $data['court_details'] = Court_detail::select('court_id','court_name')
-                                    ->distinct()
+            $data['certifying_court_details'] = CertifyingCourtDetail::select('court_id','court_name')
                                     ->orderBy('court_name')
                                     ->get();
 
-            $data['district_details'] = district::select('district_id','district_name')
-                                        ->distinct()
-                                        ->orderBy('district_name')
+            $data['ndps_court_details'] = NdpsCourtDetail::select('ndps_court_id','ndps_court_name')
+                                        ->orderBy('ndps_court_name')
                                         ->get();
 
             return view('create_new_user', compact('data'));
@@ -948,13 +946,13 @@ class MasterMaintenanceController extends Controller
 
             $this->validate ( $request, [ 
                 'user_id' => 'required|unique:users,user_id|max:30',
-                'user_name' => 'required|max:255|unique:users,user_name',
-                'password' => 'required|confirmed|max:255',
+                'user_name' => 'required|max:100|unique:users,user_name',
+                'password' => 'required|confirmed|max:20',
                 'user_type' => 'required|max:30',
-                'stakeholder_name' => 'nullable|integer|unique:users,agency_id',
-                'court_name' => 'nullable|integer|unique:users,court_id',
-                'district_name' => 'nullable|integer|unique:users,district_id',
-                'ps_name' => 'nullable|integer|unique:users,ps_id',
+                'stakeholder_name' => 'nullable|integer|unique:users,agency_id|exists:agency_details,agency_id',
+                'certifying_court_name' => 'nullable|integer|unique:users,certifying_court_id|exists:certifying_court_details,court_id',
+                'ndps_court_name' => 'nullable|integer|unique:users,ndps_court_id|exists:ndps_court_details,ndps_court_id',
+                'ps_name' => 'nullable|integer|unique:users,ps_id|exists:ps_details,ps_id',
                 'email_id' => 'required|email|max:100|unique:users,email',
                 'contact_no' => 'nullable|integer|unique:users,contact_no'         
             ] ); 
@@ -965,8 +963,8 @@ class MasterMaintenanceController extends Controller
             $password = Hash::make($request->input('password'));
             $user_type = $request->input('user_type');
             $agency_name = $request->input('agency_name');
-            $court_name = $request->input('court_name');
-            $district_name = $request->input('district_name');
+            $certifying_court_name = $request->input('certifying_court_name');
+            $ndps_court_name = $request->input('ndps_court_name');
             $ps_name = $request->input('ps_name');
             $email = $request->input('email_id');
             $phno = $request->input('contact_no');
@@ -979,8 +977,8 @@ class MasterMaintenanceController extends Controller
                     'password' => $password,
                     'agency_id' => $agency_name,
                     'ps_id' => $ps_name,
-                    'court_id' => $court_name,
-                    'district_id' => $district_name,
+                    'certifying_court_id' => $certifying_court_name,
+                    'ndps_court_id' => $ndps_court_name,
                     'email' => $email,
                     'contact_no' => $phno,
                     'user_type' => $user_type,

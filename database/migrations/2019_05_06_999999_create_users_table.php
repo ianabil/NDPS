@@ -20,20 +20,19 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->integer('ps_id')->unique()->nullable(true);
             $table->integer('agency_id')->unique()->nullable(true);
-            $table->integer('court_id')->unique()->nullable(true);
-            $table->integer('district_id')->unique()->nullable(true);
+            $table->integer('certifying_court_id')->unique()->nullable(true);
+            $table->integer('ndps_court_id')->unique()->nullable(true);
             $table->string('email')->unique()->nullable(true);
             $table->string('contact_no')->nullable(true);
             $table->timestamp('email_verified_at')->nullable(true);            
             $table->string('user_type');
             $table->rememberToken();
             $table->timestamps();
-            $table->timestamp('login_at')->nullable(true);
-
+            
             $table->foreign('ps_id')->references('ps_id')->on('ps_details');
             $table->foreign('agency_id')->references('agency_id')->on('agency_details');
-            $table->foreign('court_id')->references('court_id')->on('court_details');
-            $table->foreign('district_id')->references('district_id')->on('districts');
+            $table->foreign('certifying_court_id')->references('court_id')->on('certifying_court_details');
+            $table->foreign('ndps_court_id')->references('ndps_court_id')->on('ndps_court_details');
          });
     }
 
