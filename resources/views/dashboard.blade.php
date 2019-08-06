@@ -202,8 +202,8 @@
                                     '<td>'+obj['0'].remarks+'</td>'+
                                 '</tr>'+
                                 '<tr>'+
-                                    '<td><strong>Certification Court:</strong></td>'+
-                                    '<td>'+obj['0'].court_name+'</td>'+
+                                    '<td><strong>NDPS Court:</strong></td>'+
+                                    '<td>'+obj['0'].ndps_court_name+'</td>'+
                                 '</tr>'+
                             '</table>'+
 

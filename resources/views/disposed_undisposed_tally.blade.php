@@ -15,7 +15,7 @@
             <div class="col-sm-4">
                 <select class="form-control select2" id="report">
                     <option value="">Select an option</option>
-                    <option value="district_court_report">District & Court Wise Report</option>
+                    <option value="district_court_report">NDPS Court Wise Report</option>
                     <option value="stakeholder_report">PS Wise Report</option>
                     <option value="malkhana_report">Storage Wise Report</option>
                     <option value="narcotic_district_report">Narcotic & District Wise Report</option>
@@ -59,7 +59,7 @@
 <div class="row" id="district_court_search_result" style="display:none">
     <div class="box box-primary">
         <div class="box-header with-border">
-            <h3 class="box-title">District & Court Wise Report</h3>
+            <h3 class="box-title">NDPS Court Wise Report</h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                 </button>
@@ -71,8 +71,7 @@
             <table class="table table-bordered table-responsive display" id="district_court_report" style="white-space:nowrap;">
                 <thead>
                     <tr>
-                    <th style="display:none">DISTRICT ID </th>
-                    <th></th>
+                    <th style="display:none">NDPS COURT ID </th>
                     <th>Sl No.</th>
                     <th>District Name</th>
                     <th>Narcotic Type</th>                                    
@@ -301,7 +300,7 @@
                         "searching": true,
                         "paging" : true,
                         "ajax": {
-                        "url": "disposed_undisposed_tally/district_court_report",
+                        "url": "disposed_undisposed_tally/ndps_court_report",
                         "type": "POST",
                         "data": {
                             _token: $('meta[name="csrf-token"]').attr('content'),
@@ -311,10 +310,9 @@
                         },
                         "columns": [  
                             {"class":"district_id",
-                             "data":"DISTRICT ID"},
-                            {"data": "More Details"}, 
+                             "data":"ndps_court_id"},
                             {"data": "Sl No"},         
-                            {"data": "District Name"},
+                            {"data": "NDPS Court Name"},
                             {"data": "Narcotic Type"},
                             {"data": "Disposed Quantity"},
                             {"data": "Undisposed Quantity"}
@@ -573,96 +571,10 @@
 
             // Fetching More Details
             $(document).on("click",".more_details",function(){  
-                var report_type = $("#report option:selected").val();
-
-                // Fetching More Detailed Report About Any District :: STARTS
-                if(report_type=="district_court_report"){
-                    var element = $(this);        
-                    var tr = element.closest('tr');
-                    var row = table.row(tr);
-                    var row_data = table.row(tr).data();
-
-                    var district_id = row_data['DISTRICT ID'];
-
-                    var obj;
-
-                    // fetch case details only when the child row is hide
-                    if(!row.child.isShown()){ 
-
-                        $.ajax({
-                            type:"POST",
-                            url:"disposed_undisposed_tally/fetch_more_details_district_court_report",
-                            data:{
-                                _token: $('meta[name="csrf-token"]').attr('content'),
-                                district_id:district_id,
-                                from_date:from_date,
-                                to_date:to_date
-                            },
-                            success:function(response){
-                                obj = $.parseJSON(response); 
-                            },
-                            error:function(response){
-                                console.log(response);
-                            },
-                            async: false
-                        }) 
-                    }
-
-                    if(row.child.isShown() ) {
-                        element.attr("src","images/details_open.png");
-                        row.child.hide();
-                    }
-                    else {
-                        element.attr("src","images/details_close.png");
-
-                        var child_string ="";            
-                        child_string += '<table class="table table-bordered table-responsive">'+
-                                        '<thead>'+
-                                            '<tr>'+
-                                                '<th>Sl No.</th>'+
-                                                '<th style="display:none">Court ID</th>'+
-                                                '<th>NDPS Court</th>'+
-                                                '<th>Narcotic Type</th>'+                                        
-                                                '<th>Disposed Quantity</th>'+
-                                                '<th>Undisposed Quantity</th>'+
-                                            '</tr>'+
-                                        '</thead>'+
-                                        
-                                    '<tbody>';
-
-                        $.each(obj,function(key,value){
-                        child_string += ""+
-                            '<tr class="info">'+ 
-                                '<td>'+
-                                    value.sl_no+
-                                '</td>'+
-                                '<td class="court_id" style="display:none">'+
-                                    value.court_id+
-                                '</td>'+
-                                '<td>'+
-                                    value.court_name+
-                                '</td>'+
-                                '<td>'+
-                                    value.narcotic_type+
-                                '</td>'+                               
-                                '<td>'+
-                                    value.disposed_quantity+
-                                '</td>'+
-                                '<td>'+
-                                    value.undisposed_quantity+
-                                '</td>'+
-                            '</tr>';
-                        })
-
-                        child_string +='</tbody></table>';
-
-                        row.child(child_string).show();
-                    }
-                }
-                // Fetching More Detailed Report About Any District :: ENDS
+                var report_type = $("#report option:selected").val();                
                 
                 // Fetching More Detailed Report About Any Storage :: STARTS
-                else if(report_type=="malkhana_report"){
+                if(report_type=="malkhana_report"){
                     var element = $(this);        
                     var tr = element.closest('tr');
                     var row = table.row(tr);

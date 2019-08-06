@@ -6,11 +6,11 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Narcotic;
-use App\District;
-use App\Unit;
 use App\Narcotic_unit;
+use App\NdpsCourtDetail;
+use App\Unit;
 use App\Agency_detail;
-use App\Court_detail;
+use App\CertifyingCourtDetail;
 use App\Seizure;
 use App\Storage_detail;
 use App\Ps_detail;
@@ -30,8 +30,8 @@ class MagistrateController extends Controller
 
         $data = array();
         
-        $data['ps'] = Ps_detail::join('court_details','ps_details.district_id','court_details.district_id')
-                                ->where('court_details.court_id',Auth::user()->court_id)
+        $data['ps'] = Ps_detail::join('certifying_court_details','ps_details.district_id','certifying_court_details.district_id')
+                                ->where('certifying_court_details.court_id',Auth::user()->certifying_court_id)
                                 ->select('ps_id','ps_name')
                                 ->orderBy('ps_name')
                                 ->get();
@@ -42,7 +42,7 @@ class MagistrateController extends Controller
 
     //Fetch case details of a specific case no.
     public function fetch_case_details(Request $request){
-        $court_id =Auth::user()->court_id;
+        $court_id =Auth::user()->certifying_court_id;
         $case_no_string = $request->input('case_no_string');
 
         
@@ -52,15 +52,15 @@ class MagistrateController extends Controller
                                 ->join('units AS u1','seizures.seizure_quantity_weighing_unit_id','=','u1.unit_id')
                                 ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')                        
                                 ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                                ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
-                                ->join('districts','seizures.district_id','=','districts.district_id')
+                                ->join('certifying_court_details','seizures.certification_court_id','=','certifying_court_details.court_id')
+                                ->join('ndps_court_details','seizures.ndps_court_id','=','ndps_court_details.ndps_court_id')
                                 ->where([
-                                    ['seizures.case_no_string',$case_no_string],
+                                    ['seizures.case_no_string','ilike',$case_no_string],
                                     ['seizures.certification_court_id',$court_id]   
                                 ])                        
                                 ->select('case_no_string','seizures.ps_id','agency_name','drug_name','narcotics.display','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
                                         'u1.unit_name AS seizure_unit','date_of_seizure','storage_name',
-                                        'court_name','districts.district_id','district_name','date_of_certification',
+                                        'court_name','ndps_court_details.ndps_court_id','ndps_court_name','date_of_certification',
                                         'certification_flag','quantity_of_sample','u2.unit_name AS sample_unit',
                                         'remarks','magistrate_remarks')
                                 ->get();
@@ -125,14 +125,17 @@ class MagistrateController extends Controller
             'updated_at'=>Carbon::today()
         ];
 
-        Seizure::where('case_no_string',$case_no_string)->update($data);
+        Seizure::where([
+            ['case_no_string',$case_no_string],
+            ['drug_id',$narcotic_type]
+        ])->update($data);
         
         return 1;
         
     }
 
     public function monthly_report_status(Request $request){
-        $court_id =Auth::user()->court_id;
+        $court_id =Auth::user()->certifying_court_id;
         $start_date = date('Y-m-d', strtotime('01-'.$request->input('month')));
         $end_date = date('Y-m-d', strtotime($start_date. ' +30 days'));
         
@@ -302,7 +305,7 @@ class MagistrateController extends Controller
                                 ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
                                 ->leftjoin('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
                                 ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                                ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
+                                ->join('certifying_court_details','seizures.certification_court_id','=','certifying_court_details.court_id')
                                 ->where('case_no_string',$case_no_string)  
                                 ->select('drug_name','quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',
                                 'date_of_disposal','disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit',

@@ -390,8 +390,11 @@ class EntryFormController extends Controller
         ];
 
         
-        Seizure::where('case_no_string',$case_no_string)
-                ->update($data);    
+        Seizure::where([
+            ['case_no_string',$case_no_string],
+            ['drug_id',$narcotic_type]
+        ])->update($data);
+        
         
         return 1;
         

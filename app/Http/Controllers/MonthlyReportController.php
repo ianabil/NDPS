@@ -6,10 +6,11 @@ use Illuminate\Http\Request;
 
 
 use App\Narcotic;
-use App\District;
+use App\Narcotic_unit;
+use App\NdpsCourtDetail;
 use App\Unit;
 use App\Agency_detail;
-use App\Court_detail;
+use App\CertifyingCourtDetail;
 use App\Seizure;
 use App\Storage_detail;
 use App\Ps_detail;
@@ -55,7 +56,7 @@ class MonthlyReportController extends Controller
         // Fetching unique Case No. As Multiple Row May Exist For A Single Case No.
         $cases = Seizure::leftjoin('ps_details','seizures.ps_id','=','ps_details.ps_id')
                         ->leftjoin('agency_details','seizures.agency_id','=','agency_details.agency_id')
-                        ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
+                        ->join('certifying_court_details','seizures.certification_court_id','=','certifying_court_details.court_id')
                         ->where([
                             ['seizures.created_at','>=',$start_date],
                             ['seizures.created_at','<=',$end_date]
@@ -110,7 +111,7 @@ class MonthlyReportController extends Controller
             }
 
             //Case No. :: If Case Initiated By Any Agency            
-            $report['Case_No'] = "<strong>".$case->case_no_string."</strong>";
+            $report['Case_No'] = "<strong>".strtoupper($case->case_no_string)."</strong>";
 
             // Designated Magistrate
             $report['Magistrate'] = $case->court_name;
@@ -209,11 +210,12 @@ class MonthlyReportController extends Controller
                                 ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
                                 ->leftjoin('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
                                 ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                                ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
+                                ->join('certifying_court_details','seizures.certification_court_id','=','certifying_court_details.court_id')
+                                ->join('ndps_court_details','seizures.ndps_court_id','=','ndps_court_details.ndps_court_id')
                                 ->where('case_no_string',$case_no_string)  
                                 ->select('drug_name','quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',
                                 'date_of_disposal','disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit',
-                                'storage_name','court_name','date_of_certification','certification_flag','quantity_of_sample',
+                                'storage_name','ndps_court_name','court_name','date_of_certification','certification_flag','quantity_of_sample',
                                 'u2.unit_name AS sample_unit','remarks','magistrate_remarks')
                                 ->get();
                                 

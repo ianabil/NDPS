@@ -1096,7 +1096,9 @@
 			$(document).on("click",".dispose",function(){
 					var stakeholder = $("#stakeholder option:selected").val();
 					var case_no = $("#case_no").val();
-					var case_year = $("#case_year option:selected").val();
+					var case_year = $("#case_year").val();
+					var case_no_string = $("#stakeholder option:selected").text()+" / "+case_no+" / "+case_year;
+
 
 					var element = $(this);
 
@@ -1146,9 +1148,7 @@
 										url:"entry_form/dispose", 
 										data: {
 											_token: $('meta[name="csrf-token"]').attr('content'),
-											stakeholder:stakeholder,
-											case_no:case_no,
-											case_year:case_year,
+											case_no_string:case_no_string,
 											narcotic_type:narcotic_type,
 											disposal_date:disposal_date,
 											disposal_quantity:disposal_quantity,

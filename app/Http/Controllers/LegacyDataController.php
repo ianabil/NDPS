@@ -4,19 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Agency_detail;
-use App\Court_detail;
-use App\District;
-use App\User;
-use Carbon\Carbon;
-use App\Seizure;
 use App\Narcotic;
 use App\Narcotic_unit;
+use App\NdpsCourtDetail;
 use App\Unit;
-use App\Ps_detail;
+use App\Agency_detail;
+use App\CertifyingCourtDetail;
+use App\Seizure;
 use App\Storage_detail;
-use Auth;
+use App\Ps_detail;
+use App\User;
+use Carbon\Carbon;
 use DB;
+use Auth;
 
 class LegacyDataController extends Controller
 {    

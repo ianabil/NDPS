@@ -303,8 +303,7 @@
                 var case_year = $("#case_year option:selected").val();
                 var case_no_initial = $.trim($("#case_no_initial").val());
                 var stakeholder = $("#stakeholder option:selected").val();
-                var court = $("#court option:selected").val();
-                var district = $("#district option:selected").val();
+                var certifying_court = $("#court option:selected").val();
                 var narcotic_type = $("#narcotic option:selected").val();
                 var storage = $("#storage option:selected").val();
                 var certified_cases = $("#certified").is(":checked");
@@ -339,8 +338,7 @@
                         case_year:case_year,
                         case_no_initial:case_no_initial,
                         stakeholder:stakeholder,
-                        court:court,
-                        district:district,
+                        certifying_court:certifying_court,
                         narcotic_type:narcotic_type,
                         storage:storage,
                         certified_cases:certified_cases,
@@ -419,10 +417,6 @@
                                         '<tr>'+
                                             '<td><strong>Case Details / Remarks:</strong></td>'+
                                             '<td>'+obj['0'].remarks+'</td>'+
-                                        '</tr>'+
-                                        '<tr>'+
-                                            '<td><strong>Certification Court:</strong></td>'+
-                                            '<td>'+obj['0'].court_name+'</td>'+
                                         '</tr>'+
                                     '</table>'+
 

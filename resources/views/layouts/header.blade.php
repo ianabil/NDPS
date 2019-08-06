@@ -108,7 +108,7 @@
                                     <span>Reports/Enquiry</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                                 </a>
                                 <ul class="treeview-menu">
-                                    @if(Auth::check() && Auth::user()->user_type == 'high_court')
+                                    @if(Auth::check() && (Auth::user()->user_type == 'high_court' || Auth::user()->user_type == 'admin'))
                                         <li><a href="composite_search_highcourt">Composite Search</a></li>
                                         <li><a href="disposed_undisposed_tally">Disposed Undisposed Tally</a></li>
                                     @elseif(Auth::check() && (Auth::user()->user_type == 'ps' || Auth::user()->user_type == 'agency'))

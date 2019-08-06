@@ -62,10 +62,10 @@
 
             <label class="col-sm-1 col-form-label-sm control-label" style="font-size:medium">District</label>
             <div class="col-sm-3">
-                <select class="form-control select2" id="district" autocomplete="off">
+                <select class="form-control select2" id="ndps_court" autocomplete="off">
                     <option value="">Select an option...</option>
-                    @foreach($data['districts'] as $district)
-                        <option value="{{$district->district_id}}">{{$district->district_name}}</option>
+                    @foreach($data['ndps_courts'] as $ndps_court)
+                        <option value="{{$ndps_court->ndps_court_id}}">{{$ndps_court->ndps_court_name}}</option>
                     @endforeach
                 </select>
             </div>
@@ -313,8 +313,8 @@
                 var case_year = $("#case_year option:selected").val();
                 var case_no_initial = $.trim($("#case_no_initial").val());
                 var stakeholder = $("#stakeholder option:selected").val();
-                var court = $("#court option:selected").val();
-                var district = $("#district option:selected").val();
+                var certifying_court = $("#court option:selected").val();
+                var ndps_court = $("#ndps_court option:selected").val();
                 var narcotic_type = $("#narcotic option:selected").val();
                 var storage = $("#storage option:selected").val();
                 var certified_cases = $("#certified").is(":checked");
@@ -349,8 +349,8 @@
                         case_year:case_year,
                         case_no_initial:case_no_initial,
                         stakeholder:stakeholder,
-                        court:court,
-                        district:district,
+                        certifying_court:certifying_court,
+                        ndps_court:ndps_court,
                         narcotic_type:narcotic_type,
                         storage:storage,
                         certified_cases:certified_cases,
@@ -431,8 +431,8 @@
                                             '<td>'+obj['0'].remarks+'</td>'+
                                         '</tr>'+
                                         '<tr>'+
-                                            '<td><strong>Certification Court:</strong></td>'+
-                                            '<td>'+obj['0'].court_name+'</td>'+
+                                            '<td><strong>NDPS Court:</strong></td>'+
+                                            '<td>'+obj['0'].ndps_court_name+'</td>'+
                                         '</tr>'+
                                     '</table>'+
 

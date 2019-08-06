@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-
 use App\Narcotic;
-use App\District;
+use App\Narcotic_unit;
+use App\NdpsCourtDetail;
 use App\Unit;
 use App\Agency_detail;
-use App\Court_detail;
+use App\CertifyingCourtDetail;
 use App\Seizure;
 use App\Storage_detail;
 use App\Ps_detail;
@@ -40,11 +40,11 @@ class SearchController extends Controller
                                         ->orderBy('drug_name')
                                         ->get();
 
-        $data['districts'] = District::select('district_id','district_name')
-                                        ->orderBy('district_name')
+        $data['ndps_courts'] = NdpsCourtDetail::select('ndps_court_id','ndps_court_name')
+                                        ->orderBy('ndps_court_name')
                                         ->get();
 
-        $data['courts'] = Court_detail::select('court_id','court_name')
+        $data['courts'] = CertifyingCourtDetail::select('court_id','court_name')
                                         ->orderBy('court_name')
                                         ->get();
 
@@ -68,8 +68,8 @@ class SearchController extends Controller
         $case_year = $request->input('case_year');
         $case_no_initial = $request->input('case_no_initial');
         $agency = $request->input('stakeholder');
-        $court = $request->input('court'); 
-        $district = $request->input('district');
+        $certifying_court = $request->input('certifying_court'); 
+        $ndps_court = $request->input('ndps_court');
         $narcotic_type = $request->input('narcotic_type');
         $storage = $request->input('storage');
         $certified_cases = $request->input('certified_cases');
@@ -88,7 +88,7 @@ class SearchController extends Controller
         seizures.created_at, ps_name, agency_name, court_name 
         FROM seizures LEFT OUTER JOIN ps_details ON seizures.ps_id = ps_details.ps_id 
         LEFT OUTER JOIN agency_details ON seizures.agency_id = agency_details.agency_id
-        JOIN court_details ON seizures.certification_court_id=court_details.court_id";
+        JOIN certifying_court_details ON seizures.certification_court_id=certifying_court_details.court_id";
 
         // Default WHERE condition
         $where = ' WHERE seizures.date_of_seizure IS NOT NULL';
@@ -112,11 +112,11 @@ class SearchController extends Controller
         if(!empty($agency))
             $where = $where.' AND seizures.agency_id = '.$agency;
 
-        if(!empty($court))
-            $where = $where.' AND seizures.certification_court_id = '.$court;
+        if(!empty($certifying_court))
+            $where = $where.' AND seizures.certification_court_id = '.$certifying_court;
 
-        if(!empty($district))
-            $where = $where.' AND seizures.district_id ='.$district;
+        if(!empty($ndps_court))
+            $where = $where.' AND seizures.ndps_court_id ='.$ndps_court;
 
         if(!empty($narcotic_type))
             $where = $where.' AND seizures.drug_id ='.$narcotic_type;
@@ -223,7 +223,7 @@ class SearchController extends Controller
             }
 
             //Case_No
-                $report['Case_No'] = $case->case_no_string;
+                $report['Case_No'] = strtoupper($case->case_no_string);
 
             // Designated Magistrate
             $report['Magistrate'] = $case->court_name;
@@ -322,11 +322,12 @@ class SearchController extends Controller
                                 ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
                                 ->leftjoin('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
                                 ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                                ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
+                                ->join('certifying_court_details','seizures.certification_court_id','=','certifying_court_details.court_id')
+                                ->join('ndps_court_details','seizures.ndps_court_id','=','ndps_court_details.ndps_court_id')
                                 ->where('case_no_string',$case_no_string)  
                                 ->select('drug_name','quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',
                                 'date_of_disposal','disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit',
-                                'storage_name','court_name','date_of_certification','certification_flag','quantity_of_sample',
+                                'storage_name','court_name','ndps_court_name','date_of_certification','certification_flag','quantity_of_sample',
                                 'u2.unit_name AS sample_unit','remarks','magistrate_remarks')
                                 ->get();
                                 
@@ -396,21 +397,28 @@ class SearchController extends Controller
                                         ->select('drug_id','drug_name')
                                         ->orderBy('drug_name')
                                         ->get();
-
-        $data['districts'] = District::select('district_id','district_name')
-                                        ->orderBy('district_name')
-                                        ->get();
+        
 
         if(Auth::user()->user_type=="agency"){
-            $data['courts'] = Court_detail::select('court_id','court_name')
+            $data['courts'] = CertifyingCourtDetail::select('court_id','court_name')
                                             ->orderBy('court_name')
+                                            ->get();
+
+            $data['ndps_courts'] = NdpsCourtDetail::select('ndps_court_id','ndps_court_name')
+                                            ->orderBy('ndps_court_name')
                                             ->get();
         }
         else if(Auth::user()->user_type=="ps"){
-            $data['courts'] = Court_detail::join('ps_details','court_details.district_id','=','ps_details.district_id')
+            $data['courts'] = CertifyingCourtDetail::join('ps_details','certifying_court_details.district_id','=','ps_details.district_id')
                                             ->where('ps_details.ps_id',Auth::user()->ps_id)
                                             ->select('court_id','court_name')
                                             ->orderBy('court_name')
+                                            ->get();
+
+            $data['ndps_courts'] = NdpsCourtDetail::join('ps_details','ndps_court_details.district_id','=','ps_details.district_id')
+                                            ->where('ps_details.ps_id',Auth::user()->ps_id)
+                                            ->select('ndps_court_id','ndps_court_name')
+                                            ->orderBy('ndps_court_name')
                                             ->get();
         }
 
@@ -431,8 +439,8 @@ class SearchController extends Controller
         $case_no = $request->input('case_no');
         $case_year = $request->input('case_year');
         $agency = $request->input('agency');
-        $court = $request->input('court'); 
-        $district = $request->input('district');
+        $certifying_court = $request->input('certifying_court'); 
+        $ndps_court = $request->input('ndps_court');
         $narcotic_type = $request->input('narcotic_type');
         $storage = $request->input('storage');
         $certified_cases = $request->input('certified_cases');
@@ -451,7 +459,7 @@ class SearchController extends Controller
         seizures.created_at, ps_name, agency_name, court_name 
         FROM seizures LEFT OUTER JOIN ps_details ON seizures.ps_id = ps_details.ps_id 
         LEFT OUTER JOIN agency_details ON seizures.agency_id = agency_details.agency_id
-        JOIN court_details ON seizures.certification_court_id=court_details.court_id";
+        JOIN certifying_court_details ON seizures.certification_court_id=certifying_court_details.court_id";
 
         // Default WHERE condition
         if(Auth::user()->user_type=="ps")
@@ -475,11 +483,11 @@ class SearchController extends Controller
         if(!empty($agency) && Auth::user()->user_type=="ps")
             $where = $where.' AND seizures.agency_id = '.$agency;
 
-        if(!empty($court))
-            $where = $where.' AND seizures.certification_court_id = '.$court;
+        if(!empty($certifying_court))
+            $where = $where.' AND seizures.certification_court_id = '.$certifying_court;
 
-        if(!empty($district))
-            $where = $where.' AND seizures.district_id ='.$district;
+        if(!empty($ndps_court))
+            $where = $where.' AND seizures.ndps_court_id ='.$ndps_court;
 
         if(!empty($narcotic_type))
             $where = $where.' AND seizures.drug_id ='.$narcotic_type;
@@ -564,25 +572,25 @@ class SearchController extends Controller
             if($case->ps_id!=null && $case->agency_id!=null){
                 //If submitted date is within 10 days of present date, a new marker will be shown
                 if(((strtotime(date('Y-m-d')) - strtotime($case->created_at)) / (60*60*24) <=10))
-                    $report['Case_No'] = "<strong>".$case->case_no_string."</strong><br>(Case Initiated By: ".$case->agency_name.")<small class='label pull-right bg-blue'>new</small>";
+                    $report['Case_No'] = "<strong>".strtoupper($case->case_no_string)."</strong><br>(Case Initiated By: ".$case->agency_name.")<small class='label pull-right bg-blue'>new</small>";
                 else
-                    $report['Case_No'] = "<strong>".$case->case_no_string."</strong><br>(Case Initiated By: ".$case->agency_name.")";
+                    $report['Case_No'] = "<strong>".strtoupper($case->case_no_string)."</strong><br>(Case Initiated By: ".$case->agency_name.")";
             }
             //If Case Initiated By Any PS
             else if($case->ps_id!=null && $case->agency_id==null){
                 //If submitted date is within 10 days of present date, a new marker will be shown
                 if(((strtotime(date('Y-m-d')) - strtotime($case->created_at)) / (60*60*24) <=10))
-                    $report['Case_No'] = "<strong>".$case->case_no_string."</strong><small class='label pull-right bg-blue'>new</small>";
+                    $report['Case_No'] = "<strong>".strtoupper($case->case_no_string)."</strong><small class='label pull-right bg-blue'>new</small>";
                 else
-                    $report['Case_No'] = "<strong>".$case->case_no_string."</strong>";
+                    $report['Case_No'] = "<strong>".strtoupper($case->case_no_string)."</strong>";
             }
             //If Case Initiated By Agency
             else if($case->ps_id==null){
                 //If submitted date is within 10 days of present date, a new marker will be shown
                 if(((strtotime(date('Y-m-d')) - strtotime($case->created_at)) / (60*60*24) <=10))
-                    $report['Case_No'] = "<strong>".$case->case_no_string."</strong> <small class='label pull-right bg-blue'>new</small>";
+                    $report['Case_No'] = "<strong>".strtoupper($case->case_no_string)."</strong> <small class='label pull-right bg-blue'>new</small>";
                 else
-                    $report['Case_No'] = "<strong>".$case->case_no_string."</strong>";
+                    $report['Case_No'] = "<strong>".strtoupper($case->case_no_string)."</strong>";
             }
 
             // Designated Magistrate
@@ -682,11 +690,12 @@ class SearchController extends Controller
                                 ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
                                 ->leftjoin('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
                                 ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                                ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
+                                ->join('certifying_court_details','seizures.certification_court_id','=','certifying_court_details.court_id')
+                                ->join('ndps_court_details','seizures.ndps_court_id','=','ndps_court_details.ndps_court_id')
                                 ->where('case_no_string',$case_no_string)  
                                 ->select('drug_name','quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',
                                 'date_of_disposal','disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit',
-                                'storage_name','court_name','date_of_certification','certification_flag','quantity_of_sample',
+                                'storage_name','court_name','ndps_court_name','date_of_certification','certification_flag','quantity_of_sample',
                                 'u2.unit_name AS sample_unit','remarks','magistrate_remarks')
                                 ->get();
                                 
@@ -736,7 +745,8 @@ class SearchController extends Controller
     public function show_special_court_search_index(){
         $data = array();
         
-        $data['ps'] = Ps_detail::where('ps_details.district_id',Auth::user()->district_id)
+        $data['ps'] = Ps_detail::join('ndps_court_details','ps_details.district_id','ndps_court_details.district_id')
+                                ->where('ndps_court_details.ndps_court_id',Auth::user()->ndps_court_id)
                                 ->select('ps_id','ps_name')
                                 ->orderBy('ps_name')
                                 ->get();
@@ -750,10 +760,11 @@ class SearchController extends Controller
                                         ->orderBy('drug_name')
                                         ->get();
 
-        $data['courts'] = Court_detail::where('court_details.district_id',Auth::user()->district_id)
-                                        ->select('court_id','court_name')
-                                        ->orderBy('court_name')
-                                        ->get();
+        $data['courts'] = CertifyingCourtDetail::join('ndps_court_details','certifying_court_details.district_id','ndps_court_details.district_id')
+                                                ->where('ndps_court_details.ndps_court_id',Auth::user()->ndps_court_id)
+                                                ->select('court_id','court_name')
+                                                ->orderBy('court_name')
+                                                ->get();
 
         $data['storages'] = Storage_detail::where('display','Y')
                                             ->select('storage_id','storage_name')
@@ -775,7 +786,7 @@ class SearchController extends Controller
         $case_year = $request->input('case_year');
         $case_no_initial = $request->input('case_no_initial');
         $agency = $request->input('stakeholder');
-        $court = $request->input('court');
+        $certifying_court = $request->input('certifying_court');
         $narcotic_type = $request->input('narcotic_type');
         $storage = $request->input('storage');
         $certified_cases = $request->input('certified_cases');
@@ -794,10 +805,10 @@ class SearchController extends Controller
         seizures.created_at, ps_name, agency_name, court_name 
         FROM seizures LEFT OUTER JOIN ps_details ON seizures.ps_id = ps_details.ps_id 
         LEFT OUTER JOIN agency_details ON seizures.agency_id = agency_details.agency_id
-        JOIN court_details ON seizures.certification_court_id=court_details.court_id";
+        JOIN certifying_court_details ON seizures.certification_court_id=certifying_court_details.court_id";
 
         // Default WHERE condition
-        $where = ' WHERE seizures.district_id='.Auth::user()->district_id.' AND seizures.date_of_seizure IS NOT NULL';
+        $where = ' WHERE seizures.ndps_court_id='.Auth::user()->ndps_court_id.' AND seizures.date_of_seizure IS NOT NULL';
 
         // Default Order By query
         $orderBy = ' ORDER BY seizures.created_at DESC';
@@ -818,11 +829,8 @@ class SearchController extends Controller
         if(!empty($agency))
             $where = $where.' AND seizures.agency_id = '.$agency;
 
-        if(!empty($court))
-            $where = $where.' AND seizures.certification_court_id = '.$court;
-
-        if(!empty($district))
-            $where = $where.' AND seizures.district_id ='.$district;
+        if(!empty($certifying_court))
+            $where = $where.' AND seizures.certification_court_id = '.$certifying_court;
 
         if(!empty($narcotic_type))
             $where = $where.' AND seizures.drug_id ='.$narcotic_type;
@@ -929,7 +937,7 @@ class SearchController extends Controller
             }
 
             //Case_No
-                $report['Case_No'] = $case->case_no_string;
+                $report['Case_No'] = strtoupper($case->case_no_string);
 
             // Designated Magistrate
             $report['Magistrate'] = $case->court_name;
@@ -1028,7 +1036,7 @@ class SearchController extends Controller
                                 ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
                                 ->leftjoin('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
                                 ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                                ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
+                                ->join('certifying_court_details','seizures.certification_court_id','=','certifying_court_details.court_id')
                                 ->where('case_no_string',$case_no_string)  
                                 ->select('drug_name','quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',
                                 'date_of_disposal','disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit',
@@ -1081,7 +1089,7 @@ class SearchController extends Controller
 
     /*Disposed Undisposed Tally :Start */
 
-    public function calhc_district_court_report(Request $request){
+    public function calhc_ndps_court_report(Request $request){
         $this->validate( $request, [ 
             'from_date' => 'required|date',
             'to_date' => 'required|date',
@@ -1092,10 +1100,10 @@ class SearchController extends Controller
         
         // For dataTable :: STARTS
         $columns = array( 
-            0 =>'DISTRICT ID',
+            0 =>'ndps_court_id',
             1=>'More Details',
             2=>'Sl No',
-            3=>'District Name',
+            3=>'NDPS Court Name',
             4 =>'Narcotic Type',
             5 =>'Disposed Quantity',
             6 =>'Undisposed Quantity'
@@ -1104,27 +1112,27 @@ class SearchController extends Controller
         $limit = $request->input('length'); // For No. of rows per page
         $start = $request->input('start');
 
-        $totalData = District::count();
+        $totalData = NdpsCourtDetail::count();
         $totalFiltered = $totalData;
 
         if(empty($request->input('search.value'))){
-            $districts = District::select('district_id','district_name')
+            $ndps_courts = NdpsCourtDetail::select('ndps_court_id','ndps_court_name')
                                         ->limit($limit)
                                         ->offset($start)
-                                        ->orderBy('district_name')
+                                        ->orderBy('ndps_court_name')
                                         ->get();
         }
         else{
             $search = $request->input('search.value');
 
-            $districts = District::where('district_name','ilike',"%{$search}%")
-                                        ->select('district_id','district_name')
+            $ndps_courts = NdpsCourtDetail::where('ndps_court_name','ilike',"%{$search}%")
+                                        ->select('ndps_court_id','ndps_court_name')
                                         ->limit($limit)
                                         ->offset($start)
-                                        ->orderBy('district_name')
+                                        ->orderBy('ndps_court_name')
                                         ->get();
 
-            $totalFiltered = District::where('district_name','ilike',"%{$search}%")
+            $totalFiltered = NdpsCourtDetail::where('ndps_court_name','ilike',"%{$search}%")
                                         ->count();
 
         }
@@ -1134,15 +1142,15 @@ class SearchController extends Controller
 
         $report['Sl No'] = $start;
 
-        foreach($districts as $district){
+        foreach($ndps_courts as $ndps_court){
             //SL No.
             $report['Sl No'] ++; 
 
-            // District ID
-            $report['DISTRICT ID'] = $district->district_id;
+            // NDPS Court ID
+            $report['ndps_court_id'] = $ndps_court->ndps_court_id;
 
-            // District Name
-            $report['District Name'] = $district->district_name;
+            // NDPS Court Name
+            $report['NDPS Court Name'] = $ndps_court->ndps_court_name;
 
 
             $sql = "SELECT drug_name,SUM(A) disposal_quantity,SUM(B) undisposed_quantity,quantity_unit_name as unit_name
@@ -1192,18 +1200,13 @@ class SearchController extends Controller
                                 inner join units as u1 on seizures.seizure_quantity_weighing_unit_id=u1.unit_id 
                                 left join units as u2  on seizures.disposal_quantity_weighing_unit_id=u2.unit_id 
                                 left join units as u3  on seizures.sample_quantity_weighing_unit_id=u3.unit_id 
-                                where district_id=".$district->district_id." AND seizures.created_at BETWEEN '".$from_date."' AND '".$to_date."'
+                                where ndps_court_id=".$ndps_court->ndps_court_id." AND seizures.created_at BETWEEN '".$from_date."' AND '".$to_date."'
                             ) a
                     )b
                 )c GROUP BY drug_name,quantity_unit_name";
 
             $data = DB::select($sql);
-
-            // For More Details Button
-            if(sizeof($data)>0)
-                $report['More Details'] = '<img src="images/details_open.png" style="cursor:pointer" class="more_details" alt="More Details">';
-            else
-                $report['More Details'] =   '';    
+            
 
             $report['Narcotic Type'] = "<ul type='square'>";
             $report['Disposed Quantity'] = "<ul type='square'>";
@@ -1555,107 +1558,7 @@ class SearchController extends Controller
         echo json_encode($json_data);
 
     }
-
-
-    public function calhc_fetch_more_details_district_court_report(Request $request){
-        $district_id = $request->input('district_id');
-        $from_date = $request->input('from_date');
-        $to_date = $request->input('to_date');
-
-        $courts = Court_detail::where('district_id',$district_id)
-                                ->select('court_id','court_name')
-                                ->orderBy('court_name')
-                                ->get();
-        $record = array();
-
-        foreach($courts as $key=>$court){            
-            $report['sl_no'] = ++$key;
-            $report['court_id'] = $court->court_id;
-            $report['court_name'] = $court->court_name;
-
-                $sql = "SELECT drug_name,SUM(A) disposal_quantity,SUM(B) undisposed_quantity,quantity_unit_name as unit_name
-                        FROM
-                        (
-                            select drug_name, quantity_unit_name,
-                                    CASE 
-                                            WHEN disposal_flag = 'Y' THEN disposal ELSE 0 END as A,
-                                    CASE
-                                            WHEN disposal_flag = 'Y' THEN seizure-sample-disposal 
-                                            ELSE seizure-coalesce(sample, 0) END as B
-                            FROM
-                            (
-                                SELECT 
-                                    drug_name, disposal_flag,seizure,disposal,sample,quantity_unit_name
-                                    FROM 
-                                    (
-                                        select drug_name, disposal_flag, 
-                                                CASE    WHEN u1.unit_degree = 2 THEN quantity_of_drug/1000 
-                                                        WHEN u1.unit_degree = 1 THEN quantity_of_drug/1000000
-                                                        WHEN u1.unit_degree = 3 THEN quantity_of_drug
-                                                        WHEN u1.unit_degree = 0 THEN quantity_of_drug
-                                                        END AS seizure,
-                        
-                                                CASE    WHEN u1.unit_name ilike 'g%m'  THEN  'KG'
-                                                        WHEN u1.unit_name ilike 'l%e' OR u1.unit_name ilike 'm%l'  THEN 'KL'
-                                                        ELSE u1.unit_name
-                                                        END AS quantity_unit_name,
-                                                        
-                        
-                                                CASE 	WHEN u2.unit_degree = 2 THEN disposal_quantity/1000
-                                                        WHEN u2.unit_degree = 1 THEN disposal_quantity/1000000
-                                                        WHEN u2.unit_degree = 3 THEN disposal_quantity
-                                                        WHEN u2.unit_degree = 0 THEN disposal_quantity
-                                                        END AS disposal,
-                                                
-                        
-                                                CASE 	WHEN u3.unit_degree = 2 THEN quantity_of_sample/1000
-                                                        WHEN u3.unit_degree = 1 THEN quantity_of_sample/1000000
-                                                        WHEN u3.unit_degree = 3 THEN quantity_of_sample
-                                                        WHEN u3.unit_degree = 0 THEN quantity_of_sample
-                                                        END AS sample
-                        
-                                                
-                                                        
-                                        from  seizures inner join narcotics on seizures.drug_id = narcotics.drug_id 
-                                        inner join units as u1 on seizures.seizure_quantity_weighing_unit_id=u1.unit_id 
-                                        left join units as u2  on seizures.disposal_quantity_weighing_unit_id=u2.unit_id 
-                                        left join units as u3  on seizures.sample_quantity_weighing_unit_id=u3.unit_id 
-                                        where seizures.certification_court_id=".$court->court_id." AND seizures.created_at BETWEEN '".$from_date."' AND '".$to_date."'
-                                    ) a
-                            )b
-                        )c GROUP BY drug_name,quantity_unit_name";
-
-                $data = DB::select($sql);
-
-                $report['narcotic_type'] = "<ul type='square'>";
-                $report['disposed_quantity'] = "<ul type='square'>";
-                $report['undisposed_quantity'] = "<ul type='square'>";
-
-                foreach($data as $seizure){
-                    $report['narcotic_type'] .= "<li>".$seizure->drug_name."</li>";
-                    if($seizure->disposal_quantity==0)
-                        $report['disposed_quantity'] .= "<li>NIL</li>";
-                    else
-                        $report['disposed_quantity'] .= "<li>".$seizure->disposal_quantity." ".$seizure->unit_name."</li>";
-                    
-                    if($seizure->undisposed_quantity==0)
-                        $report['undisposed_quantity'] .= "<li>NIL</li>";
-                    else
-                    $report['undisposed_quantity'] .= "<li>".$seizure->undisposed_quantity." ".$seizure->unit_name."</li>";
-                }
-    
-                $report['narcotic_type'] .= "</ul>";
-                $report['disposed_quantity'] .= "</ul>";
-                $report['undisposed_quantity'] .= "</ul>";
-
-                $record[] = $report;
-    
-        }
-
-        echo json_encode($record);
-
-    }
-
+   
 
     public function calhc_fetch_more_details_storage_report(Request $request){
         $storage_id = $request->input('storage_id');

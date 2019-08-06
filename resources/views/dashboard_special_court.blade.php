@@ -197,10 +197,6 @@
                                     '<td><strong>Case Details / Remarks:</strong></td>'+
                                     '<td>'+obj['0'].remarks+'</td>'+
                                 '</tr>'+
-                                '<tr>'+
-                                    '<td><strong>Certification Court:</strong></td>'+
-                                    '<td>'+obj['0'].court_name+'</td>'+
-                                '</tr>'+
                             '</table>'+
 
                             '<br>'+

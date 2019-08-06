@@ -55,18 +55,15 @@
             return view ('disposed_undisposed_tally');
        });
 
-       Route::post('disposed_undisposed_tally/district_court_report',
-        'SearchController@calhc_district_court_report');
+       Route::post('disposed_undisposed_tally/ndps_court_report',
+        'SearchController@calhc_ndps_court_report');
 
         Route::post('disposed_undisposed_tally/stakeholder_report',
         'SearchController@calhc_stakeholder_report');
 
         Route::post('disposed_undisposed_tally/storage_report',
         'SearchController@calhc_storage_report');
-
-        Route::post('disposed_undisposed_tally/fetch_more_details_district_court_report',
-        'SearchController@calhc_fetch_more_details_district_court_report');
-
+       
         Route::post('disposed_undisposed_tally/fetch_more_details_storage_report',
         'SearchController@calhc_fetch_more_details_storage_report');       
 

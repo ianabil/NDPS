@@ -6,11 +6,11 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Narcotic;
-use App\District;
-use App\Unit;
 use App\Narcotic_unit;
+use App\NdpsCourtDetail;
+use App\Unit;
 use App\Agency_detail;
-use App\Court_detail;
+use App\CertifyingCourtDetail;
 use App\Seizure;
 use App\Storage_detail;
 use App\Ps_detail;
@@ -23,13 +23,13 @@ use Auth;
 class SpecialCourtController extends Controller
 {
     public function index_dashboard(){   
-        $district_id =Auth::user()->district_id;   
+        $ndps_court_id =Auth::user()->ndps_court_id;   
 
-        $data['total_seizure'] = Seizure::where('district_id',$district_id)
+        $data['total_seizure'] = Seizure::where('ndps_court_id',$ndps_court_id)
                                             ->count();
         $data['total_disposed'] = Seizure::where([
                                                 ['disposal_flag','Y'],
-                                                ['district_id',$district_id]
+                                                ['ndps_court_id',$ndps_court_id]
                                             ])
                                             ->count();
         
@@ -41,7 +41,7 @@ class SpecialCourtController extends Controller
 
 
     public function monthly_report_status(Request $request){
-        $district_id =Auth::user()->district_id;   
+        $ndps_court_id = Auth::user()->ndps_court_id;   
         $start_date = date('Y-m-d', strtotime('01-'.$request->input('month')));
         $end_date = date('Y-m-d', strtotime($start_date. ' +30 days'));
         
@@ -62,16 +62,16 @@ class SpecialCourtController extends Controller
         // Fetching unique Case No. As Multiple Row May Exist For A Single Case No.
         $cases = Seizure::leftjoin('ps_details','seizures.ps_id','=','ps_details.ps_id')
                         ->leftjoin('agency_details','seizures.agency_id','=','agency_details.agency_id')
-                        ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
+                        ->join('certifying_court_details','seizures.certification_court_id','=','certifying_court_details.court_id')
                         ->where([
                             ['seizures.created_at','>=',$start_date],
                             ['seizures.created_at','<=',$end_date],
-                            ['seizures.district_id',$district_id]
+                            ['seizures.ndps_court_id',$ndps_court_id]
                         ])
                         ->orWhere([
                             ['seizures.updated_at','>=',$start_date],
                             ['seizures.updated_at','<=',$end_date],
-                            ['seizures.district_id',$district_id]
+                            ['seizures.ndps_court_id',$ndps_court_id]
                         ])
                         ->select('seizures.ps_id','seizures.agency_id','case_no_string','seizures.created_at','ps_name','agency_name','court_name')
                         ->orderBy('seizures.created_at','DESC')
@@ -118,7 +118,7 @@ class SpecialCourtController extends Controller
             }
 
             //Case No.         
-            $report['Case_No'] = "<strong>".$case->case_no_string."</strong>"; 
+            $report['Case_No'] = "<strong>".strtoupper($case->case_no_string)."</strong>"; 
 
 
             // Designated Magistrate
@@ -218,7 +218,7 @@ class SpecialCourtController extends Controller
                                 ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
                                 ->leftjoin('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
                                 ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                                ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
+                                ->join('certifying_court_details','seizures.certification_court_id','=','certifying_court_details.court_id')
                                 ->where('case_no_string',$case_no_string)  
                                 ->select('drug_name','quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',
                                 'date_of_disposal','disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit',
