@@ -506,13 +506,9 @@
 
 		/* Save New Seizure After Inserting Seizure Details Once :: STARTS*/
 		$(document).on("click",".save",function(){
-					var stakeholder = $("#stakeholder option:selected").val();
 					var case_no = $("#case_no").val();
-					var case_year = $("#case_year option:selected").val();							
-					var storage = $("#storage option:selected").val();
-					var remark = $("#remark").val();
-					var district = $("#district option:selected").val();
-					var court = $("#court option:selected").val();
+					var case_year = $("#case_year").val();
+					var case_no_string = $("#stakeholder option:selected").text()+" / "+case_no+" / "+case_year;
 
 
 					var element = $(this);
@@ -567,19 +563,14 @@
 											url:"entry_form/add_new_seizure_details", 
 											data: {
 												_token: $('meta[name="csrf-token"]').attr('content'),
-												stakeholder:stakeholder,
-												case_no:case_no,
-												case_year:case_year,
+												case_no_string:case_no_string,
 												narcotic_type:narcotic_type,
 												seizure_date:seizure_date,
 												seizure_quantity:seizure_quantity,
 												seizure_weighing_unit:seizure_weighing_unit,
 												other_narcotic_name:other_narcotic_name,
 												flag_other_narcotic:flag_other_narcotic,
-												storage:storage,
-												remark:remark,
-												district:district,
-												court:court
+												
 											},
 											success:function(response){
 												swal("New Seizure Details Submitted Successfully","","success");
