@@ -335,10 +335,7 @@
 
         Route::post('legacy_data_entries/fetch_court',
         'LegacyDataController@district_wise_court');
-
-        Route::post('legacy_data_entries/fetch_district',
-        'LegacyDataController@stakeholder_wise_district');
-
+        
         Route::post('legacy_data_entries/fetch_case_details','LegacyDataController@fetch_case_details');
 
         Route::post('legacy_data_entries/certify','LegacyDataController@certify');

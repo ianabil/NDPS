@@ -411,43 +411,23 @@ class EntryFormController extends Controller
     public function add_new_seizure_details(Request $request){
 
         $this->validate( $request, [ 
+            'case_no_string' => 'required|exists:seizures,case_no_string',
             'narcotic_type' => 'required|integer',
             'seizure_date' => 'required|date',
             'seizure_quantity' => 'required|numeric',
             'seizure_weighing_unit' => 'required|integer',
         ] ); 
 
-        $user_type = Auth::user()->user_type;
-        
-        if($user_type=="ps"){
-            $ps = $request->input('stakeholder');
-            $agency_id = null;
-        }
-        else if($user_type=="agency"){
-            $agency_id = $request->input('stakeholder');
-            $ps = null;
-        }
-        $case_no = $request->input('case_no');
-        $case_year = $request->input('case_year');
+        $case_no_string = $request->input('case_no_string');
         $narcotic_type = $request->input('narcotic_type');
         $seizure_date = Carbon::parse($request->input('seizure_date'))->format('Y-m-d');
         $seizure_quantity = $request->input('seizure_quantity');
         $seizure_weighing_unit = $request->input('seizure_weighing_unit');
         $other_narcotic_name = $request->input('other_narcotic_name');
         $flag_other_narcotic = $request->input('flag_other_narcotic');
-        $narcotic_type = $request->input('narcotic_type');
-        $seizure_date = $request->input('seizure_date');
-        $seizure_quantity = $request->input('seizure_quantity');
-        $seizure_weighing_unit = $request->input('seizure_weighing_unit');
-        $storage = $request->input('storage');
-        $district = $request->input('district');
-        $court = $request->input('court');
-        $remark = $request->input('remark');
         $certification_flag='N';
         $disposal_flag='N';
-        $user_name=Auth::user()->user_name;
-        $update_date = Carbon::today();  
-        $uploaded_date = Carbon::today(); 
+        $update_date = Carbon::today(); 
 
         
         if($flag_other_narcotic==1){
@@ -474,24 +454,29 @@ class EntryFormController extends Controller
             }
         }
 
-        seizure::insert(
+        $case_details = Seizure::where('case_no_string','ilike',$case_no_string)
+                                ->get();
+
+        Seizure::insert(
                 [
-                    'ps_id'=>$ps,
-                    'case_no'=>$case_no,
-                    'case_year'=>$case_year,
+                    'ps_id'=>$case_details[0]['ps_id'],
+                    'case_no'=>$case_details[0]['case_no'],
+                    'case_year'=>$case_details[0]['case_year'],
+                    'case_no_string'=>$case_no_string,
                     'drug_id'=> $narcotic_type,
                     'quantity_of_drug'=>$seizure_quantity,
                     'seizure_quantity_weighing_unit_id'=>$seizure_weighing_unit,
                     'date_of_seizure'=>Date('Y-m-d', strtotime($seizure_date)),
-                    'storage_location_id'=>$storage,
-                    'agency_id'=>$agency_id,
-                    'district_id'=>$district,
-                    'certification_court_id'=>$court,
+                    'storage_location_id'=>$case_details[0]['storage_location_id'],
+                    'agency_id'=>$case_details[0]['agency_id'],
+                    'district_id'=>$case_details[0]['district_id'],
+                    'ndps_court_id'=>$case_details[0]['ndps_court_id'],
+                    'certification_court_id'=>$case_details[0]['certification_court_id'],
                     'certification_flag'=>$certification_flag,
                     'disposal_flag'=>$disposal_flag,
-                    'remarks'=>$remark,
-                    'user_name'=>$user_name,
-                    'created_at'=>$uploaded_date,
+                    'remarks'=>$case_details[0]['remarks'],
+                    'user_name'=>$case_details[0]['user_name'],
+                    'created_at'=>$case_details[0]['created_at'],
                     'updated_at'=>$update_date
                 ]
 
@@ -527,7 +512,7 @@ class EntryFormController extends Controller
         if($user_type=="ps"){
             $cases = Seizure::join('ps_details','seizures.ps_id','=','ps_details.ps_id')
                             ->leftjoin('agency_details','seizures.agency_id','=','agency_details.agency_id')
-                            ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
+                            ->join('certifying_court_details','seizures.certification_court_id','=','certifying_court_details.court_id')
                             ->where([
                                 ['seizures.created_at','>=',$start_date],
                                 ['seizures.created_at','<=',$end_date],
@@ -546,7 +531,7 @@ class EntryFormController extends Controller
         else if($user_type=="agency"){
             $cases = Seizure::leftjoin('ps_details','seizures.ps_id','=','ps_details.ps_id')
                             ->join('agency_details','seizures.agency_id','=','agency_details.agency_id')
-                            ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
+                            ->join('certifying_court_details','seizures.certification_court_id','=','certifying_court_details.court_id')
                             ->where([
                                 ['seizures.created_at','>=',$start_date],
                                 ['seizures.created_at','<=',$end_date],
@@ -703,7 +688,7 @@ class EntryFormController extends Controller
                                 ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
                                 ->leftjoin('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
                                 ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                                ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
+                                ->join('certifying_court_details','seizures.certification_court_id','=','certifying_court_details.court_id')
                                 ->where('case_no_string',$case_no_string)  
                                 ->select('drug_name','quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',
                                 'date_of_disposal','disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit',
