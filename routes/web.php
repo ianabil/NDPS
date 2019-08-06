@@ -103,10 +103,10 @@
 
         Route::post('master_maintenance_court/seizure_court_delete',
         'MasterMaintenanceController@destroy_seizure_court_record');
-    //Court ::end
+        //Court ::end
 
-    
-    //Stakeholder ::start
+        
+        //Stakeholder ::start
     
         Route::get('stakeholder_view', function(){
             return view ('stakeholder_view');
