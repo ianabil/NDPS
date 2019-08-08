@@ -2,7 +2,7 @@
 <!-- Main content -->
 <div class="box box-default">
         <div class="box-header with-border">
-            <h3 class="box-title">Add New Storage</h3>
+            <h3 class="box-title">Add New Malkhana</h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
@@ -12,13 +12,22 @@
         <div class="box-body">
             <div class="row">                
                 <div class="col-md-3 form-group required">
-                    <label class="control-label">Storage Name</label>
-                        <input type="text" class="form-control storage_name" name="storage_name" id="storage_name">
+                    <label class="control-label">Malkhana Name</label>
+                    <input type="text" class="form-control storage_name" name="storage_name" id="storage_name">
+                </div>
+                <div class="col-md-3 form-group required">
+                    <label class="control-label district_name">District</label><br>
+                    <select class="select2"  name="district_name" id="district_name">
+                        <option value="">Select District</option>
+                        @foreach($data['districts']  as $data1)
+                            <option value="{{$data1['district_id']}}">{{$data1['district_name']}} </option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="col-md-2">
                     <div class="form-group">
                         <label>&nbsp;</label>
-                        <button type="button" class="form-control btn-success btn btn-primary" name="add_new_storage" id="add_new_storage">Add New Storage
+                        <button type="button" class="form-control btn-success btn btn-primary" name="add_new_storage" id="add_new_storage">Add New Malkhana
                     </div>
                 </div>
                 <!-- /.col -->  
@@ -30,7 +39,7 @@
 
 <div class="box box-default" id="show_all_data">
     <div class="box-header with-border">
-        <h3 class="box-title"> All Storage Details</h3>
+        <h3 class="box-title"> All Malkhana Details</h3>
         <div class="box-tools pull-right">
             <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
             <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
@@ -42,8 +51,9 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>STORAGE NAME</th>
-                             <th>Action</th>
+                            <th>Malkhana</th>
+                            <th>District</th>
+                            <th>Action</th>
                         </tr>
                     </thead>                    
             </table>
@@ -76,8 +86,6 @@
 
     $(document).ready(function(){
 
-                 
-
         //select2 initialization code
          $(".select2").select2(); 
 
@@ -101,13 +109,16 @@
                                     "url": "show_all_storage",
                                     "dataType": "json",
                                     "type": "POST",
-                                    "data":{ _token: $('meta[name="csrf-token"]').attr('content')},                                    
-                                },
+                                    "data":{ 
+                                        _token: $('meta[name="csrf-token"]').attr('content')},
+                                    },
                             "columns": [                
                                 {"class": "id",
                                   "data": "ID" },
                                 {"class": "storage_name data",
                                  "data": "STORAGE NAME" },
+                                {"class": "district_name",
+                                 "data": "DISTRICT NAME" },
                                 {"class": "delete",
                                 "data": "ACTION" }
                             ]
@@ -123,28 +134,30 @@
         
             $(document).on("click", "#add_new_storage",function(){
 
-                var storage_name = $("#storage_name").val().toLowerCase().replace(/\b[a-z]/g, function(letter) {
-                    return letter.toUpperCase();
-                });
+                var storage_name = $("#storage_name").val();
+                var district_name = $("#district_name").val();
                                
                 $.ajax({
-
                     type:"POST",
-                    url:"master_maintenance/storage",
+                    url:"storage_maintainence/add_storage",
                     data:{
                         _token: $('meta[name="csrf-token"]').attr('content'),
-                        storage_name:storage_name
+                        malkhana_name:storage_name,
+                        district_name:district_name
 
                 },
                 success:function(response)
                 {
                     $("#storage_name").val('');
-                    swal("Storage Added Successfully","","success");
+                    $("#district_name").val('');
+                    swal("Malkhana Added Successfully","","success");
                     table.api().ajax.reload();
                 },
                 error:function(response) { 
                     if(response.responseJSON.errors.hasOwnProperty('storage_name'))
-                        swal("Cannot Add New STORAGE", ""+response.responseJSON.errors.storage_name['0'], "error");
+                        swal("Cannot Add New Malkhana", ""+response.responseJSON.errors.malkhana_name['0'], "error");
+                    if(response.responseJSON.errors.hasOwnProperty('district_name'))
+                        swal("Cannot Add New Malkhana", ""+response.responseJSON.errors.district_name['0'], "error");
                 }                
             });
         });
@@ -164,24 +177,23 @@
             var storage_name = $(this).closest("tr").find(".storage_name").text();
                         
             if(storage_name == prev_storage_name)
-                    return false;
+                return false;
 
 
             $.ajax({
                 type:"POST",
-                url:"master_maintenance_storage/storage_update",                
+                url:"storage_maintainence/update_storage",                
                 data:{_token: $('meta[name="csrf-token"]').attr('content'), 
                         id:id, 
-                        storage_name:storage_name
+                        malkhana_name:storage_name
                     },
-                success:function(response){   
-                            
-                    swal("Storage Details Updated","","success");
+                success:function(response){ 
+                    swal("Malkhana Details Updated","","success");
                     table.api().ajax.reload();
                 },
                 error:function(response) { 
                     if(response.responseJSON.errors.hasOwnProperty('storage_name'))
-                        swal("Cannot updated Storage", ""+response.responseJSON.errors.storage_name['0'], "error");
+                        swal("Cannot updated Storage", ""+response.responseJSON.errors.malkhana_name['0'], "error");
                 }
             })
         })
@@ -190,7 +202,7 @@
 
        // Data Deletion Codes Starts */
 
-                $(document).on("click",".delete", function(){
+            $(document).on("click",".delete", function(){
                 var element=$(this);
                 var id;
                 swal({
@@ -202,11 +214,11 @@
                     })
                     .then((willDelete) => {
                     if(willDelete){
-                             id = $(this).closest("tr").find(".id").text();
+                            id = $(this).closest("tr").find(".id").text();
                            
                             $.ajax({
                                 type:"POST",
-                                url:"master_maintenance_storage/storage_delete",
+                                url:"storage_maintainence/delete_storage",
                                 data:{
                                     _token: $('meta[name="csrf-token"]').attr('content'), 
                                     id:id
@@ -227,28 +239,28 @@
                                         dangerMode: true,
                                         })
                                         .then((willDelete) => {
-                                        if(willDelete) {
-                                            $.ajax({
-                                                type:"POST",
-                                                url:"master_maintenance_storage/seizure_storage_delete",
-                                                data:
-                                                {
-                                                    _token: $('meta[name="csrf-token"]').attr('content'),
-                                                    id:id
-                                                },
-                                                success:function(response)
-                                                {
-                                                    if(response==1)
+                                            if(willDelete) {
+                                                $.ajax({
+                                                    type:"POST",
+                                                    url:"storage_maintainence/seizure_storage_delete",
+                                                    data:
                                                     {
-                                                        swal("Storage Deleted Successfully","Storage and its associated entry has been deleted","success");  
-                                                        table.api().ajax.reload();                
+                                                        _token: $('meta[name="csrf-token"]').attr('content'),
+                                                        id:id
+                                                    },
+                                                    success:function(response)
+                                                    {
+                                                        if(response==1)
+                                                        {
+                                                            swal("Storage Deleted Successfully","Storage and its associated entry has been deleted","success");  
+                                                            table.api().ajax.reload();                
+                                                        }
                                                     }
-                                                }
-                                         })
-                                    }
-                                })
-                        }
-                     })
+                                                })
+                                            }
+                                        })
+                                }
+                            })
                     }
                     else 
                     {

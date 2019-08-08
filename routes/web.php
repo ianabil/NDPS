@@ -81,42 +81,39 @@
 
     // Master Maintainence
     Route::group(['middleware' => ['auth','role_manager:admin']], function () {
-        //Court ::start
-        Route::get('court_view', 'MasterMaintenanceController@index_court');
+        //Certifying Court ::start
+        Route::get('certifying_court_maintainence_view', 'MasterMaintenanceController@index_certifying_court_maintainence_view');
 
-        Route::get('court_view', 'MasterMaintenanceController@index_court');
-
-        Route::post('show_courts_details', 'MasterMaintenanceController@get_all_court_details');
+        Route::post('show_certifying_court_details', 'MasterMaintenanceController@get_all_certifying_court_details');
         
-        Route::post('master_maintenance/court_details',
-        'MasterMaintenanceController@store_court');
+        Route::post('certifying_court_maintainence/add_certifying_court',
+        'MasterMaintenanceController@store_certifying_court');
 
-        Route::post('master_maintenance_court/update',
-        'MasterMaintenanceController@update_court');
+        Route::post('certifying_court_maintainence/update_certifying_court',
+        'MasterMaintenanceController@update_certifying_court');
         
 
-        Route::post('master_maintenance_court_details/delete',
-        'MasterMaintenanceController@destroy_court');
+        Route::post('certifying_court_maintainence/delete_certifying_court',
+        'MasterMaintenanceController@destroy_certifying_court');
 
-        Route::post('master_maintenance_court/seizure_court_delete',
-        'MasterMaintenanceController@destroy_seizure_court_record');
-        //Court ::end
+        Route::post('certifying_court_maintainence/seizure_certifying_court_delete',
+        'MasterMaintenanceController@destroy_seizure_certifying_court_record');
+        //Certifying Court ::end
 
         
-        //Stakeholder ::start
-    
-        Route::get('stakeholder_view', function(){
-            return view ('stakeholder_view');
+        //Agency ::start    
+        Route::get('agency_maintainence_view', function(){
+            return view ('agency_maintainence_view');
         });
 
-        Route::post('show_all_stakeholders',
-        'MasterMaintenanceController@get_all_stakeholders_data');
+        Route::post('show_all_agencies',
+        'MasterMaintenanceController@get_all_agencies_data');
 
-        Route::post('master_maintenance/stakeholder',
-        'MasterMaintenanceController@store_stakeholder');
+        Route::post('agency_maintainence/add_agency',
+        'MasterMaintenanceController@store_agency');
 
-        Route::post('master_maintenance_stakeholder/update',
-        'MasterMaintenanceController@update_stakeholder');
+        Route::post('agency_maintainence/update_agency',
+        'MasterMaintenanceController@update_agency');
 
         Route::post('master_maintenance_stakeholder/delete',
         'MasterMaintenanceController@destroy_stakeholder');
@@ -126,7 +123,7 @@
 
         Route::post('master_maintenance_stakeholder/seizure_stakeholder_delete',
         'MasterMaintenanceController@destroy_seizure_stakeholder_record');
-    //Stakeholder ::end
+        //Agency ::end
 
         //Narcotic ::start
         Route::get('narcotic_view', 'MasterMaintenanceController@index_narcotic');
@@ -175,48 +172,40 @@
         //District::End
 
         //Police Station::Start
+        Route::get('ps_maintainence_view', 'MasterMaintenanceController@index_ps_maintainence_view');        
 
-
-        Route::get('ps_view', 'MasterMaintenanceController@index_ps');
-        
-
-        Route::post('master_maintenance/police_station',
+        Route::post('ps_maintainence/add_ps',
         'MasterMaintenanceController@store_ps');
 
         Route::post('show_all_ps',
         'MasterMaintenanceController@get_all_ps');
 
-        Route::post('master_maintenance_ps/ps_update',
+        Route::post('ps_maintainence/update_ps',
         'MasterMaintenanceController@update_ps');
 
-        Route::post('master_maintenance_ps/ps_delete',
+        Route::post('ps_maintainence/delete_ps',
         'MasterMaintenanceController@destroy_ps');
-        
-        Route::post('master_maintenance_ps/ps_delete',
-        'MasterMaintenanceController@destroy_police_station');
 
-        Route::post('master_maintenance_ps/seizure_ps_delete',
-        'MasterMaintenanceController@destroy_seizure_police_record');
+        Route::post('ps_maintainence/seizure_ps_delete',
+        'MasterMaintenanceController@destroy_seizure_ps_record');
         //Police Station::End
 
         //Storage :: Start
-        Route::get('storage_view',function(){
-            return view ('storage_view');
-        });
+        Route::get('storage_maintainence_view', 'MasterMaintenanceController@index_storage_maintainence_view');
 
         Route::post('show_all_storage',
         'MasterMaintenanceController@get_all_storage');
 
-        Route::post('master_maintenance/storage',
+        Route::post('storage_maintainence/add_storage',
         'MasterMaintenanceController@store_storage');
 
-        Route::post('master_maintenance_storage/storage_update',
+        Route::post('storage_maintainence/update_storage',
         'MasterMaintenanceController@update_storage');
 
-        Route::post('master_maintenance_storage/storage_delete',
+        Route::post('storage_maintainence/delete_storage',
         'MasterMaintenanceController@destroy_storage');
         
-        Route::post('master_maintenance_storage/seizure_storage_delete',
+        Route::post('storage_maintainence/seizure_storage_delete',
         'MasterMaintenanceController@destroy_seizure_storage_record');
         //Storage :: End
     

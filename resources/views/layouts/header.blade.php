@@ -125,24 +125,24 @@
                         <li class="treeview">
                             <a href="#">
                                 <i class="fa fa-edit"></i>
-                                <span>Master Maintenance</span>
+                                <span>Master Maintainence</span>
                                 <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                             </a>
                             <ul class="treeview-menu">
                                 {{-- <li><a href="district_view"><i class="fa fa-circle-o text-red"></i> <span>District Master Maintenance</span></a></li> --}}
-                                <li><a href="court_view"><i class="fa fa-circle-o text-yellow"></i> <span>Court Master Maintenance</span></a></li>
-                                <li><a href="stakeholder_view"><i class="fa fa-circle-o text-violate"></i> <span>Stakeholder Master Maintenance</span></a></li>
-                                <li><a href="narcotic_view"><i class="fa fa-circle-o text-green"></i> <span>Narcotic Master Maintenance</span></a></li>
-                                <li><a href="unit_view"><i class="fa fa-circle-o text-black"></i> <span>Unit Master Maintenance</span></a></li>
-                                <li><a href="ps_view"><i class="fa fa-circle-o text-blue"></i> <span>PS Master Maintenance</span></a></li>
-                                <li><a href="storage_view"><i class="fa fa-circle-o text-brown"></i> <span>Storage Master Maintenance</span></a></li>
+                                <li><a href="certifying_court_maintainence_view"><i class="fa fa-circle-o text-yellow"></i> <span>Magistrate Master Maintainence</span></a></li>
+                                <li><a href="agency_maintainence_view"><i class="fa fa-circle-o text-violate"></i> <span>Agency Master Maintainence</span></a></li>
+                                <li><a href="narcotic_maintainence_view"><i class="fa fa-circle-o text-green"></i> <span>Narcotic Master Maintainence</span></a></li>
+                                <li><a href="unit_maintainence_view"><i class="fa fa-circle-o text-black"></i> <span>Unit Master Maintainence</span></a></li>
+                                <li><a href="ps_maintainence_view"><i class="fa fa-circle-o text-blue"></i> <span>PS Master Maintainence</span></a></li>
+                                <li><a href="storage_maintainence_view"><i class="fa fa-circle-o text-brown"></i> <span>Storage Master Maintainence</span></a></li>
                              </ul>
                         </li>
 
                         <li class="header"></li>
                         <li class="treeview">
                             <a href="#"><i class="fa fa-user"></i>
-                                <span>User Maintainance</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+                                <span>User Maintainence</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                             </a>
                             <ul class="treeview-menu">
                                 <li><a href="create_new_user">User Creation</a></li>

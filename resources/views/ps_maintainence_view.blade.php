@@ -15,7 +15,7 @@
                     <label class="control-label">Police Station's Name</label>
                         <input type="text" class="form-control ps_name" name="ps_name" id="ps_name">
                 </div>
-                <div class="col-md-4 form-group required">
+                <div class="col-md-3 form-group required">
                     <label class="control-label district_name">District</label><br>
                         <select class="select2"  name="district_name" id="district_name">
                              <option value="">Select District</option>
@@ -24,7 +24,7 @@
 							 @endforeach
                          </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label>&nbsp;</label>
                         <button type="button" class="form-control btn-success btn btn-primary" name="add_new_ps" id="add_new_ps">Add New PS
@@ -114,7 +114,7 @@
                                   "data": "ID" },
                                 {"class": "ps_name data",
                                  "data": "POLICE STATION NAME" },
-                                 {"class": "district data",
+                                 {"class": "district",
                                  "data": "DISTRICT" },
                                 {"class": "delete",
                                 "data": "ACTION" }
@@ -133,31 +133,32 @@
              //Addition of Ps_Details starts
         
             $(document).on("click", "#add_new_ps",function(){
-                var ps_name = $("#ps_name").val().toLowerCase().replace(/\b[a-z]/g, function(letter) {
-                return letter.toUpperCase();
-            });
+                var ps_name = $("#ps_name").val();
                 var district_name=$('#district_name option:selected').val();
                 
                 $.ajax({
-
                     type:"POST",
-                    url:"master_maintenance/police_station",
+                    url:"ps_maintainence/add_ps",
                     data:{
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         ps_name:ps_name,
                         district_name:district_name
 
-                },
-                success:function(response)
-                {
-                    $("#ps_name").val('');
-                    swal("PS Added Successfully","","success");
-                    table.api().ajax.reload();
-                },
-                error:function(response) { 
-                    if(response.responseJSON.errors.hasOwnProperty('ps_name'))
-                        swal("Cannot Add New PS", ""+response.responseJSON.errors.ps_name['0'], "error");
-                    }                
+                    },
+                    success:function(response)
+                    {
+                        $("#ps_name").val('');
+                        $("#district_name").val('');
+                        swal("PS Added Successfully","","success");
+                        table.api().ajax.reload();
+                    },
+                    error:function(response) { 
+                        if(response.responseJSON.errors.hasOwnProperty('ps_name'))
+                            swal("Cannot Add New PS", ""+response.responseJSON.errors.ps_name['0'], "error");
+                        
+                        if(response.responseJSON.errors.hasOwnProperty('district_name'))
+                            swal("Cannot Add New PS", ""+response.responseJSON.errors.district_name['0'], "error");                  
+                    }           
                 });
             });
 
@@ -165,9 +166,9 @@
 
         //To prevent updation when no changes to the data is made
 
-        var prev_pc_name;
+        var prev_ps_name;
         $(document).on("focusin",".data", function(){
-        prev_ps_name = $(this).closest("tr").find(".ps_name").text();
+            prev_ps_name = $(this).closest("tr").find(".ps_name").text();
         })
 
         //Data Updation Code Starts
@@ -181,7 +182,7 @@
 
             $.ajax({
                 type:"POST",
-                url:"master_maintenance_ps/ps_update",                
+                url:"ps_maintainence/update_ps",                
                 data:{_token: $('meta[name="csrf-token"]').attr('content'), 
                         id:id, 
                         ps_name:ps_name
@@ -205,7 +206,7 @@
                     var element=$(this);
                 swal({
                     title: "Are You Sure?",
-                    text: "Once submitted, you will not be able to change the record",
+                    text: "",
                     icon: "warning",
                     buttons: true,
                     dangerMode: true,
@@ -217,7 +218,7 @@
 
                             $.ajax({
                                 type:"POST",
-                                url:"master_maintenance_ps/ps_delete",
+                                url:"ps_maintainence/delete_ps",
                                 data:{
                                     _token: $('meta[name="csrf-token"]').attr('content'), 
                                     id:id
@@ -244,7 +245,7 @@
 
                                             $.ajax({
                                                 type:"POST",
-                                                url:"master_maintenance_ps/seizure_ps_delete",
+                                                url:"ps_maintainence/seizure_ps_delete",
                                                 data:{
                                                     _token: $('meta[name="csrf-token"]').attr('content'), 
                                                     id:id

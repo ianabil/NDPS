@@ -11,6 +11,7 @@ use App\NdpsCourtDetail;
 use App\Unit;
 use App\Agency_detail;
 use App\CertifyingCourtDetail;
+use App\District;
 use App\Seizure;
 use App\Storage_detail;
 use App\Ps_detail;
@@ -39,22 +40,19 @@ class MasterMaintenanceController extends Controller
 
     //District::End
 
-    //stakeholder::Start
+    //Agency::Start
         
         //Add stakeholder
-        public function store_stakeholder(Request $request){
+        public function store_agency(Request $request){
 
             $this->validate ( $request, [ 
-                'stakeholder_name' => 'required|max:255|unique:agency_details,agency_name',
-                'district' => 'required|max:255'         
+                'agency_name' => 'required|max:255|unique:agency_details,agency_name'
             ] ); 
 
-            $stakeholder = strtoupper($request->input('stakeholder_name'));
-            $district = strtoupper($request->input('district')); 
+            $stakeholder = trim(strtoupper($request->input('agency_name')));
 
             Agency_detail::insert([
                 'agency_name'=>$stakeholder,
-                'district_for_report'=>$district,
                 'created_at'=>Carbon::today(),
                 'updated_at'=>Carbon::today()
                 ]);
@@ -63,12 +61,11 @@ class MasterMaintenanceController extends Controller
         }
 
         // Data Table Code for stakeholders
-        public function get_all_stakeholders_data(Request $request){
+        public function get_all_agencies_data(Request $request){
             $columns = array( 
                 0 =>'ID', 
-                1 =>'STAKEHOLDER',
-                2 =>'DISTRICT',
-                3=>'ACTION'
+                1 =>'AGENCY NAME',
+                2 =>'ACTION'
             );
 
             $totalData = Agency_detail::count();
@@ -81,34 +78,31 @@ class MasterMaintenanceController extends Controller
             $dir = $request->input('order.0.dir');
 
             if(empty($request->input('search.value'))){
-                $stakeholder = Agency_detail::offset($start)
-                                ->limit($limit)
-                                ->orderBy('agency_name',$dir)
-                                ->get();
+                $agencies = Agency_detail::offset($start)
+                                            ->limit($limit)
+                                            ->orderBy('agency_name',$dir)
+                                            ->get();
                 $totalFiltered = Agency_detail::count();
             }
             else{
-                $search = strtoupper($request->input('search.value'));
-                $stakeholder = Agency_detail::where('agency_id','like',"%{$search}%")
-                                    ->orWhere('agency_name','like',"%{$search}%")
-                                    ->orWhere('district_for_report','like',"%{$search}%")
+                $search = $request->input('search.value');
+                $agencies = Agency_detail::where('agency_id','ilike',"%{$search}%")
+                                    ->orWhere('agency_name','ilike',"%{$search}%")
                                     ->offset($start)
                                     ->limit($limit)
                                     ->orderBy('agency_name',$dir)
                                     ->get();
-                $totalFiltered = Agency_detail::where('agency_id','like',"%{$search}%")
-                                        ->orWhere('agency_name','like',"%{$search}%")
-                                        ->orWhere('district_for_report','like',"%{$search}%")
+                $totalFiltered = Agency_detail::where('agency_id','ilike',"%{$search}%")
+                                        ->orWhere('agency_name','ilike',"%{$search}%")
                                         ->count();
                 }
 
                 $data = array();
 
-                if($stakeholder){
-                    foreach($stakeholder as $stakeholder){
-                        $nestedData['ID'] = $stakeholder->agency_id;
-                        $nestedData['STAKEHOLDER'] = $stakeholder->agency_name;
-                        $nestedData['DISTRICT'] = $stakeholder->district_for_report;
+                if($agencies){
+                    foreach($agencies as $agency){
+                        $nestedData['ID'] = $agency->agency_id;
+                        $nestedData['AGENCY NAME'] = $agency->agency_name;
                         $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
         
                         $data[] = $nestedData;
@@ -126,23 +120,18 @@ class MasterMaintenanceController extends Controller
                 }
 
                 /*update stakeholder*/
-                public function update_stakeholder(Request $request){
+                public function update_agency(Request $request){
                     $this->validate ( $request, [ 
-                        'id' => 'required',
-                        'stakeholder' => 'required|max:255',
-                        'district' => 'required|max:255'          
-                    ] ); 
-
+                        'id' => 'required|exists:agency_details,agency_id',
+                        'agency_name' => 'required|max:255|unique:agency_details,agency_name'
+                    ]);
                     
                     $id = $request->input('id');
-                    $stakeholder = strtoupper($request->input('stakeholder'));
-                    $district = $request->input('district');
+                    $stakeholder = strtoupper($request->input('agency_name'));
 
                     $data = [
                         'agency_name'=>$stakeholder,
-                        'updated_at'=>Carbon::today(),
-                        'district_for_report'=>$district
-
+                        'updated_at'=>Carbon::today()
                     ];
 
                     Agency_detail::where('agency_id',$id)->update($data);
@@ -170,30 +159,30 @@ class MasterMaintenanceController extends Controller
                 }
             //Stakeholder::End
 
-            //Court::Start
+            //Magistrate Master Maintainence :: Start
           
-                //court master maintenance view
-                public function index_court(Request $request)
+                //Certifying court master maintenance view
+                public function index_certifying_court_maintainence_view(Request $request)
                 {
                     $data= array();
 
                     $data['districts'] = District::select('district_id','district_name')->orderBy('district_name')->get();
                     
 
-                    return view('court_view',compact('data'));
+                    return view('magistrate_maintainence_view',compact('data'));
                 }
 
-                //showing exisiting courts
-                public function get_all_court_details(Request $request){
+                //showing exisiting Certifying court
+                public function get_all_certifying_court_details(Request $request){
 
                     $columns = array( 
-                        0 =>'COURT ID', 
-                        1 =>'COURT NAME',
-                        2 =>'DISTRICT NAME',
-                        3=>'ACTION'
+                        0 =>'certifying_court_id', 
+                        1 =>'certifying_court_name',
+                        2 =>'district_name',
+                        3 =>'action'
                     );
 
-                    $totalData = Court_detail::count();
+                    $totalData = CertifyingCourtDetail::count();
 
                     $totalFiltered = $totalData; 
 
@@ -205,32 +194,32 @@ class MasterMaintenanceController extends Controller
 
                     if(empty($request->input('search.value'))){
 
-                        $court = Court_detail::
-                                        join('districts','court_details.district_id','=','districts.district_id')                               
+                        $certifying_courts = CertifyingCourtDetail::
+                                        join('districts','certifying_court_details.district_id','=','districts.district_id')                               
                                         ->offset($start)
                                         ->limit($limit)
                                         ->orderBy('court_name',$dir)
                                         ->get();
 
-                        $totalFiltered = Court_detail::count();
+                        $totalFiltered = CertifyingCourtDetail::count();
                     }
                     else{
-                        $search = strtoupper($request->input('search.value'));
-                        $court = Court_detail::
-                                        join('districts','court_details.district_id','=','districts.district_id')                               
-                                        ->where('court_id','like',"%{$search}%")
-                                        ->orWhere('court_name','like',"%{$search}%")
-                                        ->orWhere('district_name','like',"%{$search}%")
+                        $search = $request->input('search.value');
+                        $certifying_courts = CertifyingCourtDetail::
+                                        join('districts','certifying_court_details.district_id','=','districts.district_id')                               
+                                        ->where('court_id','ilike',"%{$search}%")
+                                        ->orWhere('court_name','ilike',"%{$search}%")
+                                        ->orWhere('district_name','ilike',"%{$search}%")
                                         ->offset($start)
                                         ->limit($limit)
                                         ->orderBy('court_name',$dir)
                                         ->get();
                             
-                        $totalFiltered = Court_detail::
-                                        join('districts','court_details.district_id','=','districts.district_id')                   
-                                        ->where('court_id','like',"%{$search}%")
-                                        ->orWhere('court_name','like',"%{$search}%")
-                                        ->orWhere('district_name','like',"%{$search}%")
+                        $totalFiltered = CertifyingCourtDetail::
+                                        join('districts','certifying_court_details.district_id','=','districts.district_id')                   
+                                        ->where('court_id','ilike',"%{$search}%")
+                                        ->orWhere('court_name','ilike',"%{$search}%")
+                                        ->orWhere('district_name','ilike',"%{$search}%")
                                         ->count();
 
 
@@ -238,12 +227,12 @@ class MasterMaintenanceController extends Controller
 
                     $data = Array();
 
-                    if($court){
-                        foreach($court as $court){
-                            $nestedData['COURT ID'] = $court->court_id;
-                            $nestedData['COURT NAME'] = $court->court_name;
-                            $nestedData['DISTRICT NAME'] = $court->district_name;
-                            $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
+                    if($certifying_courts){
+                        foreach($certifying_courts as $certifying_court){
+                            $nestedData['certifying_court_id'] = $certifying_court->court_id;
+                            $nestedData['certifying_court_name'] = $certifying_court->court_name;
+                            $nestedData['district_name'] = $certifying_court->district_name;
+                            $nestedData['action'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
             
                             $data[] = $nestedData;
                         }
@@ -255,25 +244,25 @@ class MasterMaintenanceController extends Controller
                             );
                     
                             echo json_encode($json_data);
-                        }
+                    }
             
-                            }
+                }
 
-                /*adding new court*/
-                public function store_court(Request $request){
+                /*adding new Certifying court*/
+                public function store_certifying_court(Request $request){
 
                     $this->validate ( $request, [ 
                         
-                        'court_name' => 'required|max:255|unique:court_details,court_name',
-                        'district_name' => 'required|integer|max:1000'
+                        'certifying_court_name' => 'required|max:255|unique:certifying_court_details,court_name',
+                        'district_name' => 'required|exists:districts,district_id'
 
                     ] ); 
 
-                $court_name=strtoupper($request->input('court_name'));
-                $district_name=strtoupper($request->input('district_name'));
+                $certifying_court_name=trim(strtoupper($request->input('certifying_court_name')));
+                $district_name=$request->input('district_name');
 
-                Court_detail::insert([
-                    'court_name'=>$court_name,
+                CertifyingCourtDetail::insert([
+                    'court_name'=>$certifying_court_name,
                     'district_id'=>$district_name,
                     'created_at'=>Carbon::today(),
                     'updated_at'=>Carbon::today()
@@ -282,40 +271,42 @@ class MasterMaintenanceController extends Controller
 
             }
         
-            /*Update court */
-            public function update_court(Request $request){
+            /*Update Certifying court */
+            public function update_certifying_court(Request $request){
                 $this->validate ( $request, [ 
-                    'id' => 'required',
-                    'court_name' => 'required|max:255'         
+                    'id' => 'required|exists:certifying_court_details,court_id',
+                    'certifying_court_name' => 'required|max:255|unique:certifying_court_details,court_name'         
                 ] ); 
 
                 
                 $id = $request->input('id');
-                $court_name= strtoupper($request->input('court_name'));
+                $certifying_court_name= trim(strtoupper($request->input('certifying_court_name')));
 
                 $data = [
-                    'court_name'=>$court_name,
+                    'court_name'=>$certifying_court_name,
                     'updated_at'=>Carbon::today()
-                    ];         
-                 Court_detail::where('court_id',$id)->update($data);
+                    ];   
+
+                CertifyingCourtDetail::where('court_id',$id)->update($data);
                 
-                 return 1;
+                return 1;
+
             }
 
 
-            //deleting court details
-            public function destroy_court(Request $request)
+            //delete Certifying court details
+            public function destroy_certifying_court(Request $request)
             {
                 $id = $request->input('id');
-                Court_detail::where('court_id',$id)->delete();
+                CertifyingCourtDetail::where('court_id',$id)->delete();
                 return 1;
             }
 
-            public function destroy_seizure_court_record(Request $request){
+            public function destroy_seizure_certifying_court_record(Request $request){
                 $id = $request->input('id');
-                Seizure::where('certification_court_id',$id)->delete();
-                User::where('court_id',$id)->delete();
-                Court_detail::where('court_id',$id)->delete();
+                User::where('certifying_court_id',$id)->delete();
+                Seizure::where('certification_court_id',$id)->delete();                
+                CertifyingCourtDetail::where('court_id',$id)->delete();
                 return 1;
             }
             
@@ -362,19 +353,19 @@ class MasterMaintenanceController extends Controller
                 }
                 else
                 {
-                    $search = strtoupper($request->input('search.value'));
+                    $search = $request->input('search.value');
                     $narcotic = Narcotic_unit::join('units','units.unit_id','=','narcotic_units.unit_id')                               
                                             ->join('narcotics','narcotics.drug_id','=','narcotic_units.narcotic_id')                               
-                                            ->where('unit_name','like',"%{$search}%")
-                                            ->orWhere('drug_name','like',"%{$search}%")                                    
+                                            ->where('unit_name','ilike',"%{$search}%")
+                                            ->orWhere('drug_name','ilike',"%{$search}%")                                    
                                             ->offset($start)
                                             ->limit($limit)
                                             ->orderBy('drug_name',$dir)
                                             ->get();
                     $totalFiltered = Narcotic_unit::join('units','units.unit_id','=','narcotic_units.unit_id')                               
                                             ->join('narcotics','narcotics.drug_id','=','narcotic_units.narcotic_id')                               
-                                            ->where('unit_name','like',"%{$search}%")
-                                            ->orWhere('drug_name','like',"%{$search}%")                                            
+                                            ->where('unit_name','ilike',"%{$search}%")
+                                            ->orWhere('drug_name','ilike',"%{$search}%")                                            
                                             ->count();
                 }
         
@@ -557,15 +548,15 @@ class MasterMaintenanceController extends Controller
                 }
                 else
                 {
-                    $search = strtoupper($request->input('search.value'));
-                    $unit = Unit::where('unit_id','like',"%{$search}%")
-                                        ->orWhere('unit_name','like',"%{$search}%")                                    
+                    $search = $request->input('search.value');
+                    $unit = Unit::where('unit_id','ilike',"%{$search}%")
+                                        ->orWhere('unit_name','ilike',"%{$search}%")                                    
                                         ->offset($start)
                                         ->limit($limit)
                                         ->orderBy('unit_name',$dir)
                                         ->get();
-                    $totalFiltered = Unit::where('unit_id','like',"%{$search}%")
-                                            ->orWhere('unit_name','like',"%{$search}%")                                           
+                    $totalFiltered = Unit::where('unit_id','ilike',"%{$search}%")
+                                            ->orWhere('unit_name','ilike',"%{$search}%")                                           
                                             ->count();
                 }
         
@@ -658,14 +649,13 @@ class MasterMaintenanceController extends Controller
 
         //Police Staion:Start
 
-            public function index_ps(Request $request)
+            public function index_ps_maintainence_view(Request $request)
             {
                 $data= array();
 
-                $data['districts'] = District::select('district_id','district_name')->orderBy('district_name')->get();
-                
+                $data['districts'] = District::select('district_id','district_name')->orderBy('district_name')->get();                
 
-                return view('ps_view',compact('data'));
+                return view('ps_maintainence_view',compact('data'));
             }
 
 
@@ -688,7 +678,7 @@ class MasterMaintenanceController extends Controller
                     $dir = $request->input('order.0.dir');
             
                     if(empty($request->input('search.value'))){
-                        $ps = Ps_detail::join('districts','ps_details.district_id','=','districts.district_id')
+                        $ps_details = Ps_detail::join('districts','ps_details.district_id','=','districts.district_id')
                                         ->offset($start)
                                         ->limit($limit)
                                         ->orderBy('ps_id',$dir)
@@ -698,23 +688,25 @@ class MasterMaintenanceController extends Controller
                     }
                     else
                     {
-                        $search = strtoupper($request->input('search.value'));
-                        $ps = Ps_detail::join('districts','ps_details.district_id','=','districts.district_id')
-                                        ->where('ps_name','like',"%{$search}%")
+                        $search = $request->input('search.value');
+                        $ps_details = Ps_detail::join('districts','ps_details.district_id','=','districts.district_id')
+                                        ->where('ps_name','ilike',"%{$search}%")
+                                        ->orWhere('district_name','ilike',"%{$search}%")
                                         ->offset($start)
                                         ->limit($limit)
                                         ->orderBy('ps_name',$dir)
                                         ->get();
                         $totalFiltered = Ps_detail::join('districts','ps_details.district_id','=','districts.district_id')
-                                                    ->where('ps_name','like',"%{$search}%")                                      
+                                                    ->where('ps_name','ilike',"%{$search}%")  
+                                                    ->orWhere('district_name','ilike',"%{$search}%")                                    
                                                     ->count();
                     }
             
                     $data = array();
             
-                    if($ps)
+                    if($ps_details)
                     {
-                        foreach($ps as $ps)
+                        foreach($ps_details as $ps)
                         {
                             $nestedData['ID'] = $ps->ps_id;
                             $nestedData['POLICE STATION NAME'] = $ps->ps_name;
@@ -740,52 +732,56 @@ class MasterMaintenanceController extends Controller
                 public function store_ps(Request $request){
 
                     $this->validate ( $request, [                     
-                        'ps_name' => 'required|string|max:255|unique:ps_details,ps_name'                    
+                        'ps_name' => 'required|string|max:255|unique:ps_details,ps_name',
+                        'district_name' => 'required|exists:districts,district_id'                    
 
-                    ] ); //'district_name' => 'required|integer|max:255'
-                    $ps_name=strtoupper($request->input('ps_name'));
-                    $district_name=strtoupper($request->input('district_name'));
+                    ] ); 
+
+                    $ps_name= trim(strtoupper($request->input('ps_name')));
+                    $district_name=$request->input('district_name');
 
                     Ps_detail::insert([
                         'ps_name'=>$ps_name,
                         'district_id'=>$district_name,
                         'created_at'=>Carbon::today(),
                         'updated_at'=>Carbon::today()
-                        ]);
+                    ]);
+                    
                     return 1;
                 }
 
                 //Update PS
                 public function update_ps(Request $request){
                     $this->validate ( $request, [ 
-                        'id' => 'required',
-                        'ps_name' => 'required|max:255',      
+                        'id' => 'required|exists:ps_details,ps_id',
+                        'ps_name' => 'required|max:255|unique:ps_details,ps_name',      
                     ] ); 
 
                         
-                        $id = $request->input('id');
-                        $ps_name = ucwords($request->input('ps_name'));
-                    
-                        $data = [
-                            'ps_name'=>$ps_name,
-                            'updated_at'=>Carbon::today()
-                            ];
+                    $id = $request->input('id');
+                    $ps_name = trim(strtoupper($request->input('ps_name')));
+                
+                    $data = [
+                        'ps_name'=>$ps_name,
+                        'updated_at'=>Carbon::today()
+                        ];
 
-                        Ps_detail::where('ps_id',$id)->update($data);
-                        
-                        return 1;
+                    Ps_detail::where('ps_id',$id)->update($data);
                     
-                    }
+                    return 1;
+                    
+                }
 
                 //Delete Police Station
-                    public function destroy_police_station(Request $request){
+                    public function destroy_ps(Request $request){
                         $id = $request->input('id');
                         Ps_detail::where('ps_id',$id)->delete();
                         return 1;
                     }
 
-                    public function destroy_seizure_police_record(Request $request){
+                    public function destroy_seizure_ps_record(Request $request){
                         $id = $request->input('id');
+                        User::where('ps_id',$id)->delete();
                         Seizure::where('ps_id',$id)->delete();
                         Ps_detail::where('ps_id',$id)->delete();
                         return 1;
@@ -797,13 +793,24 @@ class MasterMaintenanceController extends Controller
 
         //Storage :start
 
+            public function index_storage_maintainence_view(Request $request)
+            {
+                $data= array();
+
+                $data['districts'] = District::select('district_id','district_name')->orderBy('district_name')->get();                
+
+                return view('storage_maintainence_view',compact('data'));
+            }
+
+
             // Data Table Code for STORAGE
             public function get_all_storage(Request $request)
             {
                 $columns = array( 
                     0 =>'ID', 
                     1 =>'STORAGE NAME',
-                    2=>'ACTION'
+                    2 =>'DISTRICT NAME',
+                    3=>'ACTION'
                 );
                 $totalData =Storage_detail::count();
         
@@ -815,23 +822,29 @@ class MasterMaintenanceController extends Controller
                 $dir = $request->input('order.0.dir');
         
                 if(empty($request->input('search.value'))){
-                    $storages = Storage_detail::offset($start)
+                    $storages = Storage_detail::join('districts','storage_details.district_id','=','districts.district_id')
+                                    ->offset($start)
                                     ->limit($limit)
                                     ->orderBy('storage_id',$dir)
                                     ->get();
-                    $totalFiltered = Storage_detail::count();
+                    $totalFiltered = Storage_detail::join('districts','storage_details.district_id','=','districts.district_id')
+                                                    ->count();
                 }
                 else
                 {
-                    $search = strtoupper($request->input('search.value'));
-                    $storages = Storage_detail::where('storage_name','like',"%{$search}%")
-                                        ->orWhere('storage_id','like',"%{$search}%")
+                    $search = $request->input('search.value');
+                    $storages = Storage_detail::join('districts','storage_details.district_id','=','districts.district_id')
+                                        ->where('storage_name','ilike',"%{$search}%")
+                                        ->orWhere('storage_id','ilike',"%{$search}%")
+                                        ->orWhere('district_name','ilike',"%{$search}%")
                                         ->offset($start)
                                         ->limit($limit)
                                         ->orderBy('storage_id',$dir)
                                         ->get();
-                    $totalFiltered = Storage_detail::where('storage_name','like',"%{$search}%")
-                                            ->orWhere('storage_id','like',"%{$search}%")                                           
+                    $totalFiltered = Storage_detail::join('districts','storage_details.district_id','=','districts.district_id')
+                                            ->where('storage_name','ilike',"%{$search}%")
+                                            ->orWhere('storage_id','ilike',"%{$search}%")  
+                                            ->orWhere('district_name','ilike',"%{$search}%")                                         
                                             ->count();
                 }
         
@@ -843,6 +856,7 @@ class MasterMaintenanceController extends Controller
                     {
                         $nestedData['ID'] = $storage->storage_id;
                         $nestedData['STORAGE NAME'] = $storage->storage_name;
+                        $nestedData['DISTRICT NAME'] = $storage->district_name;
                         $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
         
                         $data[] = $nestedData;
@@ -864,55 +878,72 @@ class MasterMaintenanceController extends Controller
              public function store_storage(Request $request){
 
                 $this->validate ( $request, [                     
-                    'storage_name' => 'required|max:255|unique:storage_details,storage_name'                    
+                    'malkhana_name' => 'required|max:255|unique:storage_details,storage_name',
+                    'district_name' => 'required|exists:districts,district_id'                          
 
                 ] );
-                $storage_name=strtoupper($request->input('storage_name'));
-              
+
+                $storage_name = trim(strtoupper($request->input('malkhana_name')));
+                $district_id = $request->input('district_name');
+
                 Storage_detail::insert([
                     'storage_name'=>$storage_name,
+                    'district_id'=>$district_id,
                     'display'=>'Y',
                     'created_at'=>Carbon::today(),
                     'updated_at'=>Carbon::today()
                     ]);
+
                 return 1;
             }
 
              //Update STORAGE
              public function update_storage(Request $request){
                 $this->validate ( $request, [ 
-                    'id' => 'required',
-                    'storage_name' => 'required|max:255',      
-                ] ); 
+                    'id' => 'required|exists:storage_details,storage_id',
+                    'malkhana_name' => 'required|max:255|unique:storage_details,storage_name',      
+                ]); 
 
                     
-                    $id = $request->input('id');
-                    $storage_name = ucwords($request->input('storage_name'));
-                
-                    $data = [
-                        'storage_name'=>$storage_name,
-                        'updated_at'=>Carbon::today()
-                        ];
+                $id = $request->input('id');
+                $malkhana_name = trim(strtoupper($request->input('malkhana_name')));
+            
+                $data = [
+                    'storage_name'=>$malkhana_name,
+                    'updated_at'=>Carbon::today()
+                ];
 
-                    Storage_detail::where('storage_id',$id)->update($data);
-                    
-                    return 1;
+                Storage_detail::where('storage_id',$id)->update($data);
                 
-                }
+                return 1;
+            
+            }
 
               //Delete storage
              public function destroy_storage(Request $request){
+                $this->validate ( $request, [ 
+                    'id' => 'required|exists:storage_details,storage_id'
+                ]); 
+
                 $id = $request->input('id');
+
                 Storage_detail::where('storage_id',$id)->delete();
+
                 return 1;
               }
 
               public function destroy_seizure_storage_record(Request $request)
               {
-                  $id = $request->input('id');
-                  Seizure::where('storage_location_id',$id)->delete();
-                  Storage_detail::where('storage_id',$id)->delete();
-                  return 1;
+                $this->validate ( $request, [ 
+                    'id' => 'required|exists:storage_details,storage_id'
+                ]); 
+
+                $id = $request->input('id');
+                
+                Seizure::where('storage_location_id',$id)->delete();
+                Storage_detail::where('storage_id',$id)->delete();
+
+                return 1;
               }
 
         //Storage:End
