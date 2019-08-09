@@ -159,17 +159,17 @@ class MasterMaintenanceController extends Controller
                 }
             //Stakeholder::End
 
-            //Magistrate Master Maintainence :: Start
+            //Magistrate Master maintenance :: Start
           
                 //Certifying court master maintenance view
-                public function index_certifying_court_maintainence_view(Request $request)
+                public function index_certifying_court_maintenance_view(Request $request)
                 {
                     $data= array();
 
                     $data['districts'] = District::select('district_id','district_name')->orderBy('district_name')->get();
                     
 
-                    return view('magistrate_maintainence_view',compact('data'));
+                    return view('magistrate_maintenance_view',compact('data'));
                 }
 
                 //showing exisiting Certifying court
@@ -315,11 +315,10 @@ class MasterMaintenanceController extends Controller
         //Narcotic:Start
 
             // Data Table Code for Narcotics
-            public function index_narcotic()
+            public function index_narcotic_maintenance_view()
             {
-                $data=Unit::get();
-                return view('narcotic_view',compact('data'));
-
+                $data= Unit::orderBy('unit_name')->get();
+                return view('narcotic_maintenance_view',compact('data'));
             }
 
             public function get_all_narcotics_data(Request $request)
@@ -341,7 +340,7 @@ class MasterMaintenanceController extends Controller
                 $dir = $request->input('order.0.dir');
         
                 if(empty($request->input('search.value'))){
-                    $narcotic = Narcotic_unit::join('units','units.unit_id','=','narcotic_units.unit_id')                               
+                    $narcotics = Narcotic_unit::join('units','units.unit_id','=','narcotic_units.unit_id')                               
                                                 ->join('narcotics','narcotics.drug_id','=','narcotic_units.narcotic_id')                               
                                                 ->offset($start)
                                                 ->limit($limit)
@@ -354,7 +353,7 @@ class MasterMaintenanceController extends Controller
                 else
                 {
                     $search = $request->input('search.value');
-                    $narcotic = Narcotic_unit::join('units','units.unit_id','=','narcotic_units.unit_id')                               
+                    $narcotics = Narcotic_unit::join('units','units.unit_id','=','narcotic_units.unit_id')                               
                                             ->join('narcotics','narcotics.drug_id','=','narcotic_units.narcotic_id')                               
                                             ->where('unit_name','ilike',"%{$search}%")
                                             ->orWhere('drug_name','ilike',"%{$search}%")                                    
@@ -371,9 +370,9 @@ class MasterMaintenanceController extends Controller
         
                 $data = array();
         
-                if($narcotic)
+                if($narcotics)
                 {
-                    foreach($narcotic as $narcotic)
+                    foreach($narcotics as $narcotic)
                     {
                         $nestedData['ID'] = $narcotic->drug_id;
                         
@@ -417,12 +416,12 @@ class MasterMaintenanceController extends Controller
             public function store_narcotic(Request $request){
                 $this->validate ( $request, [ 
                     'narcotic_name' => 'required|max:255|unique:narcotics,drug_name',
-                    'narcotic_unit' => 'required|max:255'         
-                ] ); 
+                    'weighing_unit' => 'required|array',         
+                    'weighing_unit.*' => 'required|exists:units,unit_id'         
+                ]); 
 
-                $narcotic = ucwords($request->input('narcotic_name'));
-                $unit = $request->input('narcotic_unit');
-                
+                $narcotic = trim(strtoupper($request->input('narcotic_name')));
+                $unit = $request->input('weighing_unit');               
                
                 
                 Narcotic::insert([
@@ -452,29 +451,34 @@ class MasterMaintenanceController extends Controller
             //update Narcotics
             public function update_narcotics(Request $request){
                 $this->validate ( $request, [ 
-                    'id' => 'required',
-                    'narcotic' => 'required|max:255',
-                    'unit' => 'required|max:255'          
-                ] ); 
+                    'narcotic_id' => 'required|exists:narcotics,drug_id',
+                    'narcotic_name' => 'required|max:255|unique:narcotics,drug_name',
+                    'weighing_unit' => 'required|exists:units,unit_id'          
+                ]); 
 
                     
-                    $id = $request->input('id');
-                    $narcotic = ucwords($request->input('narcotic'));
-                    $unit = $request->input('unit');
-                    $prev_unit = $request->input('prev_unit');
+                $id = $request->input('narcotic_id');
+                $narcotic = trim(strtoupper($request->input('narcotic_name')));
+                $unit = $request->input('weighing_unit');
 
-                    $data = [
-                        'drug_name'=>$narcotic,
-                        'updated_at'=>Carbon::today(),
-                        'display' =>'Y'
+                $data = [
+                    'drug_name'=>$narcotic,
+                    'updated_at'=>Carbon::today()
+                ];
 
-                    ];
-
-                    Narcotic::where('drug_id',$id)->update($data);
-                    
-                    return 1;
+                Narcotic::where('drug_id',$id)->update($data);
                 
-                }
+                // $data = [
+                //     'narcotic_id'=>$id,
+                //     'unit_id'=>$unit,
+                //     'updated_at'=>Carbon::today()
+                // ];
+
+                // Narcotic_unit::where('drug_id',$id)->update($data);                
+
+                return 1;
+                
+            }
 
                 //Delete Narcotics
                 public function destroy_narcotic(Request $request){
@@ -519,10 +523,10 @@ class MasterMaintenanceController extends Controller
             
         //Narcotic:ends
 
-        //Unit:start
+        //Weighing Unit:start
 
             // Data Table Code for Unit
-            public function get_all_units(Request $request)
+            public function get_all_weighing_units(Request $request)
             {
                 $columns = array( 
                     0 =>'ID', 
@@ -540,31 +544,31 @@ class MasterMaintenanceController extends Controller
                 $dir = $request->input('order.0.dir');
         
                 if(empty($request->input('search.value'))){
-                    $unit = Unit::offset($start)
-                                    ->limit($limit)
-                                    ->orderBy('unit_id',$dir)
-                                    ->get();
+                    $units = Unit::offset($start)
+                                ->limit($limit)
+                                ->orderBy('unit_id',$dir)
+                                ->get();
                     $totalFiltered = Unit::count();
                 }
                 else
                 {
                     $search = $request->input('search.value');
-                    $unit = Unit::where('unit_id','ilike',"%{$search}%")
-                                        ->orWhere('unit_name','ilike',"%{$search}%")                                    
-                                        ->offset($start)
-                                        ->limit($limit)
-                                        ->orderBy('unit_name',$dir)
-                                        ->get();
+                    $units = Unit::where('unit_id','ilike',"%{$search}%")
+                                    ->orWhere('unit_name','ilike',"%{$search}%")                                    
+                                    ->offset($start)
+                                    ->limit($limit)
+                                    ->orderBy('unit_name',$dir)
+                                    ->get();
                     $totalFiltered = Unit::where('unit_id','ilike',"%{$search}%")
-                                            ->orWhere('unit_name','ilike',"%{$search}%")                                           
-                                            ->count();
+                                        ->orWhere('unit_name','ilike',"%{$search}%")                                           
+                                        ->count();
                 }
         
                 $data = array();
         
-                if($unit)
+                if($units)
                 {
-                    foreach($unit as $unit)
+                    foreach($units as $unit)
                     {
                         $nestedData['ID'] = $unit->unit_id;
                         $nestedData['UNIT NAME'] = $unit->unit_name;
@@ -586,76 +590,95 @@ class MasterMaintenanceController extends Controller
             
             }
 
-            //Add Unit
-            public function store_unit(Request $request){
+            //Add Weighing Unit
+            public function store_weighing_unit(Request $request){
                 $this->validate ( $request, [ 
-                    'narcotic_unit' => 'required|max:255',
+                    'weighing_unit_name' => 'required|max:255|unique:units,unit_name',
                     'unit_degree' => 'required|integer'   
-                ] ); 
-                $narcotic_unit = strtoupper($request->input('narcotic_unit')); 
+                ]); 
+
+                $weighing_unit_name = trim(strtoupper($request->input('weighing_unit_name'))); 
                 $unit_degree = $request->input('unit_degree'); 
+
                 Unit::insert([
-                    'unit_name'=>$narcotic_unit,
+                    'unit_name'=>$weighing_unit_name,
                     'unit_degree' =>$unit_degree,
                     'created_at'=>Carbon::today(),
                     'updated_at'=>Carbon::today()
-                    ]);
+                ]);
         
-            return 1;
+                return 1;
             }
 
-            //update Unit
-            public function update_unit(Request $request){
+            //Update Weighing Unit
+            public function update_weighing_unit(Request $request){
                 $this->validate ( $request, [ 
-                    'id' => 'required',
-                    'narcotic_unit' => 'required|max:255'          
-                ] ); 
+                    'unit_id' => 'required|exists:units,unit_id',
+                    'weighing_unit_name' => 'required|max:255|unique:units,unit_name'          
+                ]); 
 
                 
-                $id = $request->input('id');
-                $unit = $request->input('unit');
+                $unit_id = $request->input('unit_id');
+                $weighing_unit_name = trim(strtoupper($request->input('weighing_unit_name'))); 
 
                 $data = [
-                    'unit_name'=>$unit,
+                    'unit_name'=>$weighing_unit_name,
                     'updated_at'=>Carbon::today()
 
                 ];
 
-                Unit::where('unit_id',$id)->update($data);
+                Unit::where('unit_id',$unit_id)->update($data);
                 
                 return 1;
             
             }
 
-             //Delete unit
-             public function destroy_unit(Request $request){
-                $id = $request->input('id');
-                Unit::where('unit_id',$id)->delete();
+             //Delete Weighing Unit
+             public function destroy_weighing_unit(Request $request){
+                $this->validate ( $request, [ 
+                    'unit_id' => 'required|exists:units,unit_id'
+                ]); 
+                
+                $unit_id = $request->input('unit_id');
+                
+                Unit::where('unit_id',$unit_id)->delete();
+
                 return 1;
+
               }
 
-              public function destroy_seizure_unit_record(Request $request)
+              public function destroy_seizure_weighing_unit_record(Request $request)
               {
-                  $id = $request->input('id');
-                  Seizure::where('seizure_quantity_weighing_unit_id',$id)->delete();
-                  Narcotic_unit::where('unit_id',$id)->delete();
-                  Unit::where('unit_id',$id)->delete();
+                    $this->validate ( $request, [ 
+                        'unit_id' => 'required|exists:units,unit_id'
+                    ]); 
+                
+                    $unit_id = $request->input('unit_id');
+
+                  Seizure::where('seizure_quantity_weighing_unit_id',$unit_id)
+                            ->orWhere('sample_quantity_weighing_unit_id',$unit_id)
+                            ->orWhere('disposal_quantity_weighing_unit_id',$unit_id)
+                            ->delete();
+
+                  Narcotic_unit::where('unit_id',$unit_id)->delete();
+
+                  Unit::where('unit_id',$unit_id)->delete();
+
                   return 1;
+
               }
 
-
-
-        //Unit:end
+        //Weighing Unit:end
 
         //Police Staion:Start
 
-            public function index_ps_maintainence_view(Request $request)
+            public function index_ps_maintenance_view(Request $request)
             {
                 $data= array();
 
                 $data['districts'] = District::select('district_id','district_name')->orderBy('district_name')->get();                
 
-                return view('ps_maintainence_view',compact('data'));
+                return view('ps_maintenance_view',compact('data'));
             }
 
 
@@ -793,13 +816,13 @@ class MasterMaintenanceController extends Controller
 
         //Storage :start
 
-            public function index_storage_maintainence_view(Request $request)
+            public function index_storage_maintenance_view(Request $request)
             {
                 $data= array();
 
                 $data['districts'] = District::select('district_id','district_name')->orderBy('district_name')->get();                
 
-                return view('storage_maintainence_view',compact('data'));
+                return view('storage_maintenance_view',compact('data'));
             }
 
 

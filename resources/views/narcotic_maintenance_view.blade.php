@@ -143,22 +143,28 @@
                             
                  $.ajax({
                         type:"POST",
-                        url:"master_maintenance/narcotic",
-                        data:{_token: $('meta[name="csrf-token"]').attr('content'), 
-                                 narcotic_name:narcotic,
-                                 narcotic_unit:narcotic_unit
-                             },
-                             success:function(response){
-                               $("#narcotic_name").val('');
-                               $("#narcotic_unit").val('');
-                               swal("Added Successfully","A new narcotic has been added","success");
-                               setTimeout(function(){
-                                    window.location.reload(true);
-                                },2000);  
-                            }                        
+                        url:"narcotic_maintenance/add_narcotic",
+                        data:{
+                            _token: $('meta[name="csrf-token"]').attr('content'), 
+                            narcotic_name:narcotic,
+                            weighing_unit:narcotic_unit
+                         },
+                        success:function(response){
+                            $("#narcotic_name").val('');
+                            $("#narcotic_unit").val('');
+                            swal("Added Successfully","A new Narcotic has been added","success");
+                            table.api().ajax.reload();  
+                        },
+                        error:function(response) {  
+                            if(response.responseJSON.errors.hasOwnProperty('narcotic_name'))
+                                swal("Cannot create new Narcotic", ""+response.responseJSON.errors.narcotic_name['0'], "error");
+                                                        
+                            if(response.responseJSON.errors.hasOwnProperty('weighing_unit'))
+                                swal("Cannot create new Narcotic", ""+response.responseJSON.errors.weighing_unit['0'], "error");
+                        }                       
 
-                        });
                 });
+            });
 
          /* To prevent updation when no changes to the data is made*/
 
@@ -182,24 +188,23 @@
 
             $.ajax({
                 type:"POST",
-                url:"master_maintenance_narcotic/update",                
-                data:{_token: $('meta[name="csrf-token"]').attr('content'), 
-                        id:id, 
-                        narcotic:narcotic,
-                        unit:unit,
-                        prev_unit:prev_unit
+                url:"narcotic_maintenance/update_narcotic",                
+                data:{
+                        _token: $('meta[name="csrf-token"]').attr('content'), 
+                        narcotic_id:id, 
+                        narcotic_name:narcotic,
+                        weighing_unit:unit
                     },
-                success:function(response){   
-                               
+                success:function(response){ 
                     swal("Narcotic's Details Updated","","success");
                     table.api().ajax.reload();
                 },
                 error:function(response) { 
-                      if(response.responseJSON.errors.hasOwnProperty('unit'))
-                         swal("Cannot updated Narcotic", ""+response.responseJSON.errors.unit['0'], "error");
-                                                         
-                      if(response.responseJSON.errors.hasOwnProperty('narcotic'))
-                          swal("Cannot updated Narcotic", ""+response.responseJSON.errors.narcotic['0'], "error");         
+                    if(response.responseJSON.errors.hasOwnProperty('narcotic_name'))
+                        swal("Cannot updated Narcotic", ""+response.responseJSON.errors.narcotic_name['0'], "error");
+                                                        
+                    if(response.responseJSON.errors.hasOwnProperty('weighing_unit'))
+                        swal("Cannot updated Narcotic", ""+response.responseJSON.errors.weighing_unit['0'], "error");         
                 }
              })
         })
@@ -212,7 +217,7 @@
 
                 swal({
                     title: "Are You Sure?",
-                    text: "Once submitted, you will not be able to change the record",
+                    text: "Once submitted, you will not be able to recover the record",
                     icon: "warning",
                     buttons: true,
                     dangerMode: true,
@@ -224,7 +229,7 @@
 
                             $.ajax({
                                 type:"POST",
-                                url:"master_maintenance_narcotic/delete",
+                                url:"narcotic_maintenance/delete_narcotic",
                                 data:{
                                     _token: $('meta[name="csrf-token"]').attr('content'), 
                                     id:id,
@@ -236,12 +241,11 @@
                                         table.api().ajax.reload();                
                                     }
                                 },
-                                error:function(response){
-                                                                    
+                                error:function(response){                                                                    
                                     var id = element.closest("tr").find(".id").text();
                                         swal({
                                             title: "Are You Sure?",
-                                            text: "Once deleted,all details of SEIZURE and USERS associated with this COURT will be deleted ",
+                                            text: "Once deleted,all details of SEIZURE associated with this NARCOTIC will be deleted ",
                                             icon: "warning",
                                             buttons: true,
                                             dangerMode: true,

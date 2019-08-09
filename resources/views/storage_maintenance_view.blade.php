@@ -139,7 +139,7 @@
                                
                 $.ajax({
                     type:"POST",
-                    url:"storage_maintainence/add_storage",
+                    url:"storage_maintenance/add_storage",
                     data:{
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         malkhana_name:storage_name,
@@ -182,7 +182,7 @@
 
             $.ajax({
                 type:"POST",
-                url:"storage_maintainence/update_storage",                
+                url:"storage_maintenance/update_storage",                
                 data:{_token: $('meta[name="csrf-token"]').attr('content'), 
                         id:id, 
                         malkhana_name:storage_name
@@ -218,7 +218,7 @@
                            
                             $.ajax({
                                 type:"POST",
-                                url:"storage_maintainence/delete_storage",
+                                url:"storage_maintenance/delete_storage",
                                 data:{
                                     _token: $('meta[name="csrf-token"]').attr('content'), 
                                     id:id
@@ -242,7 +242,7 @@
                                             if(willDelete) {
                                                 $.ajax({
                                                     type:"POST",
-                                                    url:"storage_maintainence/seizure_storage_delete",
+                                                    url:"storage_maintenance/seizure_storage_delete",
                                                     data:
                                                     {
                                                         _token: $('meta[name="csrf-token"]').attr('content'),

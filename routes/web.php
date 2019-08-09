@@ -82,37 +82,37 @@
     // Master Maintainence
     Route::group(['middleware' => ['auth','role_manager:admin']], function () {
         //Certifying Court ::start
-        Route::get('certifying_court_maintainence_view', 'MasterMaintenanceController@index_certifying_court_maintainence_view');
+        Route::get('certifying_court_maintenance_view', 'MasterMaintenanceController@index_certifying_court_maintenance_view');
 
         Route::post('show_certifying_court_details', 'MasterMaintenanceController@get_all_certifying_court_details');
         
-        Route::post('certifying_court_maintainence/add_certifying_court',
+        Route::post('certifying_court_maintenance/add_certifying_court',
         'MasterMaintenanceController@store_certifying_court');
 
-        Route::post('certifying_court_maintainence/update_certifying_court',
+        Route::post('certifying_court_maintenance/update_certifying_court',
         'MasterMaintenanceController@update_certifying_court');
         
 
-        Route::post('certifying_court_maintainence/delete_certifying_court',
+        Route::post('certifying_court_maintenance/delete_certifying_court',
         'MasterMaintenanceController@destroy_certifying_court');
 
-        Route::post('certifying_court_maintainence/seizure_certifying_court_delete',
+        Route::post('certifying_court_maintenance/seizure_certifying_court_delete',
         'MasterMaintenanceController@destroy_seizure_certifying_court_record');
         //Certifying Court ::end
 
         
         //Agency ::start    
-        Route::get('agency_maintainence_view', function(){
-            return view ('agency_maintainence_view');
+        Route::get('agency_maintenance_view', function(){
+            return view ('agency_maintenance_view');
         });
 
         Route::post('show_all_agencies',
         'MasterMaintenanceController@get_all_agencies_data');
 
-        Route::post('agency_maintainence/add_agency',
+        Route::post('agency_maintenance/add_agency',
         'MasterMaintenanceController@store_agency');
 
-        Route::post('agency_maintainence/update_agency',
+        Route::post('agency_maintenance/update_agency',
         'MasterMaintenanceController@update_agency');
 
         Route::post('master_maintenance_stakeholder/delete',
@@ -126,86 +126,84 @@
         //Agency ::end
 
         //Narcotic ::start
-        Route::get('narcotic_view', 'MasterMaintenanceController@index_narcotic');
+        Route::get('narcotic_maintenance_view', 'MasterMaintenanceController@index_narcotic_maintenance_view');
             
         Route::post('show_all_narcotics',
         'MasterMaintenanceController@get_all_narcotics_data');
                 
-        Route::post('master_maintenance/narcotic',
+        Route::post('narcotic_maintenance/add_narcotic',
         'MasterMaintenanceController@store_narcotic');
 
-        Route::post('master_maintenance_narcotic/update',
+        Route::post('narcotic_maintenance/update_narcotic',
         'MasterMaintenanceController@update_narcotics');
 
-        Route::post('master_maintenance_narcotic/delete',
+        Route::post('narcotic_maintenance/delete_narcotic',
         'MasterMaintenanceController@destroy_narcotic');
 
-        Route::post('master_maintenance_narcotic/seizure_narcotic_delete',
+        Route::post('narcotic_maintenance/seizure_narcotic_delete',
         'MasterMaintenanceController@destroy_seizure_narcotic_record');
         //Narcotic::end
 
-        //Unit::start
-        Route::get('unit_view', function(){
-            return view ('unit_view');
+        //Weighing Unit::start
+        Route::get('weighing_unit_maintenance_view', function(){
+            return view ('weighing_unit_maintenance_view');
         });
 
-        Route::post('master_maintenance/unit',
-        'MasterMaintenanceController@store_unit');
+        Route::post('weighing_unit_maintenance/add_weighing_unit',
+        'MasterMaintenanceController@store_weighing_unit');
 
-
-        Route::post('show_all_units',
-        'MasterMaintenanceController@get_all_units');
+        Route::post('show_all_weighing_units',
+        'MasterMaintenanceController@get_all_weighing_units');
         
-        Route::post('master_maintenance_unit/update',
-        'MasterMaintenanceController@update_narcotics');
+        Route::post('weighing_unit_maintenance/update_weighing_unit',
+        'MasterMaintenanceController@update_weighing_unit');
 
-        Route::post('master_maintenance_unit/delete',
-        'MasterMaintenanceController@destroy_unit');
-
+        Route::post('weighing_unit_maintenance/delete_weighing_unit',
+        'MasterMaintenanceController@destroy_weighing_unit');
         
-        Route::post('master_maintenance_unit/seizure_unit_delete',
-        'MasterMaintenanceController@destroy_seizure_unit_record');
-        //Unit::end
+        Route::post('weighing_unit_maintenance/seizure_weighing_unit_delete',
+        'MasterMaintenanceController@destroy_seizure_weighing_unit_record');
+        //Weighing Unit::end
 
         //District::Start
         Route::get('district_view', 'MasterMaintenanceController@index_district');
         //District::End
 
         //Police Station::Start
-        Route::get('ps_maintainence_view', 'MasterMaintenanceController@index_ps_maintainence_view');        
+        Route::get('ps_maintenance_view', 'MasterMaintenanceController@index_ps_maintenance_view');        
 
-        Route::post('ps_maintainence/add_ps',
+        Route::post('ps_maintenance/add_ps',
         'MasterMaintenanceController@store_ps');
 
         Route::post('show_all_ps',
         'MasterMaintenanceController@get_all_ps');
 
-        Route::post('ps_maintainence/update_ps',
+        Route::post('ps_maintenance/update_ps',
         'MasterMaintenanceController@update_ps');
 
-        Route::post('ps_maintainence/delete_ps',
+        Route::post('ps_maintenance/delete_ps',
         'MasterMaintenanceController@destroy_ps');
 
-        Route::post('ps_maintainence/seizure_ps_delete',
+        Route::post('ps_maintenance/seizure_ps_delete',
         'MasterMaintenanceController@destroy_seizure_ps_record');
         //Police Station::End
 
         //Storage :: Start
-        Route::get('storage_maintainence_view', 'MasterMaintenanceController@index_storage_maintainence_view');
+        Route::get('storage_maintenance_view', 'MasterMaintenanceController@index_storage_maintenance_view');
 
         Route::post('show_all_storage',
         'MasterMaintenanceController@get_all_storage');
 
-        Route::post('storage_maintainence/add_storage',
+        Route::post('storage_maintenance/add_storage',
         'MasterMaintenanceController@store_storage');
 
-        Route::post('storage_maintainence/update_storage',
+        Route::post('storage_maintenance/update_storage',
         'MasterMaintenanceController@update_storage');
 
-        Route::post('storage_maintainence/delete_storage',
+        Route::post('storage_maintenance/delete_storage',
         'MasterMaintenanceController@destroy_storage');
         
-        Route::post('storage_maintainence/seizure_storage_delete',
+        Route::post('storage_maintenance/seizure_storage_delete',
         'MasterMaintenanceController@destroy_seizure_storage_record');
         //Storage :: End
     

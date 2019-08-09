@@ -2,7 +2,7 @@
 <!-- Main content -->
 <div class="box box-default">
         <div class="box-header with-border">
-            <h3 class="box-title">Add New Unit</h3>
+            <h3 class="box-title">Add New Weighing Unit</h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
@@ -12,10 +12,10 @@
         <div class="box-body">
             <div class="row">                
                 <div class="col-md-3 form-group required">
-                    <label class="control-label">Narcotic's Weighing Unit</label>
+                    <label class="control-label">Weighing Unit</label>
                     <input type="text" class="form-control" name="narcotic_unit" id="narcotic_unit">
                 </div>
-                <div class="col-md-4 form-group required">
+                <div class="col-md-3 form-group required">
                     <label class="control-label unit_degree">Unit Degree</label><br>
                         <select class="select2"  name="unit_degree" id="unit_degree">
                              <option value="">Select Unit</option>
@@ -26,10 +26,10 @@
                          </select>
                 </div>
                                 
-                 <div class="col-md-2">
+                 <div class="col-md-3">
                     <div class="form-group">
                         <label>&nbsp;</label>
-                        <button type="button" class="form-control btn-success btn btn-primary" id="add_unit">Add Unit
+                        <button type="button" class="form-control btn-success btn btn-primary" id="add_unit">Add Weighing Unit
                     </div>
                 </div>
                 <!-- /.col -->  
@@ -41,7 +41,7 @@
 
 <div class="box box-default" id="show_all_data">
     <div class="box-header with-border">
-        <h3 class="box-title">All Units' Details</h3>
+        <h3 class="box-title">All Weighing Unit Details</h3>
         <div class="box-tools pull-right">
             <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
             <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
@@ -53,7 +53,7 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>UNIT NAME</th>
+                            <th>WEIGHING UNIT NAME</th>
                             <th>UNIT DEGREE</th>
                             <th>ACTION</th>
                         </tr>
@@ -107,7 +107,7 @@
                             "processing": true,
                             "serverSide": true,
                             "ajax":{
-                                    "url": "show_all_units",
+                                    "url": "show_all_weighing_units",
                                     "dataType": "json",
                                     "type": "POST",
                                     "data":{ 
@@ -138,32 +138,31 @@
             //add unit:start
              $(document).on("click","#add_unit",function (){
 
-
-                var narcotic_unit=$("#narcotic_unit").val().toLowerCase().replace(/\b[a-z>]/g, function(letter){
-                    return letter.toUpperCase();
-                });
+                var narcotic_unit=$("#narcotic_unit").val();
                 var unit_degree=$("#unit_degree option:selected").val();
                                             
                  $.ajax({
                         type:"POST",
-                        url:"master_maintenance/unit",
+                        url:"weighing_unit_maintenance/add_weighing_unit",
                         data:{
-                                _token: $('meta[name="csrf-token"]').attr('content'), 
-                                narcotic_unit:narcotic_unit,
-                                unit_degree:unit_degree
-                             },
-                             success:function(response){
-                                $("#narcotic_unit").val('');
-                                swal("Added Successfully","A new narcotic unit has been added","success");
-                                table.api().ajax.reload();   
-                            },
-                            error:function(response) {  
-                               if(response.responseJSON.errors.hasOwnProperty('narcotic_unit'))
-                                   swal("Cannot Add New Unit", ""+response.responseJSON.errors.narcotic_unit['0'], "error");                                                                                          
-                              }
-                    });
+                            _token: $('meta[name="csrf-token"]').attr('content'), 
+                            weighing_unit_name:narcotic_unit,
+                            unit_degree:unit_degree
+                        },
+                        success:function(response){
+                            $("#narcotic_unit").val('');
+                            swal("Added Successfully","A new Weighing Unit has been added","success");
+                            table.api().ajax.reload();   
+                        },
+                        error:function(response) {  
+                            if(response.responseJSON.errors.hasOwnProperty('weighing_unit_name'))
+                                swal("Cannot Add New Weighing Unit", ""+response.responseJSON.errors.weighing_unit_name['0'], "error");                                                                                          
+                            if(response.responseJSON.errors.hasOwnProperty('unit_degree'))
+                                swal("Cannot Add New Weighing Unit", ""+response.responseJSON.errors.unit_degree['0'], "error");                                                                                          
+                        }
                 });
-                //add unit:end
+            });
+            //add unit:end
 
                 //To prevent updation when no changes to the data is made*/
                 var prev_unit;
@@ -174,28 +173,28 @@
 
                 //Data Updation Code Starts
                 $(document).on("focusout",".data", function(){
-                    var id = $(this).closest("tr").find(".id").text();
-                    var unit = $(this).closest("tr").find(".unit").text();
+                    var unit_id = $(this).closest("tr").find(".id").text();
+                    var weighing_unit_name = $(this).closest("tr").find(".unit").text();
                                     
-                    if(unit == prev_unit)
+                    if(weighing_unit_name == prev_unit)
                         return false;
 
 
                     $.ajax({
                         type:"POST",
-                        url:"master_maintenance_unit/update",                
-                        data:{_token: $('meta[name="csrf-token"]').attr('content'), 
-                                id:id, 
-                                unit:unit
-                            },
-                        success:function(response){   
-                                    
-                            swal("Narcotic Unit's Details Updated","","success");
+                        url:"weighing_unit_maintenance/update_weighing_unit",                
+                        data:{
+                            _token: $('meta[name="csrf-token"]').attr('content'), 
+                            weighing_unit_name:weighing_unit_name,
+                            unit_id:unit_id
+                        },
+                        success:function(response){                                    
+                            swal("Weighing Unit Details Updated","","success");
                             table.api().ajax.reload();
                         },
                         error:function(response) {  
-                            if(response.responseJSON.errors.hasOwnProperty('unit'))
-                                swal("Cannot updated Narcotic Unit", ""+response.responseJSON.errors.unit['0'], "error");
+                            if(response.responseJSON.errors.hasOwnProperty('weighing_unit_name'))
+                                swal("Cannot updated Weighing Unit", ""+response.responseJSON.errors.weighing_unit_name['0'], "error");
                         }
                     })
                 })
@@ -220,21 +219,21 @@
                                 
                                 $.ajax({
                                     type:"POST",
-                                    url:"master_maintenance_unit/delete",
+                                    url:"weighing_unit_maintenance/delete_weighing_unit",
                                     data:{
                                         _token: $('meta[name="csrf-token"]').attr('content'), 
-                                        id:id
+                                        unit_id:id
                                     },
                                     success:function(response){
                                         if(response==1){
-                                            swal("Unit Deleted Successfully","","success");  
+                                            swal("Weighing Unit Deleted Successfully","","success");  
                                             table.api().ajax.reload();                
                                         }
                                     },
                                     error:function(response){                                    
                                         swal({
                                             title: "Are You Sure?",
-                                            text: "Once deleted,all details of SEIZURE and USERS associated with this UNIT will be deleted ",
+                                            text: "Once deleted,all details of SEIZURE associated with this Weighing Unit will be deleted ",
                                             icon: "warning",
                                             buttons: true,
                                             dangerMode: true,
@@ -243,14 +242,14 @@
                                             if(willDelete) {
                                                 $.ajax({
                                                     type:"POST",
-                                                    url:"master_maintenance_unit/seizure_unit_delete",
+                                                    url:"weighing_unit_maintenance/seizure_weighing_unit_delete",
                                                     data:{
                                                         _token: $('meta[name="csrf-token"]').attr('content'), 
-                                                        id:id
+                                                        unit_id:id
                                                     },
                                                     success:function(response){
                                                         if(response==1){
-                                                            swal("Court Deleted Successfully","Court and its associated entry has been deleted","success");  
+                                                            swal("Weighing Unit Deleted Successfully","Weighing Unit and its associated entry has been deleted","success");  
                                                             table.api().ajax.reload();                
                                                         }
                                                     }

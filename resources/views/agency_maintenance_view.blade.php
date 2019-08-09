@@ -121,7 +121,7 @@
 
                 $.ajax({
                     type:"POST",
-                    url:"agency_maintainence/add_agency",
+                    url:"agency_maintenance/add_agency",
                     data:{
                         _token: $('meta[name="csrf-token"]').attr('content'), 
                         agency_name:stakeholder
@@ -156,7 +156,7 @@
 
             $.ajax({
                 type:"POST",
-                url:"agency_maintainence/update_agency",                
+                url:"agency_maintenance/update_agency",                
                 data:{
                     _token: $('meta[name="csrf-token"]').attr('content'), 
                     id:id, 

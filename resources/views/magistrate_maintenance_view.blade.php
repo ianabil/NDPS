@@ -133,7 +133,7 @@
                     $.ajax({
 
                         type:"POST",
-                        url:"certifying_court_maintainence/add_certifying_court",
+                        url:"certifying_court_maintenance/add_certifying_court",
                         data:{
                             _token: $('meta[name="csrf-token"]').attr('content'),
                             certifying_court_name:certifying_court_name,
@@ -188,7 +188,7 @@
 
             $.ajax({
                 type:"POST",
-                url:"certifying_court_maintainence/update_certifying_court",                
+                url:"certifying_court_maintenance/update_certifying_court",                
                 data:{_token: $('meta[name="csrf-token"]').attr('content'), 
                         id:id, 
                         certifying_court_name:certifying_court_name
@@ -228,7 +228,7 @@
 
                         $.ajax({
                             type:"POST",
-                            url:"certifying_court_maintainence/delete_certifying_court",
+                            url:"certifying_court_maintenance/delete_certifying_court",
                             data:{
                                 _token: $('meta[name="csrf-token"]').attr('content'), 
                                 id:id
@@ -256,7 +256,7 @@
 
                                             $.ajax({
                                                 type:"POST",
-                                                url:"certifying_court_maintainence/seizure_certifying_court_delete",
+                                                url:"certifying_court_maintenance/seizure_certifying_court_delete",
                                                 data:{
                                                     _token: $('meta[name="csrf-token"]').attr('content'), 
                                                     id:id

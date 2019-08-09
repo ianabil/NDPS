@@ -138,7 +138,7 @@
                 
                 $.ajax({
                     type:"POST",
-                    url:"ps_maintainence/add_ps",
+                    url:"ps_maintenance/add_ps",
                     data:{
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         ps_name:ps_name,
@@ -182,7 +182,7 @@
 
             $.ajax({
                 type:"POST",
-                url:"ps_maintainence/update_ps",                
+                url:"ps_maintenance/update_ps",                
                 data:{_token: $('meta[name="csrf-token"]').attr('content'), 
                         id:id, 
                         ps_name:ps_name
@@ -218,7 +218,7 @@
 
                             $.ajax({
                                 type:"POST",
-                                url:"ps_maintainence/delete_ps",
+                                url:"ps_maintenance/delete_ps",
                                 data:{
                                     _token: $('meta[name="csrf-token"]').attr('content'), 
                                     id:id
@@ -245,7 +245,7 @@
 
                                             $.ajax({
                                                 type:"POST",
-                                                url:"ps_maintainence/seizure_ps_delete",
+                                                url:"ps_maintenance/seizure_ps_delete",
                                                 data:{
                                                     _token: $('meta[name="csrf-token"]').attr('content'), 
                                                     id:id
