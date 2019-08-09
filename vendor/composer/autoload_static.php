@@ -421,8 +421,8 @@ class ComposerStaticInit25a8ad2d3a69d8524dcf18b505f07412
 
     public static $classMap = array (
         'App\\Agency_detail' => __DIR__ . '/../..' . '/app/Agency_detail.php',
+        'App\\CertifyingCourtDetail' => __DIR__ . '/../..' . '/app/CertifyingCourtDetail.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
-        'App\\Court_detail' => __DIR__ . '/../..' . '/app/Court_detail.php',
         'App\\District' => __DIR__ . '/../..' . '/app/District.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
         'App\\Http\\Controllers\\Auth\\ForgotPasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ForgotPasswordController.php',
@@ -431,6 +431,7 @@ class ComposerStaticInit25a8ad2d3a69d8524dcf18b505f07412
         'App\\Http\\Controllers\\Auth\\ResetPasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ResetPasswordController.php',
         'App\\Http\\Controllers\\Auth\\VerificationController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/VerificationController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
+        'App\\Http\\Controllers\\EntryFormController' => __DIR__ . '/../..' . '/app/Http/Controllers/EntryFormController.php',
         'App\\Http\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Http/Controllers/HomeController.php',
         'App\\Http\\Controllers\\LegacyDataController' => __DIR__ . '/../..' . '/app/Http/Controllers/LegacyDataController.php',
         'App\\Http\\Controllers\\MagistrateController' => __DIR__ . '/../..' . '/app/Http/Controllers/MagistrateController.php',
@@ -438,7 +439,6 @@ class ComposerStaticInit25a8ad2d3a69d8524dcf18b505f07412
         'App\\Http\\Controllers\\MonthlyReportController' => __DIR__ . '/../..' . '/app/Http/Controllers/MonthlyReportController.php',
         'App\\Http\\Controllers\\SearchController' => __DIR__ . '/../..' . '/app/Http/Controllers/SearchController.php',
         'App\\Http\\Controllers\\SpecialCourtController' => __DIR__ . '/../..' . '/app/Http/Controllers/SpecialCourtController.php',
-        'App\\Http\\Controllers\\entry_formController' => __DIR__ . '/../..' . '/app/Http/Controllers/entry_formController.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
         'App\\Http\\Middleware\\Authenticate' => __DIR__ . '/../..' . '/app/Http/Middleware/Authenticate.php',
         'App\\Http\\Middleware\\CheckForMaintenanceMode' => __DIR__ . '/../..' . '/app/Http/Middleware/CheckForMaintenanceMode.php',

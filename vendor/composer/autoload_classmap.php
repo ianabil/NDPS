@@ -7,8 +7,8 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'App\\Agency_detail' => $baseDir . '/app/Agency_detail.php',
+    'App\\CertifyingCourtDetail' => $baseDir . '/app/CertifyingCourtDetail.php',
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
-    'App\\Court_detail' => $baseDir . '/app/Court_detail.php',
     'App\\District' => $baseDir . '/app/District.php',
     'App\\Exceptions\\Handler' => $baseDir . '/app/Exceptions/Handler.php',
     'App\\Http\\Controllers\\Auth\\ForgotPasswordController' => $baseDir . '/app/Http/Controllers/Auth/ForgotPasswordController.php',
@@ -17,6 +17,7 @@ return array(
     'App\\Http\\Controllers\\Auth\\ResetPasswordController' => $baseDir . '/app/Http/Controllers/Auth/ResetPasswordController.php',
     'App\\Http\\Controllers\\Auth\\VerificationController' => $baseDir . '/app/Http/Controllers/Auth/VerificationController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
+    'App\\Http\\Controllers\\EntryFormController' => $baseDir . '/app/Http/Controllers/EntryFormController.php',
     'App\\Http\\Controllers\\HomeController' => $baseDir . '/app/Http/Controllers/HomeController.php',
     'App\\Http\\Controllers\\LegacyDataController' => $baseDir . '/app/Http/Controllers/LegacyDataController.php',
     'App\\Http\\Controllers\\MagistrateController' => $baseDir . '/app/Http/Controllers/MagistrateController.php',
@@ -24,7 +25,6 @@ return array(
     'App\\Http\\Controllers\\MonthlyReportController' => $baseDir . '/app/Http/Controllers/MonthlyReportController.php',
     'App\\Http\\Controllers\\SearchController' => $baseDir . '/app/Http/Controllers/SearchController.php',
     'App\\Http\\Controllers\\SpecialCourtController' => $baseDir . '/app/Http/Controllers/SpecialCourtController.php',
-    'App\\Http\\Controllers\\entry_formController' => $baseDir . '/app/Http/Controllers/entry_formController.php',
     'App\\Http\\Kernel' => $baseDir . '/app/Http/Kernel.php',
     'App\\Http\\Middleware\\Authenticate' => $baseDir . '/app/Http/Middleware/Authenticate.php',
     'App\\Http\\Middleware\\CheckForMaintenanceMode' => $baseDir . '/app/Http/Middleware/CheckForMaintenanceMode.php',

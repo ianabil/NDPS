@@ -1,203 +1,89 @@
-
-
-1.Storage
-------------------------------------------------------------------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION movedatatoarchive_storage_details() RETURNS trigger AS
-
-$BODY$
-BEGIN
-insert into storage_details_archive values(old.storage_id,old.storage_name,old.display,old.created_at,old.updated_at);
-	return old; 
-END;
-$BODY$
- LANGUAGE plpgsql;
-
+create or replace function movedeleted()
+	returns trigger as	
+	$BODY$
+		BEGIN
+			insert into history_deleted_data(table_name,deleted_data,deleted_time)
+			values(TG_TABLE_NAME,row_to_json(OLD),now());
+			return OLD;
+		END;
+	$BODY$
+		LANGUAGE plpgsql VOLATILE
+		COST 100;
 
 
 
-CREATE TRIGGER movedatatoarchive_storage_details
-   BEFORE DELETE ON storage_details FOR EACH ROW
-   EXECUTE PROCEDURE movedatatoarchive_storage_details();
-   
------------------------------------------------------------------------------------------------------------------------------
-2.Agency
------------------------------------------------------------------------------------------------------------------------------
-
-CREATE OR REPLACE FUNCTION movedatatoarchive_agency_details() RETURNS trigger AS
-
-$BODY$
-BEGIN
-insert into agency_details_archive values(old.agency_id,old.agency_name,old.district_for_report,old.created_at,old.updated_at);
-	return old; 
-END;
-$BODY$
- LANGUAGE plpgsql;
- 
- CREATE TRIGGER movedatatoarchive_agency_details
-   BEFORE DELETE ON agency_details FOR EACH ROW
-   EXECUTE PROCEDURE movedatatoarchive_agency_details();
-   
--------------------------------------------------------------------------------------------------------------------
-3.Court
--------------------------------------------------------------------------------------------------------------------
-
-CREATE OR REPLACE FUNCTION movedatatoarchive_court_details() RETURNS trigger AS
-
-$BODY$
-BEGIN
-insert into court_details_archive values(old.court_id,old.court_name,old.district_id,old.created_at,old.updated_at);
-	return old; 
-END;
-$BODY$
- LANGUAGE plpgsql;
- 
- 
- CREATE TRIGGER movedatatoarchive_court_details
-   BEFORE DELETE ON court_details FOR EACH ROW
-   EXECUTE PROCEDURE movedatatoarchive_court_details();
-
-----------------------------------------------------------------------------------------------------------------------------
-4.PS
----------------------------------------------------------------------------------------------------------------------------
-
-CREATE OR REPLACE FUNCTION movedatatoarchive_ps_details() RETURNS trigger AS
-
-$BODY$
-BEGIN
-insert into ps_details_archive values(old.ps_id,old.ps_name,old.district_id,old.created_at,old.updated_at);
-	return old; 
-END;
-$BODY$
- LANGUAGE plpgsql;
+CREATE TRIGGER movedeleted
+BEFORE DELETE
+ON users
+FOR EACH ROW
+EXECUTE PROCEDURE movedeleted();
 
 
-CREATE TRIGGER movedatatoarchive_ps_details
-   BEFORE DELETE ON ps_details FOR EACH ROW
-   EXECUTE PROCEDURE movedatatoarchive_ps_details();
-
--------------------------------------------------------------------------------------------------------------------------------
-5.UNIT
--------------------------------------------------------------------------------------------------------------------------------
-
-CREATE OR REPLACE FUNCTION movedatatoarchive_units() RETURNS trigger AS
-
-$BODY$
-BEGIN
-insert into units_archive values(old.unit_id,old.unit_name,old.unit_degree,old.created_at,old.updated_at);
-	return old; 
-END;
-$BODY$
- LANGUAGE plpgsql;
-
-CREATE TRIGGER movedatatoarchive_units
-   BEFORE DELETE ON units FOR EACH ROW
-   EXECUTE PROCEDURE movedatatoarchive_units();
-
---------------------------------------------------------------------------------------------------------------------------------
-6.NARCOTIC
---------------------------------------------------------------------------------------------------------------------------------
-
-CREATE OR REPLACE FUNCTION movedatatoarchive_narcotics() RETURNS trigger AS
-
-$BODY$
-BEGIN
-insert into narcotics_archive values(old.drug_id,old.drug_name,old.display,old.created_at,old.updated_at);
-	return old; 
-END;
-$BODY$
- LANGUAGE plpgsql;
- 
-
- CREATE TRIGGER movedatatoarchive_narcotics
-   BEFORE DELETE ON narcotics FOR EACH ROW
-   EXECUTE PROCEDURE movedatatoarchive_narcotics();
-
-----------------------------------------------------------------------------------------------------------------------------------
-7.USER
-----------------------------------------------------------------------------------------------------------------------------------
-
-CREATE OR REPLACE FUNCTION movedatatoarchive_users() RETURNS trigger AS
-
-$BODY$
-BEGIN
-insert into users_archive values(old.id,old.user_id,
-				old.user_name,old.password,
-				old.stakeholder_id,old.court_id,
-				old.email,old.contact_no,
-				old.email_verified_at,old.user_type,
-				old.remember_token,old.created_at,
-				old.updated_at,old.login_at);
-	return old; 
-END;
-$BODY$
- LANGUAGE plpgsql;
- 
-CREATE TRIGGER movedatatoarchive_users
-   BEFORE DELETE ON users FOR EACH ROW
-   EXECUTE PROCEDURE movedatatoarchive_users();
-
----------------------------------------------------------------------------------------------------------------------------------
-8.DISTRICT
----------------------------------------------------------------------------------------------------------------------------------
-
-CREATE OR REPLACE FUNCTION movedatatoarchive_districts() RETURNS trigger AS
-
-$BODY$
-BEGIN
-insert into districts_archive values(old.district_id,old.district_name,old.created_at,old.updated_at);
-	return old; 
-END;
-$BODY$
- LANGUAGE plpgsql;
-
-CREATE TRIGGER movedatatoarchive_districts
-   BEFORE DELETE ON districts FOR EACH ROW
-   EXECUTE PROCEDURE movedatatoarchive_districts();
-
------------------------------------------------------------------------------------------------------------------------------------
-9.NARCOTIC UNIT
------------------------------------------------------------------------------------------------------------------------------------
-
-CREATE OR REPLACE FUNCTION movedatatoarchive_narcotic_units() RETURNS trigger AS
-
-$BODY$
-BEGIN
-insert into narcotic_units_archive values(old.narcotic_id,old.unit_id,old.created_at,old.updated_at);
-	return old; 
-END;
-$BODY$
- LANGUAGE plpgsql;
-
-CREATE TRIGGER movedatatoarchive_narcotic_units
-   BEFORE DELETE ON narcotic_units FOR EACH ROW
-   EXECUTE PROCEDURE movedatatoarchive_narcotic_units();
-
---------------------------------------------------------------------------------------------------------------------------------
-10.SEIZURES
---------------------------------------------------------------------------------------------------------------------------------
-
- CREATE OR REPLACE FUNCTION movedatatoarchive_seizures() RETURNS trigger AS
-
-$BODY$
-BEGIN
-insert into seizures_archive values(old.seizure_id,old.ps_id,
-				   old.case_no,old.case_year,
-				   old.drug_id,old.quantity_of_drug,
-				   old.seizure_quantity_weighing_unit_id,old.date_of_seizure,
-				   old.date_of_disposal,old.disposal_quantity,
-				   old.disposal_quantity_weighing_unit_id,old.storage_location_id,
-				   old.stakeholder_id,old.district_id,
-				   old.certification_court_id,old.quantity_of_sample,
-				   old.sample_quantity_weighing_unit_id,old.date_of_certification,
-				   old.certification_flag,old.disposal_flag,
-				   old.remarks,old.magistrate_remarks,
-				   old.user_name,old.created_at,old.updated_at);
-	return old; 
-END;
-$BODY$
- LANGUAGE plpgsql;
+CREATE TRIGGER movedeleted
+BEFORE DELETE
+ON units
+FOR EACH ROW
+EXECUTE PROCEDURE movedeleted();
 
 
-CREATE TRIGGER movedatatoarchive_seizures
-   BEFORE DELETE ON seizures FOR EACH ROW
-   EXECUTE PROCEDURE movedatatoarchive_seizures();
+CREATE TRIGGER movedeleted
+BEFORE DELETE
+ON storage_details
+FOR EACH ROW
+EXECUTE PROCEDURE movedeleted();
+
+
+CREATE TRIGGER movedeleted
+BEFORE DELETE
+ON seizures
+FOR EACH ROW
+EXECUTE PROCEDURE movedeleted();
+
+
+CREATE TRIGGER movedeleted
+BEFORE DELETE
+ON ps_details
+FOR EACH ROW
+EXECUTE PROCEDURE movedeleted();
+
+
+CREATE TRIGGER movedeleted
+BEFORE DELETE
+ON ndps_court_details
+FOR EACH ROW
+EXECUTE PROCEDURE movedeleted();
+
+
+CREATE TRIGGER movedeleted
+BEFORE DELETE
+ON narcotics
+FOR EACH ROW
+EXECUTE PROCEDURE movedeleted();
+
+
+CREATE TRIGGER movedeleted
+BEFORE DELETE
+ON narcotic_units
+FOR EACH ROW
+EXECUTE PROCEDURE movedeleted();
+
+
+CREATE TRIGGER movedeleted
+BEFORE DELETE
+ON districts
+FOR EACH ROW
+EXECUTE PROCEDURE movedeleted();
+
+
+CREATE TRIGGER movedeleted
+BEFORE DELETE
+ON certifying_court_details
+FOR EACH ROW
+EXECUTE PROCEDURE movedeleted();
+
+
+CREATE TRIGGER movedeleted
+BEFORE DELETE
+ON agency_details
+FOR EACH ROW
+EXECUTE PROCEDURE movedeleted();
