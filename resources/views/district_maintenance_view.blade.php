@@ -11,44 +11,48 @@
         <!-- /.box-header -->
         <div class="box-body">
             <div class="row">                
-                <div class="col-md-2 form-group required">
-                    <label class="control-label district_name">Districts</label><br>
-                    <select class="form-control select2"  name="district_name" id="district_name">
-                        <option value="">Select District</option>
-                        @foreach($data['districts']  as $data1)
-                            <option value="{{$data1['district_id']}}">{{$data1['district_name']}} </option>
-                        @endforeach
-                    </select>
-                </div>
-                    <!-- /.col -->  
-                <div class="col-md-2 form-group required">
-                    <label class="control-label">No.of Partitions</label>
-                    <input type="number" class="form-control" name="no_of_partiotions" id="no_of_partiotions">
-                </div>
-                                
+                <div class="col-md-3 form-group required">
+                    <label class="control-label">District Name</label>
+                    <input type="text" class="form-control" name="district_name" id="district">
+                </div>                
                 <div class="col-md-2">
                     <div class="form-group">
                         <label>&nbsp;</label>
-                        <button type="button" class="form-control btn-success btn btn-primary" id="add_district">Add District
+                        <button type="button" class="form-control btn-success btn btn-primary " id="add">Add New District
                     </div>
                 </div>
+                <!-- /.col -->  
+    
             </div>
-
-            <hr>
             <!-- /.row -->
-            <div class="row" id="partition_row" style="display:none;">
-                
-            </div> 
         </div>
-
-        
 </div>
 
-
+<div class="box box-default" id="show_all_data">
+    <div class="box-header with-border">
+        <h3 class="box-title">All District Details</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+        </div>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body">
+        <table class="table table-striped table-bordered" id="show_district_data">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>District NAME</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>                    
+        </table>
+    </div>
+</div>
 
 <hr>
          
-         <br> <br>
+<br> <br>
 
 <!--loader starts-->
 
@@ -65,13 +69,14 @@
 </div>
 <!-- /.content-wrapper -->
 
-
 <script src="{{asset('js/jquery/jquery.min.js')}}"></script>
 
 <script>
 
         $(document).ready(function(){
+
             /*LOADER*/
+
                 $(document).ajaxStart(function() {
                     $("#wait").css("display", "block");
                 });
@@ -81,31 +86,173 @@
 
             /*LOADER*/
 
-            $(document).on("click","#add_district", function(){
-                var patition=$("#no_of_partiotions").val();
-               // var district=$("#district_name option:selected").text();
-                
-                var str="";
-                var i;
+            //Datatable Code For Showing Data :: START
+                var table = $("#show_district_data").dataTable({  
+                            "processing": true,
+                            "serverSide": true,
+                            "ajax":{
+                                    "url": "show_all_district",
+                                    "dataType": "json",
+                                    "type": "POST",
+                                    "data":{ 
+                                        _token: $('meta[name="csrf-token"]').attr('content')}
+                                    },
+                            "columns": [                
+                                {"class": "id",
+                                  "data": "ID" },
+                                {"class": "district data",
+                                  "data": "DISTRICT NAME" },
+                                {"class": "delete",
+                                  "data": "ACTION" }
+                            ]
+                        }); 
 
-                for(i=1;i<=patition;i++)
-                {
-                    str=str+"<div class='col-sm-3'><input type='text' class='form-control' name='name_of_partiotions'id='name_of_partiotions'></div>";
-                    if(i==1)
-                    {
-                        var district=$("#district_name option:selected").text();
-                        $("#name_of_partiotions").val(district);
                         
+            // DataTable initialization with Server-Processing ::END
 
+            // Double Click To Enable Content editable
+            $(document).on("click",".data", function(){
+                $(this).attr('contenteditable',true);
+            })
+            
+            /*Add District */
+            $(document).on("click","#add",function (){
+                var district= $("#district").val();
+
+                $.ajax({
+                    type:"POST",
+                    url:"district_maintenance/add_district",
+                    data:{
+                        _token: $('meta[name="csrf-token"]').attr('content'), 
+                        district_name:district
+                    },
+                    success:function(response){
+                        $("#district").val('');
+                        swal("Added Successfully","A new District has been added","success");
+                        table.api().ajax.reload();   
+                    },
+                    error:function(response) { 
+                        if(response.responseJSON.errors.hasOwnProperty('district_name'))
+                            swal("Cannot create new District", ""+response.responseJSON.errors.district_name['0'], "error");                            
                     }
-                }
-                
-                $("#partition_row").html(str);
-                $("#partition_row").show();
+                });
+            });
+
+        /* To prevent updation when no changes to the data is made*/
+
+        var prev_district;
+        $(document).on("focusin",".data", function(){
+            prev_district = $(this).closest("tr").find(".district").text();
+        })
+
+
+        /* Data Updation Code Starts*/
+        $(document).on("focusout",".data", function(){
+            var id = $(this).closest("tr").find(".id").text();
+            var district = $(this).closest("tr").find(".district").text();
+            
+            if(district == prev_district)
+                return false;
+
+            $.ajax({
+                type:"POST",
+                url:"district_maintenance/update_district",                
+                data:{
+                    _token: $('meta[name="csrf-token"]').attr('content'), 
+                    id:id, 
+                    district_name:district
+                },
+                success:function(response){  
+                    swal("District Details Updated","","success");
+                    table.api().ajax.reload();
+                },
+                error:function(response) {            
+                    if(response.responseJSON.errors.hasOwnProperty('district_name'))
+                        swal("Cannot Updated District", ""+response.responseJSON.errors.district_name['0'], "error");                          
+                }        
 
             })
+        })
+
+        // /* Data Updation Codes Ends */
+
+
+        /* Data Deletion Cods Starts */
+
+        $(document).on("click",".delete", function(){
+        var element=$(this);
+           swal({
+				title: "Are You Sure?",
+				text: "Once submitted, you will not be able to recover the data",
+				icon: "warning",
+				buttons: true,
+				dangerMode: true,
+				})
+				.then((willDelete) => {
+                    if(willDelete) {
+                        var id = $(this).closest("tr").find(".id").text();
+                        var tr = $(this).closest("tr");
+
+                        $.ajax({
+                            type:"POST",
+                            url:"district_maintenance/delete_district",
+                            data:{
+                                _token: $('meta[name="csrf-token"]').attr('content'), 
+                                id:id
+                            },
+                            success:function(response){
+                                if(response==1){
+                                    swal("District Deleted Successfully","","success");  
+                                    table.api().ajax.reload();                
+                                }
+                            },
+                            error:function(response){
+                                
+                                var id = element.closest("tr").find(".id").text();
+                                    swal({
+                                        title: "Are You Sure?",
+                                        text: "Once deleted,all details of SEIZURE associated with this DISTRICT, will be deleted ",
+                                        icon: "warning",
+                                        buttons: true,
+                                        dangerMode: true,
+                                        })
+                                        .then((willDelete) => {
+                                        if(willDelete) {
+                                         
+                                            var tr =element.closest("tr");
+
+                                            $.ajax({
+                                                type:"POST",
+                                                url:"district_maintenance/seizure_district_delete",
+                                                data:{
+                                                    _token: $('meta[name="csrf-token"]').attr('content'), 
+                                                    id:id
+                                                },
+                                                success:function(response){
+                                                    if(response==1){
+                                                        swal("District Deleted Successfully","District and its associated entry has been deleted","success");  
+                                                        table.api().ajax.reload();                
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        
+                                    })
+                                }
+                            });
+                    }
+                    else 
+                    {
+					    swal("Deletion Cancelled","","error");
+				    }
+        })
+
+        /* Data Deletion Codes Ends */
+
 
         });
+
+   });
 
 </script>
 

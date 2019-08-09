@@ -24,6 +24,7 @@
                 <div class="form-group required">
                     <label class="control-label">Password</label>
                     <input type="password" class="form-control" name="password" id="password" autocomplete="off" >
+                    <small>Password must be more than 6 charachters long, must contain atleast 1 Uppercase, 1 Lowercase, 1 Digit and 1 Special Character</small>
                 </div>
             </div>
             <!-- /.col -->
@@ -62,7 +63,7 @@
                     <option value="">Select One Option. . . </option>
                     <option value="ps">Police Station</option>
                     <option value="agency">Agency</option>
-                    <option value="magistrate">Judicial Magistrate</option>
+                    <option value="magistrate">Designated Magistrate</option>
                     <option value="special_court">Special Court</option>
                     <option value="high_court">Calcutta High Court</option>
                     <option value="admin">Admin</option>
@@ -196,9 +197,7 @@
                         error:function(response) {  
 
                             if(response.responseJSON.errors.hasOwnProperty('user_id'))
-                                swal("Cannot Create New User", ""+response.responseJSON.errors.user_id['0'], "error");
-                            else if(response.responseJSON.errors.hasOwnProperty('user_name'))
-                                swal("Cannot Create New User", ""+response.responseJSON.errors.user_name['0'], "error");
+                                swal("Cannot Create New User", ""+response.responseJSON.errors.user_id['0'], "error");                            
                             else if(response.responseJSON.errors.hasOwnProperty('email_id'))
                                 swal("Cannot Create New User", ""+response.responseJSON.errors.email_id['0'], "error");
                             else if(response.responseJSON.errors.hasOwnProperty('contact_no'))

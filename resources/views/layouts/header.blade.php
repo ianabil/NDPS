@@ -129,8 +129,9 @@
                                 <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                             </a>
                             <ul class="treeview-menu">
-                                {{-- <li><a href="district_maintenance_view"><i class="fa fa-circle-o text-red"></i> <span>District Master Maintenance</span></a></li> --}}
-                                {{-- <li><a href="ndps_court_maintenance_view"><i class="fa fa-circle-o text-black"></i> <span>NDPS Court <br>Master Maintenance</span></a></li> --}}
+                                <li><a href="district_maintenance_view"><i class="fa fa-circle-o text-red"></i> <span>District Master Maintenance</span></a></li>
+                                {{-- <li><a href="split_district_view"><i class="fa fa-circle-o text-green"></i> <span>Split District</span></a></li> --}}
+                                <li><a href="ndps_court_maintenance_view"><i class="fa fa-circle-o text-black"></i> <span>NDPS Court <br>Master Maintenance</span></a></li>
                                 <li><a href="certifying_court_maintenance_view"><i class="fa fa-circle-o text-yellow"></i> <span>Designated Magistrate <br>Master Maintenance</span></a></li>
                                 <li><a href="agency_maintenance_view"><i class="fa fa-circle-o text-violate"></i> <span>Agency Master Maintenance</span></a></li>
                                 <li><a href="narcotic_maintenance_view"><i class="fa fa-circle-o text-green"></i> <span>Narcotic Master Maintenance</span></a></li>

@@ -129,7 +129,7 @@
 
             // Double Click To Enable Content editable
             $(document).on("click",".data", function(){
-                        $(this).attr('contenteditable',true);
+                $(this).attr('contenteditable',true);
             })
 
             //Narcotic master maintenance 
@@ -169,10 +169,8 @@
          /* To prevent updation when no changes to the data is made*/
 
         var prev_narcotic;
-        var prev_unit;
         $(document).on("focusin",".data", function(){
             prev_narcotic = $(this).closest("tr").find(".narcotic").text();
-            prev_unit = $(this).closest("tr").find(".unit").val();
         })
 
          /* Data Updation Code Starts*/
@@ -180,31 +178,25 @@
         $(document).on("focusout",".data", function(){
             var id = $(this).closest("tr").find(".id").text();
             var narcotic = $(this).closest("tr").find(".narcotic").text();
-            var unit = $(this).closest("tr").find(".unit").val();
             
-            if(narcotic == prev_narcotic && unit == prev_unit)
+            if(narcotic == prev_narcotic)
                 return false;
-
 
             $.ajax({
                 type:"POST",
                 url:"narcotic_maintenance/update_narcotic",                
                 data:{
-                        _token: $('meta[name="csrf-token"]').attr('content'), 
-                        narcotic_id:id, 
-                        narcotic_name:narcotic,
-                        weighing_unit:unit
-                    },
+                    _token: $('meta[name="csrf-token"]').attr('content'), 
+                    narcotic_id:id, 
+                    narcotic_name:narcotic
+                },
                 success:function(response){ 
                     swal("Narcotic's Details Updated","","success");
                     table.api().ajax.reload();
                 },
                 error:function(response) { 
                     if(response.responseJSON.errors.hasOwnProperty('narcotic_name'))
-                        swal("Cannot updated Narcotic", ""+response.responseJSON.errors.narcotic_name['0'], "error");
-                                                        
-                    if(response.responseJSON.errors.hasOwnProperty('weighing_unit'))
-                        swal("Cannot updated Narcotic", ""+response.responseJSON.errors.weighing_unit['0'], "error");         
+                        swal("Cannot updated Narcotic", ""+response.responseJSON.errors.narcotic_name['0'], "error");                     
                 }
              })
         })

@@ -166,7 +166,24 @@
         //Weighing Unit::end
 
         //District::Start
-        Route::get('district_view', 'MasterMaintenanceController@index_district');
+        Route::get('district_maintenance_view', function(){
+            return view ('district_maintenance_view');
+        });
+
+        Route::post('district_maintenance/add_district',
+        'MasterMaintenanceController@store_district');
+
+        Route::post('show_all_district',
+        'MasterMaintenanceController@get_all_district');
+
+        Route::post('district_maintenance/update_district',
+        'MasterMaintenanceController@update_district');
+
+        Route::post('district_maintenance/delete_district',
+        'MasterMaintenanceController@destroy_district');
+
+        Route::post('district_maintenance/seizure_district_delete',
+        'MasterMaintenanceController@destroy_seizure_district_record');
         //District::End
 
         //Police Station::Start
@@ -187,6 +204,28 @@
         Route::post('ps_maintenance/seizure_ps_delete',
         'MasterMaintenanceController@destroy_seizure_ps_record');
         //Police Station::End
+
+
+        //NDPS Court::Start
+        Route::get('ndps_court_maintenance_view', 'MasterMaintenanceController@index_ndps_court_maintenance_view');        
+
+        Route::post('ndps_court_maintenance/add_ndps_court',
+        'MasterMaintenanceController@store_ndps_court');
+
+        Route::post('show_all_ndps_court',
+        'MasterMaintenanceController@get_all_ndps_court');
+
+        Route::post('ndps_court_maintenance/update_ndps_court',
+        'MasterMaintenanceController@update_ndps_court');
+
+        Route::post('ndps_court_maintenance/delete_ndps_court',
+        'MasterMaintenanceController@destroy_ndps_court');
+
+        Route::post('ndps_court_maintenance/seizure_ndps_court_delete',
+        'MasterMaintenanceController@destroy_seizure_ndps_court_record');
+        //NDPS Court::End
+
+
 
         //Storage :: Start
         Route::get('storage_maintenance_view', 'MasterMaintenanceController@index_storage_maintenance_view');
