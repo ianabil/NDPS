@@ -381,14 +381,23 @@
     });
 
 
-    //update password:start
+    Route::group(['middleware' => ['auth','role_manager:ps|agency|special_court|magistrate|high_court|admin']], function () {
 
-    Route::get('update_password', function () {
-        return view('update_password');
-     });
+        //update password:start
 
-     Route::post('update_password','MasterMaintenanceController@update_password');
-     //update password:end
+        Route::get('update_password', function () {
+            return view('update_password');
+        });
 
+        Route::post('update_password','MasterMaintenanceController@update_password');
+        //update password:end
+
+
+        // PDF Generation of Reports :: START
+        Route::post('download_monthly_report','PDFController@generate_monthly_report');
+
+        // PDF Generation of Reports :: END
+
+    });
 
   

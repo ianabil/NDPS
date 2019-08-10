@@ -239,7 +239,8 @@
 						  <button type="button" class="btn btn-danger pull-right" id="add_new_case">Add New Case</button>
 					  @endif
                   </label>
-              </form>
+			  </form>
+			  <button type="button" class="btn btn-default" id="download_report"><strong>Download Report</strong></button>
               <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                 </button>
@@ -1173,6 +1174,7 @@
 
 
 		var table;
+		var case_no_string = new Array;
 		// This function will take month as an input and fetch corresponding report
 		function get_monthly_report(month){
 
@@ -1191,9 +1193,14 @@
 								month:month
 							}
 						},
+						"initComplete":function( settings, obj){
+							$.each(obj.data,function(key,value){
+								case_no_string.push(value.CaseNo);
+							});
+						},
 						"columns": [  
 							{"class":"case_no",
-							"data":"Case No"},
+							"data":"CaseNo"},
 							{"data":"More Details"}, 
 							{"data": "Sl No"},
 							{"data": "Case_No",
@@ -1330,6 +1337,24 @@
 				row.child(child_string).show();
 			}
 
+		})
+
+
+		// Download Report
+		$(document).on("click","#download_report",function(){
+			var month = $("#month_of_report").val();
+			$.ajax({
+				url:"download_monthly_report",
+				type:"post",
+				data:{
+					_token: $('meta[name="csrf-token"]').attr('content'),
+					case_no_string:case_no_string,
+					month:month
+				},
+				success:function(response){
+					swal("Download Completed","","success");
+				}				
+			})
 		})
 
 	});

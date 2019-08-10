@@ -501,7 +501,7 @@ class EntryFormController extends Controller
         
         // For dataTable :: STARTS
         $columns = array( 
-            0 =>'Case No',
+            0 =>'CaseNo',
             1=>'More Details',
             2=>'Sl No',
             3 =>'Case_No',
@@ -557,7 +557,7 @@ class EntryFormController extends Controller
         
         foreach($cases as $case){
             //Case No
-            $report['Case No'] = $case->case_no_string;
+            $report['CaseNo'] = $case->case_no_string;
 
 
             //More Details
