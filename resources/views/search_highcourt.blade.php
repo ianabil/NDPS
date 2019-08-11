@@ -147,6 +147,7 @@
 </div>
  <!-- /.box-->
 
+ 
 <!--loader starts-->
 <div class="col-md-offset-5 col-md-3" id="wait" style="display:none;">
     <img src='images/loader.gif'width="25%" height="10%" />
@@ -161,6 +162,7 @@
     <div class="box box-primary">
         <div class="box-header with-border">
             <h3 class="box-title">Search Result</h3>
+            <button type="button" class="btn btn-default" id="download_report"><strong>Download Report</strong></button>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                 </button>
@@ -191,7 +193,11 @@
     </div>
     <!-- /.box -->
 </div>
-    
+
+
+<div class="col-sm-12 text-center" id="show_report_pdf" style="display:none">
+	<iframe id="iframe_report" src="" style="width:800px; height:400px;"></iframe>
+</div>
 
 <!--Closing that has been openned in the header.blade.php -->
 </section>
@@ -306,6 +312,7 @@
             
             // Searching Code :: STARTS
             var table;
+            var case_no_string = new Array;
             $(document).on("click","#search", function(){
                 // Getting input values
                 var ps = $("#ps option:selected").val();
@@ -363,9 +370,15 @@
                         disposal_to_date:disposal_to_date
                       }
                     },
+                    "initComplete":function( settings, obj){
+                        case_no_string = [];
+                        $.each(obj.data,function(key,value){
+                            case_no_string.push(value.CaseNo);
+                        });
+                    },                    
                     "columns": [  
                       {"class":"case_no",
-                      "data":"Case No"},
+                      "data":"CaseNo"},
                       {"data":"More Details"}, 
                       {"data": "Sl No"},         
                       {"data": "Stakeholder Name"},
@@ -389,7 +402,7 @@
                 var row = table.row(tr);
                 var row_data = table.row(tr).data();
 
-                var case_no_string = row_data['Case No']; 
+                var case_no_string = row_data['CaseNo']; 
                 
                 var obj;
 
@@ -498,6 +511,28 @@
                 }
 
             })
+
+
+            // Download Report
+            $(document).on("click","#download_report",function(){
+                $.ajax({
+                    url:"download_search_report",
+                    type:"post",
+                    data:{
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        case_no_string:case_no_string
+                    },
+                    success:function(response){
+                        $("#iframe_report").attr("src", response);
+                        $("#show_report_pdf").show();   
+                        
+                        $('html, body').animate({
+                            scrollTop: $("#show_report_pdf").offset().top
+                        }, 1000)
+                    }				
+                })
+            })
+            
             
         });
     </script>

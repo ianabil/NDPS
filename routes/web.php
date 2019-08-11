@@ -384,7 +384,6 @@
     Route::group(['middleware' => ['auth','role_manager:ps|agency|special_court|magistrate|high_court|admin']], function () {
 
         //update password:start
-
         Route::get('update_password', function () {
             return view('update_password');
         });
@@ -396,6 +395,7 @@
         // PDF Generation of Reports :: START
         Route::post('download_monthly_report','PDFController@generate_monthly_report');
 
+        Route::post('download_search_report','PDFController@generate_search_report');
         // PDF Generation of Reports :: END
 
     });

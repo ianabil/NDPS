@@ -272,6 +272,12 @@
   </div>
 
 
+<div class="col-sm-12 text-center" id="show_report_pdf" style="display:none">
+	<iframe id="iframe_report" src="" style="width:800px; height:400px;"></iframe>
+</div>
+
+
+
 <!--loader starts-->
 
 <div class="col-md-offset-5 col-md-3" id="wait" style="display:none;">
@@ -1194,6 +1200,7 @@
 							}
 						},
 						"initComplete":function( settings, obj){
+							case_no_string = [];
 							$.each(obj.data,function(key,value){
 								case_no_string.push(value.CaseNo);
 							});
@@ -1233,7 +1240,7 @@
 			var row = table.row(tr);
 			var row_data = table.row(tr).data();
 
-			var case_no_string = row_data['Case No']; 
+			var case_no_string = row_data['CaseNo']; 
 			
 			var obj;
 
@@ -1352,7 +1359,12 @@
 					month:month
 				},
 				success:function(response){
-					swal("Download Completed","","success");
+					$("#iframe_report").attr("src", response);
+                    $("#show_report_pdf").show();   
+					
+					$('html, body').animate({
+						scrollTop: $("#show_report_pdf").offset().top
+					}, 1000)
 				}				
 			})
 		})

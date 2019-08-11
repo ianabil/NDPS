@@ -47,7 +47,7 @@ class SpecialCourtController extends Controller
         
         // For dataTable :: STARTS
         $columns = array( 
-            0 =>'Case No',
+            0 =>'CaseNo',
             1=>'More Details',
             2=>'Sl No',
             3=>'Stakeholder Name',
@@ -84,7 +84,7 @@ class SpecialCourtController extends Controller
         
         foreach($cases as $case){
             //Case No
-            $report['Case No'] = $case->case_no_string;
+            $report['CaseNo'] = $case->case_no_string;
 
             //More Details
             $report['More Details'] = '<img src="images/details_open.png" style="cursor:pointer" class="more_details" alt="More Details">';

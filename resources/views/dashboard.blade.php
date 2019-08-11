@@ -54,6 +54,7 @@
                     <input type="text" class="form-control month_of_report" style="width:25%; margin-left:3%" name="month_of_report" id="month_of_report" value="{{date('F',strtotime(date('d-m-Y'))).'-'.date('Y',strtotime(date('d-m-Y')))}}" autocomplete="off">
                 </label>
             </form>
+            <button type="button" class="btn btn-default" id="download_report"><strong>Download Report</strong></button>
             <div class="box-tools pull-right">
               <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
               </button>
@@ -85,6 +86,11 @@
         <!-- /.box -->
 </div>
 
+<div class="col-sm-12 text-center" id="show_report_pdf" style="display:none">
+	<iframe id="iframe_report" src="" style="width:800px; height:400px;"></iframe>
+</div>
+
+
 
 <!--Closing that has been openned in the header.blade.php -->
 </section>
@@ -107,6 +113,7 @@
         
 
     var table;
+    var case_no_string = new Array;
     // This function will take month as an input and fetch corresponding report
     function get_monthly_report(month){
 
@@ -125,9 +132,15 @@
                         month:month
                       }
                     },
+                    "initComplete":function( settings, obj){
+                        case_no_string = [];
+                        $.each(obj.data,function(key,value){
+                            case_no_string.push(value.CaseNo);
+                        });
+                    },
                     "columns": [                          
                       {"class":"case_no",
-                        "data":"Case No"},
+                        "data":"CaseNo"},
                       {"data":"More Details"}, 
                       {"data": "Sl No"},         
                       {"data": "Stakeholder Name"},
@@ -160,7 +173,7 @@
           var row = table.row(tr);
           var row_data = table.row(tr).data();
 
-          var case_no_string = row_data['Case No']; 
+          var case_no_string = row_data['CaseNo']; 
           
           var obj;
 
@@ -269,6 +282,28 @@
             row.child(child_string).show();
         }
 
+    })
+
+    // Download Report
+    $(document).on("click","#download_report",function(){
+        var month = $("#month_of_report").val();
+        $.ajax({
+            url:"download_monthly_report",
+            type:"post",
+            data:{
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                case_no_string:case_no_string,
+                month:month
+            },
+            success:function(response){
+                $("#iframe_report").attr("src", response);
+                $("#show_report_pdf").show();   
+                
+                $('html, body').animate({
+                    scrollTop: $("#show_report_pdf").offset().top
+                }, 1000)
+            }				
+        })
     })
     
 });
