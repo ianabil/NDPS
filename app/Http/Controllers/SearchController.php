@@ -407,6 +407,12 @@ class SearchController extends Controller
             $data['ndps_courts'] = NdpsCourtDetail::select('ndps_court_id','ndps_court_name')
                                             ->orderBy('ndps_court_name')
                                             ->get();
+
+            $data['storages'] = Storage_detail::where('display','Y')
+                                                ->select('storage_id','storage_name')
+                                                ->orderBy('storage_name')
+                                                ->get(); 
+
         }
         else if(Auth::user()->user_type=="ps"){
             $data['courts'] = CertifyingCourtDetail::join('ps_details','certifying_court_details.district_id','=','ps_details.district_id')
@@ -420,13 +426,20 @@ class SearchController extends Controller
                                             ->select('ndps_court_id','ndps_court_name')
                                             ->orderBy('ndps_court_name')
                                             ->get();
+
+                                            
+            $data['storages'] = Storage_detail::join('ps_details','storage_details.district_id','=','ps_details.district_id')
+                                                ->where([
+                                                    ['ps_details.ps_id',Auth::user()->ps_id],
+                                                    ['display','Y']
+                                                ])
+                                                ->select('storage_id','storage_name')
+                                                ->orderBy('storage_name')
+                                                ->get(); 
+
         }
 
-        $data['storages'] = Storage_detail::where('display','Y')
-                                            ->select('storage_id','storage_name')
-                                            ->orderBy('storage_name')
-                                            ->get(); 
-
+        
         return view('search_stakeholder',compact('data'));
     }
 
@@ -766,7 +779,11 @@ class SearchController extends Controller
                                                 ->orderBy('court_name')
                                                 ->get();
 
-        $data['storages'] = Storage_detail::where('display','Y')
+        $data['storages'] = Storage_detail::join('ndps_court_details','storage_details.district_id','=','ndps_court_details.district_id')
+                                            ->where([
+                                                ['ndps_court_details.district_id',Auth::user()->district_id],
+                                                ['display','Y']
+                                            ])
                                             ->select('storage_id','storage_name')
                                             ->orderBy('storage_name')
                                             ->get(); 

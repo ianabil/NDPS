@@ -53,10 +53,14 @@ class EntryFormController extends Controller
                                         ->get();
 
         
-        $data['storages'] = Storage_detail::where('display','Y')
-                                            ->select('storage_id','storage_name')
-                                            ->orderBy('storage_name')
-                                            ->get(); 
+        $data['storages'] = Storage_detail::join('ps_details','storage_details.district_id','=','ps_details.district_id')
+                                        ->where([
+                                            ['ps_details.ps_id',Auth::user()->ps_id],
+                                            ['display','Y']
+                                        ])
+                                        ->select('storage_id','storage_name')
+                                        ->orderBy('storage_name')
+                                        ->get(); 
 
         $data['agencies'] = Agency_detail::select('agency_id','agency_name')
                                             ->orderBy('agency_name')
@@ -79,12 +83,12 @@ class EntryFormController extends Controller
                                         ->orderBy('drug_name')
                                         ->get();
         $data['ndps_courts'] = NdpsCourtDetail::select('ndps_court_id','ndps_court_name','ndps_court_details.district_id')
-                                    ->orderBy('ndps_court_name')
-                                    ->get();
+                                                ->orderBy('ndps_court_name')
+                                                ->get();
 
         $data['certifying_courts'] = CertifyingCourtDetail::select('court_id','court_name')
-                                        ->orderBy('court_name')
-                                        ->get();
+                                                        ->orderBy('court_name')
+                                                        ->get();
 
         $data['storages'] = Storage_detail::where('display','Y')
                                             ->select('storage_id','storage_name')
@@ -166,7 +170,7 @@ class EntryFormController extends Controller
                 if($count<1){
 
                     Narcotic::insert([
-                        'drug_name' => trim($other_narcotic_name[$i]),
+                        'drug_name' => trim(strtoupper($other_narcotic_name[$i])),
                         'display' => 'N',
                         'created_at'=>Carbon::today(),
                         'updated_at'=>Carbon::today()
@@ -191,7 +195,8 @@ class EntryFormController extends Controller
                 if($count<1){
 
                     Storage_detail::insert([
-                        'storage_name'=>trim($other_storage_name),
+                        'storage_name'=>trim(strtoupper($other_storage_name)),
+                        'district_id' => $district,
                         'display' => 'N',
                         'created_at'=>Carbon::today(),
                         'updated_at'=>Carbon::today()

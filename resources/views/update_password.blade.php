@@ -28,6 +28,7 @@
             <div class="form-group">
                <label>New Password</label>
                <input type="password" class="form-control" name="password" id="password" >
+               <small>Password must be more than 6 charachters long, must contain atleast 1 Uppercase, 1 Lowercase, 1 Digit and 1 Special Character</small>
             </div>
          </div>
          <!-- /.col -->
@@ -108,9 +109,9 @@
 
                      error:function(response){;
                         if(response.responseJSON.errors.hasOwnProperty('new_password'))
-                                   swal("Password Can Not be Updated", ""+response.responseJSON.errors.new_password['0'], "error");
+                              swal("Password Can Not be Updated", ""+response.responseJSON.errors.new_password['0'], "error");
                         if(response.responseJSON.errors.hasOwnProperty('current_password'))
-                                   swal("Password Can Not be Updated", ""+response.responseJSON.errors.current_password['0'], "error");        
+                              swal("Password Can Not be Updated", ""+response.responseJSON.errors.current_password['0'], "error");        
                      }
                 })
         })

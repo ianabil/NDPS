@@ -335,6 +335,7 @@
                     "serverSide": true,
                     "searching": false,
                     "ordering" : false,
+                    "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
                     "ajax": {
                       "url": "composite_search_special_court/search",
                       "type": "POST",
@@ -359,10 +360,15 @@
                       }
                     },
                     "initComplete":function( settings, obj){
-                        case_no_string = [];
-                        $.each(obj.data,function(key,value){
-                            case_no_string.push(value.CaseNo);
-                        });
+                        if(obj.recordsTotal>0){
+                            case_no_string = [];
+                            $.each(obj.data,function(key,value){
+                                case_no_string.push(value.CaseNo);
+                            });
+                            $("#download_report").show();
+                        }
+                        else
+                            $("#download_report").hide();
                     },                    
                     "columns": [  
                       {"class":"case_no",

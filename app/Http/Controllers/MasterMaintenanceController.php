@@ -1305,10 +1305,11 @@ class MasterMaintenanceController extends Controller
 
         public function update_password(Request $request){
 
-            $this->validate($request,
-                    ['new_password' => 'required|confirmed|alpha_dash|min:6|max:15|different:current_password',
-                    'current_password' =>'required'
-                    ]);
+            $this->validate($request,[
+                'new_password' => 'required|confirmed|min:6|max:15|different:current_password|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/',
+                'current_password' =>'required',
+                'uid' => 'required|exists:users,user_id'
+            ]);
             
             $uid=$request->input('uid');  
             $new_password = Hash::make($request->input('new_password'));
@@ -1319,16 +1320,15 @@ class MasterMaintenanceController extends Controller
             if(Hash::check($cur_password, $data['user'][0]['password']))
             {
                 User::where('user_id',$uid)
-                ->update(['password'=>$new_password, 'updated_at'=>Carbon::today()]);
+                ->update([
+                    'password'=>$new_password, 
+                    'updated_at'=>Carbon::today()
+                ]);
             
                 return 1;
             }
-
             else
-             return 0;
-
-           
-            
+                return 0;
            
         }
 
