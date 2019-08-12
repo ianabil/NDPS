@@ -217,7 +217,7 @@ class SpecialCourtController extends Controller
                                 ->join('units AS u1','seizures.seizure_quantity_weighing_unit_id','=','u1.unit_id')
                                 ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
                                 ->leftjoin('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
-                                ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
+                                ->leftjoin('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
                                 ->join('certifying_court_details','seizures.certification_court_id','=','certifying_court_details.court_id')
                                 ->where('case_no_string',$case_no_string)  
                                 ->select('drug_name','quantity_of_drug','u1.unit_name AS seizure_unit','date_of_seizure',

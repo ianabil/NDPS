@@ -24,8 +24,8 @@ class LegacyDataController extends Controller
     {
         $data = array();
         
-        $data['ps'] = Ps_detail::join('districts','ps_details.district_id','=','districts.district_id')
-                                ->where('ps_details.district_id',Auth::user()->district_id)
+        $data['ps'] = Ps_detail::join('ndps_court_details','ps_details.district_id','=','ndps_court_details.district_id')
+                                ->where('ndps_court_details.ndps_court_id',Auth::user()->ndps_court_id)
                                 ->select('ps_id','ps_name')
                                 ->orderBy('ps_name')
                                 ->get();
@@ -35,11 +35,22 @@ class LegacyDataController extends Controller
                                         ->orderBy('drug_name')
                                         ->get();
 
-        $data['districts'] = District::select('district_id','district_name')
-                                        ->orderBy('district_name')
-                                        ->get();
+        $data['ndps_courts'] = NdpsCourtDetail::select('ndps_court_id','ndps_court_name','ndps_court_details.district_id')
+                                                ->where('ndps_court_id',Auth::user()->ndps_court_id)
+                                                ->get();
 
-        $data['storages'] = Storage_detail::where('display','Y')
+        $data['certifying_courts'] = CertifyingCourtDetail::join('ndps_court_details','ndps_court_details.district_id','=','certifying_court_details.district_id')
+                                                    ->where('ndps_court_details.ndps_court_id',Auth::user()->ndps_court_id)
+                                                    ->select('court_id','court_name')
+                                                    ->orderBy('court_name')
+                                                    ->get();
+
+
+        $data['storages'] = Storage_detail::join('ndps_court_details','ndps_court_details.district_id','=','storage_details.district_id')
+                                            ->where([
+                                                ['ndps_court_details.ndps_court_id',Auth::user()->ndps_court_id],
+                                                ['display','Y']
+                                            ])
                                             ->select('storage_id','storage_name')
                                             ->orderBy('storage_name')
                                             ->get(); 
@@ -58,6 +69,7 @@ class LegacyDataController extends Controller
             'stakeholder' => 'required|integer',
             'case_no' => 'required|integer',
             'case_year' => 'required|integer',
+            'case_no_string' => 'required',
             'case_initiated_by' => 'required',
             'narcotic_type' => 'required|array',
             'narcotic_type.*' => 'required|exists:narcotics,drug_id',
@@ -70,22 +82,37 @@ class LegacyDataController extends Controller
             'storage' => 'required|integer',
             'remark' => 'nullable|max:255',
             'district' => 'required|exists:districts,district_id',         
-            'court' => 'required|exists:court_details,court_id',
+            'ndps_court' => 'required|exists:ndps_court_details,ndps_court_id',
+            'certifying_court' => 'required|exists:certifying_court_details,court_id'
         ] ); 
-      
+       
+        $user_type = Auth::user()->user_type;
+        
+        if($user_type=="ps"){
+            $ps = $request->input('stakeholder');
+            $agency_id = null;
 
-        $ps = $request->input('stakeholder');
-        $agency_id = $request->input('agency_name');
+            $case_initiated_by = $request->input('case_initiated_by');
+            if($case_initiated_by=="agency")
+                $agency_id = $request->input('agency_name');
+        }
+        else if($user_type=="agency"){
+            $agency_id = $request->input('stakeholder');
+            $ps = null;
+        } 
+
         $case_no = $request->input('case_no'); 
-        $case_year = $request->input('case_year'); 
+        $case_year = $request->input('case_year');
+        $case_no_string = $request->input('case_no_string'); 
         $narcotic_type = $request->input('narcotic_type');         
         $seizure_date = $request->input('seizure_date'); 
-        $seizure_quantity =$request->input('seizure_quantity'); 
+        $seizure_quantity = $request->input('seizure_quantity'); 
         $seizure_weighing_unit = $request->input('seizure_weighing_unit');
         $storage = $request->input('storage');
         $remark = $request->input('remark');
         $district = $request->input('district'); 
-        $court = $request->input('court');
+        $ndps_court = $request->input('ndps_court');
+        $certifying_court = $request->input('certifying_court');
         $certification_flag='N';
         $disposal_flag='N';
         $user_name=Auth::user()->user_name;
@@ -105,7 +132,7 @@ class LegacyDataController extends Controller
                 if($count<1){
 
                     Narcotic::insert([
-                        'drug_name' => trim($other_narcotic_name[$i]),
+                        'drug_name' => trim(strtoupper($other_narcotic_name[$i])),
                         'display' => 'N',
                         'created_at'=>Carbon::today(),
                         'updated_at'=>Carbon::today()
@@ -130,7 +157,8 @@ class LegacyDataController extends Controller
                 if($count<1){
 
                     Storage_detail::insert([
-                        'storage_name'=>trim($other_storage_name),
+                        'storage_name'=>trim(strtoupper($other_storage_name)),
+                        'district_id' => $district,
                         'display' => 'N',
                         'created_at'=>Carbon::today(),
                         'updated_at'=>Carbon::today()
@@ -151,6 +179,7 @@ class LegacyDataController extends Controller
                         'ps_id'=>$ps,
                         'case_no'=>$case_no,
                         'case_year'=>$case_year,
+                        'case_no_string'=>$case_no_string,
                         'drug_id'=> $narcotic_type[$i],
                         'quantity_of_drug'=>$seizure_quantity[$i],
                         'seizure_quantity_weighing_unit_id'=>$seizure_weighing_unit[$i],
@@ -158,7 +187,8 @@ class LegacyDataController extends Controller
                         'storage_location_id'=>$storage,
                         'agency_id'=>$agency_id,
                         'district_id'=>$district,
-                        'certification_court_id'=>$court,
+                        'ndps_court_id'=>$ndps_court,
+                        'certification_court_id'=>$certifying_court,
                         'certification_flag'=>$certification_flag,
                         'disposal_flag'=>$disposal_flag,
                         'remarks'=>$remark,
@@ -227,43 +257,23 @@ class LegacyDataController extends Controller
     public function add_new_seizure_details(Request $request){
 
         $this->validate( $request, [ 
+            'case_no_string' => 'required|exists:seizures,case_no_string',
             'narcotic_type' => 'required|integer',
             'seizure_date' => 'required|date',
             'seizure_quantity' => 'required|numeric',
             'seizure_weighing_unit' => 'required|integer',
         ] ); 
 
-        $user_type = $request->input('stakeholder_type');
-        
-        if($user_type=="ps"){
-            $ps = $request->input('stakeholder');
-            $agency_id = null;
-        }
-        else if($user_type=="agency"){
-            $agency_id = $request->input('stakeholder');
-            $ps = null;
-        }
-        $case_no = $request->input('case_no');
-        $case_year = $request->input('case_year');
+        $case_no_string = $request->input('case_no_string');
         $narcotic_type = $request->input('narcotic_type');
         $seizure_date = Carbon::parse($request->input('seizure_date'))->format('Y-m-d');
         $seizure_quantity = $request->input('seizure_quantity');
         $seizure_weighing_unit = $request->input('seizure_weighing_unit');
         $other_narcotic_name = $request->input('other_narcotic_name');
         $flag_other_narcotic = $request->input('flag_other_narcotic');
-        $narcotic_type = $request->input('narcotic_type');
-        $seizure_date = $request->input('seizure_date');
-        $seizure_quantity = $request->input('seizure_quantity');
-        $seizure_weighing_unit = $request->input('seizure_weighing_unit');
-        $storage = $request->input('storage');
-        $district = $request->input('district');
-        $court = $request->input('court');
-        $remark = $request->input('remark');
         $certification_flag='N';
         $disposal_flag='N';
-        $user_name=Auth::user()->user_name;
-        $update_date = Carbon::today();  
-        $uploaded_date = Carbon::today(); 
+        $update_date = Carbon::today(); 
 
         
         if($flag_other_narcotic==1){
@@ -290,24 +300,29 @@ class LegacyDataController extends Controller
             }
         }
 
-        seizure::insert(
+        $case_details = Seizure::where('case_no_string','ilike',$case_no_string)
+                                ->get();
+
+        Seizure::insert(
                 [
-                    'ps_id'=>$ps,
-                    'case_no'=>$case_no,
-                    'case_year'=>$case_year,
+                    'ps_id'=>$case_details[0]['ps_id'],
+                    'case_no'=>$case_details[0]['case_no'],
+                    'case_year'=>$case_details[0]['case_year'],
+                    'case_no_string'=>$case_no_string,
                     'drug_id'=> $narcotic_type,
                     'quantity_of_drug'=>$seizure_quantity,
                     'seizure_quantity_weighing_unit_id'=>$seizure_weighing_unit,
                     'date_of_seizure'=>Date('Y-m-d', strtotime($seizure_date)),
-                    'storage_location_id'=>$storage,
-                    'agency_id'=>$agency_id,
-                    'district_id'=>$district,
-                    'certification_court_id'=>$court,
+                    'storage_location_id'=>$case_details[0]['storage_location_id'],
+                    'agency_id'=>$case_details[0]['agency_id'],
+                    'district_id'=>$case_details[0]['district_id'],
+                    'ndps_court_id'=>$case_details[0]['ndps_court_id'],
+                    'certification_court_id'=>$case_details[0]['certification_court_id'],
                     'certification_flag'=>$certification_flag,
                     'disposal_flag'=>$disposal_flag,
-                    'remarks'=>$remark,
-                    'user_name'=>$user_name,
-                    'created_at'=>$uploaded_date,
+                    'remarks'=>$case_details[0]['remarks'],
+                    'user_name'=>$case_details[0]['user_name'],
+                    'created_at'=>$case_details[0]['created_at'],
                     'updated_at'=>$update_date
                 ]
 
@@ -316,59 +331,21 @@ class LegacyDataController extends Controller
         return 1;
     }
 
-
-    // District wise NDPS Court fetching
-    public function district_wise_court(Request $request){
-
-        $district = $request->input('district'); 
-
-        $data['district_wise_court']=Court_detail::
-                                    where('district_id','=', $district )
-                                    ->get();
-
-        echo json_encode($data);
-
-    }
-
-    // PS wise District fetching
-    public function stakeholder_wise_district(Request $request){
-        $user_type = $request->input('user_type');
-
-        if($user_type=="ps"){
-
-            $stakeholder_id = $request->input('stakeholder'); 
-
-            $data['stakeholder_wise_district']=Ps_detail::join("districts","ps_details.district_id","=","districts.district_id")
-                                        ->where('ps_id','=', $stakeholder_id)
-                                        ->get();
-        }
-        else if($user_type=="agency"){
-            $data['stakeholder_wise_district']=District::orderBy('district_name')
-                                                ->get();
-        }
-
-        echo json_encode($data);
-
-    }
-
+    
 
     // Do Dispose
     public function dispose(Request $request){
         
         $this->validate ( $request, [ 
-            'stakeholder' => 'required|integer',
-            'case_no' => 'required|integer',
-            'case_year' => 'required|integer',
+            'case_no_string' => 'required',
             'narcotic_type' => 'required|integer',
             'disposal_date' => 'required|date',
             'disposal_quantity' => 'required|numeric',
             'disposal_weighing_unit' => 'required|integer'
         ] ); 
 
-        $user_type = $request->input('stakeholder_type');        
-         
-        $case_no = $request->input('case_no'); 
-        $case_year = $request->input('case_year');
+        
+        $case_no_string = $request->input('case_no_string');
         $narcotic_type = $request->input('narcotic_type');
         $disposal_date = Carbon::parse($request->input('disposal_date'))->format('Y-m-d');
         $disposal_quantity = $request->input('disposal_quantity'); 
@@ -382,27 +359,11 @@ class LegacyDataController extends Controller
             'updated_at'=>Carbon::today()
         ];
 
-        if($user_type=="ps"){
-            $ps = $request->input('stakeholder');
-
-            Seizure::where([['ps_id',$ps],
-                        ['case_no',$case_no],
-                        ['case_year',$case_year],
-                        ['drug_id',$narcotic_type]
-                    ])->update($data);
         
-        }
-        else if($user_type=="agency"){
-            $agency_id = $request->input('stakeholder');
-
-            Seizure::where([
-                        ['agency_id',$agency_id],
-                        ['case_no',$case_no],
-                        ['case_year',$case_year],
-                        ['drug_id',$narcotic_type]
-                    ])->update($data);
-        
-        }        
+        Seizure::where([
+            ['case_no_string',$case_no_string],
+            ['drug_id',$narcotic_type]
+        ])->update($data);        
         
         return 1;
         
@@ -411,10 +372,7 @@ class LegacyDataController extends Controller
 
     //Fetch case details of a specific case no.
     public function fetch_case_details(Request $request){
-        $stakeholder = $request->input('stakeholder');
-        $case_no = $request->input('case_no');
-        $case_year = $request->input('case_year');
-
+        $case_no_string = $request->input('case_no_string');
         $user_type = $request->input('stakeholder_type');
         
         if($user_type=="ps"){
@@ -424,14 +382,17 @@ class LegacyDataController extends Controller
                         ->join('units AS u1','seizures.seizure_quantity_weighing_unit_id','=','u1.unit_id')
                         ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
                         ->leftjoin('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
-                        ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                        ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
-                        ->join('districts','seizures.district_id','=','districts.district_id')
-                        ->where([['seizures.ps_id',$stakeholder],['seizures.case_no',$case_no],['seizures.case_year',$case_year]])                        
+                        ->leftjoin('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
+                        ->join('certifying_court_details','seizures.certification_court_id','=','certifying_court_details.court_id')
+                        ->join('ndps_court_details','seizures.ndps_court_id','=','ndps_court_details.ndps_court_id')
+                        ->where([
+                            ['seizures.case_no_string','ilike',$case_no_string],
+                            ['seizures.ndps_court_id', Auth::user()->ndps_court_id]
+                        ])                        
                         ->select('seizures.agency_id','seizures.ps_id','drug_name','narcotics.display','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
                                 'u1.unit_name AS seizure_unit','u1.unit_degree AS seizure_unit_degree','date_of_seizure','date_of_disposal',
                                 'disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit', 'storage_name',
-                                'court_name','districts.district_id','district_name','date_of_certification',
+                                'court_name','ndps_court_details.ndps_court_id','ndps_court_name','date_of_certification',
                                 'certification_flag','quantity_of_sample','u2.unit_name AS sample_unit',
                                 'remarks','magistrate_remarks', 'storage_location_id', 'seizures.certification_court_id')
                         ->get();
@@ -444,14 +405,17 @@ class LegacyDataController extends Controller
                         ->join('units AS u1','seizures.seizure_quantity_weighing_unit_id','=','u1.unit_id')
                         ->leftjoin('units AS u2','seizures.sample_quantity_weighing_unit_id','=','u2.unit_id')
                         ->leftjoin('units AS u3','seizures.disposal_quantity_weighing_unit_id','=','u3.unit_id')
-                        ->join('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
-                        ->join('court_details','seizures.certification_court_id','=','court_details.court_id')
-                        ->join('districts','seizures.district_id','=','districts.district_id')
-                        ->where([['seizures.agency_id',$stakeholder],['seizures.case_no',$case_no],['seizures.case_year',$case_year]])                        
+                        ->leftjoin('storage_details','seizures.storage_location_id','=','storage_details.storage_id')
+                        ->join('certifying_court_details','seizures.certification_court_id','=','certifying_court_details.court_id')
+                        ->join('ndps_court_details','seizures.ndps_court_id','=','ndps_court_details.ndps_court_id')
+                        ->where([
+                            ['seizures.case_no_string','ilike',$case_no_string],
+                            ['seizures.ndps_court_id',Auth::user()->ndps_court_id]
+                        ])                        
                         ->select('seizures.agency_id','seizures.ps_id','drug_name','narcotics.display','narcotics.drug_id','quantity_of_drug','seizure_quantity_weighing_unit_id',
                                 'u1.unit_name AS seizure_unit','date_of_seizure','date_of_disposal',
                                 'disposal_quantity','disposal_flag','u3.unit_name AS disposal_unit','storage_name',
-                                'court_name','districts.district_id','district_name','date_of_certification',
+                                'court_name','ndps_court_details.ndps_court_id','ndps_court_name','date_of_certification',
                                 'certification_flag','quantity_of_sample','u2.unit_name AS sample_unit',
                                 'remarks','magistrate_remarks', 'storage_location_id', 'seizures.certification_court_id')
                         ->get();
@@ -475,9 +439,7 @@ class LegacyDataController extends Controller
     // Do certification
     public function certify(Request $request){
         $this->validate ( $request, [ 
-            'stakeholder' => 'required|integer',
-            'case_no' => 'required|integer',
-            'case_year' => 'required|integer',
+            'case_no_string' => 'required',
             'narcotic_type' => 'required|integer',
             'sample_quantity' => 'required|numeric',
             'sample_weighing_unit' => 'required|integer',
@@ -485,12 +447,8 @@ class LegacyDataController extends Controller
             'magistrate_remarks' => 'nullable|max:255'
         ] ); 
 
-        $stakeholder = $request->input('stakeholder'); 
-        $stakeholder_type = $request->input('stakeholder_type'); 
-        $case_no = $request->input('case_no'); 
-        $case_year = $request->input('case_year');
+        $case_no_string = $request->input('case_no_string');
         $narcotic_type = $request->input('narcotic_type');
-
         $sample_quantity = $request->input('sample_quantity'); 
         $sample_weighing_unit = $request->input('sample_weighing_unit');         
         $certification_date = Carbon::parse($request->input('certification_date'))->format('Y-m-d');
@@ -505,25 +463,13 @@ class LegacyDataController extends Controller
             'updated_at'=>Carbon::today()
         ];
 
-        if($stakeholder_type=='ps'){
-            Seizure::where([
-                ['ps_id',$stakeholder],
-                ['case_no',$case_no],
-                ['case_year',$case_year],
-                ['drug_id',$narcotic_type]
-            ])->update($data);
-        }
-        else if($stakeholder_type=='agency'){
-            Seizure::where([
-                ['agency_id',$stakeholder],
-                ['case_no',$case_no],
-                ['case_year',$case_year],
-                ['drug_id',$narcotic_type]
-            ])->update($data);
-        }
+        Seizure::where([
+            ['case_no_string',$case_no_string],
+            ['drug_id',$narcotic_type]
+        ])->update($data);
         
         return 1;
-        
+
     }
     
 

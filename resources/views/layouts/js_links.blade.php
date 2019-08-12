@@ -37,7 +37,7 @@
     <script>
         // Session Timeout For Inactive Window STARTS
         $(document).ready(function(){
-            var idle_time = 600000; // for 10 minutes
+            var idle_time = 900000; // for 15 minutes
             var idleSecondsCounter=1;
 
             document.onclick = function() {
