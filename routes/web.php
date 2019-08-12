@@ -58,15 +58,12 @@
        Route::post('disposed_undisposed_tally/ndps_court_report',
         'SearchController@calhc_ndps_court_report');
 
-        Route::post('disposed_undisposed_tally/stakeholder_report',
-        'SearchController@calhc_stakeholder_report');
+        Route::post('disposed_undisposed_tally/ps_report',
+        'SearchController@calhc_ps_report');
 
-        Route::post('disposed_undisposed_tally/storage_report',
-        'SearchController@calhc_storage_report');
-       
-        Route::post('disposed_undisposed_tally/fetch_more_details_storage_report',
-        'SearchController@calhc_fetch_more_details_storage_report');       
-
+        Route::post('disposed_undisposed_tally/agency_report',
+        'SearchController@calhc_agency_report');
+        
         Route::post('disposed_undisposed_tally/narcotic_district_wise_report',
         'SearchController@calhc_narcotic_district_report');
 

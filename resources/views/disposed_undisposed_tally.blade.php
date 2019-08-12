@@ -16,8 +16,8 @@
                 <select class="form-control select2" id="report">
                     <option value="">Select an option</option>
                     <option value="district_court_report">NDPS Court Wise Report</option>
-                    <option value="stakeholder_report">PS Wise Report</option>
-                    <option value="malkhana_report">Storage Wise Report</option>
+                    <option value="ps_report">PS Wise Report</option>
+                    <option value="agency_report">Agency Wise Report</option>
                     <option value="narcotic_district_report">Narcotic & District Wise Report</option>
                     <option value="narcotic_malkhana_report">Narcotic & Malkhana Wise Report</option>
                 </select>
@@ -87,8 +87,8 @@
 </div>
 
 
-<!-- Stakeholder Wise Search Result -->
-<div class="row" id="stakeholder_search_result" style="display:none">
+<!-- PS Wise Search Result -->
+<div class="row" id="ps_search_result" style="display:none">
     <div class="box box-primary">
         <div class="box-header with-border">
             <h3 class="box-title">PS Wise Report</h3>
@@ -100,12 +100,12 @@
         </div>
         <!-- /.box-header -->
         <div class="box-body">
-            <table class="table table-bordered table-responsive display" id="stakeholder_report" style="white-space:nowrap;">
+            <table class="table table-bordered table-responsive display" id="ps_report" style="white-space:nowrap;">
                 <thead>
                     <tr>
                     <th style="display:none">STAKEHOLDER ID </th>
                     <th>Sl No.</th>
-                    <th>Stakeholder Name</th>
+                    <th>PS Name</th>
                     <th>Narcotic Type</th>                                    
                     <th>Disposed Quantity</th>
                     <th>Undisposed Quantity</th>
@@ -119,11 +119,11 @@
 </div>
 
 
-<!-- District - Court Wise Search Result -->
-<div class="row" id="storage_search_result" style="display:none">
+<!-- Agency Wise Search Result -->
+<div class="row" id="agency_search_result" style="display:none">
     <div class="box box-primary">
         <div class="box-header with-border">
-            <h3 class="box-title">Storage Wise Report</h3>
+            <h3 class="box-title">Agency Wise Report</h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                 </button>
@@ -132,13 +132,12 @@
         </div>
         <!-- /.box-header -->
         <div class="box-body">
-            <table class="table table-bordered table-responsive display" id="storage_report" style="white-space:nowrap;">
+            <table class="table table-bordered table-responsive display" id="agency_report" style="white-space:nowrap;">
                 <thead>
                     <tr>
-                    <th style="display:none">STORAGE ID </th>
-                    <th></th>
+                    <th style="display:none">STAKEHOLDER ID </th>
                     <th>Sl No.</th>
-                    <th>Storage Name</th>
+                    <th>Agency Name</th>
                     <th>Narcotic Type</th>                                    
                     <th>Disposed Quantity</th>
                     <th>Undisposed Quantity</th>
@@ -288,10 +287,10 @@
                 else if(report_type=="district_court_report"){
                     $('#district_court_report').DataTable().destroy();
                     $("#district_court_search_result").show();
-                    $("#storage_search_result").hide();
-                    $("#stakeholder_search_result").hide();
+                    $("#ps_search_result").hide();
                     $("#narcotic_malkhana_search_result").hide();
                     $("#narcotic_district_search_result").hide();
+                    $("#agency_search_result").hide();
 
 
                     table = $("#district_court_report").DataTable({ 
@@ -322,21 +321,21 @@
                     table.column( 0 ).visible( false ); // Hiding the district id column
                     
                 }
-                else if(report_type=="stakeholder_report"){
-                    $('#stakeholder_report').DataTable().destroy();
+                else if(report_type=="agency_report"){
+                    $('#agency_report').DataTable().destroy();
                     $("#district_court_search_result").hide();
-                    $("#storage_search_result").hide();
                     $("#narcotic_malkhana_search_result").hide();
                     $("#narcotic_district_search_result").hide();
-                    $("#stakeholder_search_result").show();
+                    $("#ps_search_result").hide();
+                    $("#agency_search_result").show();
 
-                    table = $("#stakeholder_report").DataTable({ 
+                    table = $("#agency_report").DataTable({ 
                         "processing": true,
                         "serverSide": true,
                         "searching": true,
                         "paging" : true,
                         "ajax": {
-                        "url": "disposed_undisposed_tally/stakeholder_report",
+                        "url": "disposed_undisposed_tally/agency_report",
                         "type": "POST",
                         "data": {
                             _token: $('meta[name="csrf-token"]').attr('content'),
@@ -355,23 +354,23 @@
                         ]
                     });
 
-                    table.column( 0 ).visible( false ); // Hiding the stakeholder id column
+                    table.column( 0 ).visible( false ); // Hiding the Agency ID column
                 }
-                else if(report_type=="malkhana_report"){
-                    $('#storage_report').DataTable().destroy();
-                    $("#storage_search_result").show();
+                else if(report_type=="ps_report"){
+                    $('#ps_report').DataTable().destroy();
                     $("#district_court_search_result").hide();
-                    $("#stakeholder_search_result").hide();
                     $("#narcotic_malkhana_search_result").hide();
                     $("#narcotic_district_search_result").hide();
+                    $("#agency_search_result").hide();
+                    $("#ps_search_result").show();
 
-                    table = $("#storage_report").DataTable({ 
+                    table = $("#ps_report").DataTable({ 
                         "processing": true,
                         "serverSide": true,
                         "searching": true,
                         "paging" : true,
                         "ajax": {
-                        "url": "disposed_undisposed_tally/storage_report",
+                        "url": "disposed_undisposed_tally/ps_report",
                         "type": "POST",
                         "data": {
                             _token: $('meta[name="csrf-token"]').attr('content'),
@@ -380,25 +379,24 @@
                         }
                         },
                         "columns": [  
-                            {"class":"storage_id",
-                             "data":"STORAGE ID"},
-                            {"data": "More Details"}, 
+                            {"class":"stakeholder_id",
+                             "data":"STAKEHOLDER ID"},
                             {"data": "Sl No"},         
-                            {"data": "Storage Name"},
+                            {"data": "Stakeholder Name"},
                             {"data": "Narcotic Type"},
                             {"data": "Disposed Quantity"},
                             {"data": "Undisposed Quantity"}
                         ]
                     });
 
-                    table.column( 0 ).visible( false ); // Hiding the storage id column
+                    table.column( 0 ).visible( false ); // Hiding the PS Id column
                 }
                 else if(report_type=="narcotic_district_report"){
                     $("#district_court_search_result").hide();
-                    $("#storage_search_result").hide();
-                    $("#stakeholder_search_result").hide();
+                    $("#ps_search_result").hide();
                     $("#narcotic_malkhana_search_result").hide();
                     $("#narcotic_district_search_result").show();
+                    $("#agency_search_result").hide();
 
                     $.ajax({
                         url:"disposed_undisposed_tally/narcotic_district_wise_report",
@@ -435,14 +433,32 @@
                                 tbody+="</tr>";
                             }
 
+                            tbody+="<tr><td>TOTAL</td>";
+
                             var thead = "<tr><th rowspan='2'>District Name</th>";
 
                             for(i=0;i<response.length;i++){
                                 thead+="<th colspan='2'>"+
                                             response[i].narcotic_name+
                                         "</th>";
+
+                                if(response[i].total_value.length>0){
+                                    if(response[i].total_value[0].disposal_quantity>0)
+                                        tbody+="<td>"+response[i].total_value[0].disposal_quantity+" "+response[i].total_value[0].unit_name+"</td>";                                    
+                                    else
+                                        tbody+="<td>NIL</td>";
+
+                                    if(response[i].total_value[0].undisposed_quantity>0)
+                                        tbody+="<td>"+response[i].total_value[0].undisposed_quantity+" "+response[i].total_value[0].unit_name+"</td>";                                        
+                                    else
+                                        tbody+="<td>NIL</td>";
+                                }
+                                else{
+                                    tbody+="<td>NIL</td><td>NIL</td>";
+                                }
                             }
 
+                            tbody+="</tr>";
                             thead+="</tr><tr>";
 
                             for(i=0;i<response.length;i++){
@@ -459,10 +475,10 @@
                 }
                 else if(report_type=="narcotic_malkhana_report"){
                     $("#district_court_search_result").hide();
-                    $("#storage_search_result").hide();
-                    $("#stakeholder_search_result").hide();
+                    $("#ps_search_result").hide();
                     $("#narcotic_malkhana_search_result").show();
                     $("#narcotic_district_search_result").hide();
+                    $("#agency_search_result").hide();
 
                     $.ajax({
                         url:"disposed_undisposed_tally/narcotic_malkhana_wise_report",
@@ -499,13 +515,31 @@
                                 tbody+="</tr>";
                             }
 
+                            tbody+="<tr><td>TOTAL</td>";
                             var thead = "<tr><th rowspan='2'>Malkhana Name</th>";
+                            
                             for(i=0;i<response.length;i++){
                                 thead+="<th colspan='2'>"+
                                             response[i].narcotic_name+
                                         "</th>";
+                                        
+                                if(response[i].total_value.length>0){
+                                    if(response[i].total_value[0].disposal_quantity>0)
+                                        tbody+="<td>"+response[i].total_value[0].disposal_quantity+" "+response[i].total_value[0].unit_name+"</td>";                                    
+                                    else
+                                        tbody+="<td>NIL</td>";
+
+                                    if(response[i].total_value[0].undisposed_quantity>0)
+                                        tbody+="<td>"+response[i].total_value[0].undisposed_quantity+" "+response[i].total_value[0].unit_name+"</td>";                                        
+                                    else
+                                        tbody+="<td>NIL</td>";
+                                }
+                                else{
+                                    tbody+="<td>NIL</td><td>NIL</td>";
+                                }
                             }
-                            
+
+                            tbody+="</tr>";
                             thead+="</tr><tr>";
 
                             for(i=0;i<response.length;i++){
@@ -568,98 +602,7 @@
                 return (sa);
             });
 
-
-            // Fetching More Details
-            $(document).on("click",".more_details",function(){  
-                var report_type = $("#report option:selected").val();                
-                
-                // Fetching More Detailed Report About Any Storage :: STARTS
-                if(report_type=="malkhana_report"){
-                    var element = $(this);        
-                    var tr = element.closest('tr');
-                    var row = table.row(tr);
-                    var row_data = table.row(tr).data();
-
-                    var storage_id = row_data['STORAGE ID'];
-
-                    var obj;
-
-                    // fetch case details only when the child row is hide
-                    if(!row.child.isShown()){ 
-
-                        $.ajax({
-                            type:"POST",
-                            url:"disposed_undisposed_tally/fetch_more_details_storage_report",
-                            data:{
-                                _token: $('meta[name="csrf-token"]').attr('content'),
-                                storage_id:storage_id,
-                                from_date:from_date,
-                                to_date:to_date
-                            },
-                            success:function(response){
-                                obj = $.parseJSON(response); 
-                            },
-                            error:function(response){
-                                console.log(response);
-                            },
-                            async: false
-                        }) 
-                    }
-
-                    if(row.child.isShown() ) {
-                        element.attr("src","images/details_open.png");
-                        row.child.hide();
-                    }
-                    else {
-                        element.attr("src","images/details_close.png");
-
-                        var child_string ="";            
-                        child_string += '<table class="table table-bordered table-responsive">'+
-                                        '<thead>'+
-                                            '<tr>'+
-                                                '<th>Sl No.</th>'+
-                                                '<th style="display:none">Stakeholder ID</th>'+
-                                                '<th>Stakeholder</th>'+
-                                                '<th>Narcotic Type</th>'+                                        
-                                                '<th>Disposed Quantity</th>'+
-                                                '<th>Undisposed Quantity</th>'+
-                                            '</tr>'+
-                                        '</thead>'+
-                                        
-                                    '<tbody>';
-
-                        $.each(obj,function(key,value){
-                        child_string += ""+
-                            '<tr class="info">'+ 
-                                '<td>'+
-                                    value.sl_no+
-                                '</td>'+
-                                '<td class="court_id" style="display:none">'+
-                                    value.stakeholder_id+
-                                '</td>'+
-                                '<td>'+
-                                    value.stakeholder_name+
-                                '</td>'+
-                                '<td>'+
-                                    value.narcotic_type+
-                                '</td>'+                               
-                                '<td>'+
-                                    value.disposed_quantity+
-                                '</td>'+
-                                '<td>'+
-                                    value.undisposed_quantity+
-                                '</td>'+
-                            '</tr>';
-                        })
-
-                        child_string +='</tbody></table>';
-
-                        row.child(child_string).show();
-                    }
-                }
-                // Fetching More Detailed Report About Any Storage :: ENDS
-            })
-
+            
             // Reset The Page
             $(document).on("click","#reset",function(){
                 location.reload(true);

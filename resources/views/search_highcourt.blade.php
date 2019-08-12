@@ -60,7 +60,7 @@
                 </select>
             </div>
 
-            <label class="col-sm-1 col-form-label-sm control-label" style="font-size:medium">District</label>
+            <label class="col-sm-1 col-form-label-sm control-label" style="font-size:medium">NDPS Court</label>
             <div class="col-sm-3">
                 <select class="form-control select2" id="ndps_court" autocomplete="off">
                     <option value="">Select an option...</option>
@@ -318,7 +318,7 @@
                 var ps = $("#ps option:selected").val();
                 var case_no = $("#case_no").val();
                 var case_year = $("#case_year option:selected").val();
-                var case_no_initial = $.trim($("#case_no_initial").val());
+                var case_no_initial = $("#case_no_initial").val();
                 var stakeholder = $("#stakeholder option:selected").val();
                 var certifying_court = $("#court option:selected").val();
                 var ndps_court = $("#ndps_court option:selected").val();

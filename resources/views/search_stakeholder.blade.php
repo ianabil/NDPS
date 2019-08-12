@@ -14,20 +14,21 @@
             <label class="col-sm-1 col-form-label-sm control-label" style="font-size:medium">Case</label>
             <div class="col-sm-3">
                 <select class="form-control select2" id="ps" autocomplete="off">
-                    @if(Auth::user()->user_type=="agency")
-                        <option value="">Select Agency</option>
-                    @else
-                        <option value="">Select PS</option>
-                    @endif
+                    <option value="">Select PS</option>
                     @foreach($data['ps'] as $ps)
                         <option value="{{$ps->ps_id}}">{{$ps->ps_name}}</option>
                     @endforeach
                 </select>
             </div>
-            <div class="col-sm-3">
+            @if(Auth::user()->user_type=='agency')
+                <div class="col-sm-3">
+                    <input class="form-control" type="text" id="case_no_initial" placeholder="Case No. Initials (For non PS FIR cases)" autocomplete="off">                                                                                
+                </div>
+            @endif
+            <div class="col-sm-2">
                 <input class="form-control" type="number" id="case_no" placeholder="Case No." autocomplete="off">
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <select class="form-control select2" id="case_year" autocomplete="off">	
                     <option value="">Select Year</option>					
                     @for($i=Date('Y');$i>=1980;$i--)
@@ -320,6 +321,15 @@
                 var ps = $("#ps option:selected").val();
                 var case_no = $("#case_no").val();
                 var case_year = $("#case_year option:selected").val();
+
+                @if(Auth::user()->user_type=="ps")
+                    var agency = $("#agency option:selected").val();
+                    var case_no_initial = "";
+                @elseif(Auth::user()->user_type=="agency")
+                    var agency = "";
+                    var case_no_initial = $("#case_no_initial").val();
+                @endif               
+
                 var certifying_court = $("#court option:selected").val();
                 var ndps_court = $("#ndps_court option:selected").val();
                 var narcotic_type = $("#narcotic option:selected").val();
@@ -327,12 +337,13 @@
                 var certified_cases = $("#certified").is(":checked");
                 var disposed_cases = $("#disposed").is(":checked");
 
-                @if(Auth::user()->user_type=="ps")
-                    var agency = $("#agency option:selected").val();
-                @elseif(Auth::user()->user_type=="agency")
-                    var agency = "";
-                @endif               
+                if(ps!="" && case_no_initial!=""){
+                    swal("Invalid Input","PS and Case No. Initial Field (For non PS FIR cases) Can Not Have Data Together","error");
+                    return false;
+                }
 
+
+                
                 $('.table').DataTable().destroy();
                 $("#search_result").show();
 
@@ -354,6 +365,7 @@
                         ps:ps,
                         case_no:case_no,
                         case_year:case_year,
+                        case_no_initial:case_no_initial,
                         agency:agency,
                         certifying_court:certifying_court,
                         ndps_court:ndps_court,

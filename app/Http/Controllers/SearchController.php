@@ -58,15 +58,12 @@ class SearchController extends Controller
 
     public function show_highcourt_search_result(Request $request){
 
-        $this->validate( $request, [ 
-            'case_no_initial' => 'nullable|alpha_dash'
-        ]);
         
         /* Fetching values from view :: STARTS */
         $ps = $request->input('ps');
-        $case_no = $request->input('case_no');
+        $case_no = trim($request->input('case_no'));
         $case_year = $request->input('case_year');
-        $case_no_initial = $request->input('case_no_initial');
+        $case_no_initial = trim($request->input('case_no_initial'));
         $agency = $request->input('stakeholder');
         $certifying_court = $request->input('certifying_court'); 
         $ndps_court = $request->input('ndps_court');
@@ -449,8 +446,9 @@ class SearchController extends Controller
         
         /* Fetching values from view :: STARTS */
         $ps = $request->input('ps');
-        $case_no = $request->input('case_no');
+        $case_no = trim($request->input('case_no'));
         $case_year = $request->input('case_year');
+        $case_no_initial = trim($request->input('case_no_initial'));
         $agency = $request->input('agency');
         $certifying_court = $request->input('certifying_court'); 
         $ndps_court = $request->input('ndps_court');
@@ -492,6 +490,9 @@ class SearchController extends Controller
 
         if(!empty($case_year))
            $where = $where.' AND seizures.case_year ='.$case_year;
+
+        if(!empty($case_no_initial))
+           $where = $where." AND seizures.case_no_string ilike '%".$case_no_initial."%'";
 
         if(!empty($agency) && Auth::user()->user_type=="ps")
             $where = $where.' AND seizures.agency_id = '.$agency;
@@ -781,7 +782,7 @@ class SearchController extends Controller
 
         $data['storages'] = Storage_detail::join('ndps_court_details','storage_details.district_id','=','ndps_court_details.district_id')
                                             ->where([
-                                                ['ndps_court_details.district_id',Auth::user()->district_id],
+                                                ['ndps_court_details.ndps_court_id',Auth::user()->ndps_court_id],
                                                 ['display','Y']
                                             ])
                                             ->select('storage_id','storage_name')
@@ -793,15 +794,12 @@ class SearchController extends Controller
 
     public function show_special_court_search_result(Request $request){
 
-        $this->validate( $request, [ 
-            'case_no_initial' => 'nullable|alpha_dash'
-        ]);
         
         /* Fetching values from view :: STARTS */
         $ps = $request->input('ps');
-        $case_no = $request->input('case_no');
+        $case_no = trim($request->input('case_no'));
         $case_year = $request->input('case_year');
-        $case_no_initial = $request->input('case_no_initial');
+        $case_no_initial = trim($request->input('case_no_initial'));
         $agency = $request->input('stakeholder');
         $certifying_court = $request->input('certifying_court');
         $narcotic_type = $request->input('narcotic_type');
@@ -1262,7 +1260,7 @@ class SearchController extends Controller
     }
 
 
-    public function calhc_stakeholder_report(Request $request){
+    public function calhc_ps_report(Request $request){
         $this->validate( $request, [ 
             'from_date' => 'required|date',
             'to_date' => 'required|date',
@@ -1416,7 +1414,7 @@ class SearchController extends Controller
     }
 
 
-    public function calhc_storage_report(Request $request){
+    public function calhc_agency_report(Request $request){
         $this->validate( $request, [ 
             'from_date' => 'required|date',
             'to_date' => 'required|date',
@@ -1427,40 +1425,39 @@ class SearchController extends Controller
         
         // For dataTable :: STARTS
         $columns = array( 
-            0 =>'STORAGE ID',
-            1=>'More Details',
-            2=>'Sl No',
-            3=>'Storage Name',
-            4 =>'Narcotic Type',
-            5 =>'Disposed Quantity',
-            6 =>'Undisposed Quantity'
+            0 =>'STAKEHOLDER ID',
+            1=>'Sl No',
+            2=>'Stakeholder Name',
+            3 =>'Narcotic Type',
+            4 =>'Disposed Quantity',
+            5 =>'Undisposed Quantity'
         );
 
         $limit = $request->input('length'); // For No. of rows per page
         $start = $request->input('start');
 
-        $totalData = Storage_detail::count();
+        $totalData = Agency_detail::count();
         $totalFiltered = $totalData;
 
         if(empty($request->input('search.value'))){
-            $storages = Storage_detail::select('storage_id','storage_name')
+            $agencies = Agency_detail::select('agency_id','agency_name')
                                         ->limit($limit)
                                         ->offset($start)
-                                        ->orderBy('storage_name')
-                                        ->get();
+                                        ->orderBy('agency_name')
+                                        ->get();       
         }
         else{
             $search = $request->input('search.value');
 
-            $storages = Storage_detail::where('storage_name','ilike',"%{$search}%")
-                                        ->select('storage_id','storage_name')
+            $agencies = Agency_detail::where('agency_name','ilike',"%{$search}%")
+                                        ->select('agency_id','agency_name')
                                         ->limit($limit)
                                         ->offset($start)
-                                        ->orderBy('storage_name')
-                                        ->get(); 
+                                        ->orderBy('agency_name')
+                                        ->get();   
 
-            $totalFiltered = Storage_detail::where('storage_name','ilike',"%{$search}%")
-                                        ->count();
+            $totalFiltered = Agency_detail::where('agency_name','ilike',"%{$search}%")
+                                            ->count();
 
         }
 
@@ -1469,15 +1466,15 @@ class SearchController extends Controller
 
         $report['Sl No'] = $start;
 
-        foreach($storages as $storage){           
+        foreach($agencies as $agency){
             //SL No.
             $report['Sl No'] ++; 
 
             // District ID
-            $report['STORAGE ID'] = $storage->storage_id;
+            $report['STAKEHOLDER ID'] = $agency->agency_id;
 
             // District Name
-            $report['Storage Name'] = $storage->storage_name;
+            $report['Stakeholder Name'] = $agency->agency_name;
 
 
             $sql = "SELECT drug_name,SUM(A) disposal_quantity,SUM(B) undisposed_quantity,quantity_unit_name as unit_name
@@ -1496,26 +1493,26 @@ class SearchController extends Controller
                             FROM 
                             (
                                 select drug_name, disposal_flag, 
-                                        CASE    WHEN u1.unit_degree = 2 THEN quantity_of_drug/1000 
+                                        CASE    WHEN u1.unit_degree = 2 THEN                   quantity_of_drug/1000 
                                                 WHEN u1.unit_degree = 1 THEN quantity_of_drug/1000000
                                                 WHEN u1.unit_degree = 3 THEN quantity_of_drug
                                                 WHEN u1.unit_degree = 0 THEN quantity_of_drug
                                                 END AS seizure,
                 
-                                        CASE    WHEN u1.unit_name ilike 'g%m'  THEN  'KG'
+                                        CASE    WHEN u1.unit_name ilike 'g%m'  THEN             'KG'
                                                 WHEN u1.unit_name ilike 'l%e' OR u1.unit_name ilike 'm%l'  THEN 'KL'
                                                 ELSE u1.unit_name
                                                 END AS quantity_unit_name,
                                                 
                 
-                                        CASE 	WHEN u2.unit_degree = 2 THEN disposal_quantity/1000
+                                        CASE 	WHEN u2.unit_degree = 2 THEN                   disposal_quantity/1000
                                                 WHEN u2.unit_degree = 1 THEN disposal_quantity/1000000
                                                 WHEN u2.unit_degree = 3 THEN disposal_quantity
                                                 WHEN u2.unit_degree = 0 THEN disposal_quantity
                                                 END AS disposal,
                                         
                 
-                                        CASE 	WHEN u3.unit_degree = 2 THEN quantity_of_sample/1000
+                                        CASE 	WHEN u3.unit_degree = 2 THEN                   quantity_of_sample/1000
                                                 WHEN u3.unit_degree = 1 THEN quantity_of_sample/1000000
                                                 WHEN u3.unit_degree = 3 THEN quantity_of_sample
                                                 WHEN u3.unit_degree = 0 THEN quantity_of_sample
@@ -1527,18 +1524,12 @@ class SearchController extends Controller
                                 inner join units as u1 on seizures.seizure_quantity_weighing_unit_id=u1.unit_id 
                                 left join units as u2  on seizures.disposal_quantity_weighing_unit_id=u2.unit_id 
                                 left join units as u3  on seizures.sample_quantity_weighing_unit_id=u3.unit_id 
-                                where storage_location_id=".$storage->storage_id." AND seizures.created_at BETWEEN '".$from_date."' AND '".$to_date."'
+                                where agency_id=".$agency->agency_id." AND seizures.ps_id IS NULL AND seizures.created_at BETWEEN '".$from_date."' AND '".$to_date."'
                             ) a
                     )b
                 )c GROUP BY drug_name,quantity_unit_name";
 
             $data = DB::select($sql);
-            
-            // For More Details Button
-            if(sizeof($data)>0)
-                $report['More Details'] = '<img src="images/details_open.png" style="cursor:pointer" class="more_details" alt="More Details">';
-            else
-                $report['More Details'] =   '';    
 
             $report['Narcotic Type'] = "<ul type='square'>";
             $report['Disposed Quantity'] = "<ul type='square'>";
@@ -1575,168 +1566,6 @@ class SearchController extends Controller
         echo json_encode($json_data);
 
     }
-   
-
-    public function calhc_fetch_more_details_storage_report(Request $request){
-        $storage_id = $request->input('storage_id');
-        $from_date = $request->input('from_date');
-        $to_date = $request->input('to_date');
-
-        $stakeholders = Seizure::leftjoin('ps_details','seizures.ps_id','=','ps_details.ps_id')
-                                ->leftjoin('agency_details','seizures.agency_id','=','agency_details.agency_id')
-                                ->where('seizures.storage_location_id',$storage_id)
-                                ->select('ps_details.ps_id','ps_details.ps_name','agency_details.agency_id','agency_details.agency_name')
-                                ->orderBy('ps_details.ps_name')
-                                ->distinct()
-                                ->get();
-        $record = array();
-
-        foreach($stakeholders as $key=>$stakeholder){            
-            $report['sl_no'] = ++$key;
-
-            if($stakeholder->agency_id==null){
-                $report['stakeholder_id'] = $stakeholder->ps_id;
-                $report['stakeholder_name'] = $stakeholder->ps_name;
-
-                    $sql = "SELECT drug_name,SUM(A) disposal_quantity,SUM(B) undisposed_quantity,quantity_unit_name as unit_name
-                            FROM
-                            (
-                                select drug_name, quantity_unit_name,
-                                        CASE 
-                                                WHEN disposal_flag = 'Y' THEN disposal ELSE 0 END as A,
-                                        CASE
-                                                WHEN disposal_flag = 'Y' THEN seizure-sample-disposal 
-                                                ELSE seizure-coalesce(sample, 0) END as B
-                                FROM
-                                (
-                                    SELECT 
-                                        drug_name, disposal_flag,seizure,disposal,sample,quantity_unit_name
-                                        FROM 
-                                        (
-                                            select drug_name, disposal_flag, 
-                                                    CASE    WHEN u1.unit_degree = 2 THEN quantity_of_drug/1000 
-                                                            WHEN u1.unit_degree = 1 THEN quantity_of_drug/1000000
-                                                            WHEN u1.unit_degree = 3 THEN quantity_of_drug
-                                                            WHEN u1.unit_degree = 0 THEN quantity_of_drug
-                                                            END AS seizure,
-                            
-                                                    CASE    WHEN u1.unit_name ilike 'g%m'  THEN  'KG'
-                                                            WHEN u1.unit_name ilike 'l%e' OR u1.unit_name ilike 'm%l'  THEN 'KL'
-                                                            ELSE u1.unit_name
-                                                            END AS quantity_unit_name,
-                                                            
-                            
-                                                    CASE 	WHEN u2.unit_degree = 2 THEN disposal_quantity/1000
-                                                            WHEN u2.unit_degree = 1 THEN disposal_quantity/1000000
-                                                            WHEN u2.unit_degree = 3 THEN disposal_quantity
-                                                            WHEN u2.unit_degree = 0 THEN disposal_quantity
-                                                            END AS disposal,
-                                                    
-                            
-                                                    CASE 	WHEN u3.unit_degree = 2 THEN quantity_of_sample/1000
-                                                            WHEN u3.unit_degree = 1 THEN quantity_of_sample/1000000
-                                                            WHEN u3.unit_degree = 3 THEN quantity_of_sample
-                                                            WHEN u3.unit_degree = 0 THEN quantity_of_sample
-                                                            END AS sample
-                            
-                                                    
-                                                            
-                                            from  seizures inner join narcotics on seizures.drug_id = narcotics.drug_id 
-                                            inner join units as u1 on seizures.seizure_quantity_weighing_unit_id=u1.unit_id 
-                                            left join units as u2  on seizures.disposal_quantity_weighing_unit_id=u2.unit_id 
-                                            left join units as u3  on seizures.sample_quantity_weighing_unit_id=u3.unit_id 
-                                            where seizures.storage_location_id=".$storage_id." AND seizures.ps_id=".$stakeholder->ps_id." AND seizures.created_at BETWEEN '".$from_date."' AND '".$to_date."'
-                                        ) a
-                                )b
-                            )c GROUP BY drug_name,quantity_unit_name";
-            }
-            else{
-                $report['stakeholder_id'] = $stakeholder->agency_id;
-                $report['stakeholder_name'] = $stakeholder->agency_name;
-
-                    $sql = "SELECT drug_name,SUM(A) disposal_quantity,SUM(B) undisposed_quantity,quantity_unit_name as unit_name
-                            FROM
-                            (
-                                select drug_name, quantity_unit_name,
-                                        CASE 
-                                                WHEN disposal_flag = 'Y' THEN disposal ELSE 0 END as A,
-                                        CASE
-                                                WHEN disposal_flag = 'Y' THEN seizure-sample-disposal 
-                                                ELSE seizure-coalesce(sample, 0) END as B
-                                FROM
-                                (
-                                    SELECT 
-                                        drug_name, disposal_flag,seizure,disposal,sample,quantity_unit_name
-                                        FROM 
-                                        (
-                                            select drug_name, disposal_flag, 
-                                                    CASE    WHEN u1.unit_degree = 2 THEN quantity_of_drug/1000 
-                                                            WHEN u1.unit_degree = 1 THEN quantity_of_drug/1000000
-                                                            WHEN u1.unit_degree = 3 THEN quantity_of_drug
-                                                            WHEN u1.unit_degree = 0 THEN quantity_of_drug
-                                                            END AS seizure,
-                            
-                                                    CASE    WHEN u1.unit_name ilike 'g%m'  THEN  'KG'
-                                                            WHEN u1.unit_name ilike 'l%e' OR u1.unit_name ilike 'm%l'  THEN 'KL'
-                                                            ELSE u1.unit_name
-                                                            END AS quantity_unit_name,
-                                                            
-                            
-                                                    CASE 	WHEN u2.unit_degree = 2 THEN disposal_quantity/1000
-                                                            WHEN u2.unit_degree = 1 THEN disposal_quantity/1000000
-                                                            WHEN u2.unit_degree = 3 THEN disposal_quantity
-                                                            WHEN u2.unit_degree = 0 THEN disposal_quantity
-                                                            END AS disposal,
-                                                    
-                            
-                                                    CASE 	WHEN u3.unit_degree = 2 THEN quantity_of_sample/1000
-                                                            WHEN u3.unit_degree = 1 THEN quantity_of_sample/1000000
-                                                            WHEN u3.unit_degree = 3 THEN quantity_of_sample
-                                                            WHEN u3.unit_degree = 0 THEN quantity_of_sample
-                                                            END AS sample
-                            
-                                                    
-                                                            
-                                            from  seizures inner join narcotics on seizures.drug_id = narcotics.drug_id 
-                                            inner join units as u1 on seizures.seizure_quantity_weighing_unit_id=u1.unit_id 
-                                            left join units as u2  on seizures.disposal_quantity_weighing_unit_id=u2.unit_id 
-                                            left join units as u3  on seizures.sample_quantity_weighing_unit_id=u3.unit_id 
-                                            where seizures.storage_location_id=".$storage_id." AND seizures.agency_id=".$stakeholder->agency_id." AND seizures.created_at BETWEEN '".$from_date."' AND '".$to_date."'
-                                        ) a
-                                )b
-                            )c GROUP BY drug_name,quantity_unit_name";
-            }
-                $data = DB::select($sql);
-
-                $report['narcotic_type'] = "<ul type='square'>";
-                $report['disposed_quantity'] = "<ul type='square'>";
-                $report['undisposed_quantity'] = "<ul type='square'>";
-
-                foreach($data as $seizure){
-                    $report['narcotic_type'] .= "<li>".$seizure->drug_name."</li>";
-                    if($seizure->disposal_quantity==0)
-                        $report['disposed_quantity'] .= "<li>NIL</li>";
-                    else
-                        $report['disposed_quantity'] .= "<li>".$seizure->disposal_quantity." ".$seizure->unit_name."</li>";
-                    
-                    if($seizure->undisposed_quantity==0)
-                        $report['undisposed_quantity'] .= "<li>NIL</li>";
-                    else
-                    $report['undisposed_quantity'] .= "<li>".$seizure->undisposed_quantity." ".$seizure->unit_name."</li>";
-                }
-    
-                $report['narcotic_type'] .= "</ul>";
-                $report['disposed_quantity'] .= "</ul>";
-                $report['undisposed_quantity'] .= "</ul>";
-
-                $record[] = $report;
-    
-        }
-
-        echo json_encode($record);
-
-    }
-
     
     public function calhc_narcotic_district_report(Request $request){
         $this->validate( $request, [ 
@@ -1803,8 +1632,56 @@ class SearchController extends Controller
                     GROUP BY district_name,quantity_unit_name
                     ORDER BY district_name";
 
+            $sql2 = "SELECT SUM(A) disposal_quantity,SUM(coalesce(B,0)) undisposed_quantity,quantity_unit_name as unit_name
+            FROM
+                (
+                    SELECT quantity_unit_name,
+                    CASE 
+                            WHEN disposal_flag = 'Y' THEN disposal ELSE 0 END as A,
+                    CASE
+                            WHEN disposal_flag = 'Y' THEN seizure-sample-disposal 
+                            ELSE seizure-coalesce(sample, 0) END as B
+                    from 
+                    (
+                        select 
+                        CASE    WHEN u1.unit_degree = 2 THEN quantity_of_drug/1000 
+                                WHEN u1.unit_degree = 1 THEN quantity_of_drug/1000000
+                                WHEN u1.unit_degree = 3 THEN quantity_of_drug
+                                WHEN u1.unit_degree = 0 THEN quantity_of_drug
+                                END AS seizure,
+                        
+                        CASE    WHEN u1.unit_name ilike 'g%m'  THEN 'KG'
+                                WHEN u1.unit_name ilike 'l%e' OR u1.unit_name ilike 'm%l'  THEN 'KL'
+                                ELSE u1.unit_name
+                                END AS quantity_unit_name,
+                        
+                        
+                        CASE    WHEN u2.unit_degree = 2 THEN disposal_quantity/1000
+                                WHEN u2.unit_degree = 1 THEN disposal_quantity/1000000
+                                WHEN u2.unit_degree = 3 THEN disposal_quantity
+                                WHEN u2.unit_degree = 0 THEN disposal_quantity
+                                END AS disposal,
+                        
+                        
+                        CASE    WHEN u3.unit_degree = 2 THEN quantity_of_sample/1000
+                                WHEN u3.unit_degree = 1 THEN quantity_of_sample/1000000
+                                WHEN u3.unit_degree = 3 THEN quantity_of_sample
+                                WHEN u3.unit_degree = 0 THEN quantity_of_sample
+                                END AS sample, disposal_flag
+                        
+                    
+                        from narcotics left join seizures on seizures.drug_id = narcotics.drug_id 
+                        left join units as u1 on seizures.seizure_quantity_weighing_unit_id=u1.unit_id 
+                        left join units as u2  on seizures.disposal_quantity_weighing_unit_id=u2.unit_id 
+                        left join units as u3  on seizures.sample_quantity_weighing_unit_id=u3.unit_id 
+                        WHERE seizures.created_at BETWEEN '".$from_date."' AND '".$to_date."' and seizures.drug_id = ".$narcotic->drug_id."
+                        ) a
+                )b
+            GROUP BY quantity_unit_name";
+
             $report['data'] = DB::select($sql);
             $report['narcotic_name'] = $narcotic->drug_name;
+            $report['total_value'] = DB::select($sql2);
             
             $record[] = $report;            
 
@@ -1881,8 +1758,57 @@ class SearchController extends Controller
                     GROUP BY storage_name,quantity_unit_name
                     ORDER BY storage_name";
 
+                $sql2 = "SELECT SUM(A) disposal_quantity,SUM(coalesce(B,0)) undisposed_quantity,quantity_unit_name as unit_name
+                    FROM
+                        (
+                            SELECT quantity_unit_name,
+                            CASE 
+                                    WHEN disposal_flag = 'Y' THEN disposal ELSE 0 END as A,
+                            CASE
+                                    WHEN disposal_flag = 'Y' THEN seizure-sample-disposal 
+                                    ELSE seizure-coalesce(sample, 0) END as B
+                            from 
+                            (
+                                select 
+                                CASE    WHEN u1.unit_degree = 2 THEN quantity_of_drug/1000 
+                                        WHEN u1.unit_degree = 1 THEN quantity_of_drug/1000000
+                                        WHEN u1.unit_degree = 3 THEN quantity_of_drug
+                                        WHEN u1.unit_degree = 0 THEN quantity_of_drug
+                                        END AS seizure,
+                                
+                                CASE    WHEN u1.unit_name ilike 'g%m'  THEN 'KG'
+                                        WHEN u1.unit_name ilike 'l%e' OR u1.unit_name ilike 'm%l'  THEN 'KL'
+                                        ELSE u1.unit_name
+                                        END AS quantity_unit_name,
+                                
+                                
+                                CASE    WHEN u2.unit_degree = 2 THEN disposal_quantity/1000
+                                        WHEN u2.unit_degree = 1 THEN disposal_quantity/1000000
+                                        WHEN u2.unit_degree = 3 THEN disposal_quantity
+                                        WHEN u2.unit_degree = 0 THEN disposal_quantity
+                                        END AS disposal,
+                                
+                                
+                                CASE    WHEN u3.unit_degree = 2 THEN quantity_of_sample/1000
+                                        WHEN u3.unit_degree = 1 THEN quantity_of_sample/1000000
+                                        WHEN u3.unit_degree = 3 THEN quantity_of_sample
+                                        WHEN u3.unit_degree = 0 THEN quantity_of_sample
+                                        END AS sample, disposal_flag
+                                
+                            
+                                from narcotics left join seizures on seizures.drug_id = narcotics.drug_id 
+                                left join units as u1 on seizures.seizure_quantity_weighing_unit_id=u1.unit_id 
+                                left join units as u2  on seizures.disposal_quantity_weighing_unit_id=u2.unit_id 
+                                left join units as u3  on seizures.sample_quantity_weighing_unit_id=u3.unit_id 
+                                WHERE seizures.created_at BETWEEN '".$from_date."' AND '".$to_date."' and seizures.drug_id = ".$narcotic->drug_id."
+                                ) a
+                        )b
+                    GROUP BY quantity_unit_name";
+        
+
             $report['data'] = DB::select($sql);
             $report['narcotic_name'] = $narcotic->drug_name;
+            $report['total_value'] = DB::select($sql2);
             
             $record[] = $report;            
 

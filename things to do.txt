@@ -1,0 +1,17 @@
+NDPS remaining works:
+- In Search Window of CALHC::
+1. Change the label of 'District' to NDPS Court -- DONE
+2. Add District as a search parameter -- Not Required
+3. Disable the blank spaces in the fields. same in both NDPS Court & Agency search window  -- DONE
+
+- In Disposed Undisposed Tally window:
+1. Add Agency Wise report.  -- DONE
+2. Add Total Quantity at the bottom of both Narcotic-District wise & Narcotic-Storage wise report.  -- DONE
+3. Storage Report showing wrong stakeholder's name in More Details section  -- DONE
+
+- In monthly report in PS / Agency / Magistrate / High Court end, do not show legacy data  -- Not Required
+
+- Check Entire Legacy Entry properly
+
+- Add a report showing all case details of legacy data in a time range at both CHC & District Court end. 
+
