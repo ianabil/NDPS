@@ -16,6 +16,12 @@ class RoleManager
      */
     public function handle($request, Closure $next, $role)
     {
+        $input = $request->all();
+        array_walk_recursive($input, function(&$input) {
+            $input = strip_tags($input);
+        });
+        $request->merge($input);
+        
         $roles = is_array($role)
             ? $role
             : explode('|', $role);
