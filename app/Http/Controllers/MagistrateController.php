@@ -157,12 +157,14 @@ class MagistrateController extends Controller
                         ->where([
                             ['seizures.created_at','>=',$start_date],
                             ['seizures.created_at','<=',$end_date],
-                            ['certification_court_id',$court_id]
+                            ['certification_court_id',$court_id],
+                            ['seizures.legacy_data_flag','N']
                         ])
                         ->orWhere([
                             ['seizures.updated_at','>=',$start_date],
                             ['seizures.updated_at','<=',$end_date],
-                            ['certification_court_id',$court_id]
+                            ['certification_court_id',$court_id],
+                            ['seizures.legacy_data_flag','N']
                         ])
                         ->select('seizures.ps_id','seizures.agency_id','case_no_string','seizures.created_at','ps_name','agency_name')
                         ->orderBy('seizures.created_at','DESC')

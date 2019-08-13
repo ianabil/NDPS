@@ -79,28 +79,15 @@ class LegacyDataController extends Controller
             'seizure_quantity.*' => 'required',
             'seizure_weighing_unit' => 'required|array',
             'seizure_weighing_unit.*' => 'required|exists:units,unit_id',
-            'storage' => 'required|integer',
+            'storage' => 'nullable|integer',
             'remark' => 'nullable|max:255',
             'district' => 'required|exists:districts,district_id',         
             'ndps_court' => 'required|exists:ndps_court_details,ndps_court_id',
             'certifying_court' => 'required|exists:certifying_court_details,court_id'
         ] ); 
-       
-        $user_type = Auth::user()->user_type;
-        
-        if($user_type=="ps"){
-            $ps = $request->input('stakeholder');
-            $agency_id = null;
-
-            $case_initiated_by = $request->input('case_initiated_by');
-            if($case_initiated_by=="agency")
-                $agency_id = $request->input('agency_name');
-        }
-        else if($user_type=="agency"){
-            $agency_id = $request->input('stakeholder');
-            $ps = null;
-        } 
-
+    
+        $ps = $request->input('stakeholder');
+        $agency_id = $request->input('agency_name');
         $case_no = $request->input('case_no'); 
         $case_year = $request->input('case_year');
         $case_no_string = $request->input('case_no_string'); 
@@ -193,6 +180,7 @@ class LegacyDataController extends Controller
                         'disposal_flag'=>$disposal_flag,
                         'remarks'=>$remark,
                         'user_name'=>$user_name,
+                        'legacy_data_flag'=>'Y',
                         'created_at'=>$uploaded_date,
                         'updated_at'=>$update_date
                     ]
@@ -322,6 +310,7 @@ class LegacyDataController extends Controller
                     'disposal_flag'=>$disposal_flag,
                     'remarks'=>$case_details[0]['remarks'],
                     'user_name'=>$case_details[0]['user_name'],
+                    'legacy_data_flag'=>'Y',
                     'created_at'=>$case_details[0]['created_at'],
                     'updated_at'=>$update_date
                 ]
@@ -472,5 +461,70 @@ class LegacyDataController extends Controller
 
     }
     
+
+    // Legacy Data Report
+    public function legacy_data_report(Request $request)
+    {
+        $columns = array( 
+            0 =>'sl_no', 
+            1 =>'ndps_court_name',
+            2 =>'count'
+        );
+
+        $totalData =NdpsCourtDetail::count();
+
+        $totalFiltered = $totalData; 
+
+        $limit = $request->input('length');
+        $start = $request->input('start');
+
+        if(empty($request->input('search.value'))){
+            $sql = "select ndps_court_name, count(distinct(case_no_string))
+                    from ndps_court_details left outer join seizures
+                    on ndps_court_details.ndps_court_id = seizures.ndps_court_id 
+                    where seizures.legacy_data_flag='Y' or seizures.legacy_data_flag is null
+                    group by ndps_court_name limit ".$limit." offset ".$start;
+
+            
+            $legacy_data_report = DB::select($sql);
+            $totalFiltered = sizeof($legacy_data_report);
+        }
+        else
+        {
+            $search = $request->input('search.value');
+
+            $sql = "select ndps_court_name, count(distinct(case_no_string))
+                    from ndps_court_details left outer join seizures
+                    on ndps_court_details.ndps_court_id = seizures.ndps_court_id 
+                    where ndps_court_details.ndps_court_name ilike '%".$search."%' and (seizures.legacy_data_flag='Y' or seizures.legacy_data_flag is null)
+                    group by ndps_court_name limit ".$limit." offset ".$start;
+
+            
+            $legacy_data_report = DB::select($sql);
+            $totalFiltered = sizeof($legacy_data_report);
+        }
+
+        $data = array();
+
+        $nestedData['sl_no']=$start;
+
+        foreach($legacy_data_report as $data1)
+        {        
+            $nestedData['sl_no'] += 1;
+            $nestedData['ndps_court_name'] = $data1->ndps_court_name;
+            $nestedData['count'] = $data1->count;
+
+            $data[] = $nestedData;
+        }
+            $json_data = array(
+                "draw" => intval($request->input('draw')),
+                "recordsTotal" => intval($totalData),
+                "recordsFiltered" =>intval($totalFiltered),
+                "data" => $data
+            );
+    
+            echo json_encode($json_data);
+    
+    }
 
 }

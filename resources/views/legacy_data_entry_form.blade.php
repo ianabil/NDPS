@@ -436,98 +436,91 @@
 
 		/* Save New Seizure After Inserting Seizure Details Once :: STARTS*/
 		$(document).on("click",".save",function(){
-					var stakeholder = $("#stakeholder option:selected").val();
-					var stakeholder_type = $("#stakeholder option:selected").data('stakeholder_type');
-					var case_no = $("#case_no").val();
-					var case_year = $("#case_year option:selected").val();							
-					var storage = $("#storage option:selected").val();
-					var remark = $("#remark").val();
-					var ndps_court = $("#ndps_court option:selected").val();
-					var court = $("#court option:selected").val();
+			var case_no = $("#case_no").val();
+			var case_year = $("#case_year").val();	
+			var case_no_initial = $.trim($("#case_no_initial").val());		
 
+			if(case_no_initial=="")
+				var case_no_string = $("#stakeholder option:selected").text()+" / "+case_no+" / "+case_year;
+			else
+				var case_no_string = case_no_initial+" / "+case_no+" / "+case_year;
 
-					var element = $(this);
+			var element = $(this);
 
-					// If div structure changes, following code will not work :: STARTS
-					var element_narcotic_type = $(this).parent().parent().prev().prev().find(".narcotic_type");
-					var narcotic_type = element_narcotic_type.val();
+			// If div structure changes, following code will not work :: STARTS
+			var element_narcotic_type = $(this).parent().parent().prev().prev().find(".narcotic_type");
+			var narcotic_type = element_narcotic_type.val();
 
-					var element_other_narcotic_name = $(this).parent().parent().prev().prev().find(".other_narcotic_name");
-					var other_narcotic_name = element_other_narcotic_name.val();
+			var element_other_narcotic_name = $(this).parent().parent().prev().prev().find(".other_narcotic_name");
+			var other_narcotic_name = element_other_narcotic_name.val();
 
-					var flag_other_narcotic = $(this).parent().parent().prev().prev().find(".flag_other_narcotic").val();
+			var flag_other_narcotic = $(this).parent().parent().prev().prev().find(".flag_other_narcotic").val();
 
-					var element_seizure_quantity = $(this).parent().parent().prev().find(".seizure_quantity");
-					var seizure_quantity = element_seizure_quantity.val();
+			var element_seizure_quantity = $(this).parent().parent().prev().find(".seizure_quantity");
+			var seizure_quantity = element_seizure_quantity.val();
 
-					var element_seizure_weighing_unit = $(this).parent().parent().prev().find(".seizure_weighing_unit");
-					var seizure_weighing_unit = element_seizure_weighing_unit.val();
+			var element_seizure_weighing_unit = $(this).parent().parent().prev().find(".seizure_weighing_unit");
+			var seizure_weighing_unit = element_seizure_weighing_unit.val();
 
-					var element_seizure_date = $(this).parent().parent().find(".seizure_date");
-					var seizure_date = element_seizure_date.val();
-					// If div structure changes, following code will not work :: ENDS
+			var element_seizure_date = $(this).parent().parent().find(".seizure_date");
+			var seizure_date = element_seizure_date.val();
+			// If div structure changes, following code will not work :: ENDS
 
-					if(narcotic_type==""){
-						swal("Invalid Input","Please Select Narcotic Contraband","error");
-						return false;
-					}
-					if(seizure_quantity==""){
-						swal("Invalid Input","Please Insert Seizure Quantity","error");
-						return false;
-					}
-					else if(seizure_weighing_unit==""){
-						swal("Invalid Input","Please Select Weighing Unit","error");
-						return false;
-					}
-					else if(seizure_date==""){
-						swal("Invalid Input","Please Insert Date of Seizure","error");
-						return false;
-					}
-					else{
-						swal({
-							title: "Are you sure?",
-							text: "",
-							icon: "warning",
-							buttons: true,
-							dangerMode: true,
-							})
-							.then((willDelete) => {
-									if (willDelete) {
-										$.ajax({
-											type: "POST",
-											url:"legacy_data_entries/add_new_seizure_details", 
-											data: {
-												_token: $('meta[name="csrf-token"]').attr('content'),
-												stakeholder:stakeholder,
-												stakeholder_type:stakeholder_type,
-												case_no:case_no,
-												case_year:case_year,
-												narcotic_type:narcotic_type,
-												seizure_date:seizure_date,
-												seizure_quantity:seizure_quantity,
-												seizure_weighing_unit:seizure_weighing_unit,
-												other_narcotic_name:other_narcotic_name,
-												flag_other_narcotic:flag_other_narcotic,
-												storage:storage,
-												remark:remark,
-												ndps_court:ndps_court,
-												court:court
-											},
-											success:function(response){
-												swal("New Seizure Details Submitted Successfully","","success");
-												element_narcotic_type.attr('readonly',true);
-												element_seizure_quantity.attr('readonly',true);
-												element_seizure_weighing_unit.attr('disabled',true);
-												element_seizure_date.attr('readonly',true);
-												element_other_narcotic_name.attr('readonly',true);
-												element.hide();
-												$("#cancel").hide();
-											},
-											error:function(response){
-												console.log(response);
-											}
-										})
+			if(narcotic_type==""){
+				swal("Invalid Input","Please Select Narcotic Contraband","error");
+				return false;
+			}
+			if(seizure_quantity==""){
+				swal("Invalid Input","Please Insert Seizure Quantity","error");
+				return false;
+			}
+			else if(seizure_weighing_unit==""){
+				swal("Invalid Input","Please Select Weighing Unit","error");
+				return false;
+			}
+			else if(seizure_date==""){
+				swal("Invalid Input","Please Insert Date of Seizure","error");
+				return false;
+			}
+			else{
+				swal({
+					title: "Are you sure?",
+					text: "",
+					icon: "warning",
+					buttons: true,
+					dangerMode: true,
+					})
+					.then((willDelete) => {
+							if (willDelete) {
+								$.ajax({
+									type: "POST",
+									url:"legacy_data_entries/add_new_seizure_details", 
+									data: {
+										_token: $('meta[name="csrf-token"]').attr('content'),
+										case_no_string:case_no_string,
+										narcotic_type:narcotic_type,
+										seizure_date:seizure_date,
+										seizure_quantity:seizure_quantity,
+										seizure_weighing_unit:seizure_weighing_unit,
+										other_narcotic_name:other_narcotic_name,
+										flag_other_narcotic:flag_other_narcotic,												
+									},
+									success:function(response){
+										swal("New Seizure Details Submitted Successfully","","success");
+										element_narcotic_type.attr('readonly',true);
+										element_seizure_quantity.attr('readonly',true);
+										element_seizure_weighing_unit.attr('disabled',true);
+										element_seizure_date.attr('readonly',true);
+										element_other_narcotic_name.attr('readonly',true);
+										element.hide();
+										$("#cancel").hide();
+										$("#case_year").trigger("change");
+									},
+									error:function(response){
+										console.log(response);
 									}
+								})
+							}
 						});
 					}
 			})
@@ -547,6 +540,8 @@
 				var stakeholder_type = $("#stakeholder option:selected").data('stakeholder_type');
 				var case_no_initial = $.trim($("#case_no_initial").val());
 				var case_initiated_by = $("#case_initiated_by option:selected").val();
+				var case_no = $.trim($("#case_no").val());
+				var case_year = $("#case_year").val();
 				var agency_name;
 
 				if(stakeholder_type=="ps" && case_no_initial!=""){
@@ -568,9 +563,7 @@
 					agency_name = stakeholder;
 					stakeholder = null;
 				}
-
-				var case_no = $.trim($("#case_no").val());
-				var case_year = $("#case_year").val();
+				
 
 				if(case_initiated_by=="ps")
 					agency_name = null;
@@ -638,10 +631,6 @@
 					swal("Invalid Input","Please Select The Agency Who Has Initiated The Case","error");
 					return false;
 				}
-				else if(storage==""){
-					swal("Invalid Input","Please Select Place of Storage of Seizure","error");
-					return false;
-				}
 				else if(ndps_court==""){
 					swal("Invalid Input","Please Select ndps_court","error");
 					return false;
@@ -679,7 +668,7 @@
 										remark:remark,
 										ndps_court:ndps_court,
 										district:district,
-										court:court,
+										certifying_court:court,
 										flag_other_narcotic:flag_other_narcotic,
 										other_narcotic_name:other_narcotic_name,
 										flag_other_storage:flag_other_storage,
@@ -833,6 +822,7 @@
 								if(obj['case_details'].length>0){
 										$("#stakeholder").attr('disabled',true);
 										$("#case_no").attr('readonly',true);
+										$("#case_no_initial").attr('disabled',true);
 										$("#case_year").attr('disabled',true);
 
 										var str_case_details ="";
@@ -1061,8 +1051,13 @@
 											$("#div_case_initiated_by").show();											
 										}
 										
-										$("#seizure_date").val(obj['case_details']['0'].date_of_seizure).attr('readonly',true);											
-										$("#storage").prepend("<option value='"+obj['case_details']['0'].storage_location_id+"' selected>"+obj['case_details']['0'].storage_name+"</option>").attr('disabled',true);
+										$("#seizure_date").val(obj['case_details']['0'].date_of_seizure).attr('readonly',true);		
+										
+										if(obj['case_details']['0'].storage_location_id!=null)
+											$("#storage").prepend("<option value='"+obj['case_details']['0'].storage_location_id+"' selected>"+obj['case_details']['0'].storage_name+"</option>").attr('disabled',true);
+										else
+											$("#storage").prepend("<option value='null' selected>NA</option>").attr('disabled',true);
+
 										$("#remark").val(obj['case_details']['0'].remarks).attr('readonly',true);
 										$("#ndps_court").prepend("<option value='"+obj['case_details']['0'].ndps_court_id+"' selected>"+obj['case_details']['0'].ndps_court_name+"</option>").attr('disabled',true);
 										$("#court").prepend("<option value='"+obj['case_details']['0'].certification_court_id+"' selected>"+obj['case_details']['0'].court_name+"</option>").attr('disabled',true);
@@ -1077,10 +1072,10 @@
 										}
 										// If one or many of 'n' no. of seized narcotic is/are disposed
 										if(all_narcotic_disposal_flag==1){
-													$("#dispose").hide();
+											$("#dispose").hide();
 										}
 										else{
-													$("#dispose").show();
+											$("#dispose").show();
 										}
 									
 								}
@@ -1093,21 +1088,25 @@
 
 			/* Fetching Case Details On Other Events Too :: STARTS */
 				$(document).on("change","#stakeholder", function(){
-						$("#case_year").trigger("change");
+					$("#case_year").trigger("change");
 				})
 
 				$(document).on("keyup","#case_no", function(){
-						$("#case_year").trigger("change");
+					$("#case_year").trigger("change");
 				})
 			/* Fetching Case Details On Other Events Too :: ENDS */
 
 
 			/*Certify ::STARTS*/
 			$(document).on("click",".certify",function(){
-				var stakeholder = $("#stakeholder option:selected").val();
-				var stakeholder_type = $("#stakeholder option:selected").data('stakeholder_type');
 				var case_no = $("#case_no").val();
-				var case_year = $("#case_year option:selected").val();
+				var case_year = $("#case_year").val();	
+				var case_no_initial = $.trim($("#case_no_initial").val());		
+
+				if(case_no_initial=="")
+					var case_no_string = $("#stakeholder option:selected").text()+" / "+case_no+" / "+case_year;
+				else
+					var case_no_string = case_no_initial+" / "+case_no+" / "+case_year;
 
 				var element = $(this);
 
@@ -1163,10 +1162,7 @@
 												url:"legacy_data_entries/certify", 
 												data: {
 													_token: $('meta[name="csrf-token"]').attr('content'),
-													stakeholder:stakeholder,
-													stakeholder_type:stakeholder_type,
-													case_no:case_no,
-													case_year:case_year,
+													case_no_string:case_no_string,
 													narcotic_type:narcotic_type,
 													sample_quantity:sample_quantity,
 													sample_weighing_unit:sample_unit,
@@ -1199,10 +1195,14 @@
 
 			/* Dispose :: STARTS*/
 			$(document).on("click",".dispose",function(){
-					var stakeholder = $("#stakeholder option:selected").val();
-					var stakeholder_type = $("#stakeholder option:selected").data('stakeholder_type');
 					var case_no = $("#case_no").val();
-					var case_year = $("#case_year option:selected").val();
+					var case_year = $("#case_year").val();	
+					var case_no_initial = $.trim($("#case_no_initial").val());		
+
+					if(case_no_initial=="")
+						var case_no_string = $("#stakeholder option:selected").text()+" / "+case_no+" / "+case_year;
+					else
+						var case_no_string = case_no_initial+" / "+case_no+" / "+case_year;
 
 					var element = $(this);
 
@@ -1252,10 +1252,7 @@
 										url:"legacy_data_entries/dispose", 
 										data: {
 											_token: $('meta[name="csrf-token"]').attr('content'),
-											stakeholder:stakeholder,
-											stakeholder_type:stakeholder_type,
-											case_no:case_no,
-											case_year:case_year,
+											case_no_string:case_no_string,
 											narcotic_type:narcotic_type,
 											disposal_date:disposal_date,
 											disposal_quantity:disposal_quantity,

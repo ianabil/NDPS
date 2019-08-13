@@ -469,7 +469,9 @@
                             $("#thead_narcotic_district_report").html(thead); 
                             $("#tbody_narcotic_district_report").html(tbody);
                             $('#narcotic_district_report').DataTable().destroy();
-                            $('#narcotic_district_report').DataTable();    
+                            $('#narcotic_district_report').DataTable({
+                                "ordering" : false,
+                            });    
                         }
                     })
                 }
@@ -550,7 +552,9 @@
                             $("#thead_narcotic_malkhana_report").html(thead); 
                             $("#tbody_narcotic_malkhana_report").html(tbody);
                             $('#narcotic_malkhana_report').DataTable().destroy();
-                            $('#narcotic_malkhana_report').DataTable();
+                            $('#narcotic_malkhana_report').DataTable({
+                                "ordering" : false,
+                            });
                         }
                     })
                 }                

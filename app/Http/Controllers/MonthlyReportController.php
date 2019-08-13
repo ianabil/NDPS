@@ -59,11 +59,13 @@ class MonthlyReportController extends Controller
                         ->join('certifying_court_details','seizures.certification_court_id','=','certifying_court_details.court_id')
                         ->where([
                             ['seizures.created_at','>=',$start_date],
-                            ['seizures.created_at','<=',$end_date]
+                            ['seizures.created_at','<=',$end_date],
+                            ['seizures.legacy_data_flag','N']
                         ])
                         ->orWhere([
                             ['seizures.updated_at','>=',$start_date],
-                            ['seizures.updated_at','<=',$end_date]
+                            ['seizures.updated_at','<=',$end_date],
+                            ['seizures.legacy_data_flag','N']
                         ])
                         ->select('seizures.ps_id','seizures.agency_id','case_no_string','seizures.created_at','ps_name','agency_name','court_name')
                         ->orderBy('seizures.created_at','DESC')

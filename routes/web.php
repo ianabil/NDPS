@@ -69,9 +69,16 @@
 
         Route::post('disposed_undisposed_tally/narcotic_malkhana_wise_report',
         'SearchController@calhc_narcotic_malkhana_report');
-        
-
        // Disposed Undisposed Tally Ends
+
+       // Legacy Data Report :: STARTS
+        Route::get('legacy_data_report', function(){
+            return view ('legacy_data_report');
+        });
+
+        Route::post('legacy_data_report',
+        'LegacyDataController@legacy_data_report');
+        // Legacy Data Report :: ENDS
 
     });
 

@@ -66,12 +66,14 @@ class SpecialCourtController extends Controller
                         ->where([
                             ['seizures.created_at','>=',$start_date],
                             ['seizures.created_at','<=',$end_date],
-                            ['seizures.ndps_court_id',$ndps_court_id]
+                            ['seizures.ndps_court_id',$ndps_court_id],
+                            ['seizures.legacy_data_flag','N']
                         ])
                         ->orWhere([
                             ['seizures.updated_at','>=',$start_date],
                             ['seizures.updated_at','<=',$end_date],
-                            ['seizures.ndps_court_id',$ndps_court_id]
+                            ['seizures.ndps_court_id',$ndps_court_id],
+                            ['seizures.legacy_data_flag','N']
                         ])
                         ->select('seizures.ps_id','seizures.agency_id','case_no_string','seizures.created_at','ps_name','agency_name','court_name')
                         ->orderBy('seizures.created_at','DESC')

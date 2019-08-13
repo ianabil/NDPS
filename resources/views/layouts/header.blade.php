@@ -111,13 +111,14 @@
                                     @if(Auth::check() && (Auth::user()->user_type == 'high_court' || Auth::user()->user_type == 'admin'))
                                         <li><a href="composite_search_highcourt">Composite Search</a></li>
                                         <li><a href="disposed_undisposed_tally">Disposed Undisposed Tally</a></li>
+                                        <li><a href="legacy_data_report">Legacy Data</a></li>
                                     @elseif(Auth::check() && (Auth::user()->user_type == 'ps' || Auth::user()->user_type == 'agency'))
                                         <li><a href="composite_search_stakeholder">Composite Search</a></li>
                                     @elseif(Auth::check() && Auth::user()->user_type == 'special_court')
                                         <li><a href="composite_search_specialcourt">Composite Search</a></li>
                                     @endif
                                 </ul>
-                            </li>
+                            </li>                            
                         @endif
                         
                     @if(Auth::check() && Auth::user()->user_type == 'admin')
@@ -148,9 +149,8 @@
                             </a>
                             <ul class="treeview-menu">
                                 <li><a href="create_new_user">User Creation</a></li>
-                                {{-- <li><a href="#">Remove User</a></li> --}}
                             </ul>
-                        </li>
+                        </li>                        
                     @endif
 
                     @if(Auth::check() && Auth::user()->user_type == 'special_court')
@@ -160,8 +160,7 @@
                                 <span>Legacy Data</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="legacy_data_entries"><i class="fa fa-circle-o text-yellow"></i><span>Insert Data</span></a></li>
-                                <li></i><a href=""><i class="fa fa-circle-o text-red"></i><span>Generate Report</span></a></li>
+                                <li><a href="legacy_data_entries"><i class="fa fa-circle-o text-yellow"></i><span>Insert Data</span></a></li>                                
                             </ul>
                         </li>
                     @endif
