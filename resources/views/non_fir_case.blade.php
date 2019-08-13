@@ -780,7 +780,6 @@
 
 			/*Fetching case details for a specific case :: STARTS */
 			$(document).on("change","#case_year", function(){
-					var stakeholder = {{Auth::user()->agency_id}};
 					var case_no = $("#case_no").val();
 					var case_year = $("#case_year option:selected").val();			
 
