@@ -43,6 +43,9 @@
     </div>  
 
 </div>
+<div>
+    <canvas id="myChart" width="400" height="200"></canvas>
+</div>
 
 <!-- Stakeholders' Report SUbmission Status -->
 <div class="row">
@@ -102,15 +105,73 @@
 <script src="{{asset('js/jquery/jquery.min.js')}}"></script>
 
 <script>
+    
+    </script>
+    
 
-	$(document).ready(function(){
+<script>
+
+	$(document).ready(function(){        
 		var date=$(".month_of_report").datepicker({
 			format: "MM-yyyy",
             viewMode: "months", 
             minViewMode: "months"
         }); // Date picker initialization For Month of Report
 
+
+        // Chart :: STARTS
+        $.ajax({
+            type:"post",
+            url:"dashboard/chart_district_wise_disposal",
+            data:{
+                _token: $('meta[name="csrf-token"]').attr('content'),
+            },
+            success:function(response){
+                var district_name = new Array;
+                var disposal_percentage = new Array;
+                var background_color = new Array;
+                var border_color = new Array;
+
+                $.each(JSON.parse(response), function(key,value){
+                    district_name.push(value.district_name);
+                    disposal_percentage.push(value.disposal_percentage);
+                    var random_color = '#'+ ('000000' + Math.floor(Math.random()*16777215).toString(16)).slice(-6);
+                    background_color.push(random_color);
+                    border_color.push(random_color);
+                })
+
+                var ctx = $('#myChart');
+                var myChart = new Chart(ctx, {
+                    type: 'bar',                    
+                    data: {
+                        labels: district_name,
+                        datasets: [{
+                            label: '% of Disposed Seizures',
+                            data: disposal_percentage,
+                            backgroundColor: background_color,
+                            borderColor: border_color,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    autoSkip: false
+                                }
+                            }]
+                        }
+                    }
+                });
+            }            
+        });
         
+        // Chart :: ENDS
 
     var table;
     var case_no_string = new Array;

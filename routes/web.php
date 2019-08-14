@@ -32,6 +32,9 @@
 
         Route::post('dashboard/fetch_more_details',
         'MonthlyReportController@fetch_case_details');
+
+        Route::post('dashboard/chart_district_wise_disposal',
+        'MonthlyReportController@chart_district_wise_disposal');
         //High Court Dashboard::end
                
 

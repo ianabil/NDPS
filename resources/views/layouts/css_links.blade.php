@@ -30,7 +30,7 @@
 
     <!--Data Table Buttons-->
     <link rel="stylesheet" href="{{asset('css/buttons.dataTables.min.css')}}">
-   
+
     <!--To Disabled The Spinner In The Number Type Input Fileds-->
     <style>
       input[type=number]::-webkit-inner-spin-button, 

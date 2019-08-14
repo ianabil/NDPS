@@ -258,5 +258,30 @@ class MonthlyReportController extends Controller
         echo json_encode($case_details);
 
     }
+
+    // chart for % of disposed seizure district wise
+    public function chart_district_wise_disposal(){
+        $sql = "select district_name, 
+                coalesce(SUM(disposed),0) as disposed_quantity, coalesce(SUM(undisposed),0) as undisposed_quantity,
+                coalesce(SUM(disposed),0)+coalesce(SUM(undisposed),0) as total_quantity,
+                round(coalesce((coalesce(SUM(disposed))::float / (coalesce(SUM(disposed))+coalesce(SUM(undisposed)))::float)*100,0)::integer,2) as disposal_percentage
+                FROM
+                    districts left outer join
+                    (
+                        SELECT district_id, 
+                        CASE
+                            WHEN disposal_flag='Y' THEN 1 ELSE 0 END AS disposed,
+                        CASE
+                            WHEN disposal_flag='N' THEN 1 ELSE 0 END AS undisposed
+                        FROM
+                        seizures
+                ) AS temp 
+                on districts.district_id = temp.district_id
+                group by district_name
+                order by district_name";
+        
+        $data = DB::select($sql);
+        echo json_encode($data);
+    }
   
 }

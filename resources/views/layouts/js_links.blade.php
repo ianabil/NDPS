@@ -32,8 +32,13 @@
     <script src="{{asset('js/buttons.colVis.min.js')}}"></script>
     <!-- For Data Table Buttons ENDS -->
 
+    <!-- Go To Top -->
     <script src="{{asset('js/jquery.gotop.min.js')}}"></script>
     
+    <!-- Chart -->
+    <script src="{{asset('js/chart.js')}}"></script>
+    
+
     <script>
         // Session Timeout For Inactive Window STARTS
         $(document).ready(function(){
