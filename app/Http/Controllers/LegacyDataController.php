@@ -481,8 +481,7 @@ class LegacyDataController extends Controller
         if(empty($request->input('search.value'))){
             $sql = "select ndps_court_name, count(distinct(case_no_string))
                     from ndps_court_details left outer join seizures
-                    on ndps_court_details.ndps_court_id = seizures.ndps_court_id 
-                    where seizures.legacy_data_flag='Y' or seizures.legacy_data_flag is null
+                    on ndps_court_details.ndps_court_id = seizures.ndps_court_id and (seizures.legacy_data_flag='Y' or seizures.legacy_data_flag is null)
                     group by ndps_court_name limit ".$limit." offset ".$start;
 
             
@@ -495,8 +494,8 @@ class LegacyDataController extends Controller
 
             $sql = "select ndps_court_name, count(distinct(case_no_string))
                     from ndps_court_details left outer join seizures
-                    on ndps_court_details.ndps_court_id = seizures.ndps_court_id 
-                    where ndps_court_details.ndps_court_name ilike '%".$search."%' and (seizures.legacy_data_flag='Y' or seizures.legacy_data_flag is null)
+                    on ndps_court_details.ndps_court_id = seizures.ndps_court_id and (seizures.legacy_data_flag='Y' or seizures.legacy_data_flag is null)
+                    where ndps_court_details.ndps_court_name ilike '%".$search."%'
                     group by ndps_court_name limit ".$limit." offset ".$start;
 
             
