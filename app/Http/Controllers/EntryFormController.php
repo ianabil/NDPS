@@ -182,7 +182,7 @@ class EntryFormController extends Controller
                 }
                 else{
                     $drug_id = Narcotic::where('drug_name','ILIKE',trim($other_narcotic_name[$i]))
-                                        ->max('drug_id');
+                                        ->select('drug_id');
                     $narcotic_type[$i] = $drug_id;
                 }
             }
@@ -190,7 +190,10 @@ class EntryFormController extends Controller
 
             if($flag_other_storage==1){
 
-                $count = Storage_detail::where('storage_name','ILIKE',trim($other_storage_name))
+                $count = Storage_detail::where([
+                                            ['storage_name','ILIKE',trim($other_storage_name)],
+                                            ['district_id',$district]
+                                        ])
                                         ->count();
 
                 if($count<1){
@@ -207,8 +210,11 @@ class EntryFormController extends Controller
                     $storage = $max_storage_value;
                 }
                 else{
-                    $storage_id = Storage_detail::where('storage_name','ILIKE',trim($other_storage_name))
-                                        ->max('storage_id');
+                    $storage_id = Storage_detail::where([
+                                                    ['storage_name','ILIKE',trim($other_storage_name)],
+                                                    ['district_id',$district]
+                                                ])
+                                                ->max('storage_id');
                     $storage = $storage_id;
                 }
             }
@@ -546,12 +552,14 @@ class EntryFormController extends Controller
                             ->where([
                                 ['seizures.created_at','>=',$start_date],
                                 ['seizures.created_at','<=',$end_date],
-                                ['seizures.agency_id',$agency_id]
+                                ['seizures.agency_id',$agency_id],
+                                ['seizures.legacy_data_flag','N']
                             ])
                             ->orWhere([
                                 ['seizures.updated_at','>=',$start_date],
                                 ['seizures.updated_at','<=',$end_date],
-                                ['seizures.agency_id',$agency_id]
+                                ['seizures.agency_id',$agency_id],
+                                ['seizures.legacy_data_flag','N']
                             ])
                             ->select('seizures.ps_id','seizures.agency_id','case_no_string','seizures.created_at','ps_name','agency_name','court_name')
                             ->orderBy('seizures.created_at','DESC')

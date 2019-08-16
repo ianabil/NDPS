@@ -1261,11 +1261,11 @@ class MasterMaintenanceController extends Controller
                 'user_name' => 'required|max:100|unique:users,user_name',
                 'password' => 'required|confirmed|max:20|min:6|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/',
                 'user_type' => 'required|max:30',
-                'stakeholder_name' => 'nullable|integer|unique:users,agency_id|exists:agency_details,agency_id',
+                'agency_name' => 'nullable|exists:agency_details,agency_id',
                 'certifying_court_name' => 'nullable|integer|unique:users,certifying_court_id|exists:certifying_court_details,court_id',
                 'ndps_court_name' => 'nullable|integer|unique:users,ndps_court_id|exists:ndps_court_details,ndps_court_id',
-                'ps_name' => 'nullable|integer|unique:users,ps_id|exists:ps_details,ps_id',
-                'email_id' => 'required|email|max:100|unique:users,email',
+                'ps_name' => 'nullable|unique:users,ps_id|exists:ps_details,ps_id',
+                'email_id' => 'nullable|email|max:100|unique:users,email',
                 'contact_no' => 'nullable|integer|unique:users,contact_no'         
             ] ); 
 
@@ -1275,9 +1275,25 @@ class MasterMaintenanceController extends Controller
             $password = Hash::make($request->input('password'));
             $user_type = $request->input('user_type');
             $agency_name = $request->input('agency_name');
+
+            if(empty($agency_name))
+                $agency_name=null;
+
             $certifying_court_name = $request->input('certifying_court_name');
+
+            if(empty($certifying_court_name))
+                $certifying_court_name=null;
+
             $ndps_court_name = $request->input('ndps_court_name');
+
+            if(empty($ndps_court_name))
+                $ndps_court_name=null;
+
             $ps_name = $request->input('ps_name');
+
+            if(empty($ps_name))
+                $ps_name=null;
+
             $email = $request->input('email_id');
             $phno = $request->input('contact_no');
             $created_at = Carbon::today();
@@ -1287,7 +1303,7 @@ class MasterMaintenanceController extends Controller
                     'user_id' => $user_id,
                     'user_name' => $user_name,
                     'password' => $password,
-                    'agency_id' => $agency_name,
+                    'agency_id' => null,
                     'ps_id' => $ps_name,
                     'certifying_court_id' => $certifying_court_name,
                     'ndps_court_id' => $ndps_court_name,

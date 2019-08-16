@@ -48,31 +48,7 @@
                                     </select>
                                 </div>
                             </div>
-
-                            <div class="form-group required row">
-                                <label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Case Initiated By</label>
-                                <div class="col-sm-2">
-                                    <select class="form-control" id="case_initiated_by" autocomplete="off">
-                                        <option value="">Select an option</option>												
-                                        <option value="ps">PS</option>
-                                        <option value="agency">Any Agency</option>
-                                    </select>
-                                </div>
-
-                                <div id="div_case_initiated_by" style="display:none">
-                                    <label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Agency Name</label>
-                                    <div class="col-sm-2">
-                                        <select class="form-control" id="agency_name" autocomplete="off">
-                                            <option value="">Select an option</option>
-                                            @foreach($data['agencies'] as $agency)
-                                                <option value="{{$agency->agency_id}}">{{$agency->agency_name}}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-
-                            </div>
-
+                            
                             <hr>
 
                             <div class="div_add_more">
@@ -295,19 +271,7 @@
 			
 		})
 		/*If multiple narcotics are seized in a same case :: ENDS*/
-
-
-		/*When Case Initiated By Any Agency :: STARTS*/
-		$(document).on("change","#case_initiated_by", function(){	
-			var case_initiated_by=$(this).val();
-
-			if(case_initiated_by=="agency")
-				$("#div_case_initiated_by").show();
-			else if(case_initiated_by=="ps")
-				$("#div_case_initiated_by").hide();
-		});
-		/*When Case Initiated By Any Agency :: ENDS*/
-
+		
 
 		/*If multiple narcotics are entered after first time submission of seizure details :: STARTS*/			
 		$(document).on("click","#seizure_add_more", function(){
@@ -539,10 +503,8 @@
 				var stakeholder = $("#stakeholder option:selected").val();
 				var stakeholder_type = $("#stakeholder option:selected").data('stakeholder_type');
 				var case_no_initial = $.trim($("#case_no_initial").val());
-				var case_initiated_by = $("#case_initiated_by option:selected").val();
 				var case_no = $.trim($("#case_no").val());
 				var case_year = $("#case_year").val();
-				var agency_name;
 
 				if(stakeholder_type=="ps" && case_no_initial!=""){
 					swal("Invalid Input","Case No. Initial Field is applicable only for non PS FIR cases","error");
@@ -559,17 +521,7 @@
 				else
 					var case_no_string = case_no_initial+" / "+case_no+" / "+case_year;
 
-				if(stakeholder_type=="agency"){
-					agency_name = stakeholder;
-					stakeholder = null;
-				}
 				
-
-				if(case_initiated_by=="ps")
-					agency_name = null;
-				else if(case_initiated_by=="agency")
-					agency_name = $("#agency_name option:selected").val();
-
 				narcotic_type = [];
 				$(".narcotic_type").each(function(){
 					narcotic_type.push($(this).val());
@@ -622,15 +574,7 @@
 				else if(case_year==""){
 					swal("Invalid Input","Please Select Case Year.","error");
 					return false;
-				}
-				else if(case_initiated_by==""){
-					swal("Invalid Input","Please Insert Who Has Initiated The Case","error");
-					return false;
-				}
-				else if(case_initiated_by=="agency" && agency_name==""){
-					swal("Invalid Input","Please Select The Agency Who Has Initiated The Case","error");
-					return false;
-				}
+				}				
 				else if(ndps_court==""){
 					swal("Invalid Input","Please Select ndps_court","error");
 					return false;
@@ -657,9 +601,8 @@
 										stakeholder:stakeholder,
 										case_no:case_no,
 										case_year:case_year,
+										stakeholder_type:stakeholder_type,
 										case_no_string:case_no_string,
-										case_initiated_by:case_initiated_by,
-										agency_name:agency_name,
 										narcotic_type:narcotic_type,
 										seizure_date:seizure_date,
 										seizure_quantity:seizure_quantity,

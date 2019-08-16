@@ -67,10 +67,10 @@ class LegacyDataController extends Controller
     {
         $this->validate( $request, [ 
             'stakeholder' => 'required|integer',
+            'stakeholder_type' => 'required',
             'case_no' => 'required|integer',
             'case_year' => 'required|integer',
             'case_no_string' => 'required',
-            'case_initiated_by' => 'required',
             'narcotic_type' => 'required|array',
             'narcotic_type.*' => 'required|exists:narcotics,drug_id',
             'seizure_date' => 'required|array',
@@ -86,17 +86,27 @@ class LegacyDataController extends Controller
             'certifying_court' => 'required|exists:certifying_court_details,court_id'
         ] ); 
     
-        $ps = $request->input('stakeholder');
-        $agency_id = $request->input('agency_name');
+        $stakeholder = $request->input('stakeholder');
+        $stakeholder_type = $request->input('stakeholder_type');
+
+        if($stakeholder_type=='ps'){
+            $ps = $stakeholder;
+            $agency_id = null;
+        }
+        else if($stakeholder_type=='agency'){
+            $ps = null;
+            $agency_id = $stakeholder;
+        }            
+
         $case_no = $request->input('case_no'); 
         $case_year = $request->input('case_year');
-        $case_no_string = $request->input('case_no_string'); 
+        $case_no_string = trim($request->input('case_no_string')); 
         $narcotic_type = $request->input('narcotic_type');         
         $seizure_date = $request->input('seizure_date'); 
         $seizure_quantity = $request->input('seizure_quantity'); 
         $seizure_weighing_unit = $request->input('seizure_weighing_unit');
         $storage = $request->input('storage');
-        $remark = $request->input('remark');
+        $remark = trim($request->input('remark'));
         $district = $request->input('district'); 
         $ndps_court = $request->input('ndps_court');
         $certifying_court = $request->input('certifying_court');
@@ -108,7 +118,7 @@ class LegacyDataController extends Controller
         $flag_other_narcotic = $request->input('flag_other_narcotic'); 
         $other_narcotic_name = $request->input('other_narcotic_name'); 
         $flag_other_storage = $request->input('flag_other_storage'); 
-        $other_storage_name = $request->input('other_storage_name'); 
+        $other_storage_name = trim($request->input('other_storage_name')); 
         
         for($i=0;$i<sizeof($narcotic_type);$i++){
             if($flag_other_narcotic[$i]==1){
@@ -130,7 +140,7 @@ class LegacyDataController extends Controller
                 }
                 else{
                     $drug_id = Narcotic::where('drug_name','ILIKE',trim($other_narcotic_name[$i]))
-                                        ->max('drug_id');
+                                        ->select('drug_id');
                     $narcotic_type[$i] = $drug_id;
                 }
             }
@@ -138,7 +148,10 @@ class LegacyDataController extends Controller
 
             if($flag_other_storage==1){
 
-                $count = Storage_detail::where('storage_name','ILIKE',trim($other_storage_name))
+                $count = Storage_detail::where([
+                                            ['storage_name','ILIKE',trim($other_storage_name)],
+                                            ['district_id',$district]
+                                        ])
                                         ->count();
 
                 if($count<1){
@@ -155,8 +168,11 @@ class LegacyDataController extends Controller
                     $storage = $max_storage_value;
                 }
                 else{
-                    $storage_id = Storage_detail::where('storage_name','ILIKE',trim($other_storage_name))
-                                        ->max('storage_id');
+                    $storage_id = Storage_detail::where([
+                                                    ['storage_name','ILIKE',trim($other_storage_name)],
+                                                    ['district_id',$district]
+                                                ])
+                                                ->max('storage_id');
                     $storage = $storage_id;
                 }
             }
@@ -186,6 +202,7 @@ class LegacyDataController extends Controller
                     ]
 
                 );
+
                 
         }
 
