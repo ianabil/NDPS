@@ -189,7 +189,6 @@ class LegacyDataController extends Controller
                         'date_of_seizure'=>date('Y-m-d', strtotime($seizure_date[$i])),
                         'storage_location_id'=>$storage,
                         'agency_id'=>$agency_id,
-                        'district_id'=>$district,
                         'ndps_court_id'=>$ndps_court,
                         'certification_court_id'=>$certifying_court,
                         'certification_flag'=>$certification_flag,
@@ -320,7 +319,6 @@ class LegacyDataController extends Controller
                     'date_of_seizure'=>Date('Y-m-d', strtotime($seizure_date)),
                     'storage_location_id'=>$case_details[0]['storage_location_id'],
                     'agency_id'=>$case_details[0]['agency_id'],
-                    'district_id'=>$case_details[0]['district_id'],
                     'ndps_court_id'=>$case_details[0]['ndps_court_id'],
                     'certification_court_id'=>$case_details[0]['certification_court_id'],
                     'certification_flag'=>$certification_flag,
@@ -351,7 +349,7 @@ class LegacyDataController extends Controller
         ] ); 
 
         
-        $case_no_string = $request->input('case_no_string');
+        $case_no_string = strtoupper(trim($request->input('case_no_string')));
         $narcotic_type = $request->input('narcotic_type');
         $disposal_date = Carbon::parse($request->input('disposal_date'))->format('Y-m-d');
         $disposal_quantity = $request->input('disposal_quantity'); 
@@ -367,7 +365,7 @@ class LegacyDataController extends Controller
 
         
         Seizure::where([
-            ['case_no_string',$case_no_string],
+            ['case_no_string','ilike',$case_no_string],
             ['drug_id',$narcotic_type]
         ])->update($data);        
         
@@ -378,7 +376,7 @@ class LegacyDataController extends Controller
 
     //Fetch case details of a specific case no.
     public function fetch_case_details(Request $request){
-        $case_no_string = $request->input('case_no_string');
+        $case_no_string = strtoupper(trim($request->input('case_no_string')));
         $user_type = $request->input('stakeholder_type');
         
         if($user_type=="ps"){
@@ -470,7 +468,7 @@ class LegacyDataController extends Controller
         ];
 
         Seizure::where([
-            ['case_no_string',$case_no_string],
+            ['case_no_string','ilike',$case_no_string],
             ['drug_id',$narcotic_type]
         ])->update($data);
         

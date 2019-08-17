@@ -29,8 +29,7 @@ class CreateSeizuresTable extends Migration
             $table->string('disposal_flag');           
             $table->double('disposal_quantity',8,3)->nullable(true);  
             $table->integer('disposal_quantity_weighing_unit_id')->nullable(true);            
-            $table->date('date_of_disposal')->nullable(true);                        
-            $table->integer('district_id')->nullable(false);  
+            $table->date('date_of_disposal')->nullable(true); 
             $table->integer('ndps_court_id')->nullable(false);  
             $table->integer('certification_court_id')->nullable(false);
             $table->double('quantity_of_sample',6,3)->nullable(true);  
@@ -48,7 +47,6 @@ class CreateSeizuresTable extends Migration
             $table->foreign('disposal_quantity_weighing_unit_id')->references('unit_id')->on('units');
             $table->foreign('sample_quantity_weighing_unit_id')->references('unit_id')->on('units');
             $table->foreign('storage_location_id')->references('storage_id')->on('storage_details');
-            $table->foreign('district_id')->references('district_id')->on('districts');
             $table->foreign('ndps_court_id')->references('ndps_court_id')->on('ndps_court_details');
             $table->foreign('certification_court_id')->references('court_id')->on('certifying_court_details');
         });

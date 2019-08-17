@@ -268,13 +268,14 @@ class MonthlyReportController extends Controller
                 FROM
                     districts left outer join
                     (
-                        SELECT district_id, 
+                        SELECT districts.district_id, 
                         CASE
                             WHEN disposal_flag='Y' THEN 1 ELSE 0 END AS disposed,
                         CASE
                             WHEN disposal_flag='N' THEN 1 ELSE 0 END AS undisposed
                         FROM
-                        seizures
+                        seizures inner join ndps_court_details on seizures.ndps_court_id = ndps_court_details.ndps_court_id
+                        inner join districts on ndps_court_details.district_id = districts.district_id
                 ) AS temp 
                 on districts.district_id = temp.district_id
                 group by district_name

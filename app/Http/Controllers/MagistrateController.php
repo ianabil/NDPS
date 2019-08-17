@@ -43,7 +43,7 @@ class MagistrateController extends Controller
     //Fetch case details of a specific case no.
     public function fetch_case_details(Request $request){
         $court_id =Auth::user()->certifying_court_id;
-        $case_no_string = $request->input('case_no_string');
+        $case_no_string = strtoupper(trim($request->input('case_no_string')));
 
         
         $data['case_details'] = Seizure::leftjoin('ps_details','seizures.ps_id','=','ps_details.ps_id')

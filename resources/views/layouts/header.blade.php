@@ -6,9 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"> 
     <meta name="Drug Disposal Monitoring System" content="DDMS is developed by the
-    Software Developers of Calcutta High Court and its purpose is to monitor all
-    the seizures and its disposals.">
-    <meta name="Software Developers" content="Anabil Bhattacharya, Rupsa Bose">
+    Calcutta High Court and its purpose is to monitor the flow of seizures of narcotic & psychotropic substance 
+    and respective disposals all through the state.">
+    <meta name="Developer" content="Anabil Bhattacharya, Rupsa Bose">
     <meta name="Guide" content="Shri Kallol Chattopadhyay, Shri Abhranil Neogi">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <title>DDMS</title>    

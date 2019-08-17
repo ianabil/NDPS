@@ -1621,7 +1621,8 @@ class SearchController extends Controller
                                         END AS sample, disposal_flag
                                 
                             
-                                from districts left join seizures on districts.district_id = seizures.district_id and seizures.drug_id = ".$narcotic->drug_id."
+                                from districts left join ndps_court_details on districts.district_id = ndps_court_details.district_id
+                                left join seizures on ndps_court_details.ndps_court_id = seizures.ndps_court_id and seizures.drug_id = ".$narcotic->drug_id."
                                 left join narcotics on seizures.drug_id = narcotics.drug_id
                                 left join units as u1 on seizures.seizure_quantity_weighing_unit_id=u1.unit_id 
                                 left join units as u2  on seizures.disposal_quantity_weighing_unit_id=u2.unit_id 
