@@ -109,7 +109,7 @@ class MagistrateController extends Controller
             'magistrate_remarks' => 'nullable|max:255'
         ] ); 
 
-        $case_no_string = $request->input('case_no_string');
+        $case_no_string = trim(strtoupper($request->input('case_no_string')));
         $narcotic_type = $request->input('narcotic_type');
         $sample_quantity = $request->input('sample_quantity'); 
         $sample_weighing_unit = $request->input('sample_weighing_unit');         
@@ -126,7 +126,7 @@ class MagistrateController extends Controller
         ];
 
         Seizure::where([
-            ['case_no_string',$case_no_string],
+            ['case_no_string','ilike',$case_no_string],
             ['drug_id',$narcotic_type]
         ])->update($data);
         

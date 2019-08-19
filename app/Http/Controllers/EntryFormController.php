@@ -425,19 +425,19 @@ class EntryFormController extends Controller
     public function add_new_seizure_details(Request $request){
 
         $this->validate( $request, [ 
-            'case_no_string' => 'required|exists:seizures,case_no_string',
+            'case_no_string' => 'required',
             'narcotic_type' => 'required|integer',
             'seizure_date' => 'required|date',
             'seizure_quantity' => 'required|numeric',
             'seizure_weighing_unit' => 'required|integer',
         ] ); 
 
-        $case_no_string = $request->input('case_no_string');
+        $case_no_string = trim(strtoupper($request->input('case_no_string')));
         $narcotic_type = $request->input('narcotic_type');
         $seizure_date = Carbon::parse($request->input('seizure_date'))->format('Y-m-d');
         $seizure_quantity = $request->input('seizure_quantity');
         $seizure_weighing_unit = $request->input('seizure_weighing_unit');
-        $other_narcotic_name = $request->input('other_narcotic_name');
+        $other_narcotic_name = strtoupper($request->input('other_narcotic_name'));
         $flag_other_narcotic = $request->input('flag_other_narcotic');
         $certification_flag='N';
         $disposal_flag='N';
