@@ -207,39 +207,9 @@
                                 }
                             },
                             error:function(response){
-                                
-                                var id = element.closest("tr").find(".id").text();
-                                    swal({
-                                        title: "Are You Sure?",
-                                        text: "Once deleted,all details of SEIZURE associated with this DISTRICT, will be deleted ",
-                                        icon: "warning",
-                                        buttons: true,
-                                        dangerMode: true,
-                                        })
-                                        .then((willDelete) => {
-                                        if(willDelete) {
-                                         
-                                            var tr =element.closest("tr");
-
-                                            $.ajax({
-                                                type:"POST",
-                                                url:"district_maintenance/seizure_district_delete",
-                                                data:{
-                                                    _token: $('meta[name="csrf-token"]').attr('content'), 
-                                                    id:id
-                                                },
-                                                success:function(response){
-                                                    if(response==1){
-                                                        swal("District Deleted Successfully","District and its associated entry has been deleted","success");  
-                                                        table.api().ajax.reload();                
-                                                    }
-                                                }
-                                            });
-                                        }
-                                        
-                                    })
-                                }
-                            });
+                                swal("Can Not Delete","This District Contains Seizure Record","error");                               
+                            }
+                        });
                     }
                     else 
                     {

@@ -23,23 +23,7 @@ use Auth;
 
 class MasterMaintenanceController extends Controller
 {
-
-    //District::Start
-
-        //Fetching districts
-        public function index_district(Request $request)
-                {
-                    $data= array();
-
-                    $data['districts'] = District::select('district_id','district_name')->orderBy('district_name')->get();
-                    
-
-                    return view('district_view',compact('data'));
-                }
-
-
-    //District::End
-
+    
     //Agency::Start
         
         //Add stakeholder
@@ -47,7 +31,7 @@ class MasterMaintenanceController extends Controller
 
             $this->validate ( $request, [ 
                 'agency_name' => 'required|max:255|unique:agency_details,agency_name'
-            ] ); 
+            ]); 
 
             $stakeholder = trim(strtoupper($request->input('agency_name')));
 
@@ -127,7 +111,7 @@ class MasterMaintenanceController extends Controller
                     ]);
                     
                     $id = $request->input('id');
-                    $stakeholder = strtoupper($request->input('agency_name'));
+                    $stakeholder = strtoupper(trim($request->input('agency_name')));
 
                     $data = [
                         'agency_name'=>$stakeholder,
@@ -147,16 +131,7 @@ class MasterMaintenanceController extends Controller
                     Agency_detail::where('agency_id',$id)->delete();
                     return 1;
                 }
-
-                public function destroy_seizure_stakeholder_record(Request $request)
-                {
-                    $id = $request->input('id');
-                    Seizure::where('agency_id',$id)->delete();
-                    User::where('agency_id',$id)->delete();
-                    Agency_detail::where('agency_id',$id)->delete();
-                    return 1;
-
-                }
+                
             //Stakeholder::End
 
             //Magistrate Master maintenance :: Start
@@ -179,7 +154,8 @@ class MasterMaintenanceController extends Controller
                         0 =>'certifying_court_id', 
                         1 =>'certifying_court_name',
                         2 =>'district_name',
-                        3 =>'action'
+                        3 =>'district_id',
+                        4 =>'action'
                     );
 
                     $totalData = CertifyingCourtDetail::count();
@@ -193,7 +169,6 @@ class MasterMaintenanceController extends Controller
 
 
                     if(empty($request->input('search.value'))){
-
                         $certifying_courts = CertifyingCourtDetail::
                                         join('districts','certifying_court_details.district_id','=','districts.district_id')                               
                                         ->offset($start)
@@ -232,7 +207,8 @@ class MasterMaintenanceController extends Controller
                             $nestedData['certifying_court_id'] = $certifying_court->court_id;
                             $nestedData['certifying_court_name'] = $certifying_court->court_name;
                             $nestedData['district_name'] = $certifying_court->district_name;
-                            $nestedData['action'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
+                            $nestedData['district_id'] = $certifying_court->district_id;
+                            $nestedData['action'] = "<i class='fa fa-trash delete' aria-hidden='true' title='Delete'></i><br><i class='fa fa-pencil edit' aria-hidden='true' title='Edit'></i>";
             
                             $data[] = $nestedData;
                         }
@@ -251,11 +227,9 @@ class MasterMaintenanceController extends Controller
                 /*adding new Certifying court*/
                 public function store_certifying_court(Request $request){
 
-                    $this->validate ( $request, [ 
-                        
-                        'certifying_court_name' => 'required|max:255|unique:certifying_court_details,court_name',
+                    $this->validate ( $request, [                         
+                        'certifying_court_name' => 'required|max:255',
                         'district_name' => 'required|exists:districts,district_id'
-
                     ] ); 
 
                 $certifying_court_name=trim(strtoupper($request->input('certifying_court_name')));
@@ -266,7 +240,7 @@ class MasterMaintenanceController extends Controller
                     'district_id'=>$district_name,
                     'created_at'=>Carbon::today(),
                     'updated_at'=>Carbon::today()
-                    ]);
+                ]);
                 return 1;
 
             }
@@ -274,18 +248,21 @@ class MasterMaintenanceController extends Controller
             /*Update Certifying court */
             public function update_certifying_court(Request $request){
                 $this->validate ( $request, [ 
-                    'id' => 'required|exists:certifying_court_details,court_id',
-                    'certifying_court_name' => 'required|max:255|unique:certifying_court_details,court_name'         
+                    'certifying_court_id' => 'required|exists:certifying_court_details,court_id',
+                    'certifying_court_name' => 'required|max:255',
+                    'district_name' => 'required|exists:districts,district_id'         
                 ] ); 
 
                 
-                $id = $request->input('id');
+                $id = $request->input('certifying_court_id');
                 $certifying_court_name= trim(strtoupper($request->input('certifying_court_name')));
+                $district_id = $request->input('district_name');
 
                 $data = [
                     'court_name'=>$certifying_court_name,
+                    'district_id'=>$district_id,
                     'updated_at'=>Carbon::today()
-                    ];   
+                ];   
 
                 CertifyingCourtDetail::where('court_id',$id)->update($data);
                 
@@ -300,17 +277,11 @@ class MasterMaintenanceController extends Controller
                 $id = $request->input('id');
                 CertifyingCourtDetail::where('court_id',$id)->delete();
                 return 1;
-            }
-
-            public function destroy_seizure_certifying_court_record(Request $request){
-                $id = $request->input('id');
-                User::where('certifying_court_id',$id)->delete();
-                Seizure::where('certification_court_id',$id)->delete();                
-                CertifyingCourtDetail::where('court_id',$id)->delete();
-                return 1;
-            }
+            }            
             
         //Court:End
+
+
             
         //Narcotic:Start
 
@@ -796,9 +767,9 @@ class MasterMaintenanceController extends Controller
         //Add District
         public function store_district(Request $request){
 
-            $this->validate ( $request, [ 
+            $this->validate ($request, [ 
                 'district_name' => 'required|max:255|unique:districts,district_name'
-            ] ); 
+            ]); 
 
             $district_name = trim(strtoupper($request->input('district_name')));
 
@@ -871,203 +842,182 @@ class MasterMaintenanceController extends Controller
     
         }
 
-                /*update district*/
-                public function update_district(Request $request){
-                    $this->validate ( $request, [ 
-                        'id' => 'required|exists:districts,district_id',
-                        'district_name' => 'required|max:255|unique:districts,district_name'
-                    ]);
-                    
-                    $id = $request->input('id');
-                    $district = trim(strtoupper($request->input('district_name')));
+        /*update district*/
+        public function update_district(Request $request){
+            $this->validate ( $request, [ 
+                'id' => 'required|exists:districts,district_id',
+                'district_name' => 'required|max:255|unique:districts,district_name'
+            ]);
+            
+            $id = $request->input('id');
+            $district = trim(strtoupper($request->input('district_name')));
 
-                    $data = [
-                        'district_name'=>$district,
-                        'updated_at'=>Carbon::today()
-                    ];
+            $data = [
+                'district_name'=>$district,
+                'updated_at'=>Carbon::today()
+            ];
 
-                    District::where('district_id',$id)->update($data);
-                    
-                    return 1;
-                
-                }
+            District::where('district_id',$id)->update($data);
+            
+            return 1;
+        
+        }
 
-                //deleting District
-                public function destroy_district(Request $request)
-                {
-                    $this->validate ( $request, [ 
-                        'id' => 'required|exists:districts,district_id'
-                    ]);
+        //deleting District
+        public function destroy_district(Request $request)
+        {
+            $this->validate ( $request, [ 
+                'id' => 'required|exists:districts,district_id'
+            ]);
 
-                    $id = $request->input('id');
+            $id = $request->input('id');
 
-                    District::where('district_id',$id)->delete();
-                    return 1;
-                }
-
-                public function destroy_seizure_district_record(Request $request)
-                {
-                    $this->validate ( $request, [ 
-                        'id' => 'required|exists:districts,district_id'
-                    ]);
-
-                    $id = $request->input('id');
-
-                    Seizure::where('district_id',$id)->delete();
-                    District::where('district_id',$id)->delete();
-
-                    return 1;
-
-                }
-            //District::End
+            District::where('district_id',$id)->delete();
+            return 1;
+        }
+        //District::End
 
 
 
-            //NDPS Court:Start
+        //NDPS Court:Start
 
-            public function index_ndps_court_maintenance_view(Request $request)
+        public function index_ndps_court_maintenance_view(Request $request)
+        {
+            $data= array();
+
+            $data['districts'] = District::select('district_id','district_name')->orderBy('district_name')->get();                
+
+            return view('ndps_court_maintenance_view',compact('data'));
+        }
+
+
+        // Data Table Code for NDPS Court
+            public function get_all_ndps_court(Request $request)
             {
-                $data= array();
+                $columns = array( 
+                    0 =>'id', 
+                    1 =>'ndps_court_name',
+                    2 =>'district_id',
+                    3 =>'district',
+                    4 =>'action'
+                );
 
-                $data['districts'] = District::select('district_id','district_name')->orderBy('district_name')->get();                
-
-                return view('ndps_court_maintenance_view',compact('data'));
+                $totalData =NdpsCourtDetail::count();
+        
+                $totalFiltered = $totalData; 
+        
+                $limit = $request->input('length');
+                $start = $request->input('start');
+                $order = $columns[$request->input('order.0.column')];
+                $dir = $request->input('order.0.dir');
+        
+                if(empty($request->input('search.value'))){
+                    $ndps_courts = NdpsCourtDetail::join('districts','ndps_court_details.district_id','=','districts.district_id')
+                                    ->offset($start)
+                                    ->limit($limit)
+                                    ->orderBy('district_name',$dir)
+                                    ->get();
+                    $totalFiltered = NdpsCourtDetail::join('districts','ndps_court_details.district_id','=','districts.district_id')
+                                        ->count();
+                }
+                else
+                {
+                    $search = $request->input('search.value');
+                    $ndps_courts = NdpsCourtDetail::join('districts','ndps_court_details.district_id','=','districts.district_id')
+                                    ->where('ndps_court_name','ilike',"%{$search}%")
+                                    ->orWhere('district_name','ilike',"%{$search}%")
+                                    ->offset($start)
+                                    ->limit($limit)
+                                    ->orderBy('district_name',$dir)
+                                    ->get();
+                    $totalFiltered = NdpsCourtDetail::join('districts','ndps_court_details.district_id','=','districts.district_id')
+                                                ->where('ndps_court_name','ilike',"%{$search}%")  
+                                                ->orWhere('district_name','ilike',"%{$search}%")                                    
+                                                ->count();
+                }
+        
+                $data = array();
+        
+                if($ndps_courts)
+                {
+                    foreach($ndps_courts as $ndps_court)
+                    {
+                        $nestedData['id'] = $ndps_court->ndps_court_id;
+                        $nestedData['ndps_court_name'] = $ndps_court->ndps_court_name;
+                        $nestedData['district_id'] = $ndps_court->district_id;
+                        $nestedData['district'] = $ndps_court->district_name;
+                        $nestedData['action'] = "<i class='fa fa-trash delete' aria-hidden='true' title='Delete'></i><br><i class='fa fa-pencil edit' aria-hidden='true' title='Edit'></i>";
+        
+                        $data[] = $nestedData;
+                    }
+                    $json_data = array(
+                        "draw" => intval($request->input('draw')),
+                        "recordsTotal" => intval($totalData),
+                        "recordsFiltered" =>intval($totalFiltered),
+                        "data" => $data
+                    );
+            
+                    echo json_encode($json_data);
+                }            
+            
             }
 
+            //Adding new NDPS Court
+            public function store_ndps_court(Request $request){
 
-            // Data Table Code for NDPS Court
-                public function get_all_ndps_court(Request $request)
-                {
-                    $columns = array( 
-                        0 =>'ID', 
-                        1 =>'NDPS COURT NAME',
-                        3 =>'DISTRICT',
-                        2=>'ACTION'
-                    );
+                $this->validate ( $request, [                     
+                    'ndps_court_name' => 'required|string|max:255|unique:ndps_court_details,ndps_court_name',
+                    'district_name' => 'required|exists:districts,district_id'                    
 
-                    $totalData =NdpsCourtDetail::count();
-            
-                    $totalFiltered = $totalData; 
-            
-                    $limit = $request->input('length');
-                    $start = $request->input('start');
-                    $order = $columns[$request->input('order.0.column')];
-                    $dir = $request->input('order.0.dir');
-            
-                    if(empty($request->input('search.value'))){
-                        $ndps_courts = NdpsCourtDetail::join('districts','ndps_court_details.district_id','=','districts.district_id')
-                                        ->offset($start)
-                                        ->limit($limit)
-                                        ->orderBy('district_name',$dir)
-                                        ->get();
-                        $totalFiltered = NdpsCourtDetail::join('districts','ndps_court_details.district_id','=','districts.district_id')
-                                          ->count();
-                    }
-                    else
-                    {
-                        $search = $request->input('search.value');
-                        $ndps_courts = NdpsCourtDetail::join('districts','ndps_court_details.district_id','=','districts.district_id')
-                                        ->where('ndps_court_name','ilike',"%{$search}%")
-                                        ->orWhere('district_name','ilike',"%{$search}%")
-                                        ->offset($start)
-                                        ->limit($limit)
-                                        ->orderBy('district_name',$dir)
-                                        ->get();
-                        $totalFiltered = NdpsCourtDetail::join('districts','ndps_court_details.district_id','=','districts.district_id')
-                                                    ->where('ndps_court_name','ilike',"%{$search}%")  
-                                                    ->orWhere('district_name','ilike',"%{$search}%")                                    
-                                                    ->count();
-                    }
-            
-                    $data = array();
-            
-                    if($ndps_courts)
-                    {
-                        foreach($ndps_courts as $ndps_court)
-                        {
-                            $nestedData['ID'] = $ndps_court->ndps_court_id;
-                            $nestedData['NDPS COURT NAME'] = $ndps_court->ndps_court_name;
-                            $nestedData['DISTRICT'] = $ndps_court->district_name;
-                            $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
-            
-                            $data[] = $nestedData;
-                        }
-                        $json_data = array(
-                            "draw" => intval($request->input('draw')),
-                            "recordsTotal" => intval($totalData),
-                            "recordsFiltered" =>intval($totalFiltered),
-                            "data" => $data
-                        );
+                ]); 
+
+                $ndps_court_name= trim(strtoupper($request->input('ndps_court_name')));
+                $district_name=$request->input('district_name');
+
+                NdpsCourtDetail::insert([
+                    'ndps_court_name'=>$ndps_court_name,
+                    'district_id'=>$district_name,
+                    'created_at'=>Carbon::today(),
+                    'updated_at'=>Carbon::today()
+                ]);
                 
-                        echo json_encode($json_data);
-                    }
-                
-                
-                }
+                return 1;
+            }
 
-                //Adding new NDPS Court
-                public function store_ndps_court(Request $request){
+            //Update NDPS Court
+            public function update_ndps_court(Request $request){
+                $this->validate ( $request, [ 
+                    'ndps_court_id' => 'required|exists:ndps_court_details,ndps_court_id',
+                    'ndps_court_name' => 'required|max:255',      
+                    'district_name' => 'required|exists:districts,district_id',
+                ] ); 
 
-                    $this->validate ( $request, [                     
-                        'ndps_court_name' => 'required|string|max:255|unique:ndps_court_details,ndps_court_name',
-                        'district_name' => 'required|exists:districts,district_id'                    
-
-                    ]); 
-
-                    $ndps_court_name= trim(strtoupper($request->input('ndps_court_name')));
-                    $district_name=$request->input('district_name');
-
-                    NdpsCourtDetail::insert([
-                        'ndps_court_name'=>$ndps_court_name,
-                        'district_id'=>$district_name,
-                        'created_at'=>Carbon::today(),
-                        'updated_at'=>Carbon::today()
-                    ]);
                     
-                    return 1;
-                }
+                $ndps_court_id = $request->input('ndps_court_id');
+                $ndps_court_name = trim(strtoupper($request->input('ndps_court_name')));
+                $district_id = $request->input('district_name');
+            
+                $data = [
+                    'ndps_court_name'=>$ndps_court_name,
+                    'district_id'=>$district_id,
+                    'updated_at'=>Carbon::today()
+                ];
 
-                //Update NDPS Court
-                public function update_ndps_court(Request $request){
-                    $this->validate ( $request, [ 
-                        'id' => 'required|exists:ndps_court_details,ndps_court_id',
-                        'ndps_court_name' => 'required|max:255|unique:ndps_court_details,ndps_court_name',      
-                    ] ); 
-
-                        
-                    $id = $request->input('id');
-                    $ndps_court_name = trim(strtoupper($request->input('ndps_court_name')));
+                NdpsCourtDetail::where('ndps_court_id',$ndps_court_id)->update($data);
                 
-                    $data = [
-                        'ndps_court_name'=>$ndps_court_name,
-                        'updated_at'=>Carbon::today()
-                    ];
+                return 1;
+                
+            }
 
-                    NdpsCourtDetail::where('ndps_court_id',$id)->update($data);
-                    
-                    return 1;
-                    
-                }
+            //Delete NDPS Court
+            public function destroy_ndps_court(Request $request){
+                $id = $request->input('id');
+                NdpsCourtDetail::where('ndps_court_id',$id)->delete();
 
-                //Delete NDPS Court
-                    public function destroy_ndps_court(Request $request){
-                        $id = $request->input('id');
-                        NdpsCourtDetail::where('ndps_court_id',$id)->delete();
+                return 1;
+            }
 
-                        return 1;
-                    }
-
-                    public function destroy_seizure_ndps_court_record(Request $request){
-                        $id = $request->input('id');
-                        
-                        User::where('ndps_court_id',$id)->delete();
-                        Seizure::where('ndps_court_id',$id)->delete();
-                        NdpsCourtDetail::where('ndps_court_id',$id)->delete();
-
-                        return 1;
-
-                    }
-
+            
         //NDPS Court:End
 
 

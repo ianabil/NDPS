@@ -13,25 +13,26 @@
             <div class="row">                
                 <div class="col-md-3 form-group required">
                     <label class="control-label">NDPS Court's Name</label>
-                        <input type="text" class="form-control ndps_court_name" name="ndps_court_name" id="ndps_court_name">
+                    <input type="text" class="form-control ndps_court_name" name="ndps_court_name" id="ndps_court_name">
+                    <!-- hidden field to get the NDPS Court ID which will be used during updation -->
+                    <input type="text" class="form-control" name="ndps_court_id" id="ndps_court_id" style="display:none">
                 </div>
                 <div class="col-md-3 form-group required">
                     <label class="control-label district_name">District</label><br>
-                        <select class="select2"  name="district_name" id="district_name">
-                             <option value="">Select District</option>
-                             @foreach($data['districts']  as $data1)
-                             	<option value="{{$data1['district_id']}}">{{$data1['district_name']}} </option>
-							 @endforeach
-                         </select>
+                    <select class="select2"  name="district_name" id="district_name">
+                        <option value="">Select District</option>
+                        @foreach($data['districts']  as $data1)
+                        <option value="{{$data1['district_id']}}">{{$data1['district_name']}} </option>
+                        @endforeach
+                    </select>
+                </div>                
+                <br>   
+                <div class="btn-group" role="group">  
+                    <button type="button" class="btn btn-success" id="add_new_ndps_court" style="margin-right:5px">Add NDPS Court</button>
+                    <button type="button" class="btn btn-info" id="update_ndps_court" style="display:none;margin-right:5px">Update NDPS Court</button>
+                    <button type="button" class="btn btn-danger" id="reset">Reset</button>
                 </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label>&nbsp;</label>
-                        <button type="button" class="form-control btn-success btn btn-primary" name="add_new_ps" id="add_new_ps">Add New NDPS Court
-                    </div>
-                </div>
-                <!-- /.col -->  
-    
+                <!-- /.col --> 
             </div>
             <!-- /.row -->
         </div>
@@ -100,7 +101,7 @@
 
          //Datatable Code For Showing Data :: START
 
-                var table = $("#show_ndps_court_details").dataTable({  
+                var table = $("#show_ndps_court_details").DataTable({  
                             "processing": true,
                             "serverSide": true,
                             "ajax":{
@@ -109,31 +110,20 @@
                                     "type": "POST",
                                     "data":{ 
                                         _token: $('meta[name="csrf-token"]').attr('content')},                                    
-                                    },
+                            },
                             "columns": [                
-                                {"class": "id",
-                                  "data": "ID" },
-                                {"class": "ndps_court_name data",
-                                 "data": "NDPS COURT NAME" },
-                                 {"class": "district",
-                                 "data": "DISTRICT" },
-                                {"class": "delete",
-                                "data": "ACTION" }
+                                {"data": "id" },
+                                {"data": "ndps_court_name" },
+                                {"data": "district" },
+                                {"data": "action" }
                             ]
                         }); 
                         
                                        
             // DataTable initialization with Server-Processing ::END
 
-            // Double Click To Enable Content editable
-            $(document).on("click",".data", function(){
-                $(this).attr('contenteditable',true);
-            })
-
-
-             //Addition of ndps_court_Details starts
-        
-            $(document).on("click", "#add_new_ps",function(){
+            //Addition of ndps_court_Details starts        
+            $(document).on("click", "#add_new_ndps_court",function(){
                 var ndps_court_name = $("#ndps_court_name").val();
                 var district_name=$('#district_name option:selected').val();
                 
@@ -144,133 +134,122 @@
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         ndps_court_name:ndps_court_name,
                         district_name:district_name
-
                     },
                     success:function(response)
                     {
                         $("#ndps_court_name").val('');
                         $("#district_name").val('');
                         swal("NDPS Court Added Successfully","","success");
-                        table.api().ajax.reload();
+                        table.ajax.reload();
                     },
                     error:function(response) { 
                         if(response.responseJSON.errors.hasOwnProperty('ndps_court_name'))
-                            swal("Cannot Add New PS", ""+response.responseJSON.errors.ndps_court_name['0'], "error");
+                            swal("Cannot Add New NDPS Court", ""+response.responseJSON.errors.ndps_court_name['0'], "error");
                         
                         if(response.responseJSON.errors.hasOwnProperty('district_name'))
-                            swal("Cannot Add New PS", ""+response.responseJSON.errors.district_name['0'], "error");                  
+                            swal("Cannot Add New NDPS Court", ""+response.responseJSON.errors.district_name['0'], "error");                  
                     }           
                 });
             });
 
         //Addition in ndps_court_Details ends
 
-        //To prevent updation when no changes to the data is made
+        // Data Updation Code Starts
+        $(document).on("click",".edit",function(){
+            var data = table.row($(this).parents('tr')).data();
+            $("#ndps_court_name").val(data.ndps_court_name);
+            $("#ndps_court_id").val(data.id);
+            $("#district_name").val(data.district_id).trigger('change');
 
-        var prev_ndps_court_name;
-        $(document).on("focusin",".data", function(){
-            prev_ndps_court_name = $(this).closest("tr").find(".ndps_court_name").text();
+            $("#add_new_ndps_court").hide();
+            $("#update_ndps_court").show();
         })
 
-        //Data Updation Code Starts
-        $(document).on("focusout",".data", function(){
-            var id = $(this).closest("tr").find(".id").text();
-            var ndps_court_name = $(this).closest("tr").find(".ndps_court_name").text();
-                        
-            if(ndps_court_name == prev_ndps_court_name)
-                    return false;
 
-
+        $(document).on("click", "#update_ndps_court",function(){
+            var ndps_court_id = $("#ndps_court_id").val();
+            var ndps_court_name = $("#ndps_court_name").val();
+            var district_name=$('#district_name option:selected').val();
+            
             $.ajax({
                 type:"POST",
-                url:"ndps_court_maintenance/update_ndps_court",                
+                url:"ndps_court_maintenance/update_ndps_court",
                 data:{
-                        _token: $('meta[name="csrf-token"]').attr('content'), 
-                        id:id, 
-                        ndps_court_name:ndps_court_name
-                    },
-                success:function(response){ 
-                    swal("NDPS Court's Details Updated","","success");
-                    table.api().ajax.reload();
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    ndps_court_id:ndps_court_id,
+                    ndps_court_name:ndps_court_name,
+                    district_name:district_name
+                },
+                success:function(response)
+                {
+                    $("#ndps_court_name").val('');
+                    $("#district_name").val('').trigger('change');
+                    swal("NDPS Court Details Updated Successfully","","success");
+                    table.ajax.reload();                    
+                    $("#add_new_ndps_court").show();
+                    $("#update_ndps_court").hide();
+
                 },
                 error:function(response) { 
+                    if(response.responseJSON.errors.hasOwnProperty('ndps_court_id'))
+                        swal("Cannot Update NDPS Court", ""+response.responseJSON.errors.ndps_court_id['0'], "error");
+                    
                     if(response.responseJSON.errors.hasOwnProperty('ndps_court_name'))
-                        swal("Cannot updated NDPS Court", ""+response.responseJSON.errors.ndps_court_name['0'], "error");
-                }
-                })
-        })
+                        swal("Cannot Update NDPS Court", ""+response.responseJSON.errors.ndps_court_name['0'], "error");
+                    
+                    if(response.responseJSON.errors.hasOwnProperty('district_name'))
+                        swal("Cannot Update NDPS Court", ""+response.responseJSON.errors.district_name['0'], "error");                  
+                }           
+            });
+        });
 
         // Data Updation Codes Ends 
 
-        // Data Deletion Codes Starts */
 
-                $(document).on("click",".delete", function(){
-                    var element=$(this);
+        // Reset
+        $(document).on("click","#reset",function(){
+            location.reload();
+        })
+
+        // Data Deletion Codes Starts */
+            $(document).on("click",".delete", function(){
+                var element=$(this);
                 swal({
                     title: "Are You Sure?",
                     text: "",
                     icon: "warning",
                     buttons: true,
                     dangerMode: true,
-                    })
-                    .then((willDelete) => {
-                        if(willDelete) {
-                            var id = $(this).closest("tr").find(".id").text();
-                            var tr = $(this).closest("tr");
-
-                            $.ajax({
-                                type:"POST",
-                                url:"ndps_court_maintenance/delete_ndps_court",
-                                data:{
-                                    _token: $('meta[name="csrf-token"]').attr('content'), 
-                                    id:id
-                                },
-                                success:function(response){
-                                    if(response==1){
-                                        swal("NDPS Court Deleted Successfully","","success");  
-                                        table.api().ajax.reload();                
-                                    }
-                                },
-                                error:function(response){
-                                    var id = element.closest("tr").find(".id").text();
-                                    swal({
-                                        title: "Are You Sure?",
-                                        text: "Once deleted,all seizure details associated with this PS will be deleted ",
-                                        icon: "warning",
-                                        buttons: true,
-                                        dangerMode: true,
-                                        })
-                                        .then((willDelete) => {
-                                        if(willDelete) {
-                                         
-                                            var tr =element.closest("tr");
-
-                                            $.ajax({
-                                                type:"POST",
-                                                url:"ndps_court_maintenance/seizure_ndps_court_delete",
-                                                data:{
-                                                    _token: $('meta[name="csrf-token"]').attr('content'), 
-                                                    id:id
-                                                },
-                                                success:function(response){
-                                                    if(response==1){
-                                                        swal("NDPS Court Deleted Successfully  ","Police Staion and its associated entry has been deleted","success");  
-                                                        table.api().ajax.reload();                
-                                                    }
-                                                }
-                                            });
-                                        }
-                                        
-                                    })
-                                }
-                            })
-                        }
-                        
-                        else 
-                        {
-                            swal("Deletion Cancelled","","error");
-                        }
                 })
+                .then((willDelete) => {
+                    if(willDelete) {
+                        var data = table.row($(this).parents('tr')).data();
+                        var id = data.id;
+                        var tr = $(this).closest("tr");
+
+                        $.ajax({
+                            type:"POST",
+                            url:"ndps_court_maintenance/delete_ndps_court",
+                            data:{
+                                _token: $('meta[name="csrf-token"]').attr('content'), 
+                                id:id
+                            },
+                            success:function(response){
+                                if(response==1){
+                                    swal("NDPS Court Deleted Successfully","","success");  
+                                    table.ajax.reload();                
+                                }
+                            },
+                            error:function(response){
+                                swal("Can Not Delete","NDPS Court Contains Seizure Record","error");
+                            }
+                        })
+                    }                        
+                    else 
+                    {
+                        swal("Deletion Cancelled","","error");
+                    }
+            })
 
         // Data Deletion Codes Ends 
     });

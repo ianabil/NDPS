@@ -14,6 +14,8 @@
                 <div class="col-md-3 form-group required">
                     <label class="control-label">Designated Magistrate Name</label>
                     <input type="text" class="form-control certifying_court_name" name="certifying_court_name" id="certifying_court_name">
+                    <!-- hidden field to get the Certification Court ID which will be used during updation -->
+                    <input type="text" class="form-control" name="certifying_court_id" id="certifying_court_id" style="display:none">
                 </div>
                 <div class="col-md-3 form-group required">
                     <label class="control-label district_name">District</label><br>
@@ -24,12 +26,11 @@
                         @endforeach
                     </select>
                 </div>
-                
-                 <div class="col-md-3">
-                    <div class="form-group">
-                        <label>&nbsp;</label>
-                        <button type="button" class="form-control btn-success btn btn-primary" name="add_new_certifying_court" id="add_new_certifying_court">Add New Designated Magistrate
-                    </div>
+                <br>   
+                <div class="btn-group" role="group">  
+                    <button type="button" class="btn btn-success" id="add_magistrate" style="margin-right:5px">Add Magistrate</button>
+                    <button type="button" class="btn btn-info" id="update_magistrate" style="display:none;margin-right:5px">Update Magistrate</button>
+                    <button type="button" class="btn btn-danger" id="reset">Reset</button>
                 </div>
                 <!-- /.col -->  
     
@@ -86,7 +87,7 @@
     $(document).ready(function(){
 
         //Datatable Code For Showing Data :: START
-        var table = $("#show_courts_details").dataTable({  
+        var table = $("#show_courts_details").DataTable({  
                             "processing": true,
                             "serverSide": true,
                             "pageLength": "10",
@@ -97,14 +98,10 @@
                                     "data":{ _token: $('meta[name="csrf-token"]').attr('content')}
                                 },
                             "columns": [                
-                                {"class":"certifying_court_id data",
-                                "data": "certifying_court_id" },
-                                {"class":"certifying_court_name data",
-                                 "data": "certifying_court_name" },
-                                {"class":"district_name data",
-                                "data": "district_name" },
-                                {"class":"delete"
-                                 ,"data": "action" }
+                                {"data": "certifying_court_id" },
+                                {"data": "certifying_court_name" },
+                                {"data": "district_name" },
+                                {"data": "action" }
                             ]
                         }); 
            
@@ -125,7 +122,7 @@
 
          /*Addition of Magistrate_Details starts*/
             
-                $(document).on("click", "#add_new_certifying_court",function(){
+                $(document).on("click", "#add_magistrate",function(){
 
                     var certifying_court_name= $('#certifying_court_name').val().toUpperCase();
                     var district=$('#district_name option:selected').val();
@@ -144,7 +141,7 @@
                             $("#certifying_court_name").val('');
                             $("#district_name").val('')
                             swal("Designated Magistrate Added Successfully","","success");
-                            table.api().ajax.reload();
+                            table.ajax.reload();
                         },
                         error:function(response) {  
                             if(response.responseJSON.errors.hasOwnProperty('district_name'))
@@ -160,55 +157,61 @@
 
          // DataTable initialization with Server-Processing ::END
 
-            // Double Click To Enable Content editable
-            $(document).on("click",".certifying_court_name", function(){
-                $(this).attr('contenteditable',true);
-              })
-
-
-        /* Start To prevent updation when no changes to the data is made*/
-
-            var prev_magistrate;
-            $(document).on("focusin",".certifying_court_name", function(){
-                prev_magistrate = $(this).closest("tr").find(".certifying_court_name").text();
-            })
-
-        /*End to prevent updation when no changes to the data is made */
-
-
-        /* Data Updation Code Starts*/
-        $(document).on("focusout",".certifying_court_name", function(){
-            var id = $(this).closest("tr").find(".certifying_court_id").text();
-            var certifying_court_name = $(this).closest("tr").find(".certifying_court_name").text();
-           
             
-            if(certifying_court_name == prev_magistrate)
-                return false;
+        /* Data Updation Code Starts*/
+        $(document).on("click",".edit",function(){
+            var data = table.row($(this).parents('tr')).data();
+            $("#certifying_court_name").val(data.certifying_court_name);
+            $("#certifying_court_id").val(data.certifying_court_id);
+            $("#district_name").val(data.district_id).trigger('change');
 
-
-            $.ajax({
-                type:"POST",
-                url:"certifying_court_maintenance/update_certifying_court",                
-                data:{_token: $('meta[name="csrf-token"]').attr('content'), 
-                        id:id, 
-                        certifying_court_name:certifying_court_name
-                     },
-                success:function(response){ 
-                    swal("Designated Magistrate's Details Updated","","success");
-                    table.api().ajax.reload();
-                },
-                error:function(response) {                           
-                    //   if(response.responseJSON.errors.hasOwnProperty('certifying_court_name'))
-                    swal("Cannot updated Designated Magistrate Details","", "error");
-                          
-                }
-
-            })
+            $("#add_magistrate").hide();
+            $("#update_magistrate").show();
         })
 
-        // /* Data Updation Cods Ends */
 
+        $(document).on("click", "#update_magistrate",function(){
+            var certifying_court_id = $("#certifying_court_id").val();
+            var certifying_court_name = $("#certifying_court_name").val();
+            var district_name=$('#district_name option:selected').val();
+            
+            $.ajax({
+                type:"POST",
+                url:"certifying_court_maintenance/update_certifying_court",
+                data:{
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    certifying_court_id:certifying_court_id,
+                    certifying_court_name:certifying_court_name,
+                    district_name:district_name
+                },
+                success:function(response)
+                {
+                    $("#certifying_court_name").val('');
+                    $("#district_name").val('').trigger('change');
+                    swal("Magistrate Details Updated Successfully","","success");
+                    table.ajax.reload();                    
+                    $("#add_magistrate").show();
+                    $("#update_magistrate").hide();
 
+                },
+                error:function(response) { 
+                    if(response.responseJSON.errors.hasOwnProperty('ndps_court_id'))
+                        swal("Cannot Update NDPS Court", ""+response.responseJSON.errors.ndps_court_id['0'], "error");
+                    
+                    if(response.responseJSON.errors.hasOwnProperty('ndps_court_name'))
+                        swal("Cannot Update NDPS Court", ""+response.responseJSON.errors.ndps_court_name['0'], "error");
+                    
+                    if(response.responseJSON.errors.hasOwnProperty('district_name'))
+                        swal("Cannot Update NDPS Court", ""+response.responseJSON.errors.district_name['0'], "error");                  
+                }           
+            });
+        });
+        /* Data Updation Cods Ends */
+
+        // Reset
+        $(document).on("click","#reset",function(){
+            location.reload();
+        })
 
      /* Data Deletion Codes Starts */
 
@@ -223,7 +226,8 @@
                 })
                 .then((willDelete) => {
                     if(willDelete) {
-                        var id = $(this).closest("tr").find(".certifying_court_id").text();
+                        var data = table.row($(this).parents('tr')).data();
+                        var id = data.certifying_court_id;
                         var tr = $(this).closest("tr");
 
                         $.ajax({
@@ -236,44 +240,14 @@
                             success:function(response){
                                 if(response==1){
                                     swal("Designated Magistrate Details Deleted Successfully","","success");  
-                                    table.api().ajax.reload();                
+                                    table.ajax.reload();                
                                 }
                             },
                             error:function(response){
-                                
-                                var id = element.closest("tr").find(".certifying_court_id").text();
-                                    swal({
-                                        title: "Are You Sure?",
-                                        text: "Once deleted, all details of SEIZURE and USERS associated with this Designated Magistrate will be deleted ",
-                                        icon: "warning",
-                                        buttons: true,
-                                        dangerMode: true,
-                                        })
-                                        .then((willDelete) => {
-                                        if(willDelete) {
-                                         
-                                            var tr =element.closest("tr");
-
-                                            $.ajax({
-                                                type:"POST",
-                                                url:"certifying_court_maintenance/seizure_certifying_court_delete",
-                                                data:{
-                                                    _token: $('meta[name="csrf-token"]').attr('content'), 
-                                                    id:id
-                                                },
-                                                success:function(response){
-                                                    if(response==1){
-                                                        swal("Designated Magistrate Deleted Successfully","Designated Magistrate and its associated entry has been deleted","success");  
-                                                        table.api().ajax.reload();                
-                                                    }
-                                                }
-                                            });
-                                        }
-                                        
-                                    })
-                                }
-                            }); 
-                        }
+                          
+                            }
+                        }); 
+                    }
                     else 
                     {
                         swal("Deletion Cancelled","","error");

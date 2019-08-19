@@ -102,9 +102,6 @@
 
         Route::post('certifying_court_maintenance/delete_certifying_court',
         'MasterMaintenanceController@destroy_certifying_court');
-
-        Route::post('certifying_court_maintenance/seizure_certifying_court_delete',
-        'MasterMaintenanceController@destroy_seizure_certifying_court_record');
         //Certifying Court ::end
 
         
@@ -127,9 +124,6 @@
 
         Route::post('master_maintenance_stakeholder/delete',
         'MasterMaintenanceController@destroy_stakeholder');
-
-        Route::post('master_maintenance_stakeholder/seizure_stakeholder_delete',
-        'MasterMaintenanceController@destroy_seizure_stakeholder_record');
         //Agency ::end
 
         //Narcotic ::start
@@ -188,9 +182,7 @@
 
         Route::post('district_maintenance/delete_district',
         'MasterMaintenanceController@destroy_district');
-
-        Route::post('district_maintenance/seizure_district_delete',
-        'MasterMaintenanceController@destroy_seizure_district_record');
+       
         //District::End
 
         //Police Station::Start
@@ -227,9 +219,6 @@
 
         Route::post('ndps_court_maintenance/delete_ndps_court',
         'MasterMaintenanceController@destroy_ndps_court');
-
-        Route::post('ndps_court_maintenance/seizure_ndps_court_delete',
-        'MasterMaintenanceController@destroy_seizure_ndps_court_record');
         //NDPS Court::End
 
 
