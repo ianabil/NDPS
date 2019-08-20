@@ -138,7 +138,7 @@
                     success:function(response)
                     {
                         $("#ndps_court_name").val('');
-                        $("#district_name").val('');
+                        $("#district_name").val('').trigger('change');
                         swal("NDPS Court Added Successfully","","success");
                         table.ajax.reload();
                     },

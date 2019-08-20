@@ -196,9 +196,6 @@
 
         Route::post('ps_maintenance/delete_ps',
         'MasterMaintenanceController@destroy_ps');
-
-        Route::post('ps_maintenance/seizure_ps_delete',
-        'MasterMaintenanceController@destroy_seizure_ps_record');
         //Police Station::End
 
 
@@ -233,10 +230,7 @@
         'MasterMaintenanceController@update_storage');
 
         Route::post('storage_maintenance/delete_storage',
-        'MasterMaintenanceController@destroy_storage');
-        
-        Route::post('storage_maintenance/seizure_storage_delete',
-        'MasterMaintenanceController@destroy_seizure_storage_record');
+        'MasterMaintenanceController@destroy_storage');    
         //Storage :: End
     
 

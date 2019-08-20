@@ -304,6 +304,7 @@ class MasterMaintenanceController extends Controller
         
                 $totalData = Narcotic_unit::join('units','units.unit_id','=','narcotic_units.unit_id')                               
                                             ->join('narcotics','narcotics.drug_id','=','narcotic_units.narcotic_id')
+                                            ->where('display','Y')
                                             ->count();
         
                 $totalFiltered = $totalData; 
@@ -315,13 +316,15 @@ class MasterMaintenanceController extends Controller
         
                 if(empty($request->input('search.value'))){
                     $narcotics = Narcotic_unit::join('units','units.unit_id','=','narcotic_units.unit_id')                               
-                                                ->join('narcotics','narcotics.drug_id','=','narcotic_units.narcotic_id')                               
+                                                ->join('narcotics','narcotics.drug_id','=','narcotic_units.narcotic_id')
+                                                ->where('display','Y')                               
                                                 ->offset($start)
                                                 ->limit($limit)
                                                 ->orderBy('drug_name',$dir)
                                                 ->get();
                     $totalFiltered = Narcotic_unit::join('units','units.unit_id','=','narcotic_units.unit_id')                               
                                                     ->join('narcotics','narcotics.drug_id','=','narcotic_units.narcotic_id')                               
+                                                    ->where('display','Y')
                                                     ->count();
                 }
                 else
@@ -633,11 +636,13 @@ class MasterMaintenanceController extends Controller
                 public function get_all_ps(Request $request)
                 {
                     $columns = array( 
-                        0 =>'ID', 
-                        1 =>'POLICE STATION NAME',
-                        3 =>'DISTRICT',
-                        2=>'ACTION'
+                        0 => 'ps_id', 
+                        1 => 'ps_name',
+                        2 => 'district_name',
+                        3 => 'district_id',
+                        4 => 'action'
                     );
+
                     $totalData =Ps_detail::count();
             
                     $totalFiltered = $totalData; 
@@ -678,10 +683,11 @@ class MasterMaintenanceController extends Controller
                     {
                         foreach($ps_details as $ps)
                         {
-                            $nestedData['ID'] = $ps->ps_id;
-                            $nestedData['POLICE STATION NAME'] = $ps->ps_name;
-                            $nestedData['DISTRICT'] = $ps->district_name;
-                            $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
+                            $nestedData['ps_id'] = $ps->ps_id;
+                            $nestedData['ps_name'] = $ps->ps_name;
+                            $nestedData['district_name'] = $ps->district_name;
+                            $nestedData['district_id'] = $ps->district_id;
+                            $nestedData['action'] = "<i class='fa fa-trash delete' aria-hidden='true' title='Delete'></i><br><i class='fa fa-pencil edit' aria-hidden='true' title='Edit'></i>";
             
                             $data[] = $nestedData;
                         }
@@ -703,9 +709,8 @@ class MasterMaintenanceController extends Controller
 
                     $this->validate ( $request, [                     
                         'ps_name' => 'required|string|max:255|unique:ps_details,ps_name',
-                        'district_name' => 'required|exists:districts,district_id'                    
-
-                    ] ); 
+                        'district_name' => 'required|exists:districts,district_id' 
+                    ]); 
 
                     $ps_name= trim(strtoupper($request->input('ps_name')));
                     $district_name=$request->input('district_name');
@@ -723,40 +728,38 @@ class MasterMaintenanceController extends Controller
                 //Update PS
                 public function update_ps(Request $request){
                     $this->validate ( $request, [ 
-                        'id' => 'required|exists:ps_details,ps_id',
-                        'ps_name' => 'required|max:255|unique:ps_details,ps_name',      
+                        'ps_id' => 'required|exists:ps_details,ps_id',
+                        'ps_name' => 'required|max:255',      
+                        'district_name' => 'required|exists:districts,district_id' 
                     ] ); 
 
                         
-                    $id = $request->input('id');
+                    $ps_id = $request->input('ps_id');
                     $ps_name = trim(strtoupper($request->input('ps_name')));
+                    $district_name=$request->input('district_name');
                 
                     $data = [
-                        'ps_name'=>$ps_name,
-                        'updated_at'=>Carbon::today()
+                            'ps_name'=>$ps_name,
+                            'district_id'=>$district_name,
+                            'updated_at'=>Carbon::today()
                         ];
 
-                    Ps_detail::where('ps_id',$id)->update($data);
+                    Ps_detail::where('ps_id',$ps_id)->update($data);
                     
                     return 1;
                     
                 }
 
                 //Delete Police Station
-                    public function destroy_ps(Request $request){
-                        $id = $request->input('id');
-                        Ps_detail::where('ps_id',$id)->delete();
-                        return 1;
-                    }
+                public function destroy_ps(Request $request){
+                    $this->validate ( $request, [ 
+                        'ps_id' => 'required|exists:ps_details,ps_id'
+                    ]); 
 
-                    public function destroy_seizure_ps_record(Request $request){
-                        $id = $request->input('id');
-                        User::where('ps_id',$id)->delete();
-                        Seizure::where('ps_id',$id)->delete();
-                        Ps_detail::where('ps_id',$id)->delete();
-                        return 1;
-
-                    }
+                    $ps_id = $request->input('ps_id');
+                    Ps_detail::where('ps_id',$ps_id)->delete();
+                    return 1;
+                }
 
         //Police Staion:End
 
@@ -1036,12 +1039,14 @@ class MasterMaintenanceController extends Controller
             public function get_all_storage(Request $request)
             {
                 $columns = array( 
-                    0 =>'ID', 
-                    1 =>'STORAGE NAME',
-                    2 =>'DISTRICT NAME',
-                    3=>'ACTION'
+                    0 =>'storage_id', 
+                    1 =>'storage_name',
+                    2 =>'district_name',
+                    3 =>'district_id',
+                    4=>'action'
                 );
-                $totalData =Storage_detail::count();
+
+                $totalData =Storage_detail::where('display','Y')->count();
         
                 $totalFiltered = $totalData; 
         
@@ -1052,29 +1057,31 @@ class MasterMaintenanceController extends Controller
         
                 if(empty($request->input('search.value'))){
                     $storages = Storage_detail::join('districts','storage_details.district_id','=','districts.district_id')
-                                    ->offset($start)
-                                    ->limit($limit)
-                                    ->orderBy('storage_id',$dir)
-                                    ->get();
+                                                ->where('display','Y')
+                                                ->offset($start)
+                                                ->limit($limit)
+                                                ->orderBy('storage_id',$dir)
+                                                ->get();
                     $totalFiltered = Storage_detail::join('districts','storage_details.district_id','=','districts.district_id')
+                                                    ->where('display','Y')
                                                     ->count();
                 }
                 else
                 {
                     $search = $request->input('search.value');
                     $storages = Storage_detail::join('districts','storage_details.district_id','=','districts.district_id')
-                                        ->where('storage_name','ilike',"%{$search}%")
-                                        ->orWhere('storage_id','ilike',"%{$search}%")
-                                        ->orWhere('district_name','ilike',"%{$search}%")
-                                        ->offset($start)
-                                        ->limit($limit)
-                                        ->orderBy('storage_id',$dir)
-                                        ->get();
+                                                ->where('storage_name','ilike',"%{$search}%")
+                                                ->orWhere('storage_id','ilike',"%{$search}%")
+                                                ->orWhere('district_name','ilike',"%{$search}%")
+                                                ->offset($start)
+                                                ->limit($limit)
+                                                ->orderBy('storage_id',$dir)
+                                                ->get();
                     $totalFiltered = Storage_detail::join('districts','storage_details.district_id','=','districts.district_id')
-                                            ->where('storage_name','ilike',"%{$search}%")
-                                            ->orWhere('storage_id','ilike',"%{$search}%")  
-                                            ->orWhere('district_name','ilike',"%{$search}%")                                         
-                                            ->count();
+                                                    ->where('storage_name','ilike',"%{$search}%")
+                                                    ->orWhere('storage_id','ilike',"%{$search}%")  
+                                                    ->orWhere('district_name','ilike',"%{$search}%")                                         
+                                                    ->count();
                 }
         
                 $data = array();
@@ -1083,10 +1090,11 @@ class MasterMaintenanceController extends Controller
                 {
                     foreach($storages as $storage)
                     {
-                        $nestedData['ID'] = $storage->storage_id;
-                        $nestedData['STORAGE NAME'] = $storage->storage_name;
-                        $nestedData['DISTRICT NAME'] = $storage->district_name;
-                        $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
+                        $nestedData['storage_id'] = $storage->storage_id;
+                        $nestedData['storage_name'] = $storage->storage_name;
+                        $nestedData['district_name'] = $storage->district_name;
+                        $nestedData['district_id'] = $storage->district_id;
+                        $nestedData['action'] = "<i class='fa fa-trash delete' aria-hidden='true' title='Delete'></i><br><i class='fa fa-pencil edit' aria-hidden='true' title='Edit'></i>";
         
                         $data[] = $nestedData;
                     }
@@ -1116,33 +1124,35 @@ class MasterMaintenanceController extends Controller
                 $district_id = $request->input('district_name');
 
                 Storage_detail::insert([
-                    'storage_name'=>$storage_name,
-                    'district_id'=>$district_id,
-                    'display'=>'Y',
-                    'created_at'=>Carbon::today(),
-                    'updated_at'=>Carbon::today()
-                    ]);
-
+                                    'storage_name'=>$storage_name,
+                                    'district_id'=>$district_id,
+                                    'display'=>'Y',
+                                    'created_at'=>Carbon::today(),
+                                    'updated_at'=>Carbon::today()
+                                ]);
                 return 1;
             }
 
              //Update STORAGE
              public function update_storage(Request $request){
                 $this->validate ( $request, [ 
-                    'id' => 'required|exists:storage_details,storage_id',
-                    'malkhana_name' => 'required|max:255|unique:storage_details,storage_name',      
+                    'malkhana_id' => 'required|exists:storage_details,storage_id',
+                    'malkhana_name' => 'required|max:255',
+                    'district_name' => 'required|exists:districts,district_id',        
                 ]); 
 
                     
-                $id = $request->input('id');
+                $malkhana_id = $request->input('malkhana_id');
                 $malkhana_name = trim(strtoupper($request->input('malkhana_name')));
+                $district_id = $request->input('district_name');
             
                 $data = [
                     'storage_name'=>$malkhana_name,
+                    'district_id'=>$district_id,
                     'updated_at'=>Carbon::today()
                 ];
 
-                Storage_detail::where('storage_id',$id)->update($data);
+                Storage_detail::where('storage_id',$malkhana_id)->update($data);
                 
                 return 1;
             
@@ -1151,26 +1161,12 @@ class MasterMaintenanceController extends Controller
               //Delete storage
              public function destroy_storage(Request $request){
                 $this->validate ( $request, [ 
-                    'id' => 'required|exists:storage_details,storage_id'
+                    'storage_id' => 'required|exists:storage_details,storage_id'
                 ]); 
 
-                $id = $request->input('id');
+                $storage_id = $request->input('storage_id');
 
-                Storage_detail::where('storage_id',$id)->delete();
-
-                return 1;
-              }
-
-              public function destroy_seizure_storage_record(Request $request)
-              {
-                $this->validate ( $request, [ 
-                    'id' => 'required|exists:storage_details,storage_id'
-                ]); 
-
-                $id = $request->input('id');
-                
-                Seizure::where('storage_location_id',$id)->delete();
-                Storage_detail::where('storage_id',$id)->delete();
+                Storage_detail::where('storage_id',$storage_id)->delete();
 
                 return 1;
               }

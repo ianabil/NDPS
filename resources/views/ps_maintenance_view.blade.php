@@ -13,7 +13,9 @@
             <div class="row">                
                 <div class="col-md-3 form-group required">
                     <label class="control-label">Police Station's Name</label>
-                        <input type="text" class="form-control ps_name" name="ps_name" id="ps_name">
+                    <input type="text" class="form-control ps_name" name="ps_name" id="ps_name">
+                    <!-- hidden field to get the PS ID which will be used during updation -->
+                    <input type="text" class="form-control" name="ps_id" id="ps_id" style="display:none">
                 </div>
                 <div class="col-md-3 form-group required">
                     <label class="control-label district_name">District</label><br>
@@ -24,11 +26,11 @@
 							 @endforeach
                          </select>
                 </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label>&nbsp;</label>
-                        <button type="button" class="form-control btn-success btn btn-primary" name="add_new_ps" id="add_new_ps">Add New PS
-                    </div>
+                <br>   
+                <div class="btn-group" role="group">  
+                    <button type="button" class="btn btn-success" id="add_new_ps" style="margin-right:5px">Add New PS</button>
+                    <button type="button" class="btn btn-info" id="update_ps" style="display:none;margin-right:5px">Update PS</button>
+                    <button type="button" class="btn btn-danger" id="reset">Reset</button>
                 </div>
                 <!-- /.col -->  
     
@@ -100,7 +102,7 @@
 
          //Datatable Code For Showing Data :: START
 
-                var table = $("#show_ps_details").dataTable({  
+                var table = $("#show_ps_details").DataTable({  
                             "processing": true,
                             "serverSide": true,
                             "ajax":{
@@ -110,28 +112,18 @@
                                     "data":{ _token: $('meta[name="csrf-token"]').attr('content')},                                    
                                     },
                             "columns": [                
-                                {"class": "id",
-                                  "data": "ID" },
-                                {"class": "ps_name data",
-                                 "data": "POLICE STATION NAME" },
-                                 {"class": "district",
-                                 "data": "DISTRICT" },
-                                {"class": "delete",
-                                "data": "ACTION" }
+                                {"data": "ps_id" },
+                                {"data": "ps_name" },
+                                {"data": "district_name" },
+                                {"data": "action" }
                             ]
                         }); 
                         
                                        
             // DataTable initialization with Server-Processing ::END
 
-            // Double Click To Enable Content editable
-            $(document).on("click",".data", function(){
-                $(this).attr('contenteditable',true);
-            })
-
-
-             //Addition of Ps_Details starts
-        
+            
+             //Addition of Ps_Details starts        
             $(document).on("click", "#add_new_ps",function(){
                 var ps_name = $("#ps_name").val();
                 var district_name=$('#district_name option:selected').val();
@@ -143,14 +135,13 @@
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         ps_name:ps_name,
                         district_name:district_name
-
                     },
                     success:function(response)
                     {
                         $("#ps_name").val('');
-                        $("#district_name").val('');
+                        $("#district_name").val('').trigger('change');
                         swal("PS Added Successfully","","success");
-                        table.api().ajax.reload();
+                       table.ajax.reload();
                     },
                     error:function(response) { 
                         if(response.responseJSON.errors.hasOwnProperty('ps_name'))
@@ -164,41 +155,61 @@
 
         //Addition in PS_Details ends
 
-        //To prevent updation when no changes to the data is made
+        // Data Updation Code Starts
+        $(document).on("click",".edit",function(){
+            var data = table.row($(this).parents('tr')).data();
+            $("#ps_name").val(data.ps_name);
+            $("#ps_id").val(data.ps_id);
+            $("#district_name").val(data.district_id).trigger('change');
 
-        var prev_ps_name;
-        $(document).on("focusin",".data", function(){
-            prev_ps_name = $(this).closest("tr").find(".ps_name").text();
+            $("#add_new_ps").hide();
+            $("#update_ps").show();
         })
 
-        //Data Updation Code Starts
-        $(document).on("focusout",".data", function(){
-            var id = $(this).closest("tr").find(".id").text();
-            var ps_name = $(this).closest("tr").find(".ps_name").text();
-                        
-            if(ps_name == prev_ps_name)
-                    return false;
 
-
+        $(document).on("click", "#update_ps",function(){
+            var ps_id = $("#ps_id").val();
+            var ps_name = $("#ps_name").val();
+            var district_name=$('#district_name option:selected').val();
+            
             $.ajax({
                 type:"POST",
-                url:"ps_maintenance/update_ps",                
-                data:{_token: $('meta[name="csrf-token"]').attr('content'), 
-                        id:id, 
-                        ps_name:ps_name
-                    },
-                success:function(response){ 
-                    swal("Police Station's Details Updated","","success");
-                    table.api().ajax.reload();
+                url:"ps_maintenance/update_ps",
+                data:{
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    ps_id:ps_id,
+                    ps_name:ps_name,
+                    district_name:district_name
+                },
+                success:function(response)
+                {
+                    $("#ps_name").val('');
+                    $("#district_name").val('').trigger('change');
+                    swal("PS Details Updated Successfully","","success");
+                    table.ajax.reload();                    
+                    $("#add_new_ps").show();
+                    $("#update_ps").hide();
+
                 },
                 error:function(response) { 
+                    if(response.responseJSON.errors.hasOwnProperty('ps_id'))
+                        swal("Cannot Update PS", ""+response.responseJSON.errors.ps_id['0'], "error");
+                    
                     if(response.responseJSON.errors.hasOwnProperty('ps_name'))
-                        swal("Cannot updated Police Station", ""+response.responseJSON.errors.ps_name['0'], "error");
-                }
-                })
-        })
+                        swal("Cannot Update PS", ""+response.responseJSON.errors.ps_name['0'], "error");
+                    
+                    if(response.responseJSON.errors.hasOwnProperty('district_name'))
+                        swal("Cannot Update PS", ""+response.responseJSON.errors.district_name['0'], "error");                  
+                }           
+            });
+        });
 
         // Data Updation Codes Ends 
+        
+        // Reset
+        $(document).on("click","#reset",function(){
+            location.reload();
+        })
 
         // Data Deletion Codes Starts */
 
@@ -213,53 +224,22 @@
                     })
                     .then((willDelete) => {
                         if(willDelete) {
-                            var id = $(this).closest("tr").find(".id").text();
-                            var tr = $(this).closest("tr");
+                            var data = table.row($(this).parents('tr')).data();
+                            var ps_id = data.ps_id;
 
                             $.ajax({
                                 type:"POST",
                                 url:"ps_maintenance/delete_ps",
                                 data:{
                                     _token: $('meta[name="csrf-token"]').attr('content'), 
-                                    id:id
+                                    ps_id:ps_id
                                 },
                                 success:function(response){
-                                    if(response==1){
-                                        swal("Police Station Deleted Successfully","","success");  
-                                        table.api().ajax.reload();                
-                                    }
+                                    swal("Police Station Deleted Successfully","","success");  
+                                    table.ajax.reload();                
                                 },
                                 error:function(response){
-                                    var id = element.closest("tr").find(".id").text();
-                                    swal({
-                                        title: "Are You Sure?",
-                                        text: "Once deleted,all seizure details associated with this PS will be deleted ",
-                                        icon: "warning",
-                                        buttons: true,
-                                        dangerMode: true,
-                                        })
-                                        .then((willDelete) => {
-                                        if(willDelete) {
-                                         
-                                            var tr =element.closest("tr");
-
-                                            $.ajax({
-                                                type:"POST",
-                                                url:"ps_maintenance/seizure_ps_delete",
-                                                data:{
-                                                    _token: $('meta[name="csrf-token"]').attr('content'), 
-                                                    id:id
-                                                },
-                                                success:function(response){
-                                                    if(response==1){
-                                                        swal("Police Station Deleted Successfully  ","Police Staion and its associated entry has been deleted","success");  
-                                                        table.api().ajax.reload();                
-                                                    }
-                                                }
-                                            });
-                                        }
-                                        
-                                    })
+                                    swal("Can Not Delete","This PS Contains Seizure Records","error");
                                 }
                             })
                         }
