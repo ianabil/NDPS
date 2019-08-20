@@ -19,6 +19,9 @@
                 <div class="col-md-3 form-group required">
                     <label class="control-label">Narcotic's Name</label>
                     <input type="text" class="form-control" name="narcotic_name" id="narcotic_name">
+                    <!-- hidden field to get the Narcotic ID which will be used during updation -->
+                    <input type="text" class="form-control" name="narcotic_id" id="narcotic_id" style="display:none">
+                    <input type="text" class="form-control" name="unit_id" id="unit_id" style="display:none">
                 </div>
                 <div class="col-md-3 form-group required">
                     <label class="control-label">Narcotic's Unit</label>
@@ -28,16 +31,14 @@
                             <option value="{{$unit['unit_id']}}">{{$unit['unit_name']}}</option>
                         @endforeach
                     </select>
+                </div>                
+                <br>   
+                <div class="btn-group" role="group">  
+                    <button type="button" class="btn btn-success" id="add_narcotics" style="margin-right:5px">Add Narcotic</button>
+                    <button type="button" class="btn btn-info" id="update_narcotics" style="display:none;margin-right:5px">Update Narcotic</button>
+                    <button type="button" class="btn btn-danger" id="reset">Reset</button>
                 </div>
-                
-                 <div class="col-md-2">
-                    <div class="form-group">
-                        <label>&nbsp;</label>
-                        <button type="button" class="form-control btn-success btn btn-primary " id="add_narcotics">Add New Narcotic
-                    </div>
-                </div>
-                <!-- /.col -->  
-    
+                <!-- /.col -->      
             </div>
             <!-- /.row -->
         </div>
@@ -104,7 +105,7 @@
 
             //Datatable Code For Showing Data :: START
 
-                var table = $("#show_narcotics_data").dataTable({  
+                var table = $("#show_narcotics_data").DataTable({  
                             "processing": true,
                             "serverSide": true,
                             "ajax":{
@@ -114,32 +115,21 @@
                                     "data":{ _token: $('meta[name="csrf-token"]').attr('content')},                                    
                                 },
                             "columns": [                
-                                {"class": "id",
-                                  "data": "ID" },
-                                {"class": "narcotic data",
-                                 "data": "NARCOTIC" },
-                                {"data": "UNIT" },
-                                {"class": "delete",
-                                "data": "ACTION" }
+                                {"data": "drug_id" },
+                                {"data": "narcotic_name" },
+                                {"data": "unit_name"},
+                                {"data": "action" }
                             ]
                         }); 
                         
                                        
             // DataTable initialization with Server-Processing ::END
 
-            // Double Click To Enable Content editable
-            $(document).on("click",".data", function(){
-                $(this).attr('contenteditable',true);
-            })
 
-            //Narcotic master maintenance 
+            //Add Narcotic                    
              $(document).on("click","#add_narcotics",function (){
-                var narcotic = $("#narcotic_name").val().toLowerCase().replace(/\b[a-z]/g, function(letter) {
-                    return letter.toUpperCase();
-                });
-                
-                var narcotic_unit=$("#narcotic_unit").val();
-                 
+                var narcotic = $("#narcotic_name").val();                
+                var narcotic_unit=$("#narcotic_unit").val();                 
                             
                  $.ajax({
                         type:"POST",
@@ -151,9 +141,9 @@
                          },
                         success:function(response){
                             $("#narcotic_name").val('');
-                            $("#narcotic_unit").val('');
+                            $("#narcotic_unit").val('').trigger('change');
                             swal("Added Successfully","A new Narcotic has been added","success");
-                            table.api().ajax.reload();  
+                            table.ajax.reload();  
                         },
                         error:function(response) {  
                             if(response.responseJSON.errors.hasOwnProperty('narcotic_name'))
@@ -166,42 +156,67 @@
                 });
             });
 
-         /* To prevent updation when no changes to the data is made*/
+         
+        /* Data Updation Code Starts*/
+        $(document).on("click",".edit",function(){
+            var data = table.row($(this).parents('tr')).data();
+            $("#narcotic_name").val(data.narcotic_name);
+            $("#narcotic_id").val(data.drug_id);
+            $("#unit_id").val(data.unit_id);
+            $("#narcotic_unit").val(data.unit_id).trigger('change');
 
-        var prev_narcotic;
-        $(document).on("focusin",".data", function(){
-            prev_narcotic = $(this).closest("tr").find(".narcotic").text();
+            $("#add_narcotics").hide();
+            $("#update_narcotics").show();
         })
 
-         /* Data Updation Code Starts*/
 
-        $(document).on("focusout",".data", function(){
-            var id = $(this).closest("tr").find(".id").text();
-            var narcotic = $(this).closest("tr").find(".narcotic").text();
+        $(document).on("click", "#update_narcotics",function(){
+            var narcotic_id = $("#narcotic_id").val();
+            var unit_id = $("#unit_id").val();
+            var narcotic_name = $("#narcotic_name").val();
+            var narcotic_unit=$('#narcotic_unit option:selected').val();
             
-            if(narcotic == prev_narcotic)
-                return false;
-
             $.ajax({
                 type:"POST",
-                url:"narcotic_maintenance/update_narcotic",                
+                url:"narcotic_maintenance/update_narcotic",
                 data:{
-                    _token: $('meta[name="csrf-token"]').attr('content'), 
-                    narcotic_id:id, 
-                    narcotic_name:narcotic
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    narcotic_id:narcotic_id,
+                    unit_id:unit_id,
+                    narcotic_name:narcotic_name,
+                    narcotic_unit:narcotic_unit
                 },
-                success:function(response){ 
-                    swal("Narcotic's Details Updated","","success");
-                    table.api().ajax.reload();
+                success:function(response)
+                {
+                    $("#narcotic_name").val('');
+                    $("#narcotic_unit").val('').trigger('change');
+                    swal("Narcotic Details Updated Successfully","","success");
+                    table.ajax.reload();                    
+                    $("#add_narcotics").show();
+                    $("#update_narcotics").hide();
+
                 },
                 error:function(response) { 
-                    if(response.responseJSON.errors.hasOwnProperty('narcotic_name'))
-                        swal("Cannot updated Narcotic", ""+response.responseJSON.errors.narcotic_name['0'], "error");                     
-                }
-             })
-        })
+                    if(response.responseJSON.errors.hasOwnProperty('narcotic_id'))
+                        swal("Cannot Update Narcotic Details", ""+response.responseJSON.errors.narcotic_id['0'], "error");
 
-        // /* Data Updation Cods Ends */
+                    if(response.responseJSON.errors.hasOwnProperty('unit_id'))
+                        swal("Cannot Update Narcotic Details", ""+response.responseJSON.errors.unit_id['0'], "error");
+                    
+                    if(response.responseJSON.errors.hasOwnProperty('narcotic_name'))
+                        swal("Cannot Update Narcotic Details", ""+response.responseJSON.errors.narcotic_name['0'], "error");
+                    
+                    if(response.responseJSON.errors.hasOwnProperty('narcotic_unit'))
+                        swal("Cannot Update Narcotic Details", ""+response.responseJSON.errors.narcotic_unit['0'], "error");                  
+                }           
+            });
+        });
+        /* Data Updation Cods Ends */
+
+        // Reset
+        $(document).on("click","#reset",function(){
+            location.reload();
+        })
 
          /* Data Deletion Codes Starts */
 
@@ -216,58 +231,27 @@
                     })
                     .then((willDelete) => {
                         if(willDelete) {
-                            var id = $(this).closest("tr").find(".id").text();
-                            var unit = $(this).closest("tr").find(".unit").val();
+                            var data = table.row($(this).parents('tr')).data();           
+                            var narcotic_id = data.drug_id;
+                            var unit_id = data.unit_id;
 
                             $.ajax({
                                 type:"POST",
                                 url:"narcotic_maintenance/delete_narcotic",
                                 data:{
                                     _token: $('meta[name="csrf-token"]').attr('content'), 
-                                    id:id,
-                                    unit:unit
+                                    narcotic_id:narcotic_id,
+                                    unit_id:unit_id
                                 },
                                 success:function(response){
-                                    if(response==1){
-                                        swal("Data Deleted Successfully","","success");  
-                                        table.api().ajax.reload();                
-                                    }
+                                    swal("Data Deleted Successfully","","success");  
+                                    table.ajax.reload();
                                 },
-                                error:function(response){                                                                    
-                                    var id = element.closest("tr").find(".id").text();
-                                        swal({
-                                            title: "Are You Sure?",
-                                            text: "Once deleted,all details of SEIZURE associated with this NARCOTIC will be deleted ",
-                                            icon: "warning",
-                                            buttons: true,
-                                            dangerMode: true,
-                                            })
-                                            .then((willDelete) => {
-                                            if(willDelete) {
-                                            
-                                                var tr =element.closest("tr");
+                                error:function(response){    
+                                    swal("Can Not Delete","Corresponding Data Exist In Seizure Table","error");
+                                }
 
-                                                $.ajax({
-                                                    type:"POST",
-                                                    url:"master_maintenance_narcotic/seizure_narcotic_delete",
-                                                    data:{
-                                                        _token: $('meta[name="csrf-token"]').attr('content'), 
-                                                        id:id
-                                                    },
-                                                    success:function(response){
-                                                        if(response==1){
-                                                            swal("Court Deleted Successfully","Court and its associated entry has been deleted","success");  
-                                                            table.api().ajax.reload();                
-                                                        }
-                                                    }
-                                                });
-                                            }
-                                            
-                                        })
-                                    
-                                    }
-
-                               })
+                            })
                         }
                         else 
                         {

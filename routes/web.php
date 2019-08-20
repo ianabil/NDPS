@@ -140,9 +140,6 @@
 
         Route::post('narcotic_maintenance/delete_narcotic',
         'MasterMaintenanceController@destroy_narcotic');
-
-        Route::post('narcotic_maintenance/seizure_narcotic_delete',
-        'MasterMaintenanceController@destroy_seizure_narcotic_record');
         //Narcotic::end
 
         //Weighing Unit::start

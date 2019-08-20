@@ -43,6 +43,7 @@ class CreateSeizuresTable extends Migration
             
             $table->foreign('ps_id')->references('ps_id')->on('ps_details');
             $table->foreign('agency_id')->references('agency_id')->on('agency_details');            
+            $table->foreign('drug_id')->references('drug_id')->on('narcotics');            
             $table->foreign('seizure_quantity_weighing_unit_id')->references('unit_id')->on('units');
             $table->foreign('disposal_quantity_weighing_unit_id')->references('unit_id')->on('units');
             $table->foreign('sample_quantity_weighing_unit_id')->references('unit_id')->on('units');

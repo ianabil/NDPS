@@ -295,10 +295,11 @@ class MasterMaintenanceController extends Controller
             public function get_all_narcotics_data(Request $request)
             {
                 $columns = array( 
-                    0 =>'ID', 
-                    1 =>'NARCOTIC',
-                    2=>'UNIT',
-                    3=>'ACTION'
+                    0 =>'drug_id', 
+                    1 =>'narcotic_name',
+                    2=>'unit_name',
+                    3=>'unit_id',
+                    4=>'action'
                 );
         
                 $totalData = Narcotic_unit::join('units','units.unit_id','=','narcotic_units.unit_id')                               
@@ -347,13 +348,15 @@ class MasterMaintenanceController extends Controller
                 {
                     foreach($narcotics as $narcotic)
                     {
-                        $nestedData['ID'] = $narcotic->drug_id;
+                        $nestedData['drug_id'] = $narcotic->drug_id;
                         
-                        $nestedData['NARCOTIC'] = $narcotic->drug_name;
+                        $nestedData['narcotic_name'] = $narcotic->drug_name;
                         
-                        $nestedData['UNIT'] = $narcotic->unit_name;
+                        $nestedData['unit_name'] = $narcotic->unit_name;
 
-                        $nestedData['ACTION'] = "<i class='fa fa-trash' aria-hidden='true'></i>";
+                        $nestedData['unit_id'] = $narcotic->unit_id;
+
+                        $nestedData['action'] = "<i class='fa fa-trash delete' aria-hidden='true' title='Delete'></i><br><i class='fa fa-pencil edit' aria-hidden='true' title='Edit'></i>";
         
                         $data[] = $nestedData;
                     }
@@ -373,7 +376,7 @@ class MasterMaintenanceController extends Controller
             //Add Narcotics
             public function store_narcotic(Request $request){
                 $this->validate ( $request, [ 
-                    'narcotic_name' => 'required|max:255|unique:narcotics,drug_name',
+                    'narcotic_name' => 'required|max:255',
                     'weighing_unit' => 'required|array',         
                     'weighing_unit.*' => 'required|exists:units,unit_id'         
                 ]); 
@@ -410,19 +413,31 @@ class MasterMaintenanceController extends Controller
             public function update_narcotics(Request $request){
                 $this->validate ( $request, [ 
                     'narcotic_id' => 'required|exists:narcotics,drug_id',
-                    'narcotic_name' => 'required|max:255|unique:narcotics,drug_name'
+                    'narcotic_name' => 'required|max:255',
+                    'narcotic_unit' => 'required|exists:units,unit_id',
+                    'unit_id' => 'required|exists:units,unit_id'
                 ]); 
 
                     
-                $id = $request->input('narcotic_id');
-                $narcotic = trim(strtoupper($request->input('narcotic_name')));
+                $narcotic_id = $request->input('narcotic_id');                
+                $narcotic_name = trim(strtoupper($request->input('narcotic_name')));
+                $narcotic_unit = $request->input('narcotic_unit');  
+                $unit_id = $request->input('unit_id');   
 
-                $data = [
-                    'drug_name'=>$narcotic,
-                    'updated_at'=>Carbon::today()
-                ];
 
-                Narcotic::where('drug_id',$id)->update($data);
+                Narcotic::where('drug_id',$narcotic_id)
+                                ->update([
+                                    'drug_name' => $narcotic_name,
+                                    'updated_at'=>Carbon::today()
+                                ]);
+
+                Narcotic_unit::where([
+                                ['narcotic_id',$narcotic_id],
+                                ['unit_id',$unit_id]
+                            ])->update([
+                                'unit_id' =>$narcotic_unit,
+                                'updated_at'=>Carbon::today()
+                            ]);
 
                 return 1;
                 
@@ -430,46 +445,30 @@ class MasterMaintenanceController extends Controller
 
                 //Delete Narcotics
                 public function destroy_narcotic(Request $request){
-                        $id = $request->input('id');
-                        $unit_id= $request->input('unit');
-                        $narotic_count=Narcotic_unit::where('narcotic_id',$id)->count();
-                        if($narotic_count==1)
-                        {
-                            Narcotic_unit::where('narcotic_id',$id)->delete();
-                            Narcotic::where('drug_id',$id)->delete();
-                        }
-                        else{
-                            Narcotic_unit::where('narcotic_id',$id)
-                                            ->where('unit_id',$unit_id)
-                                            ->delete();
-                        }
-                        return 1;
-                }
+                    $this->validate ( $request, [ 
+                        'narcotic_id' => 'required|exists:narcotics,drug_id',                        
+                        'unit_id' => 'required|exists:units,unit_id'
+                    ]); 
 
+                    $narcotic_id = $request->input('narcotic_id');                                    
+                    $unit_id = $request->input('unit_id'); 
+                    
+                    Narcotic_unit::where([
+                                    ['narcotic_id',$narcotic_id],
+                                    ['unit_id',$unit_id]
+                                ])->delete();
+                    
+                    $count = Narcotic_unit::where('narcotic_id',$narcotic_id)->count();
+                    
+                    if($count==0)
+                        Narcotic::where('drug_id',$narcotic_id)->delete();                    
                 
-                public function destroy_seizure_narcotic_record(Request $request)
-                {
-                    $id = $request->input('id');
-                    $unit_id= $request->input('unit');
-                    $narotic_count=Narcotic_unit::where('narcotic_id',$id)->count();
-                    Seizure::where('drug_id',$id)
-                            ->where('unit_id',$unit_id)
-                            ->delete();
-                    if($narotic_count==1)
-                    {
-                        Narcotic_unit::where('narcotic_id',$id)->delete();
-                        Narcotic::where('drug_id',$id)->delete();
-                    }
-                    else
-                    {
-                        Narcotic_unit::where('narcotic_id',$id)
-                                            ->where('unit_id',$unit_id)
-                                            ->delete();
-                    }
                     return 1;
-                }
+                }                
             
         //Narcotic:ends
+
+
 
         //Weighing Unit:start
 
