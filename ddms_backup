@@ -1,0 +1,2046 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 11.1
+-- Dumped by pg_dump version 11.1
+
+-- Started on 2019-08-20 14:15:07
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+DROP DATABASE ndps;
+--
+-- TOC entry 3001 (class 1262 OID 90230)
+-- Name: ndps; Type: DATABASE; Schema: -; Owner: admin
+--
+
+CREATE DATABASE ndps WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'English_India.1252' LC_CTYPE = 'English_India.1252';
+
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 222 (class 1255 OID 237792)
+-- Name: movedeleted(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.movedeleted() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+		BEGIN
+			insert into history_deleted_data(table_name,deleted_data,deleted_time)
+			values(TG_TABLE_NAME,row_to_json(OLD),now());
+			return OLD;
+		END;
+	$$;
+
+
+ALTER FUNCTION public.movedeleted() OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- TOC entry 208 (class 1259 OID 221690)
+-- Name: agency_details; Type: TABLE; Schema: public; Owner: admin
+--
+
+CREATE TABLE public.agency_details (
+    agency_id integer NOT NULL,
+    agency_name character varying(255) NOT NULL,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+
+--
+-- TOC entry 207 (class 1259 OID 221688)
+-- Name: agency_details_agency_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
+--
+
+CREATE SEQUENCE public.agency_details_agency_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- TOC entry 3002 (class 0 OID 0)
+-- Dependencies: 207
+-- Name: agency_details_agency_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
+--
+
+ALTER SEQUENCE public.agency_details_agency_id_seq OWNED BY public.agency_details.agency_id;
+
+
+--
+-- TOC entry 206 (class 1259 OID 221677)
+-- Name: certifying_court_details; Type: TABLE; Schema: public; Owner: admin
+--
+
+CREATE TABLE public.certifying_court_details (
+    court_id integer NOT NULL,
+    court_name character varying(255) NOT NULL,
+    district_id integer NOT NULL,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+
+--
+-- TOC entry 205 (class 1259 OID 221675)
+-- Name: certifying_court_details_court_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
+--
+
+CREATE SEQUENCE public.certifying_court_details_court_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- TOC entry 3003 (class 0 OID 0)
+-- Dependencies: 205
+-- Name: certifying_court_details_court_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
+--
+
+ALTER SEQUENCE public.certifying_court_details_court_id_seq OWNED BY public.certifying_court_details.court_id;
+
+
+--
+-- TOC entry 200 (class 1259 OID 221632)
+-- Name: districts; Type: TABLE; Schema: public; Owner: admin
+--
+
+CREATE TABLE public.districts (
+    district_id integer NOT NULL,
+    district_name character varying(255) NOT NULL,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+
+--
+-- TOC entry 199 (class 1259 OID 221630)
+-- Name: districts_district_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
+--
+
+CREATE SEQUENCE public.districts_district_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- TOC entry 3004 (class 0 OID 0)
+-- Dependencies: 199
+-- Name: districts_district_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
+--
+
+ALTER SEQUENCE public.districts_district_id_seq OWNED BY public.districts.district_id;
+
+
+--
+-- TOC entry 219 (class 1259 OID 237783)
+-- Name: history_deleted_data; Type: TABLE; Schema: public; Owner: admin
+--
+
+CREATE TABLE public.history_deleted_data (
+    id bigint NOT NULL,
+    table_name character varying(255) NOT NULL,
+    deleted_data json NOT NULL,
+    deleted_time timestamp(0) without time zone NOT NULL
+);
+
+
+--
+-- TOC entry 218 (class 1259 OID 237781)
+-- Name: history_deleted_data_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
+--
+
+CREATE SEQUENCE public.history_deleted_data_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- TOC entry 3005 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: history_deleted_data_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
+--
+
+ALTER SEQUENCE public.history_deleted_data_id_seq OWNED BY public.history_deleted_data.id;
+
+
+--
+-- TOC entry 197 (class 1259 OID 221617)
+-- Name: migrations; Type: TABLE; Schema: public; Owner: admin
+--
+
+CREATE TABLE public.migrations (
+    id integer NOT NULL,
+    migration character varying(255) NOT NULL,
+    batch integer NOT NULL
+);
+
+
+--
+-- TOC entry 196 (class 1259 OID 221615)
+-- Name: migrations_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
+--
+
+CREATE SEQUENCE public.migrations_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- TOC entry 3006 (class 0 OID 0)
+-- Dependencies: 196
+-- Name: migrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
+--
+
+ALTER SEQUENCE public.migrations_id_seq OWNED BY public.migrations.id;
+
+
+--
+-- TOC entry 213 (class 1259 OID 221772)
+-- Name: narcotic_units; Type: TABLE; Schema: public; Owner: admin
+--
+
+CREATE TABLE public.narcotic_units (
+    narcotic_id integer NOT NULL,
+    unit_id integer NOT NULL,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+
+--
+-- TOC entry 210 (class 1259 OID 221698)
+-- Name: narcotics; Type: TABLE; Schema: public; Owner: admin
+--
+
+CREATE TABLE public.narcotics (
+    drug_id integer NOT NULL,
+    drug_name character varying(255) NOT NULL,
+    display character varying(255) NOT NULL,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+
+--
+-- TOC entry 209 (class 1259 OID 221696)
+-- Name: narcotics_drug_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
+--
+
+CREATE SEQUENCE public.narcotics_drug_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- TOC entry 3007 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: narcotics_drug_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
+--
+
+ALTER SEQUENCE public.narcotics_drug_id_seq OWNED BY public.narcotics.drug_id;
+
+
+--
+-- TOC entry 204 (class 1259 OID 221664)
+-- Name: ndps_court_details; Type: TABLE; Schema: public; Owner: admin
+--
+
+CREATE TABLE public.ndps_court_details (
+    ndps_court_id integer NOT NULL,
+    ndps_court_name character varying(255) NOT NULL,
+    district_id integer NOT NULL,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+
+
+--
+-- TOC entry 203 (class 1259 OID 221662)
+-- Name: ndps_court_details_ndps_court_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
+--
+
+CREATE SEQUENCE public.ndps_court_details_ndps_court_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- TOC entry 3008 (class 0 OID 0)
+-- Dependencies: 203
+-- Name: ndps_court_details_ndps_court_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
+--
+
+ALTER SEQUENCE public.ndps_court_details_ndps_court_id_seq OWNED BY public.ndps_court_details.ndps_court_id;
+
+
+--
+-- TOC entry 198 (class 1259 OID 221623)
+-- Name: password_resets; Type: TABLE; Schema: public; Owner: admin
+--
+
+CREATE TABLE public.password_resets (
+    email character varying(255) NOT NULL,
+    token character varying(255) NOT NULL,
+    created_at timestamp(0) without time zone
+);
+
+
+
+
+--
+-- TOC entry 202 (class 1259 OID 221640)
+-- Name: ps_details; Type: TABLE; Schema: public; Owner: admin
+--
+
+CREATE TABLE public.ps_details (
+    ps_id integer NOT NULL,
+    ps_name character varying(255) NOT NULL,
+    district_id integer NOT NULL,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+
+
+--
+-- TOC entry 201 (class 1259 OID 221638)
+-- Name: ps_details_ps_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
+--
+
+CREATE SEQUENCE public.ps_details_ps_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- TOC entry 3009 (class 0 OID 0)
+-- Dependencies: 201
+-- Name: ps_details_ps_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
+--
+
+ALTER SEQUENCE public.ps_details_ps_id_seq OWNED BY public.ps_details.ps_id;
+
+
+--
+-- TOC entry 221 (class 1259 OID 245975)
+-- Name: seizures; Type: TABLE; Schema: public; Owner: admin
+--
+
+CREATE TABLE public.seizures (
+    seizure_id integer NOT NULL,
+    ps_id integer,
+    case_no integer NOT NULL,
+    case_year integer NOT NULL,
+    agency_id integer,
+    case_no_string character varying(255) NOT NULL,
+    drug_id integer NOT NULL,
+    quantity_of_drug double precision NOT NULL,
+    seizure_quantity_weighing_unit_id integer NOT NULL,
+    date_of_seizure date,
+    storage_location_id integer,
+    remarks text,
+    disposal_flag character varying(255) NOT NULL,
+    disposal_quantity double precision,
+    disposal_quantity_weighing_unit_id integer,
+    date_of_disposal date,
+    ndps_court_id integer NOT NULL,
+    certification_court_id integer NOT NULL,
+    quantity_of_sample double precision,
+    sample_quantity_weighing_unit_id integer,
+    date_of_certification date,
+    certification_flag character varying(255) NOT NULL,
+    magistrate_remarks text,
+    user_name character varying(255) NOT NULL,
+    legacy_data_flag character varying(255) DEFAULT 'N'::character varying NOT NULL,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+
+
+--
+-- TOC entry 220 (class 1259 OID 245973)
+-- Name: seizures_seizure_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
+--
+
+CREATE SEQUENCE public.seizures_seizure_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- TOC entry 3010 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: seizures_seizure_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
+--
+
+ALTER SEQUENCE public.seizures_seizure_id_seq OWNED BY public.seizures.seizure_id;
+
+
+--
+-- TOC entry 217 (class 1259 OID 229600)
+-- Name: storage_details; Type: TABLE; Schema: public; Owner: admin
+--
+
+CREATE TABLE public.storage_details (
+    storage_id integer NOT NULL,
+    storage_name character varying(255) NOT NULL,
+    district_id integer NOT NULL,
+    display character varying(255) NOT NULL,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+
+
+--
+-- TOC entry 216 (class 1259 OID 229598)
+-- Name: storage_details_storage_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
+--
+
+CREATE SEQUENCE public.storage_details_storage_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- TOC entry 3011 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: storage_details_storage_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
+--
+
+ALTER SEQUENCE public.storage_details_storage_id_seq OWNED BY public.storage_details.storage_id;
+
+
+--
+-- TOC entry 212 (class 1259 OID 221709)
+-- Name: units; Type: TABLE; Schema: public; Owner: admin
+--
+
+CREATE TABLE public.units (
+    unit_id integer NOT NULL,
+    unit_name character varying(255) NOT NULL,
+    unit_degree integer NOT NULL,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+
+
+--
+-- TOC entry 211 (class 1259 OID 221707)
+-- Name: units_unit_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
+--
+
+CREATE SEQUENCE public.units_unit_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- TOC entry 3012 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: units_unit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
+--
+
+ALTER SEQUENCE public.units_unit_id_seq OWNED BY public.units.unit_id;
+
+
+--
+-- TOC entry 215 (class 1259 OID 221789)
+-- Name: users; Type: TABLE; Schema: public; Owner: admin
+--
+
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    user_id character varying(255) NOT NULL,
+    user_name character varying(255) NOT NULL,
+    password character varying(255) NOT NULL,
+    ps_id integer,
+    agency_id integer,
+    certifying_court_id integer,
+    ndps_court_id integer,
+    email character varying(255),
+    contact_no character varying(255),
+    email_verified_at timestamp(0) without time zone,
+    user_type character varying(255) NOT NULL,
+    remember_token character varying(100),
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+
+--
+-- TOC entry 214 (class 1259 OID 221787)
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
+--
+
+CREATE SEQUENCE public.users_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+--
+-- TOC entry 3013 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- TOC entry 2771 (class 2604 OID 221693)
+-- Name: agency_details agency_id; Type: DEFAULT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.agency_details ALTER COLUMN agency_id SET DEFAULT nextval('public.agency_details_agency_id_seq'::regclass);
+
+
+--
+-- TOC entry 2770 (class 2604 OID 221680)
+-- Name: certifying_court_details court_id; Type: DEFAULT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.certifying_court_details ALTER COLUMN court_id SET DEFAULT nextval('public.certifying_court_details_court_id_seq'::regclass);
+
+
+--
+-- TOC entry 2767 (class 2604 OID 221635)
+-- Name: districts district_id; Type: DEFAULT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.districts ALTER COLUMN district_id SET DEFAULT nextval('public.districts_district_id_seq'::regclass);
+
+
+--
+-- TOC entry 2776 (class 2604 OID 237786)
+-- Name: history_deleted_data id; Type: DEFAULT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.history_deleted_data ALTER COLUMN id SET DEFAULT nextval('public.history_deleted_data_id_seq'::regclass);
+
+
+--
+-- TOC entry 2766 (class 2604 OID 221620)
+-- Name: migrations id; Type: DEFAULT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.migrations ALTER COLUMN id SET DEFAULT nextval('public.migrations_id_seq'::regclass);
+
+
+--
+-- TOC entry 2772 (class 2604 OID 221701)
+-- Name: narcotics drug_id; Type: DEFAULT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.narcotics ALTER COLUMN drug_id SET DEFAULT nextval('public.narcotics_drug_id_seq'::regclass);
+
+
+--
+-- TOC entry 2769 (class 2604 OID 221667)
+-- Name: ndps_court_details ndps_court_id; Type: DEFAULT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.ndps_court_details ALTER COLUMN ndps_court_id SET DEFAULT nextval('public.ndps_court_details_ndps_court_id_seq'::regclass);
+
+
+--
+-- TOC entry 2768 (class 2604 OID 221643)
+-- Name: ps_details ps_id; Type: DEFAULT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.ps_details ALTER COLUMN ps_id SET DEFAULT nextval('public.ps_details_ps_id_seq'::regclass);
+
+
+--
+-- TOC entry 2777 (class 2604 OID 245978)
+-- Name: seizures seizure_id; Type: DEFAULT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.seizures ALTER COLUMN seizure_id SET DEFAULT nextval('public.seizures_seizure_id_seq'::regclass);
+
+
+--
+-- TOC entry 2775 (class 2604 OID 229603)
+-- Name: storage_details storage_id; Type: DEFAULT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.storage_details ALTER COLUMN storage_id SET DEFAULT nextval('public.storage_details_storage_id_seq'::regclass);
+
+
+--
+-- TOC entry 2773 (class 2604 OID 221712)
+-- Name: units unit_id; Type: DEFAULT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.units ALTER COLUMN unit_id SET DEFAULT nextval('public.units_unit_id_seq'::regclass);
+
+
+--
+-- TOC entry 2774 (class 2604 OID 221792)
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- TOC entry 2982 (class 0 OID 221690)
+-- Dependencies: 208
+-- Data for Name: agency_details; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.agency_details (agency_id, agency_name, created_at, updated_at) VALUES (1, 'CID, West Bengal', '2019-08-01 00:00:00', '2019-08-01 00:00:00');
+INSERT INTO public.agency_details (agency_id, agency_name, created_at, updated_at) VALUES (2, 'NCB', '2019-08-01 00:00:00', '2019-08-08 00:00:00');
+
+
+--
+-- TOC entry 2980 (class 0 OID 221677)
+-- Dependencies: 206
+-- Data for Name: certifying_court_details; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.certifying_court_details (court_id, court_name, district_id, created_at, updated_at) VALUES (1, '1st Class Magistrate, Siliguri', 5, '2019-08-05 00:00:00', '2019-08-05 00:00:00');
+INSERT INTO public.certifying_court_details (court_id, court_name, district_id, created_at, updated_at) VALUES (2, '1st Class Magistrate, Mirik', 5, '2019-08-05 00:00:00', '2019-08-05 00:00:00');
+INSERT INTO public.certifying_court_details (court_id, court_name, district_id, created_at, updated_at) VALUES (3, '1ST CLASS MAGISTRATE, BANKURA', 2, '2019-08-05 00:00:00', '2019-08-19 00:00:00');
+
+
+--
+-- TOC entry 2974 (class 0 OID 221632)
+-- Dependencies: 200
+-- Data for Name: districts; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (1, 'Alipurduar', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (2, 'Bankura', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (3, 'Birbhum', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (4, 'Cooch Bihar', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (5, 'Darjeeling', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (6, 'Dakhsin Dinajpur', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (7, 'Hooghly', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (8, 'Howrah', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (9, 'Jalpaiguri', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (10, 'Jhargram', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (11, 'Kolkata', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (12, 'Kalimpong', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (13, 'Malda', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (14, 'Murshidabad', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (15, 'Nadia', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (16, 'North 24 Parganas', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (17, 'Paschim Medinipur', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (18, 'Purba Midnapore', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (19, 'Purulia', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (20, 'Purba Burdwan', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (21, 'Paschim Burdwan', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (22, 'South 24 Parganas', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+INSERT INTO public.districts (district_id, district_name, created_at, updated_at) VALUES (23, 'Uttar Dinajpur', '2019-08-05 00:00:00', '0201-08-05 00:00:00');
+
+
+--
+-- TOC entry 2993 (class 0 OID 237783)
+-- Dependencies: 219
+-- Data for Name: history_deleted_data; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (3, 'ps_details', '{"ps_id":2,"ps_name":"Birpara","district_id":1,"created_at":null,"updated_at":null}', '2019-08-13 12:00:04');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (4, 'agency_details', '{"agency_id":5,"agency_name":"ABC","created_at":"2019-08-09T00:00:00","updated_at":"2019-08-09T00:00:00"}', '2019-08-13 12:31:26');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (5, 'districts', '{"district_id":25,"district_name":"ABC","created_at":"2019-08-13T00:00:00","updated_at":"2019-08-13T00:00:00"}', '2019-08-13 17:16:15');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (6, 'districts', '{"district_id":26,"district_name":"ALERT(\"HELLO\")","created_at":"2019-08-13T00:00:00","updated_at":"2019-08-13T00:00:00"}', '2019-08-13 17:16:44');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (7, 'districts', '{"district_id":27,"district_name":"ALERT(\"HELLO\")","created_at":"2019-08-13T00:00:00","updated_at":"2019-08-13T00:00:00"}', '2019-08-13 17:18:56');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (11, 'certifying_court_details', '{"court_id":6,"court_name":"JBGJ","district_id":1,"created_at":"2019-08-19T00:00:00","updated_at":"2019-08-19T00:00:00"}', '2019-08-19 15:44:31');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (12, 'ndps_court_details', '{"ndps_court_id":4,"ndps_court_name":"ASDASD","district_id":1,"created_at":"2019-08-19T00:00:00","updated_at":"2019-08-19T00:00:00"}', '2019-08-19 15:45:18');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (13, 'agency_details', '{"agency_id":4,"agency_name":"ABCD","created_at":"2019-08-09T00:00:00","updated_at":"2019-08-19T00:00:00"}', '2019-08-19 15:47:35');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (17, 'narcotic_units', '{"narcotic_id":7,"unit_id":4,"created_at":"2019-08-20T00:00:00","updated_at":"2019-08-20T00:00:00"}', '2019-08-20 12:34:52');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (20, 'narcotic_units', '{"narcotic_id":7,"unit_id":1,"created_at":"2019-08-20T00:00:00","updated_at":"2019-08-20T00:00:00"}', '2019-08-20 12:38:26');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (22, 'narcotic_units', '{"narcotic_id":7,"unit_id":2,"created_at":"2019-08-20T00:00:00","updated_at":"2019-08-20T00:00:00"}', '2019-08-20 12:40:39');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (23, 'narcotics', '{"drug_id":7,"drug_name":"ABC","display":"Y","created_at":"2019-08-20T00:00:00","updated_at":"2019-08-20T00:00:00"}', '2019-08-20 12:40:39');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (24, 'narcotic_units', '{"narcotic_id":1,"unit_id":1,"created_at":"2019-08-06T00:00:00","updated_at":"2019-08-06T00:00:00"}', '2019-08-20 12:40:59');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (25, 'narcotic_units', '{"narcotic_id":1,"unit_id":2,"created_at":"2019-08-06T00:00:00","updated_at":"2019-08-06T00:00:00"}', '2019-08-20 12:41:09');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (26, 'narcotic_units', '{"narcotic_id":1,"unit_id":3,"created_at":"2019-08-06T00:00:00","updated_at":"2019-08-06T00:00:00"}', '2019-08-20 12:41:14');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (27, 'narcotics', '{"drug_id":1,"drug_name":"CHARAS","display":"Y","created_at":"2019-08-06T00:00:00","updated_at":"2019-08-20T00:00:00"}', '2019-08-20 12:41:14');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (28, 'narcotic_units', '{"narcotic_id":4,"unit_id":3,"created_at":"2019-08-06T00:00:00","updated_at":"2019-08-06T00:00:00"}', '2019-08-20 12:41:19');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (29, 'narcotic_units', '{"narcotic_id":4,"unit_id":2,"created_at":"2019-08-06T00:00:00","updated_at":"2019-08-06T00:00:00"}', '2019-08-20 12:41:27');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (30, 'narcotic_units', '{"narcotic_id":4,"unit_id":1,"created_at":"2019-08-06T00:00:00","updated_at":"2019-08-06T00:00:00"}', '2019-08-20 12:41:32');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (31, 'narcotics', '{"drug_id":4,"drug_name":"Cocaine","display":"Y","created_at":"2019-08-06T00:00:00","updated_at":"2019-08-06T00:00:00"}', '2019-08-20 12:41:32');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (32, 'narcotic_units', '{"narcotic_id":2,"unit_id":1,"created_at":"2019-08-06T00:00:00","updated_at":"2019-08-06T00:00:00"}', '2019-08-20 12:42:33');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (33, 'narcotic_units', '{"narcotic_id":2,"unit_id":2,"created_at":"2019-08-06T00:00:00","updated_at":"2019-08-06T00:00:00"}', '2019-08-20 12:42:36');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (34, 'narcotic_units', '{"narcotic_id":2,"unit_id":3,"created_at":"2019-08-06T00:00:00","updated_at":"2019-08-06T00:00:00"}', '2019-08-20 12:42:41');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (35, 'narcotics', '{"drug_id":2,"drug_name":"Ganja","display":"Y","created_at":"2019-08-06T00:00:00","updated_at":"2019-08-06T00:00:00"}', '2019-08-20 12:42:41');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (36, 'narcotic_units', '{"narcotic_id":3,"unit_id":1,"created_at":"2019-08-06T00:00:00","updated_at":"2019-08-06T00:00:00"}', '2019-08-20 12:42:46');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (37, 'narcotic_units', '{"narcotic_id":3,"unit_id":2,"created_at":"2019-08-06T00:00:00","updated_at":"2019-08-06T00:00:00"}', '2019-08-20 12:42:50');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (38, 'narcotic_units', '{"narcotic_id":3,"unit_id":3,"created_at":"2019-08-06T00:00:00","updated_at":"2019-08-06T00:00:00"}', '2019-08-20 12:42:53');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (39, 'narcotics', '{"drug_id":3,"drug_name":"Lsd","display":"Y","created_at":"2019-08-06T00:00:00","updated_at":"2019-08-06T00:00:00"}', '2019-08-20 12:42:53');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (40, 'narcotic_units', '{"narcotic_id":12,"unit_id":5,"created_at":"2019-08-20T00:00:00","updated_at":"2019-08-20T00:00:00"}', '2019-08-20 12:50:58');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (41, 'narcotics', '{"drug_id":12,"drug_name":"CHARAS","display":"Y","created_at":"2019-08-20T00:00:00","updated_at":"2019-08-20T00:00:00"}', '2019-08-20 12:50:58');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (42, 'ps_details', '{"ps_id":8,"ps_name":"Samuktala","district_id":1,"created_at":null,"updated_at":null}', '2019-08-20 13:39:07');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (43, 'storage_details', '{"storage_id":2,"storage_name":"ABCD","district_id":6,"display":"Y","created_at":"2019-08-08T00:00:00","updated_at":"2019-08-20T00:00:00"}', '2019-08-20 14:02:59');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (44, 'storage_details', '{"storage_id":6,"storage_name":"TEST MALKHANA","district_id":2,"display":"N","created_at":"2019-08-19T00:00:00","updated_at":"2019-08-19T00:00:00"}', '2019-08-20 14:04:35');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (45, 'storage_details', '{"storage_id":5,"storage_name":"TEST STORAGE","district_id":5,"display":"N","created_at":"2019-08-16T00:00:00","updated_at":"2019-08-16T00:00:00"}', '2019-08-20 14:04:39');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (46, 'storage_details', '{"storage_id":4,"storage_name":"TEST STORAGE","district_id":2,"display":"N","created_at":"2019-08-16T00:00:00","updated_at":"2019-08-16T00:00:00"}', '2019-08-20 14:04:41');
+INSERT INTO public.history_deleted_data (id, table_name, deleted_data, deleted_time) VALUES (47, 'storage_details', '{"storage_id":3,"storage_name":"TEST MALKHANA","district_id":5,"display":"N","created_at":"2019-08-13T00:00:00","updated_at":"2019-08-13T00:00:00"}', '2019-08-20 14:04:44');
+
+
+--
+-- TOC entry 2971 (class 0 OID 221617)
+-- Dependencies: 197
+-- Data for Name: migrations; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.migrations (id, migration, batch) VALUES (1, '2014_10_12_100000_create_password_resets_table', 1);
+INSERT INTO public.migrations (id, migration, batch) VALUES (2, '2019_02_01_075711_create_districts_table', 1);
+INSERT INTO public.migrations (id, migration, batch) VALUES (3, '2019_02_01_075712_create_ps_details_table', 1);
+INSERT INTO public.migrations (id, migration, batch) VALUES (5, '2019_02_01_075755_create_ndps_court_details_table', 1);
+INSERT INTO public.migrations (id, migration, batch) VALUES (6, '2019_02_01_075758_create_certifying_court_details_table', 1);
+INSERT INTO public.migrations (id, migration, batch) VALUES (7, '2019_02_01_075904_create_agency_details_table', 1);
+INSERT INTO public.migrations (id, migration, batch) VALUES (8, '2019_02_01_075945_create_narcotics_table', 1);
+INSERT INTO public.migrations (id, migration, batch) VALUES (9, '2019_02_01_080046_create_units_table', 1);
+INSERT INTO public.migrations (id, migration, batch) VALUES (11, '2019_04_11_084651_create_narcotic_units_table', 1);
+INSERT INTO public.migrations (id, migration, batch) VALUES (12, '2019_05_06_999999_create_users_table', 1);
+INSERT INTO public.migrations (id, migration, batch) VALUES (13, '2019_02_01_075713_create_storage_details_table', 2);
+INSERT INTO public.migrations (id, migration, batch) VALUES (14, '2019_08_09_094343_create_history_deleted_data', 3);
+INSERT INTO public.migrations (id, migration, batch) VALUES (16, '2019_02_01_080158_create_seizures_table', 4);
+
+
+--
+-- TOC entry 2987 (class 0 OID 221772)
+-- Dependencies: 213
+-- Data for Name: narcotic_units; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.narcotic_units (narcotic_id, unit_id, created_at, updated_at) VALUES (8, 2, '2019-08-20 00:00:00', '2019-08-20 00:00:00');
+INSERT INTO public.narcotic_units (narcotic_id, unit_id, created_at, updated_at) VALUES (8, 1, '2019-08-20 00:00:00', '2019-08-20 00:00:00');
+INSERT INTO public.narcotic_units (narcotic_id, unit_id, created_at, updated_at) VALUES (8, 3, '2019-08-20 00:00:00', '2019-08-20 00:00:00');
+INSERT INTO public.narcotic_units (narcotic_id, unit_id, created_at, updated_at) VALUES (9, 2, '2019-08-20 00:00:00', '2019-08-20 00:00:00');
+INSERT INTO public.narcotic_units (narcotic_id, unit_id, created_at, updated_at) VALUES (9, 1, '2019-08-20 00:00:00', '2019-08-20 00:00:00');
+INSERT INTO public.narcotic_units (narcotic_id, unit_id, created_at, updated_at) VALUES (9, 3, '2019-08-20 00:00:00', '2019-08-20 00:00:00');
+INSERT INTO public.narcotic_units (narcotic_id, unit_id, created_at, updated_at) VALUES (10, 2, '2019-08-20 00:00:00', '2019-08-20 00:00:00');
+INSERT INTO public.narcotic_units (narcotic_id, unit_id, created_at, updated_at) VALUES (10, 1, '2019-08-20 00:00:00', '2019-08-20 00:00:00');
+INSERT INTO public.narcotic_units (narcotic_id, unit_id, created_at, updated_at) VALUES (10, 3, '2019-08-20 00:00:00', '2019-08-20 00:00:00');
+INSERT INTO public.narcotic_units (narcotic_id, unit_id, created_at, updated_at) VALUES (11, 2, '2019-08-20 00:00:00', '2019-08-20 00:00:00');
+INSERT INTO public.narcotic_units (narcotic_id, unit_id, created_at, updated_at) VALUES (11, 1, '2019-08-20 00:00:00', '2019-08-20 00:00:00');
+INSERT INTO public.narcotic_units (narcotic_id, unit_id, created_at, updated_at) VALUES (11, 3, '2019-08-20 00:00:00', '2019-08-20 00:00:00');
+
+
+--
+-- TOC entry 2984 (class 0 OID 221698)
+-- Dependencies: 210
+-- Data for Name: narcotics; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.narcotics (drug_id, drug_name, display, created_at, updated_at) VALUES (6, 'Test Narcotic', 'N', '2019-08-16 00:00:00', '2019-08-16 00:00:00');
+INSERT INTO public.narcotics (drug_id, drug_name, display, created_at, updated_at) VALUES (8, 'GANJA', 'Y', '2019-08-20 00:00:00', '2019-08-20 00:00:00');
+INSERT INTO public.narcotics (drug_id, drug_name, display, created_at, updated_at) VALUES (9, 'CHARAS', 'Y', '2019-08-20 00:00:00', '2019-08-20 00:00:00');
+INSERT INTO public.narcotics (drug_id, drug_name, display, created_at, updated_at) VALUES (10, 'LSD', 'Y', '2019-08-20 00:00:00', '2019-08-20 00:00:00');
+INSERT INTO public.narcotics (drug_id, drug_name, display, created_at, updated_at) VALUES (11, 'COCAINE', 'Y', '2019-08-20 00:00:00', '2019-08-20 00:00:00');
+
+
+--
+-- TOC entry 2978 (class 0 OID 221664)
+-- Dependencies: 204
+-- Data for Name: ndps_court_details; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.ndps_court_details (ndps_court_id, ndps_court_name, district_id, created_at, updated_at) VALUES (1, 'NDPS Court, Darjeeling', 5, '2019-08-05 00:00:00', '2019-08-05 00:00:00');
+INSERT INTO public.ndps_court_details (ndps_court_id, ndps_court_name, district_id, created_at, updated_at) VALUES (2, 'NDPS COURT, BANKURA', 2, '2019-08-05 00:00:00', '2019-08-19 00:00:00');
+
+
+--
+-- TOC entry 2972 (class 0 OID 221623)
+-- Dependencies: 198
+-- Data for Name: password_resets; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+
+
+--
+-- TOC entry 2976 (class 0 OID 221640)
+-- Dependencies: 202
+-- Data for Name: ps_details; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (3, 'Falakata', 1, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (4, 'Jaigaon', 1, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (5, 'Kalchini', 1, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (6, 'Kumargram', 1, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (9, 'Alipurduar Women', 1, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (10, 'Andal', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (11, 'Asansol Women', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (12, 'Durgapur Women', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (13, 'Asansole North', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (14, 'Asansole South', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (15, 'Barabani', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (16, 'Chittaranjan', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (17, 'Coke Oven', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (18, 'Durgapur', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (19, 'Faridpur', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (20, 'Hirapur', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (21, 'Jamuria', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (22, 'Kulti', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (23, 'New Township', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (24, 'Pandabeshwar', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (25, 'Raniganj', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (26, 'Salanpur', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (27, 'Asansol Durgapur Cyber Crime', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (28, 'Kanksa', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (29, 'Budbud', 21, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (31, 'Bankura Women', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (32, 'Barikul', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (33, 'Barjora', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (34, 'Beliatore', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (35, 'Bishnupur', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (36, 'Chhatna', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (37, 'Gangajalghati', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (38, 'Hirbandh', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (39, 'Indpur', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (40, 'Indus', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (41, 'Joypur', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (42, 'Khatra', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (43, 'Khatra Women', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (44, 'Kotulpur', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (45, 'Mejhia', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (46, 'Onda', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (47, 'Patrasayar', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (48, 'Raipur', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (49, 'Ranibandh', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (50, 'Saltora', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (51, 'Sarenga', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (52, 'Simlapal', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (53, 'Sonamukhi', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (54, 'Taldangra', 2, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (55, 'Baranagar', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (56, 'Barrackpore', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (57, 'Barrackpore Cyber Crime', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (58, 'Barrackpore Women', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (59, 'Belghoria', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (60, 'Bizpur', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (61, 'Dumdum', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (62, 'Ghola', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (63, 'Jagaddal', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (64, 'Khardah', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (65, 'Naihati', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (66, 'New Barrackpore', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (67, 'Nimta', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (68, 'Noapara', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (69, 'Titagarh', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (70, 'Baruipur', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (71, 'Baruipur Women', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (72, 'Basanti', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (73, 'Bhangar', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (74, 'Canning', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (75, 'Canning Women', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (76, 'Gosaba', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (77, 'Jharkhali Coastal', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (78, 'Jibantala', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (79, 'Joynagar', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (80, 'Kashipore', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (81, 'Kultali', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (82, 'Maipith Coastal', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (83, 'Sonarpur', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (84, 'Sundarban Coastal', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (85, 'Airport', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (86, 'Baguiati', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (87, 'Bidhannagar Cyber Crime', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (88, 'Bidhannagar East', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (89, 'Bidhannagar North', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (90, 'Bidhannagar South', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (91, 'Bidhannagar Women', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (92, 'Electronics Complex', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (93, 'Lake Town', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (94, 'New Town', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (95, 'Nscbi Airport', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (96, 'Rajarhat', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (97, 'Bolpur', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (98, 'Chandrapur', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (99, 'Dubrajpore', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (100, 'Illambazar', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (101, 'Kankartala', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (102, 'Khoyrasole', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (103, 'Labhpur', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (104, 'Lokpur', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (105, 'Mahammad Bazar', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (106, 'Mergram', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (107, 'Mayureshar', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (108, 'Murarai', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (109, 'Nalhati', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (110, 'Nanoor', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (111, 'Panrui', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (112, 'Rajnagar', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (113, 'Rampurhat', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (114, 'Sadaipore', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (115, 'Sainthia', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (116, 'Shantiniketan', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (117, 'Suri', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (118, 'Suri Women', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (119, 'Tarapith', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (120, 'Baxsirhat', 4, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (121, 'Cooch Behar', 4, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (122, 'Coochbehar Women', 4, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (123, 'Dinhata', 4, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (124, 'Ghogsadanga', 4, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (125, 'Haldibari', 4, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (126, 'Kuchlibari', 4, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (127, 'Mathabhanga', 4, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (128, 'Mekhliganj', 4, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (129, 'Sitai', 4, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (130, 'Sithalkuchi', 4, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (131, 'Tufanganj', 4, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (132, 'Sahebganj', 4, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (133, 'Pundibari', 4, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (134, 'Balurghat', 6, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (135, 'Balurghat Women', 6, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (136, 'Bansihari', 6, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (137, 'Gangarampur', 6, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (138, 'Harirampur', 6, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (139, 'Hili', 6, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (140, 'Kumarganj', 6, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (141, 'Kushmandi', 6, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (142, 'Tapan', 6, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (143, 'Darjeeling (Sadar PS)', 5, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (144, 'Darjeeling Women', 5, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (145, 'Jorebunglow', 5, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (146, 'Kharibari', 5, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (147, 'Kurseong', 5, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (148, 'Lodhama', 5, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (149, 'Mirik', 5, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (150, 'Naxalbari', 5, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (151, 'Phansidewa', 5, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (152, 'Pulbazar', 5, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (153, 'Rangli Rangliat', 5, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (154, 'Sukhia Pokhri', 5, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (155, 'Bishnupur', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (156, 'Budgebudge', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (157, 'Diamond Harbour', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (158, 'Diamond Harbour Women', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (159, 'Falta', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (160, 'Maheshtala', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (161, 'Mograhat', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (30, 'BANKURA DISTRICT', 2, NULL, '2019-08-20 00:00:00');
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (7, 'MADARIHAT', 1, NULL, '2019-08-20 00:00:00');
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (162, 'Nodakhali', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (163, 'Parulia Coastal', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (164, 'Rabindranagar', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (165, 'Ramnagar', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (166, 'Usthi', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (167, 'Arambagh', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (168, 'Arambagh Women', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (169, 'Balagarh', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (170, 'Bhadreswar', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (171, 'Chandannagar', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (172, 'Chanditala', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (173, 'Chinsurah', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (174, 'Chinsurah Women', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (175, 'Dadpur', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (176, 'Dankuni', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (177, 'Dhaniakhali', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (178, 'Goghat', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (179, 'Gurap', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (180, 'Haripal', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (181, 'Jangipara', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (182, 'Khanakul', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (183, 'Mogra', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (184, 'Pandua', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (185, 'Polba', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (186, 'Pursurah', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (187, 'Rishra', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (188, 'Shrirampur Women', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (189, 'Singoor', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (190, 'Srirampore', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (191, 'Tarakeswar', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (192, 'Uttarpara', 7, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (193, 'Andal G.R.P.S.', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (194, 'Andul G.R.P.S.', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (195, 'Asansole G.R.P.S.', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (196, 'Azimganj G.R.P.S.', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (197, 'Bandel G.R.P.S.', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (198, 'Belur G.R.P.S.', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (199, 'Burdwan G.R.P.S.', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (200, 'Howrah G.R.P.S.', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (201, 'Kalna G.R.P.S.', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (202, 'Kamar Kundu G.R.P.S.', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (203, 'Katwa G.R.P.S.', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (204, 'Sainthia G.R.P.S.', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (205, 'Sheoraphuli G.R.P.S.', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (206, 'Suri G.R.P.S.', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (207, 'Ajc Bose Botanic Garden', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (208, 'Bally', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (209, 'Bantra', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (210, 'Belur', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (211, 'Chatterjeehat', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (212, 'Dasnagar', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (213, 'Golabari', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (214, 'Howrah', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (215, 'Howrah Cyber Crime', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (216, 'Howrah Women', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (217, 'Jagachha', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (218, 'Liluah', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (219, 'Malipanchghara', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (220, 'Nishchinda', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (221, 'Santragachhi', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (222, 'Shibpur', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (223, 'Amta', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (224, 'Bagnan', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (225, 'Bauria', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (226, 'Domjur', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (227, 'Jagatballavpore', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (228, 'Joypur : Howrah', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (229, 'Panchla', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (230, 'Sankrail : Howrah', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (231, 'Shyampur', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (232, 'Udaynarayanpur', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (233, 'Uluberia', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (234, 'Uluberia Women', 8, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (235, 'Banarhat', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (236, 'Dhubguri', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (237, 'Jalpaiguri', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (238, 'Jalpaiguri Women', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (239, 'Joygarh', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (240, 'Malbazar', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (241, 'Metelli', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (242, 'Moynaguri', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (243, 'Nagrakata', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (244, 'Rajganj', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (245, 'Beliabera', 10, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (246, 'Belpahari', 10, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (247, 'Binpur', 10, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (248, 'Gopiballavpur', 10, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (249, 'Jamboni', 10, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (250, 'Jhargram', 10, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (251, 'Jhargram Women', 10, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (252, 'Nayagram', 10, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (253, 'Sankrail', 10, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (254, 'Lalgarh', 10, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (255, 'Garubathan', 12, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (256, 'Jaldhaka', 12, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (257, 'Kalimpong', 12, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (258, 'Adra G.R.P.S.', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (259, 'Bankura G.R.P.S.', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (260, 'Haldia G.R.P.S.', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (261, 'Jhargram G.R.P.S.', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (262, 'Kharagpur G.R.P.S.', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (263, 'Panskura G.R.P.S.', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (264, 'Purulia G.R.P.S.', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (265, 'Shalimar G.R.P.S.', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (266, 'Uluberia G.R.P.S.', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (267, 'Baishnabnagar', 13, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (268, 'Bamangola', 13, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (269, 'Bhutni', 13, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (270, 'Chanchal', 13, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (271, 'English Bazar', 13, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (272, 'English Bazar Women', 13, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (273, 'Gajole', 13, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (274, 'Habibpur', 13, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (275, 'Harishchandrapur', 13, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (276, 'Kaliachak', 13, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (277, 'Manickchak', 13, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (278, 'Mothabari', 13, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (279, 'Oldmalda', 13, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (280, 'Pukhuria', 13, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (281, 'Ratua', 13, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (282, 'Beldanga', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (283, 'Berhampore', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (284, 'Berhampore Women', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (285, 'Bhagawangola', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (286, 'Bharatpur', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (287, 'Burwan', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (288, 'Daulatabad', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (289, 'Domkal', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (290, 'Farakka', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (291, 'Hariharpara', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (292, 'Islampore', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (293, 'Jalangi', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (294, 'Jangipur Women', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (295, 'Jiaganj', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (296, 'Kandi', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (297, 'Khargram', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (298, 'Lalgola', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (299, 'Murshidabad', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (300, 'Nabagram', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (301, 'Nawda', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (302, 'Raghunathganj', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (303, 'Raninagar', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (304, 'Ranitala', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (305, 'Rejinagar', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (306, 'Sagardighi', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (307, 'Salar', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (308, 'Samsherganj', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (309, 'Saktipur', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (310, 'Suti', 14, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (311, 'Bhimpur', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (312, 'Chakdah', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (313, 'Chapra', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (314, 'Dhantala', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (315, 'Dhubulia', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (316, 'Gangnapur', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (317, 'Hanskhli', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (318, 'Haringhata', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (319, 'Hogalberia', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (320, 'Kaligunj', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (321, 'Kalyani', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (322, 'Karimpore', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (323, 'Krishnaganj', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (324, 'Krishnanagar', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (325, 'Krishnanagar Women', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (326, 'Murutia', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (327, 'Nabadwip', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (328, 'Nakashipara', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (329, 'Ranaghat', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (330, 'Ranaghat Women', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (331, 'Shantipur', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (332, 'Taherpur', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (333, 'Tehatta', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (334, 'Thanapara', 15, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (335, 'Amdanga', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (336, 'Ashoknagar', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (337, 'Baduria', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (338, 'Bagdah', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (339, 'Barasat', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (340, 'Barasat Women', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (341, 'Bashirhat', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (342, 'Bongaon', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (343, 'Bongaon Women', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (344, 'Deganga', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (345, 'Duttapukur', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (346, 'Gaighata', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (347, 'Gopalnagar', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (348, 'Habra', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (349, 'Haroa', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (350, 'Hasnabad', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (351, 'Hemnagar Coastal', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (352, 'Hingalganj', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (353, 'Madhyamgram', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (354, 'Minakhan', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (355, 'Petrapole', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (356, 'Sandeshkhali', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (357, 'Sasan', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (358, 'Swarupnagar', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (359, 'Nazat', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (360, 'Anandapur : Paschim Medinipur', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (361, 'Belaberya', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (362, 'Belda', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (363, 'Chandrakona', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (364, 'Dantan', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (365, 'Daspur', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (366, 'Debra', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (367, 'Garbeta', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (368, 'Ghatal', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (369, 'Goaltore', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (370, 'Keshiary', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (371, 'Keshpur', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (372, 'Kharagpur Local', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (373, 'Kharagpur Town', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (374, 'Kharagpur Women', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (375, 'Midnapore', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (376, 'Mohanpur', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (377, 'Narayangarh', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (378, 'Pachim Medinipur Women', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (379, 'Pingla', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (380, 'Sabang', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (381, 'Salbani', 17, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (382, 'Bhatar', 20, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (383, 'Ausgram', 20, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (384, 'Burdwan', 20, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (385, 'Burdwan Women', 20, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (386, 'Galsi', 20, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (387, 'Jamalpore', 20, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (388, 'Kalna', 20, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (389, 'Katwa', 20, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (390, 'Ketugram', 20, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (391, 'Khandaghosh', 20, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (392, 'Madhabdihi', 20, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (393, 'Mangalkot', 20, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (394, 'Memari', 20, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (395, 'Monteshwar', 20, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (396, 'Nadanghat', 20, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (397, 'Purbasthali', 20, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (398, 'Raina', 20, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (399, 'Bhabanipur', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (400, 'Bhagawanpur', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (401, 'Bhupatinagar', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (402, 'Chandipur', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (403, 'Contai', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (404, 'Contai Women', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (405, 'Digha', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (406, 'Digha Mohana Coastal', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (407, 'Durgachak', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (408, 'Egra', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (409, 'Haldia', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (410, 'Haldia Women', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (411, 'Junput Coastal', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (412, 'Khejuri', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (413, 'Kolaghat', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (414, 'Mahishadal', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (415, 'Mandarmoni', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (416, 'Marishda', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (417, 'Moyna', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (418, 'Nandakumar', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (419, 'Nandigram', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (420, 'Nayachar Coastal', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (421, 'Panskura', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (422, 'Pataspur', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (423, 'Ramnagar', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (424, 'Sutahata', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (425, 'Talpatti Ghat Coastal', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (426, 'Tamluk', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (427, 'Adra', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (428, 'Arsha', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (429, 'Bagmundi', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (430, 'Balarampur', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (431, 'Bandowan', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (432, 'Barabazar', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (433, 'Bora', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (434, 'Hura', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (435, 'Jhalda', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (436, 'Joypur', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (437, 'Kashipur', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (438, 'Kenda', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (439, 'Kotshila', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (440, 'Manbazar', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (441, 'Nashipur', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (442, 'Neturia', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (443, 'Para', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (444, 'Puncha', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (445, 'Purulia Mufassil', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (446, 'Purulia Town', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (447, 'Purulia Women', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (448, 'Raghunathpur', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (449, 'Raghunathpur Women', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (450, 'Santaldih', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (451, 'Santari', 19, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (452, 'Ballygunge G.R.P.S.', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (453, 'Barasat G.R.P.S.', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (454, 'Baruipur G.R.P.S.', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (455, 'Berhampore G.R.P.S.', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (456, 'Bongaon G.R.P.S.', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (457, 'Diamond Harbour G.R.P.S.', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (458, 'Dumdum G.R.P.S.', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (459, 'Jadavpore G.R.P.S.', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (460, 'Krishnanagar G.R.P.S.', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (461, 'Naihati G.R.P.S.', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (462, 'Ranaghat G.R.P.S.', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (463, 'Sealdah G.R.P.S.', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (464, 'Sonarpur G.R.P.S.', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (465, 'Alipurduar G.R.P.S.', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (466, 'Dalkhola G.R.P.S.', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (467, 'Mal G.R.P.S.', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (468, 'Malda G.R.P.S.', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (469, 'Moynaguri G.R.P.S.', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (470, 'New Coochbehar G.R.P.S.', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (471, 'New Jalpaiguri G.R.P.S.', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (472, 'Siliguri G.R.P.S.', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (473, 'Bagdogra', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (474, 'Bhaktinagar', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (475, 'Matigara', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (476, 'New Jalpaiguri', 9, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (477, 'Pradhannagar', 5, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (478, 'Siliguri', 5, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (479, 'Siliguri Cyber Crime', 5, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (480, 'Siliguri Women', 5, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (481, 'Dholahat', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (482, 'Frazerganj Coastal', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (483, 'Ganga Sagar Coastal', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (484, 'Gobardhanpur Coastal', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (485, 'Harwood Point Coastal', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (486, 'kakdwip', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (487, 'Kulpi', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (488, 'Mandirbazar', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (489, 'Mathurapur', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (490, 'Namkhana', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (491, 'Patharpratima', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (492, 'Raidighi', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (493, 'Sagar', 22, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (494, 'Chakulia', 23, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (495, 'Chopra', 23, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (496, 'Goalpukur', 23, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (497, 'Hemtabad', 23, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (498, 'Islampore', 23, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (499, 'Itahar', 23, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (500, 'Kaliaganj', 23, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (501, 'Karandighi', 23, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (502, 'Raigunje', 23, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (503, 'Raiganj Women', 23, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (504, 'Dalkhola', 23, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (505, 'Alipore', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (506, 'Amherst Street', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (507, 'Anandapur : Kolkata', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (508, 'Ballygunge', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (509, 'Bansdroni', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (510, 'Behala', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (511, 'Beliaghata', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (512, 'Beniapukur', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (513, 'Bhowanipur', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (514, 'Bowbazar', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (515, 'Burrra Bazar', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (516, 'Burtolla', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (517, 'Charu Market', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (518, 'Chetla', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (519, 'Chitpur', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (520, 'Cossipore', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (521, 'Ekbalpur', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (522, 'Entally', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (523, 'Garden Reach', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (524, 'Garfa', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (525, 'Gariahat', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (526, 'Girish Park', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (527, 'Hare Street', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (528, 'Haridevpur', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (529, 'Hastings', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (530, 'Jadavpore', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (531, 'Jorabagan', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (532, 'Jorasanko', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (533, 'Kalighat', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (534, 'Kareya', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (535, 'Kasba', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (536, 'Kolkata Leather Complex', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (537, 'Lake', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (538, 'Maidan', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (539, 'Maniktala', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (540, 'Metiaburuz', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (541, 'Muchipara', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (542, 'Nadial', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (543, 'Narkeldanga', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (544, 'Netaji Nagar', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (545, 'New Alipore', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (546, 'New Market', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (547, 'North Port', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (548, 'Panchasayar', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (549, 'Park Street', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (550, 'Parnashree', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (551, 'Patuli', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (552, 'Phoolbagan', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (553, 'Posta', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (554, 'Pragati Maidan', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (555, 'Purba Jadavpore', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (556, 'Rajabagan', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (557, 'Regent Park', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (558, 'Sarsuna', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (559, 'Shakespeare Sarani', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (560, 'Shyampukur', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (561, 'Sinthi', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (562, 'South Port', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (563, 'STF', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (564, 'Survey Park', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (565, 'Tala', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (566, 'Taltala', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (567, 'Tangra', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (568, 'Taratala', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (569, 'Thakurpukur', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (570, 'Tiljala', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (571, 'Tollygaunge', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (572, 'Topsia', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (573, 'Ultadanga', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (574, 'Watganj', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (575, 'West Port', 11, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (576, 'Mallarpur', 3, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (577, 'Dinhata Women', 4, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (578, 'Digha G.R.P.S.', 18, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (579, 'Matia', 16, NULL, NULL);
+INSERT INTO public.ps_details (ps_id, ps_name, district_id, created_at, updated_at) VALUES (1, 'Alipurduar', 1, NULL, '2019-08-08 00:00:00');
+
+
+--
+-- TOC entry 2995 (class 0 OID 245975)
+-- Dependencies: 221
+-- Data for Name: seizures; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+
+
+--
+-- TOC entry 2991 (class 0 OID 229600)
+-- Dependencies: 217
+-- Data for Name: storage_details; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.storage_details (storage_id, storage_name, district_id, display, created_at, updated_at) VALUES (7, 'TEST MALKHANA', 5, 'Y', '2019-08-20 00:00:00', '2019-08-20 00:00:00');
+INSERT INTO public.storage_details (storage_id, storage_name, district_id, display, created_at, updated_at) VALUES (8, 'DEMO STORAGE', 2, 'Y', '2019-08-20 00:00:00', '2019-08-20 00:00:00');
+
+
+--
+-- TOC entry 2986 (class 0 OID 221709)
+-- Dependencies: 212
+-- Data for Name: units; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.units (unit_id, unit_name, unit_degree, created_at, updated_at) VALUES (1, 'KG', 3, '2019-08-06 00:00:00', '2019-08-06 00:00:00');
+INSERT INTO public.units (unit_id, unit_name, unit_degree, created_at, updated_at) VALUES (2, 'GRAM', 2, '2019-08-06 00:00:00', '2019-08-06 00:00:00');
+INSERT INTO public.units (unit_id, unit_name, unit_degree, created_at, updated_at) VALUES (3, 'MG', 1, '2019-08-06 00:00:00', '2019-08-06 00:00:00');
+INSERT INTO public.units (unit_id, unit_name, unit_degree, created_at, updated_at) VALUES (4, 'LITER', 2, '2019-08-06 00:00:00', '2019-08-06 00:00:00');
+INSERT INTO public.units (unit_id, unit_name, unit_degree, created_at, updated_at) VALUES (5, 'ML', 1, '2019-08-06 00:00:00', '2019-08-06 00:00:00');
+INSERT INTO public.units (unit_id, unit_name, unit_degree, created_at, updated_at) VALUES (6, 'PIECE', 0, '2019-08-06 00:00:00', '2019-08-06 00:00:00');
+INSERT INTO public.units (unit_id, unit_name, unit_degree, created_at, updated_at) VALUES (7, 'AMPULE', 0, '2019-08-06 00:00:00', '2019-08-06 00:00:00');
+
+
+--
+-- TOC entry 2989 (class 0 OID 221789)
+-- Dependencies: 215
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+INSERT INTO public.users (id, user_id, user_name, password, ps_id, agency_id, certifying_court_id, ndps_court_id, email, contact_no, email_verified_at, user_type, remember_token, created_at, updated_at) VALUES (13, 'ncb', 'NCB', '$2y$10$ocrg4J79ti9j3qMjgYjsl.M8rE6oeHrFphxqNwbeub31QEx/7PvRq', NULL, 2, NULL, NULL, 'ncb@g.com', NULL, NULL, 'agency', 'mZxkVOgJ2faRARU61rXJoUzUSppFnRy6LPSTu4RG7qguAOTwnnaU6ANTuRkg', '2019-08-06 00:00:00', '2019-08-06 00:00:00');
+INSERT INTO public.users (id, user_id, user_name, password, ps_id, agency_id, certifying_court_id, ndps_court_id, email, contact_no, email_verified_at, user_type, remember_token, created_at, updated_at) VALUES (24, 'spc_phoolbagan', 'Phoolbagan', '$2y$10$kbrVJIYY.SBicuXz5ZowNeEf8S3FEi0A.K7C7D8AYaZ3joXKxAH4.', 552, NULL, NULL, NULL, 'hg@g.com', '', NULL, 'ps', NULL, '2019-08-16 00:00:00', '2019-08-16 00:00:00');
+INSERT INTO public.users (id, user_id, user_name, password, ps_id, agency_id, certifying_court_id, ndps_court_id, email, contact_no, email_verified_at, user_type, remember_token, created_at, updated_at) VALUES (25, 'ps_belghoria', 'Belghoria', '$2y$10$me0cWhfwq06nSLanxlwOROWhC8iwRlxD343lbvQCL.MbuBZ8H1sSa', 59, NULL, NULL, NULL, '', '', NULL, 'ps', NULL, '2019-08-16 00:00:00', '2019-08-16 00:00:00');
+INSERT INTO public.users (id, user_id, user_name, password, ps_id, agency_id, certifying_court_id, ndps_court_id, email, contact_no, email_verified_at, user_type, remember_token, created_at, updated_at) VALUES (16, 'jm_mirik', '1st Class Magistrate, Mirik', '$2y$10$Jw6W7I15a.IaGhoHeAq0Su0aO9.jWK9BKdTOLQJCvIUhdY82XcYne', NULL, NULL, 2, NULL, 'jmmirik@g.com', NULL, NULL, 'magistrate', '8GRb7Y5QNpQvtTmE1Mq4VPUJfbYfXIqFiheP0PL4f358G7fAoPcmovR99Qs8', '2019-08-06 00:00:00', '2019-08-06 00:00:00');
+INSERT INTO public.users (id, user_id, user_name, password, ps_id, agency_id, certifying_court_id, ndps_court_id, email, contact_no, email_verified_at, user_type, remember_token, created_at, updated_at) VALUES (15, 'jm_siliguri', '1st Class Magistrate, Siliguri', '$2y$10$25vzg85HQAtGl2tmMki5fOOeVsqeshyqaH09suOY7W8wv9WLgZmFC', NULL, NULL, 1, NULL, 'jmsl@g.com', NULL, NULL, 'magistrate', '1PmGqA3nQiML4GELTIEUuMSNgAJ35yWscxv7DpTuDUgwbLLMBAQyEPORioWt', '2019-08-06 00:00:00', '2019-08-06 00:00:00');
+INSERT INTO public.users (id, user_id, user_name, password, ps_id, agency_id, certifying_court_id, ndps_court_id, email, contact_no, email_verified_at, user_type, remember_token, created_at, updated_at) VALUES (12, 'ps_siliguri', 'Siliguri', '$2y$10$aBAFK1T59AzcJVKBGLkV4uMOHGSxxYUkuFR0IE84imZjK55wryJ2u', 478, NULL, NULL, NULL, 'pssil@g.com', NULL, NULL, 'ps', 'eqvEJfQQkpcC0LT2XHpLbzd4DgJYm4rPgr31c2KMe6tOTNKwQeL1ucexiWd9', '2019-08-05 00:00:00', '2019-08-05 00:00:00');
+INSERT INTO public.users (id, user_id, user_name, password, ps_id, agency_id, certifying_court_id, ndps_court_id, email, contact_no, email_verified_at, user_type, remember_token, created_at, updated_at) VALUES (23, 'spc_bankura', 'NDPS Court, Bankura', '$2y$10$9T9g56Et/6mMkOFM7w4Q7uB.mDrD6W2zLhW49FQwOMnADVd3O7bpe', NULL, NULL, NULL, 2, 'bank@g.com', NULL, NULL, 'special_court', 'PuZFcxwGojL5xRpZwM9ztXO3YF1yqXhsIX4HanijAihjkgIhaSTzaswulRSJ', '2019-08-05 00:00:00', '2019-08-05 00:00:00');
+INSERT INTO public.users (id, user_id, user_name, password, ps_id, agency_id, certifying_court_id, ndps_court_id, email, contact_no, email_verified_at, user_type, remember_token, created_at, updated_at) VALUES (17, 'spc_darjeeling', 'NDPS Court, Darjeeling', '$2y$10$bbsFnSmWivfXFTWKyyPzNubNryixuH8Ou6WIYBdqWtVAhAhaNofvS', NULL, NULL, NULL, 1, 'spcdarj@g.com', NULL, NULL, 'special_court', 'HRl7xmVhDEfnJWh2zyWz5Hf5Z5O4dCsG7acw2cHP8b7Vct4Les4qJQnCCPMr', '2019-08-06 00:00:00', '2019-08-06 00:00:00');
+INSERT INTO public.users (id, user_id, user_name, password, ps_id, agency_id, certifying_court_id, ndps_court_id, email, contact_no, email_verified_at, user_type, remember_token, created_at, updated_at) VALUES (18, 'calhc', 'Calcutta High Court', '$2y$10$9T9g56Et/6mMkOFM7w4Q7uB.mDrD6W2zLhW49FQwOMnADVd3O7bpe', NULL, NULL, NULL, NULL, 'calhc@g.com', NULL, NULL, 'high_court', 'CGeMSXDjWCcXwu06VnzrPZuPURTGhY9qbJZbBIf2TRI75QJUfaE7a9cAxbK2', '2019-08-06 00:00:00', '2019-08-06 00:00:00');
+INSERT INTO public.users (id, user_id, user_name, password, ps_id, agency_id, certifying_court_id, ndps_court_id, email, contact_no, email_verified_at, user_type, remember_token, created_at, updated_at) VALUES (14, 'cid', 'CID, West Bengal', '$2y$10$8VFChRg.cdzrt4SWaKfY4.F1GihY84olyOo7LrZKepdw5hhKjtgrm', NULL, 1, NULL, NULL, 'cid@g.com', NULL, NULL, 'agency', 'j92brTBOszFwNCxltQTQZYWGPlbma4PeCjA8aWd0Y4t0lWJZwYoU7HWUCQ8J', '2019-08-06 00:00:00', '2019-08-06 00:00:00');
+INSERT INTO public.users (id, user_id, user_name, password, ps_id, agency_id, certifying_court_id, ndps_court_id, email, contact_no, email_verified_at, user_type, remember_token, created_at, updated_at) VALUES (11, 'admin', 'Admin', '$2y$10$O1kTHMbCwbPV6T8zWKTVXuvCL0HAm5bhpBST5UldApCGxSwRr/IXO', NULL, NULL, NULL, NULL, 'admin@g.com', NULL, NULL, 'admin', 'LgCbnAfn0R0ChQeF19Rq3ltgKxaZLqNhkJqF2iqqKGedafAoZ2xfNTgFZdJC', '2019-08-05 00:00:00', '2019-08-05 00:00:00');
+
+
+--
+-- TOC entry 3014 (class 0 OID 0)
+-- Dependencies: 207
+-- Name: agency_details_agency_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.agency_details_agency_id_seq', 5, true);
+
+
+--
+-- TOC entry 3015 (class 0 OID 0)
+-- Dependencies: 205
+-- Name: certifying_court_details_court_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.certifying_court_details_court_id_seq', 6, true);
+
+
+--
+-- TOC entry 3016 (class 0 OID 0)
+-- Dependencies: 199
+-- Name: districts_district_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.districts_district_id_seq', 27, true);
+
+
+--
+-- TOC entry 3017 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: history_deleted_data_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.history_deleted_data_id_seq', 47, true);
+
+
+--
+-- TOC entry 3018 (class 0 OID 0)
+-- Dependencies: 196
+-- Name: migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.migrations_id_seq', 16, true);
+
+
+--
+-- TOC entry 3019 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: narcotics_drug_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.narcotics_drug_id_seq', 12, true);
+
+
+--
+-- TOC entry 3020 (class 0 OID 0)
+-- Dependencies: 203
+-- Name: ndps_court_details_ndps_court_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.ndps_court_details_ndps_court_id_seq', 4, true);
+
+
+--
+-- TOC entry 3021 (class 0 OID 0)
+-- Dependencies: 201
+-- Name: ps_details_ps_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.ps_details_ps_id_seq', 585, true);
+
+
+--
+-- TOC entry 3022 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: seizures_seizure_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.seizures_seizure_id_seq', 1, false);
+
+
+--
+-- TOC entry 3023 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: storage_details_storage_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.storage_details_storage_id_seq', 8, true);
+
+
+--
+-- TOC entry 3024 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: units_unit_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.units_unit_id_seq', 7, true);
+
+
+--
+-- TOC entry 3025 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.users_id_seq', 25, true);
+
+
+--
+-- TOC entry 2791 (class 2606 OID 221695)
+-- Name: agency_details agency_details_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.agency_details
+    ADD CONSTRAINT agency_details_pkey PRIMARY KEY (agency_id);
+
+
+--
+-- TOC entry 2789 (class 2606 OID 221682)
+-- Name: certifying_court_details certifying_court_details_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.certifying_court_details
+    ADD CONSTRAINT certifying_court_details_pkey PRIMARY KEY (court_id);
+
+
+--
+-- TOC entry 2783 (class 2606 OID 221637)
+-- Name: districts districts_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.districts
+    ADD CONSTRAINT districts_pkey PRIMARY KEY (district_id);
+
+
+--
+-- TOC entry 2817 (class 2606 OID 237791)
+-- Name: history_deleted_data history_deleted_data_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.history_deleted_data
+    ADD CONSTRAINT history_deleted_data_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2780 (class 2606 OID 221622)
+-- Name: migrations migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.migrations
+    ADD CONSTRAINT migrations_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2797 (class 2606 OID 221776)
+-- Name: narcotic_units narcotic_units_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.narcotic_units
+    ADD CONSTRAINT narcotic_units_pkey PRIMARY KEY (narcotic_id, unit_id);
+
+
+--
+-- TOC entry 2793 (class 2606 OID 221706)
+-- Name: narcotics narcotics_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.narcotics
+    ADD CONSTRAINT narcotics_pkey PRIMARY KEY (drug_id);
+
+
+--
+-- TOC entry 2787 (class 2606 OID 221669)
+-- Name: ndps_court_details ndps_court_details_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.ndps_court_details
+    ADD CONSTRAINT ndps_court_details_pkey PRIMARY KEY (ndps_court_id);
+
+
+--
+-- TOC entry 2785 (class 2606 OID 221645)
+-- Name: ps_details ps_details_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.ps_details
+    ADD CONSTRAINT ps_details_pkey PRIMARY KEY (ps_id);
+
+
+--
+-- TOC entry 2819 (class 2606 OID 245984)
+-- Name: seizures seizures_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.seizures
+    ADD CONSTRAINT seizures_pkey PRIMARY KEY (seizure_id);
+
+
+--
+-- TOC entry 2815 (class 2606 OID 229608)
+-- Name: storage_details storage_details_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.storage_details
+    ADD CONSTRAINT storage_details_pkey PRIMARY KEY (storage_id);
+
+
+--
+-- TOC entry 2795 (class 2606 OID 221714)
+-- Name: units units_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.units
+    ADD CONSTRAINT units_pkey PRIMARY KEY (unit_id);
+
+
+--
+-- TOC entry 2799 (class 2606 OID 221825)
+-- Name: users users_agency_id_unique; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_agency_id_unique UNIQUE (agency_id);
+
+
+--
+-- TOC entry 2801 (class 2606 OID 221827)
+-- Name: users users_certifying_court_id_unique; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_certifying_court_id_unique UNIQUE (certifying_court_id);
+
+
+--
+-- TOC entry 2803 (class 2606 OID 221831)
+-- Name: users users_email_unique; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_email_unique UNIQUE (email);
+
+
+--
+-- TOC entry 2805 (class 2606 OID 221829)
+-- Name: users users_ndps_court_id_unique; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_ndps_court_id_unique UNIQUE (ndps_court_id);
+
+
+--
+-- TOC entry 2807 (class 2606 OID 221797)
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2809 (class 2606 OID 221823)
+-- Name: users users_ps_id_unique; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_ps_id_unique UNIQUE (ps_id);
+
+
+--
+-- TOC entry 2811 (class 2606 OID 221819)
+-- Name: users users_user_id_unique; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_user_id_unique UNIQUE (user_id);
+
+
+--
+-- TOC entry 2813 (class 2606 OID 221821)
+-- Name: users users_user_name_unique; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_user_name_unique UNIQUE (user_name);
+
+
+--
+-- TOC entry 2781 (class 1259 OID 221629)
+-- Name: password_resets_email_index; Type: INDEX; Schema: public; Owner: admin
+--
+
+CREATE INDEX password_resets_email_index ON public.password_resets USING btree (email);
+
+
+--
+-- TOC entry 2847 (class 2620 OID 237793)
+-- Name: users movedeleted; Type: TRIGGER; Schema: public; Owner: admin
+--
+
+CREATE TRIGGER movedeleted BEFORE DELETE ON public.users FOR EACH ROW EXECUTE PROCEDURE public.movedeleted();
+
+
+--
+-- TOC entry 2845 (class 2620 OID 237794)
+-- Name: units movedeleted; Type: TRIGGER; Schema: public; Owner: admin
+--
+
+CREATE TRIGGER movedeleted BEFORE DELETE ON public.units FOR EACH ROW EXECUTE PROCEDURE public.movedeleted();
+
+
+--
+-- TOC entry 2848 (class 2620 OID 237795)
+-- Name: storage_details movedeleted; Type: TRIGGER; Schema: public; Owner: admin
+--
+
+CREATE TRIGGER movedeleted BEFORE DELETE ON public.storage_details FOR EACH ROW EXECUTE PROCEDURE public.movedeleted();
+
+
+--
+-- TOC entry 2840 (class 2620 OID 237797)
+-- Name: ps_details movedeleted; Type: TRIGGER; Schema: public; Owner: admin
+--
+
+CREATE TRIGGER movedeleted BEFORE DELETE ON public.ps_details FOR EACH ROW EXECUTE PROCEDURE public.movedeleted();
+
+
+--
+-- TOC entry 2841 (class 2620 OID 237798)
+-- Name: ndps_court_details movedeleted; Type: TRIGGER; Schema: public; Owner: admin
+--
+
+CREATE TRIGGER movedeleted BEFORE DELETE ON public.ndps_court_details FOR EACH ROW EXECUTE PROCEDURE public.movedeleted();
+
+
+--
+-- TOC entry 2844 (class 2620 OID 237799)
+-- Name: narcotics movedeleted; Type: TRIGGER; Schema: public; Owner: admin
+--
+
+CREATE TRIGGER movedeleted BEFORE DELETE ON public.narcotics FOR EACH ROW EXECUTE PROCEDURE public.movedeleted();
+
+
+--
+-- TOC entry 2846 (class 2620 OID 237800)
+-- Name: narcotic_units movedeleted; Type: TRIGGER; Schema: public; Owner: admin
+--
+
+CREATE TRIGGER movedeleted BEFORE DELETE ON public.narcotic_units FOR EACH ROW EXECUTE PROCEDURE public.movedeleted();
+
+
+--
+-- TOC entry 2839 (class 2620 OID 237801)
+-- Name: districts movedeleted; Type: TRIGGER; Schema: public; Owner: admin
+--
+
+CREATE TRIGGER movedeleted BEFORE DELETE ON public.districts FOR EACH ROW EXECUTE PROCEDURE public.movedeleted();
+
+
+--
+-- TOC entry 2842 (class 2620 OID 237802)
+-- Name: certifying_court_details movedeleted; Type: TRIGGER; Schema: public; Owner: admin
+--
+
+CREATE TRIGGER movedeleted BEFORE DELETE ON public.certifying_court_details FOR EACH ROW EXECUTE PROCEDURE public.movedeleted();
+
+
+--
+-- TOC entry 2843 (class 2620 OID 237803)
+-- Name: agency_details movedeleted; Type: TRIGGER; Schema: public; Owner: admin
+--
+
+CREATE TRIGGER movedeleted BEFORE DELETE ON public.agency_details FOR EACH ROW EXECUTE PROCEDURE public.movedeleted();
+
+
+--
+-- TOC entry 2822 (class 2606 OID 221683)
+-- Name: certifying_court_details certifying_court_details_district_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.certifying_court_details
+    ADD CONSTRAINT certifying_court_details_district_id_foreign FOREIGN KEY (district_id) REFERENCES public.districts(district_id);
+
+
+--
+-- TOC entry 2823 (class 2606 OID 221777)
+-- Name: narcotic_units narcotic_units_narcotic_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.narcotic_units
+    ADD CONSTRAINT narcotic_units_narcotic_id_foreign FOREIGN KEY (narcotic_id) REFERENCES public.narcotics(drug_id);
+
+
+--
+-- TOC entry 2824 (class 2606 OID 221782)
+-- Name: narcotic_units narcotic_units_unit_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.narcotic_units
+    ADD CONSTRAINT narcotic_units_unit_id_foreign FOREIGN KEY (unit_id) REFERENCES public.units(unit_id);
+
+
+--
+-- TOC entry 2821 (class 2606 OID 221670)
+-- Name: ndps_court_details ndps_court_details_district_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.ndps_court_details
+    ADD CONSTRAINT ndps_court_details_district_id_foreign FOREIGN KEY (district_id) REFERENCES public.districts(district_id);
+
+
+--
+-- TOC entry 2820 (class 2606 OID 221646)
+-- Name: ps_details ps_details_district_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.ps_details
+    ADD CONSTRAINT ps_details_district_id_foreign FOREIGN KEY (district_id) REFERENCES public.districts(district_id);
+
+
+--
+-- TOC entry 2831 (class 2606 OID 245990)
+-- Name: seizures seizures_agency_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.seizures
+    ADD CONSTRAINT seizures_agency_id_foreign FOREIGN KEY (agency_id) REFERENCES public.agency_details(agency_id);
+
+
+--
+-- TOC entry 2838 (class 2606 OID 246025)
+-- Name: seizures seizures_certification_court_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.seizures
+    ADD CONSTRAINT seizures_certification_court_id_foreign FOREIGN KEY (certification_court_id) REFERENCES public.certifying_court_details(court_id);
+
+
+--
+-- TOC entry 2834 (class 2606 OID 246005)
+-- Name: seizures seizures_disposal_quantity_weighing_unit_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.seizures
+    ADD CONSTRAINT seizures_disposal_quantity_weighing_unit_id_foreign FOREIGN KEY (disposal_quantity_weighing_unit_id) REFERENCES public.units(unit_id);
+
+
+--
+-- TOC entry 2832 (class 2606 OID 245995)
+-- Name: seizures seizures_drug_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.seizures
+    ADD CONSTRAINT seizures_drug_id_foreign FOREIGN KEY (drug_id) REFERENCES public.narcotics(drug_id);
+
+
+--
+-- TOC entry 2837 (class 2606 OID 246020)
+-- Name: seizures seizures_ndps_court_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.seizures
+    ADD CONSTRAINT seizures_ndps_court_id_foreign FOREIGN KEY (ndps_court_id) REFERENCES public.ndps_court_details(ndps_court_id);
+
+
+--
+-- TOC entry 2830 (class 2606 OID 245985)
+-- Name: seizures seizures_ps_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.seizures
+    ADD CONSTRAINT seizures_ps_id_foreign FOREIGN KEY (ps_id) REFERENCES public.ps_details(ps_id);
+
+
+--
+-- TOC entry 2835 (class 2606 OID 246010)
+-- Name: seizures seizures_sample_quantity_weighing_unit_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.seizures
+    ADD CONSTRAINT seizures_sample_quantity_weighing_unit_id_foreign FOREIGN KEY (sample_quantity_weighing_unit_id) REFERENCES public.units(unit_id);
+
+
+--
+-- TOC entry 2833 (class 2606 OID 246000)
+-- Name: seizures seizures_seizure_quantity_weighing_unit_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.seizures
+    ADD CONSTRAINT seizures_seizure_quantity_weighing_unit_id_foreign FOREIGN KEY (seizure_quantity_weighing_unit_id) REFERENCES public.units(unit_id);
+
+
+--
+-- TOC entry 2836 (class 2606 OID 246015)
+-- Name: seizures seizures_storage_location_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.seizures
+    ADD CONSTRAINT seizures_storage_location_id_foreign FOREIGN KEY (storage_location_id) REFERENCES public.storage_details(storage_id);
+
+
+--
+-- TOC entry 2829 (class 2606 OID 229609)
+-- Name: storage_details storage_details_district_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.storage_details
+    ADD CONSTRAINT storage_details_district_id_foreign FOREIGN KEY (district_id) REFERENCES public.districts(district_id);
+
+
+--
+-- TOC entry 2826 (class 2606 OID 221803)
+-- Name: users users_agency_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_agency_id_foreign FOREIGN KEY (agency_id) REFERENCES public.agency_details(agency_id);
+
+
+--
+-- TOC entry 2827 (class 2606 OID 221808)
+-- Name: users users_certifying_court_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_certifying_court_id_foreign FOREIGN KEY (certifying_court_id) REFERENCES public.certifying_court_details(court_id);
+
+
+--
+-- TOC entry 2828 (class 2606 OID 221813)
+-- Name: users users_ndps_court_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_ndps_court_id_foreign FOREIGN KEY (ndps_court_id) REFERENCES public.ndps_court_details(ndps_court_id);
+
+
+--
+-- TOC entry 2825 (class 2606 OID 221798)
+-- Name: users users_ps_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_ps_id_foreign FOREIGN KEY (ps_id) REFERENCES public.ps_details(ps_id);
+
+
+-- Completed on 2019-08-20 14:15:08
+
+--
+-- PostgreSQL database dump complete
+--
+

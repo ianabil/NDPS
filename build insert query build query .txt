@@ -1,0 +1,12 @@
+$2y$10$aBAFK1T59AzcJVKBGLkV4uMOHGSxxYUkuFR0IE84imZjK55wryJ2u
+
+select concat('insert into users(user_id, user_name, password, ps_id, user_type, created_at, updated_at) values(''ps',LPAD(ps_id::text,4,'0'),'''',',''',ps_name,'''',',''$2y$10$aBAFK1T59AzcJVKBGLkV4uMOHGSxxYUkuFR0IE84imZjK55wryJ2u'',',ps_id,',''ps'',''',CURRENT_DATE,''',''',CURRENT_DATE,''');') from ps_details 
+
+
+
+ndps_court_details:-
+
+select concat('insert into users(user_id, user_name, password, ndps_court_id, user_type, created_at, updated_at) values(''spc',LPAD(ndps_court_id::text,4,'0'),'''',',''',ndps_court_name,'''',',''$2y$10$aBAFK1T59AzcJVKBGLkV4uMOHGSxxYUkuFR0IE84imZjK55wryJ2u'',',ndps_court_id,',''special_court'',''',CURRENT_DATE,''',''',CURRENT_DATE,''');') from ndps_court_details
+
+
+select concat('insert into users(user_id, user_name, password, certifying_court_id, user_type, created_at, updated_at) values(''jm',LPAD(court_id::text,4,'0'),'''',',''',court_name,'''',',''$2y$10$aBAFK1T59AzcJVKBGLkV4uMOHGSxxYUkuFR0IE84imZjK55wryJ2u'',',court_id,',''magistrate'',''',CURRENT_DATE,''',''',CURRENT_DATE,''');') from certifying_court_details
