@@ -72,7 +72,7 @@ class LegacyDataController extends Controller
             'case_year' => 'required|integer',
             'case_no_string' => 'required',
             'narcotic_type' => 'required|array',
-            'narcotic_type.*' => 'required|exists:narcotics,drug_id',
+            'narcotic_type.*' => 'required',
             'seizure_date' => 'required|array',
             'seizure_date.*' => 'required|date',
             'seizure_quantity' => 'required|array',
@@ -140,7 +140,7 @@ class LegacyDataController extends Controller
                 }
                 else{
                     $drug_id = Narcotic::where('drug_name','ILIKE',trim($other_narcotic_name[$i]))
-                                        ->select('drug_id');
+                                        ->max('drug_id');
                     $narcotic_type[$i] = $drug_id;
                 }
             }
