@@ -1248,7 +1248,7 @@ class MasterMaintenanceController extends Controller
                     'user_id' => $user_id,
                     'user_name' => $user_name,
                     'password' => $password,
-                    'agency_id' => null,
+                    'agency_id' => $agency_name,
                     'ps_id' => $ps_name,
                     'certifying_court_id' => $certifying_court_name,
                     'ndps_court_id' => $ndps_court_name,

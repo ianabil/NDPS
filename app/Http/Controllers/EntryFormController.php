@@ -171,7 +171,7 @@ class EntryFormController extends Controller
                 if($count<1){
 
                     Narcotic::insert([
-                        'drug_name' => trim(strtoupper($other_narcotic_name[$i])),
+                        'drug_name' => strtoupper(trim(strtoupper($other_narcotic_name[$i]))),
                         'display' => 'N',
                         'created_at'=>Carbon::today(),
                         'updated_at'=>Carbon::today()
@@ -199,7 +199,7 @@ class EntryFormController extends Controller
                 if($count<1){
 
                     Storage_detail::insert([
-                        'storage_name'=>trim(strtoupper($other_storage_name)),
+                        'storage_name'=>strtoupper(trim(strtoupper($other_storage_name))),
                         'district_id' => $district,
                         'display' => 'N',
                         'created_at'=>Carbon::today(),
