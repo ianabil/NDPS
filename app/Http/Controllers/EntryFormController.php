@@ -105,25 +105,38 @@ class EntryFormController extends Controller
     public function store(Request $request)
     {
         $this->validate( $request, [ 
-            'stakeholder' => 'required|integer',
-            'case_no' => 'required|integer',
-            'case_year' => 'required|integer',
-            'case_no_string' => 'required',
-            'case_initiated_by' => 'required',
-            'narcotic_type' => 'required|array',
-            'narcotic_type.*' => 'required',
-            'seizure_date' => 'required|array',
-            'seizure_date.*' => 'required|date',
-            'seizure_quantity' => 'required|array',
-            'seizure_quantity.*' => 'required',
-            'seizure_weighing_unit' => 'required|array',
-            'seizure_weighing_unit.*' => 'required|exists:units,unit_id',
-            'storage' => 'required|integer',
-            'remark' => 'nullable|max:255',
-            'district' => 'required|exists:districts,district_id',         
-            'ndps_court' => 'required|exists:ndps_court_details,ndps_court_id',
-            'certifying_court' => 'required|exists:certifying_court_details,court_id'
-        ] ); 
+            'stakeholder' => 'required|integer|max:2000|exists:ps_details,ps_id',
+            'agency_name' => 'nullable|integer|max:2000|exists:agency_details,agency_id',
+            'case_no' => 'required|integer|max:2000',
+            'case_year' => 'required|integer|min:1970|max:'.date('Y'),
+            'case_no_string' => 'required|string|max:30|unique:seizures,case_no_string',
+            'case_initiated_by' => 'required|alpha|max:10|in:self,agency',
+            'narcotic_type' => 'array',
+            'narcotic_type.*' => 'required|integer|min:1|max:999',
+            'flag_other_narcotic' => 'array',
+            'flag_other_narcotic.*' => 'required|in:0,1',
+            'other_narcotic_name' => 'array',
+            'other_narcotic_name.*' => 'required_if:flag_other_narcotic.*,1|max:50',
+            'seizure_date' => 'array',
+            'seizure_date.*' => 'required|date_format:d-m-Y',            
+            'seizure_quantity' => 'array',
+            'seizure_quantity.*' => 'required|integer|max:2000',
+            'seizure_weighing_unit' => 'array',
+            'seizure_weighing_unit.*' => 'required|integer|exists:units,unit_id',
+            'storage' => 'required|integer|max:999',
+            'flag_other_storage' => 'required|in:0,1',
+            'other_storage_name' => 'required_if:flag_other_storage,1|max:50',
+            'remark' => 'nullable|string|max:255',
+            'district' => 'required|integer|max:2000|exists:districts,district_id',         
+            'ndps_court' => 'required|integer|max:2000|exists:ndps_court_details,ndps_court_id',
+            'certifying_court' => 'required|integer|max:2000|exists:certifying_court_details,court_id'
+        ],
+        [
+            'other_narcotic_name.*.required_if' => 'Narcotic Name field is blank',
+            'other_storage_name.required_if' => 'Malkhana Name field is blank',
+        ]
+    
+    ); 
        
         $user_type = Auth::user()->user_type;
         
@@ -249,22 +262,7 @@ class EntryFormController extends Controller
 
     }
 
-    
-
-    // District wise NDPS Court fetching
-    public function district_wise_court(Request $request){
-
-        $district = $request->input('district'); 
-
-        $data['district_wise_court']=CertifyingCourtDetail::
-                                    where('district_id','=', $district )
-                                    ->get();
-
-        echo json_encode($data);
-
-    }
-
-    
+      
     // Narcotic wise unit fetching
     public function narcotic_units(Request $request){
 

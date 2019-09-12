@@ -736,8 +736,17 @@
 												window.location.reload(true);
 										},2000);
 									},
-									error:function(response){
-										swal("Invalid Input","","error");														
+									error: function (jqXHR, textStatus, errorThrown) {
+										if(jqXHR.status!=422 && jqXHR.status!=400){
+											swal("Server Error",errorThrown,"error");
+										}
+										else{
+											msg = "";
+											$.each(jqXHR.responseJSON.errors, function(key,value) {
+												msg+=value+"\n";						
+											});
+											swal("Invalid Input",msg,"error");
+										}
 									}
 								})
 							}

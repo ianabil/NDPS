@@ -260,9 +260,6 @@
 
         Route::post('entry_form/add_new_seizure_details','EntryFormController@add_new_seizure_details');
 
-        Route::post('entry_form/fetch_certifying_court',
-        'EntryFormController@district_wise_court');
-
         Route::post('entry_form/fetch_case_details','EntryFormController@fetch_case_details');
 
         Route::post('entry_form/dispose','EntryFormController@dispose');               
