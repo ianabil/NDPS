@@ -51,7 +51,7 @@
                                 <div class="form-group required row" style="display:none">
                                     <label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Case Initiated By</label>
                                     <div class="col-sm-2">
-                                        <select class="form-control" id="case_initiated_by" autocomplete="off">	
+                                        <select class="form-control select2" id="case_initiated_by" autocomplete="off">	
                                             <option value="self">Self</option>
                                         </select>
                                     </div>
@@ -59,7 +59,7 @@
                                     <div id="div_case_initiated_by" style="display:none">
                                         <label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Agency Name</label>
                                         <div class="col-sm-2">
-                                            <select class="form-control" id="agency_name" autocomplete="off">
+                                            <select class="form-control select2" id="agency_name" autocomplete="off">
                                                 <option value="">Select an option</option>                                                
                                             </select>
                                         </div>
@@ -73,7 +73,7 @@
                                     <div class="form-group required row">
                                         <label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Nature of Narcotic</label>
                                         <div class="col-sm-3">
-                                            <select class="form-control narcotic_type" autocomplete="off">
+                                            <select class="form-control narcotic_type select2" autocomplete="off">
                                                 <option value="" selected>Select An Option</option>
                                                 @foreach($data['narcotics'] as $narcotic)
                                                     <option value="{{$narcotic->drug_id}}">{{$narcotic->drug_name}}</option>
@@ -87,8 +87,8 @@
                                         </div>
 
                                         <div class="col-sm-3 div_other_narcotic_type" style="display:none">
-                                                <input class="form-control other_narcotic_name" type="text" placeholder="Narcotic Name" autocomplete="off">
-                                                <input class="form-control flag_other_narcotic" type="number" style="display:none" autocomplete="off"> 	
+											<input class="form-control other_narcotic_name" type="text" placeholder="Narcotic Name" autocomplete="off">
+											<input class="form-control flag_other_narcotic" type="number" style="display:none" autocomplete="off"> 	
                                         </div>
 
                                     </div>
@@ -101,7 +101,7 @@
 
                                         <label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Weighing Unit</label>
                                         <div class="col-sm-2">											
-                                            <select class="form-control seizure_weighing_unit" autocomplete="off">
+                                            <select class="form-control seizure_weighing_unit select2" autocomplete="off">
                                                 <option value="" selected>Select An Option</option>											
                                             </select>
                                         </div>										
@@ -245,6 +245,8 @@
 			viewMode: "months", 
 			minViewMode: "months"
 		}); // Date picker initialization For Month of Report
+
+		var div_clone = $(".div_add_more:first").clone();
 		
 		$(".select2").select2(); // select2 dropdown initialization
 		
@@ -284,12 +286,12 @@
 		var count = 0;
 		$(document).on("click","#add_more", function(){
 			count++;
-			$(".div_add_more:first").clone().find('.div_other_narcotic_type').hide().end().insertAfter(".div_add_more:last");
+			div_clone.clone().insertAfter(".div_add_more:last");
 			$(".add_more:last").attr({src:"images/details_close.png",
 										class:"remove", 
 										alt:"remove",
 										id:""});
-			$(".seizure_quantity:last").val('');
+			$(".select2").select2(); // Select2 re-initialization
 			$(".date").datepicker({
 				endDate:'0',
 				format: 'dd-mm-yyyy'
@@ -430,8 +432,6 @@
 					var case_year = $("#case_year").val();
 					var case_no_string = $.trim($("#stakeholder").val())+" / "+case_no+" / "+case_year;
 
-
-
 					var element = $(this);
 
 					// If div structure changes, following code will not work :: STARTS
@@ -503,8 +503,17 @@
 												element.hide();
 												$("#cancel").hide();
 											},
-											error:function(response){
-												console.log(response);
+											error: function (jqXHR, textStatus, errorThrown) {
+												if(jqXHR.status!=422 && jqXHR.status!=400){
+													swal("Server Error",errorThrown,"error");
+												}
+												else{
+													msg = "";
+													$.each(jqXHR.responseJSON.errors, function(key,value) {
+														msg+=value+"\n";						
+													});
+													swal("Invalid Input",msg,"error");
+												}
 											}
 										})
 									}
@@ -650,8 +659,17 @@
 												window.location.reload(true);
 										},2000);
 									},
-									error:function(response){
-										swal("Invalid Input","","error");														
+									error: function (jqXHR, textStatus, errorThrown) {
+										if(jqXHR.status!=422 && jqXHR.status!=400){
+											swal("Server Error",errorThrown,"error");
+										}
+										else{
+											msg = "";
+											$.each(jqXHR.responseJSON.errors, function(key,value) {
+												msg+=value+"\n";						
+											});
+											swal("Invalid Input",msg,"error");
+										}
 									}
 								})
 							}
@@ -680,6 +698,18 @@
 						$.each(obj['district_wise_court'],function(index,value){							
 							$("#magistrate").append('<option value="'+value.court_id+'">'+value.court_name+'</option>');
 						})
+					},
+					error: function (jqXHR, textStatus, errorThrown) {
+						if(jqXHR.status!=422 && jqXHR.status!=400){
+							swal("Server Error",errorThrown,"error");
+						}
+						else{
+							msg = "";
+							$.each(jqXHR.responseJSON.errors, function(key,value) {
+								msg+=value+"\n";						
+							});
+							swal("Invalid Input",msg,"error");
+						}
 					}
 				});
 
@@ -1111,8 +1141,17 @@
 											element_disposal_date.attr('readonly',true);
 											element.hide();
 										},
-										error:function(response){
-											console.log(response);
+										error: function (jqXHR, textStatus, errorThrown) {
+											if(jqXHR.status!=422 && jqXHR.status!=400){
+												swal("Server Error",errorThrown,"error");
+											}
+											else{
+												msg = "";
+												$.each(jqXHR.responseJSON.errors, function(key,value) {
+													msg+=value+"\n";						
+												});
+												swal("Invalid Input",msg,"error");
+											}
 										}
 									})
 								}

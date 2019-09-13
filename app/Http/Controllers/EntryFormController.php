@@ -312,9 +312,9 @@ class EntryFormController extends Controller
         $user_type = Auth::user()->user_type;
 
         $this->validate( $request, [
-            'stakeholder' => 'required|integer|max:2000|exists:ps_details,ps_id',
-            'case_no' => 'required|integer|max:2000',
-            'case_year' => 'required|integer|min:1970|max:'.date('Y'),
+            'stakeholder' => 'sometimes|required|integer|max:2000|exists:ps_details,ps_id',
+            'case_no' => 'sometimes|required|integer|max:2000',
+            'case_year' => 'sometimes|required|integer|min:1970|max:'.date('Y'),
             'case_no_string' => 'sometimes|required|string|max:100',
         ]);
         
@@ -430,6 +430,23 @@ class EntryFormController extends Controller
                         ->get();
 
         echo json_encode($data);
+    }
+
+
+    // District wise NDPS Court fetching
+    public function district_wise_court(Request $request){
+        $this->validate( $request, [ 
+            'district' => 'required|integer|max:500|exists:districts,district_id',
+        ]); 
+
+        $district = $request->input('district'); 
+
+        $data['district_wise_court']=CertifyingCourtDetail::
+                                    where('district_id','=', $district )
+                                    ->get();
+
+        echo json_encode($data);
+
     }
 
     // Save New Seizure Details 

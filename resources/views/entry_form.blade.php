@@ -234,7 +234,7 @@
               <form class="form-inline">
                   <label class="box-title" style="font-size:25px; margin-left:30%">
                       Report For The Month Of :                  
-					  <input type="text" class="form-control month_of_report" style="width:25%; margin-left:3%" name="month_of_report" id="month_of_report" value="{{date('F',strtotime(date('d-m-Y'))).'-'.date('Y',strtotime(date('d-m-Y')))}}" autocomplete="off">
+					  <input type="text" class="form-control month_of_report" style="width:30%; margin-left:3%" name="month_of_report" id="month_of_report" value="{{date('F',strtotime(date('d-m-Y'))).'-'.date('Y',strtotime(date('d-m-Y')))}}" autocomplete="off">
 					  @if(Auth::user()->user_type=='ps')
 						  <button type="button" class="btn btn-danger pull-right" id="add_new_case">Add New Case</button>
 					  @endif
