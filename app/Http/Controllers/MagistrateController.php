@@ -42,9 +42,12 @@ class MagistrateController extends Controller
 
     //Fetch case details of a specific case no.
     public function fetch_case_details(Request $request){
+        $this->validate( $request, [           
+            'case_no_string' => 'required|string|max:100',
+        ]);
+
         $court_id =Auth::user()->certifying_court_id;
         $case_no_string = strtoupper(trim($request->input('case_no_string')));
-
         
         $data['case_details'] = Seizure::leftjoin('ps_details','seizures.ps_id','=','ps_details.ps_id')
                                 ->leftjoin('agency_details','seizures.agency_id','=','agency_details.agency_id')
@@ -80,6 +83,10 @@ class MagistrateController extends Controller
 
     // Narcotic wise unit fetching
     public function narcotic_units(Request $request){
+        $this->validate($request, [ 
+            'narcotic' => 'required|integer|min:1|max:999|exists:narcotics,drug_id',
+            'display' => 'required|in:Y,N',
+        ]);
 
         $narcotic = $request->input('narcotic'); 
         $display = $request->input('display'); 
@@ -100,14 +107,16 @@ class MagistrateController extends Controller
 
     // Do certification
     public function certify(Request $request){
-        $this->validate ( $request, [ 
-            'case_no_string' => 'required',
-            'narcotic_type' => 'required|integer',
-            'sample_quantity' => 'required|numeric',
-            'sample_weighing_unit' => 'required|integer',
-            'certification_date' => 'required|date',
-            'magistrate_remarks' => 'nullable|max:255'
-        ] ); 
+        $request['case_no_string'] = trim(strtoupper($request['case_no_string']));
+
+        $this->validate ($request, [ 
+            'case_no_string' => 'required|string|max:100|exists:seizures,case_no_string',
+            'narcotic_type' => 'required|integer|min:1|max:999|exists:narcotics,drug_id',
+            'sample_quantity' => 'required|numeric|max:2000',
+            'sample_weighing_unit' => 'required|integer|max:500|exists:units,unit_id',
+            'certification_date' => 'required|date_format:d-m-Y',
+            'magistrate_remarks' => 'nullable|string|max:255'
+        ]); 
 
         $case_no_string = trim(strtoupper($request->input('case_no_string')));
         $narcotic_type = $request->input('narcotic_type');
@@ -134,7 +143,11 @@ class MagistrateController extends Controller
         
     }
 
-    public function monthly_report_status(Request $request){
+    public function monthly_report_status(Request $request){        
+        $this->validate ($request, [ 
+            'month' => 'required|date_format:F-Y',            
+        ]);
+
         $court_id =Auth::user()->certifying_court_id;
         $start_date = date('Y-m-d', strtotime('01-'.$request->input('month')));
         $end_date = date('Y-m-d', strtotime($start_date. ' +30 days'));
@@ -298,7 +311,12 @@ class MagistrateController extends Controller
     }
 
     public function fetch_case_details_for_report(Request $request){
-        $case_no_string = $request->input('case_no_string');
+        $request['case_no_string'] = trim(strtoupper($request['case_no_string']));
+        $this->validate ($request, [ 
+            'case_no_string' => 'required|string|max:100|exists:seizures,case_no_string',
+        ]); 
+        
+        $case_no_string = trim(strtoupper($request->input('case_no_string')));
         
         $case_details = Seizure::leftjoin('ps_details','seizures.ps_id','=','ps_details.ps_id')
                                 ->leftjoin('agency_details','seizures.agency_id','=','agency_details.agency_id')

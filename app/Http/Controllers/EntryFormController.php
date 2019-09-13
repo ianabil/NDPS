@@ -109,7 +109,7 @@ class EntryFormController extends Controller
             'agency_name' => 'nullable|integer|max:2000|exists:agency_details,agency_id',
             'case_no' => 'required|integer|max:2000',
             'case_year' => 'required|integer|min:1970|max:'.date('Y'),
-            'case_no_string' => 'required|string|max:30|unique:seizures,case_no_string',
+            'case_no_string' => 'required|string|max:100|unique:seizures,case_no_string',
             'case_initiated_by' => 'required|alpha|max:10|in:self,agency',
             'narcotic_type' => 'array',
             'narcotic_type.*' => 'required|integer|min:1|max:999',
@@ -120,9 +120,9 @@ class EntryFormController extends Controller
             'seizure_date' => 'array',
             'seizure_date.*' => 'required|date_format:d-m-Y',            
             'seizure_quantity' => 'array',
-            'seizure_quantity.*' => 'required|integer|max:2000',
+            'seizure_quantity.*' => 'required|numeric|max:2000',
             'seizure_weighing_unit' => 'array',
-            'seizure_weighing_unit.*' => 'required|integer|exists:units,unit_id',
+            'seizure_weighing_unit.*' => 'required|integer|max:500|exists:units,unit_id',
             'storage' => 'required|integer|max:999',
             'flag_other_storage' => 'required|in:0,1',
             'other_storage_name' => 'required_if:flag_other_storage,1|max:50',
@@ -266,6 +266,12 @@ class EntryFormController extends Controller
     // Narcotic wise unit fetching
     public function narcotic_units(Request $request){
 
+        $this->validate($request, [ 
+            'narcotic' => 'required|integer|min:1|max:999',
+            'flag_other_narcotic' => 'sometimes|required|in:0,1',
+            'display' => 'sometimes|in:Y,N',
+        ]);
+
         $narcotic = $request->input('narcotic'); 
         $flag_other_narcotic = $request->input('flag_other_narcotic'); 
         $display = $request->input('display'); 
@@ -273,14 +279,14 @@ class EntryFormController extends Controller
         // This part is for bringing units in the seizure screen
         if($flag_other_narcotic!=""){
             if($flag_other_narcotic==0){
-                    $data['units']=Narcotic_unit::join('units',"narcotic_units.unit_id","=","units.unit_id")
-                                    ->select('units.unit_id','unit_name','unit_degree')
-                                    ->where('narcotic_id','=', $narcotic )
-                                    ->get();
+                $data['units']=Narcotic_unit::join('units',"narcotic_units.unit_id","=","units.unit_id")
+                                ->select('units.unit_id','unit_name','unit_degree')
+                                ->where('narcotic_id','=', $narcotic )
+                                ->get();
                                     
             }
             else if($flag_other_narcotic==1){
-                    $data['units']=Unit::get();
+                $data['units']=Unit::get();
             }
         }
         // This part is for bringing units in the disposal screen
@@ -288,7 +294,7 @@ class EntryFormController extends Controller
             if($display=='Y'){
                 $data['units']=Narcotic_unit::join('units',"narcotic_units.unit_id","=","units.unit_id")
                                         ->select('units.unit_id','unit_name','unit_degree')
-                                        ->where('narcotic_id','=', $narcotic )
+                                        ->where('narcotic_id','=', $narcotic)
                                         ->get();
             }
             else if($display=='N'){
@@ -304,6 +310,13 @@ class EntryFormController extends Controller
     //Fetch case details of a specific case no.
     public function fetch_case_details(Request $request){
         $user_type = Auth::user()->user_type;
+
+        $this->validate( $request, [
+            'stakeholder' => 'required|integer|max:2000|exists:ps_details,ps_id',
+            'case_no' => 'required|integer|max:2000',
+            'case_year' => 'required|integer|min:1970|max:'.date('Y'),
+            'case_no_string' => 'sometimes|required|string|max:100',
+        ]);
         
         if($user_type=="ps"){
             $stakeholder = $request->input('stakeholder');
@@ -374,14 +387,14 @@ class EntryFormController extends Controller
 
     // Do Dispose
     public function dispose(Request $request){
-        
-        $this->validate ( $request, [ 
-            'case_no_string' => 'required',
-            'narcotic_type' => 'required|integer',
-            'disposal_date' => 'required|date',
-            'disposal_quantity' => 'required|numeric',
-            'disposal_weighing_unit' => 'required|integer'
-        ] ); 
+        $request['case_no_string'] = trim(strtoupper($request['case_no_string']));
+        $this->validate ($request, [ 
+            'case_no_string' => 'required|string|max:100|exists:seizures,case_no_string',
+            'narcotic_type' => 'required|integer|min:1|max:999',
+            'disposal_date' => 'required|date_format:d-m-Y',
+            'disposal_quantity' => 'required|numeric|max:2000',
+            'disposal_weighing_unit' => 'required|integer|max:500|exists:units,unit_id',
+        ]); 
 
         
         $case_no_string = strtoupper(trim($request->input('case_no_string')));
@@ -421,13 +434,15 @@ class EntryFormController extends Controller
 
     // Save New Seizure Details 
     public function add_new_seizure_details(Request $request){
-
+        $request['case_no_string'] = trim(strtoupper($request['case_no_string']));
         $this->validate( $request, [ 
-            'case_no_string' => 'required',
-            'narcotic_type' => 'required|integer',
-            'seizure_date' => 'required|date',
-            'seizure_quantity' => 'required|numeric',
-            'seizure_weighing_unit' => 'required|integer',
+            'case_no_string' => 'required|string|max:100|exists:seizures,case_no_string',
+            'narcotic_type' => 'required|integer|min:1|max:999',
+            'seizure_date' => 'required|date_format:d-m-Y',
+            'seizure_quantity' => 'required|numeric|max:2000',
+            'seizure_weighing_unit' => 'required|integer|max:500|exists:units,unit_id',
+            'flag_other_narcotic' => 'required|in:0,1',
+            'other_narcotic_name' => 'required_if:flag_other_narcotic.*,1|max:50',
         ] ); 
 
         $case_no_string = trim(strtoupper($request->input('case_no_string')));
@@ -498,6 +513,10 @@ class EntryFormController extends Controller
 
 
     public function monthly_report_status(Request $request){
+        $this->validate ($request, [ 
+            'month' => 'required|date_format:F-Y',            
+        ]);
+
         $user_type = Auth::user()->user_type;
         if($user_type=="ps")
             $ps_id = Auth::user()->ps_id;
@@ -694,6 +713,10 @@ class EntryFormController extends Controller
 
 
     public function fetch_more_details(Request $request){
+        $this->validate ($request, [ 
+            'case_no_string' => 'required|string|max:100|exists:seizures,case_no_string',
+        ]); 
+
         $case_no_string = $request->input('case_no_string');
         
         $case_details = Seizure::leftjoin('ps_details','seizures.ps_id','=','ps_details.ps_id')

@@ -58,7 +58,7 @@
 									<div class="form-group required row">
 										<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Case Initiated By</label>
 										<div class="col-sm-2">
-											<select class="form-control" id="case_initiated_by" autocomplete="off">
+											<select class="form-control select2" id="case_initiated_by" autocomplete="off">
 												<option value="">Select an option</option>												
 												<option value="self">Self</option>
 												<option value="agency">Any Agency</option>
@@ -85,7 +85,7 @@
 										<div class="form-group required row">
 											<label class="col-sm-2 col-form-label-sm control-label" style="font-size:medium">Nature of Narcotic</label>
 											<div class="col-sm-3">
-												<select class="form-control narcotic_type" autocomplete="off">
+												<select class="form-control narcotic_type select2" autocomplete="off">
 													<option value="" selected>Select An Option</option>
 													@foreach($data['narcotics'] as $narcotic)
 														<option value="{{$narcotic->drug_id}}">{{$narcotic->drug_name}}</option>
@@ -99,8 +99,8 @@
 											</div>
 
 											<div class="col-sm-3 div_other_narcotic_type" style="display:none">
-													<input class="form-control other_narcotic_name" type="text" placeholder="Narcotic Name" autocomplete="off">
-													<input class="form-control flag_other_narcotic" type="number" style="display:none" autocomplete="off"> 	
+												<input class="form-control other_narcotic_name" type="text" placeholder="Narcotic Name" autocomplete="off">
+												<input class="form-control flag_other_narcotic" type="number" style="display:none" autocomplete="off"> 	
 											</div>
 
 										</div>
@@ -113,7 +113,7 @@
 
 											<label class="col-sm-2 col-sm-offset-1 col-form-label-sm control-label" style="font-size:medium">Weighing Unit</label>
 											<div class="col-sm-2">											
-												<select class="form-control seizure_weighing_unit" autocomplete="off">
+												<select class="form-control seizure_weighing_unit select2" autocomplete="off">
 													<option value="" selected>Select An Option</option>											
 												</select>
 											</div>										
@@ -311,6 +311,8 @@
 			viewMode: "months", 
 			minViewMode: "months"
 		}); // Date picker initialization For Month of Report
+
+		var div_clone = $(".div_add_more:first").clone();
 		
 		$(".select2").select2(); // select2 dropdown initialization
 
@@ -359,12 +361,12 @@
 		var count = 0;
 		$(document).on("click","#add_more", function(){
 			count++;
-			$(".div_add_more:first").clone().find('.div_other_narcotic_type').hide().end().insertAfter(".div_add_more:last");
+			div_clone.clone().insertAfter(".div_add_more:last");
 			$(".add_more:last").attr({src:"images/details_close.png",
 										class:"remove", 
 										alt:"remove",
 										id:""});
-			$(".seizure_quantity:last").val('');
+			$(".select2").select2(); // Select2 re-initialization
 			$(".date").datepicker({
 				endDate:'0',
 				format: 'dd-mm-yyyy'
@@ -411,12 +413,22 @@
 					type:"POST",
 					url:"entry_form/fetch_narcotics",
 					async: false,
-					data:{_token: $('meta[name="csrf-token"]').attr('content')},
+					data:{
+						_token: $('meta[name="csrf-token"]').attr('content')
+					},
 					success:function(response){
 						obj = $.parseJSON(response);							
 						$.each(obj,function(key,value){
-								str_narcotic_list=str_narcotic_list+'<option value="'+value.drug_id+'">'+value.drug_name+'</option>';
+							str_narcotic_list=str_narcotic_list+'<option value="'+value.drug_id+'">'+value.drug_name+'</option>';
 						})							
+					},
+					error:function (jqXHR, textStatus, errorThrown) {
+						if(jqXHR.status!=422 && jqXHR.status!=400){
+							swal("Server Error",errorThrown,"error");
+						}
+						else{								
+							swal("Invalid Input","","error");
+						}
 					}
 				})
 				
@@ -589,8 +601,17 @@
 												element.hide();
 												$("#cancel").hide();
 											},
-											error:function(response){
-												console.log(response);
+											error: function (jqXHR, textStatus, errorThrown) {
+												if(jqXHR.status!=422 && jqXHR.status!=400){
+													swal("Server Error",errorThrown,"error");
+												}
+												else{
+													msg = "";
+													$.each(jqXHR.responseJSON.errors, function(key,value) {
+														msg+=value+"\n";						
+													});
+													swal("Invalid Input",msg,"error");
+												}
 											}
 										})
 									}
@@ -785,13 +806,21 @@
 						data: {
 							_token: $('meta[name="csrf-token"]').attr('content'),
 							narcotic: narcotic,
-							flag_other_narcotic
+							flag_other_narcotic:flag_other_narcotic
 						},
 						success:function(resonse){                        
 							var obj=$.parseJSON(resonse)
 							$.each(obj['units'],function(index,value){							
 								element.append('<option value="'+value.unit_id+'">'+value.unit_name+'</option>');											
 							})
+						},
+						error: function (jqXHR, textStatus, errorThrown) {
+							if(jqXHR.status!=422 && jqXHR.status!=400){
+								swal("Server Error",errorThrown,"error");
+							}
+							else{								
+								swal("Invalid Input","","error");
+							}
 						}
 					});
 
@@ -1089,6 +1118,18 @@
 														$("#dispose").show();
 											}
 										
+									}
+								},
+								error: function (jqXHR, textStatus, errorThrown) {
+									if(jqXHR.status!=422 && jqXHR.status!=400){
+											swal("Server Error",errorThrown,"error");
+										}
+									else{
+										msg = "";
+										$.each(jqXHR.responseJSON.errors, function(key,value) {
+											msg+=value+"\n";						
+										});
+										swal("Invalid Input",msg,"error");
 									}
 								}
 							})

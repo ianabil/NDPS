@@ -97,7 +97,7 @@
               <form class="form-inline">
                   <label class="box-title" style="font-size:25px; margin-left:30%">
                       Report For The Month Of :                  
-                      <input type="text" class="form-control month_of_report" style="width:25%; margin-left:3%" name="month_of_report" id="month_of_report" value="{{date('F',strtotime(date('d-m-Y'))).'-'.date('Y',strtotime(date('d-m-Y')))}}" autocomplete="off">
+                      <input type="text" class="form-control month_of_report" style="width:30%; margin-left:3%" name="month_of_report" id="month_of_report" value="{{date('F',strtotime(date('d-m-Y'))).'-'.date('Y',strtotime(date('d-m-Y')))}}" autocomplete="off">
                   </label>
               </form>
               <button type="button" class="btn btn-default" id="download_report"><strong>Download Report</strong></button>
@@ -418,6 +418,18 @@
                             else{
                                 swal("No Record Found","","error");
                             }
+                        },
+                        error:function (jqXHR, textStatus, errorThrown) {
+                            if(jqXHR.status!=422 && jqXHR.status!=400){
+                                    swal("Server Error",errorThrown,"error");
+                                }
+                            else{
+                                msg = "";
+                                $.each(jqXHR.responseJSON.errors, function(key,value) {
+                                    msg+=value+"\n";						
+                                });
+                                swal("Invalid Input",msg,"error");
+                            }
                         }
                     })
             }
@@ -737,8 +749,17 @@
                                             element_verification_statement.attr('readonly',true);
                                             element.hide();
                                         },
-                                        error:function(response){
-                                            console.log(response);
+                                        error: function (jqXHR, textStatus, errorThrown) {
+                                            if(jqXHR.status!=422 && jqXHR.status!=400){
+                                                    swal("Server Error",errorThrown,"error");
+                                                }
+                                            else{
+                                                msg = "";
+                                                $.each(jqXHR.responseJSON.errors, function(key,value) {
+                                                    msg+=value+"\n";						
+                                                });
+                                                swal("Invalid Input",msg,"error");
+                                            }
                                         }
                                 })
                             }
