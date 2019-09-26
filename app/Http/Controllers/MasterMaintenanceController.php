@@ -30,7 +30,7 @@ class MasterMaintenanceController extends Controller
         public function store_agency(Request $request){
 
             $this->validate ( $request, [ 
-                'agency_name' => 'required|max:255|unique:agency_details,agency_name'
+                'agency_name' => 'required|alpha|max:255|unique:agency_details,agency_name'
             ]); 
 
             $stakeholder = trim(strtoupper($request->input('agency_name')));
@@ -39,7 +39,7 @@ class MasterMaintenanceController extends Controller
                 'agency_name'=>$stakeholder,
                 'created_at'=>Carbon::today(),
                 'updated_at'=>Carbon::today()
-                ]);
+            ]);
 
             return 1;
         }
@@ -106,8 +106,8 @@ class MasterMaintenanceController extends Controller
                 /*update stakeholder*/
                 public function update_agency(Request $request){
                     $this->validate ( $request, [ 
-                        'id' => 'required|exists:agency_details,agency_id',
-                        'agency_name' => 'required|max:255|unique:agency_details,agency_name'
+                        'id' => 'required|integer|max:200|exists:agency_details,agency_id',
+                        'agency_name' => 'required|alpha|max:255|unique:agency_details,agency_name'
                     ]);
                     
                     $id = $request->input('id');
@@ -127,6 +127,10 @@ class MasterMaintenanceController extends Controller
                 //deleting stakeholder
                 public function destroy_stakeholder(Request $request)
                 {
+                    $this->validate ( $request, [ 
+                        'id' => 'required|integer|max:200|exists:agency_details,agency_id',                        
+                    ]);
+
                     $id = $request->input('id');
                     Agency_detail::where('agency_id',$id)->delete();
                     return 1;
@@ -228,8 +232,8 @@ class MasterMaintenanceController extends Controller
                 public function store_certifying_court(Request $request){
 
                     $this->validate ( $request, [                         
-                        'certifying_court_name' => 'required|max:255',
-                        'district_name' => 'required|exists:districts,district_id'
+                        'certifying_court_name' => 'required|alpha_dash|max:255|unique:certifying_court_details,court_name',
+                        'district_name' => 'required|integer|max:200|exists:districts,district_id'
                     ] ); 
 
                 $certifying_court_name=trim(strtoupper($request->input('certifying_court_name')));
@@ -248,10 +252,10 @@ class MasterMaintenanceController extends Controller
             /*Update Certifying court */
             public function update_certifying_court(Request $request){
                 $this->validate ( $request, [ 
-                    'certifying_court_id' => 'required|exists:certifying_court_details,court_id',
-                    'certifying_court_name' => 'required|max:255',
-                    'district_name' => 'required|exists:districts,district_id'         
-                ] ); 
+                    'certifying_court_id' => 'required|integer|max:200|exists:certifying_court_details,court_id',
+                    'certifying_court_name' => 'required|alpha_dash|max:255',
+                    'district_name' => 'required|integer|max:200|exists:districts,district_id'         
+                ]); 
 
                 
                 $id = $request->input('certifying_court_id');
@@ -274,6 +278,10 @@ class MasterMaintenanceController extends Controller
             //delete Certifying court details
             public function destroy_certifying_court(Request $request)
             {
+                $this->validate ( $request, [ 
+                    'id' => 'required|integer|max:200|exists:certifying_court_details,court_id',                    
+                ]); 
+
                 $id = $request->input('id');
                 CertifyingCourtDetail::where('court_id',$id)->delete();
                 return 1;
@@ -379,9 +387,9 @@ class MasterMaintenanceController extends Controller
             //Add Narcotics
             public function store_narcotic(Request $request){
                 $this->validate ( $request, [ 
-                    'narcotic_name' => 'required|max:255',
+                    'narcotic_name' => 'required|alpha_dash|max:255',
                     'weighing_unit' => 'required|array',         
-                    'weighing_unit.*' => 'required|exists:units,unit_id'         
+                    'weighing_unit.*' => 'required|integer|max:200|exists:units,unit_id'         
                 ]); 
 
                 $narcotic = trim(strtoupper($request->input('narcotic_name')));
@@ -415,10 +423,10 @@ class MasterMaintenanceController extends Controller
             //update Narcotics
             public function update_narcotics(Request $request){
                 $this->validate ( $request, [ 
-                    'narcotic_id' => 'required|exists:narcotics,drug_id',
-                    'narcotic_name' => 'required|max:255',
-                    'narcotic_unit' => 'required|exists:units,unit_id',
-                    'unit_id' => 'required|exists:units,unit_id'
+                    'narcotic_id' => 'required|integer|max:200|exists:narcotics,drug_id',
+                    'narcotic_name' => 'required|alpha_dash|max:255',
+                    'narcotic_unit' => 'required|integer|max:200|exists:units,unit_id',
+                    'unit_id' => 'required|integer|max:200|exists:units,unit_id'
                 ]); 
 
                     
@@ -449,8 +457,8 @@ class MasterMaintenanceController extends Controller
                 //Delete Narcotics
                 public function destroy_narcotic(Request $request){
                     $this->validate ( $request, [ 
-                        'narcotic_id' => 'required|exists:narcotics,drug_id',                        
-                        'unit_id' => 'required|exists:units,unit_id'
+                        'narcotic_id' => 'required|integer|max:200|exists:narcotics,drug_id',                        
+                        'unit_id' => 'required|integer|max:200|exists:units,unit_id'
                     ]); 
 
                     $narcotic_id = $request->input('narcotic_id');                                    
@@ -543,8 +551,8 @@ class MasterMaintenanceController extends Controller
             //Add Weighing Unit
             public function store_weighing_unit(Request $request){
                 $this->validate ( $request, [ 
-                    'weighing_unit_name' => 'required|max:255|unique:units,unit_name',
-                    'unit_degree' => 'required|integer'   
+                    'weighing_unit_name' => 'required|alpha|max:255|unique:units,unit_name',
+                    'unit_degree' => 'required|integer|max:3|in:0,1,2,3'   
                 ]); 
 
                 $weighing_unit_name = trim(strtoupper($request->input('weighing_unit_name'))); 
@@ -563,8 +571,8 @@ class MasterMaintenanceController extends Controller
             //Update Weighing Unit
             public function update_weighing_unit(Request $request){
                 $this->validate ( $request, [ 
-                    'unit_id' => 'required|exists:units,unit_id',
-                    'weighing_unit_name' => 'required|max:255|unique:units,unit_name'          
+                    'unit_id' => 'required|integer|max:200|exists:units,unit_id',
+                    'weighing_unit_name' => 'required|alpha|max:255'          
                 ]); 
 
                 
@@ -586,7 +594,7 @@ class MasterMaintenanceController extends Controller
              //Delete Weighing Unit
              public function destroy_weighing_unit(Request $request){
                 $this->validate ( $request, [ 
-                    'unit_id' => 'required|exists:units,unit_id'
+                    'unit_id' => 'required|integer|max:200|exists:units,unit_id'
                 ]); 
                 
                 $unit_id = $request->input('unit_id');
@@ -600,7 +608,7 @@ class MasterMaintenanceController extends Controller
               public function destroy_seizure_weighing_unit_record(Request $request)
               {
                     $this->validate ( $request, [ 
-                        'unit_id' => 'required|exists:units,unit_id'
+                        'unit_id' => 'required|integer|max:200|exists:units,unit_id'
                     ]); 
                 
                     $unit_id = $request->input('unit_id');
@@ -708,8 +716,8 @@ class MasterMaintenanceController extends Controller
                 public function store_ps(Request $request){
 
                     $this->validate ( $request, [                     
-                        'ps_name' => 'required|string|max:255|unique:ps_details,ps_name',
-                        'district_name' => 'required|exists:districts,district_id' 
+                        'ps_name' => 'required|alpha_dash|max:255|unique:ps_details,ps_name',
+                        'district_name' => 'required|integer|max:200|exists:districts,district_id' 
                     ]); 
 
                     $ps_name= trim(strtoupper($request->input('ps_name')));
@@ -728,9 +736,9 @@ class MasterMaintenanceController extends Controller
                 //Update PS
                 public function update_ps(Request $request){
                     $this->validate ( $request, [ 
-                        'ps_id' => 'required|exists:ps_details,ps_id',
-                        'ps_name' => 'required|max:255',      
-                        'district_name' => 'required|exists:districts,district_id' 
+                        'ps_id' => 'required|integer|max:1200|exists:ps_details,ps_id',
+                        'ps_name' => 'required|alpha_dash|max:255',      
+                        'district_name' => 'required|integer|max:200|exists:districts,district_id' 
                     ] ); 
 
                         
@@ -753,7 +761,7 @@ class MasterMaintenanceController extends Controller
                 //Delete Police Station
                 public function destroy_ps(Request $request){
                     $this->validate ( $request, [ 
-                        'ps_id' => 'required|exists:ps_details,ps_id'
+                        'ps_id' => 'required|integer|max:1200|exists:ps_details,ps_id'
                     ]); 
 
                     $ps_id = $request->input('ps_id');
@@ -770,7 +778,7 @@ class MasterMaintenanceController extends Controller
         public function store_district(Request $request){
 
             $this->validate ($request, [ 
-                'district_name' => 'required|max:255|unique:districts,district_name'
+                'district_name' => 'required|alpha_dash|max:255|unique:districts,district_name'
             ]); 
 
             $district_name = trim(strtoupper($request->input('district_name')));
@@ -847,8 +855,8 @@ class MasterMaintenanceController extends Controller
         /*update district*/
         public function update_district(Request $request){
             $this->validate ( $request, [ 
-                'id' => 'required|exists:districts,district_id',
-                'district_name' => 'required|max:255|unique:districts,district_name'
+                'id' => 'required|integer|max:200|exists:districts,district_id',
+                'district_name' => 'required|alpha_dash|max:255|unique:districts,district_name'
             ]);
             
             $id = $request->input('id');
@@ -869,7 +877,7 @@ class MasterMaintenanceController extends Controller
         public function destroy_district(Request $request)
         {
             $this->validate ( $request, [ 
-                'id' => 'required|exists:districts,district_id'
+                'id' => 'required|integer|max:200|exists:districts,district_id'
             ]);
 
             $id = $request->input('id');
@@ -968,9 +976,8 @@ class MasterMaintenanceController extends Controller
             public function store_ndps_court(Request $request){
 
                 $this->validate ( $request, [                     
-                    'ndps_court_name' => 'required|string|max:255|unique:ndps_court_details,ndps_court_name',
-                    'district_name' => 'required|exists:districts,district_id'                    
-
+                    'ndps_court_name' => 'required|alpha_dash|max:255|unique:ndps_court_details,ndps_court_name',
+                    'district_name' => 'required|integer|max:200|exists:districts,district_id'  
                 ]); 
 
                 $ndps_court_name= trim(strtoupper($request->input('ndps_court_name')));
@@ -989,9 +996,9 @@ class MasterMaintenanceController extends Controller
             //Update NDPS Court
             public function update_ndps_court(Request $request){
                 $this->validate ( $request, [ 
-                    'ndps_court_id' => 'required|exists:ndps_court_details,ndps_court_id',
-                    'ndps_court_name' => 'required|max:255',      
-                    'district_name' => 'required|exists:districts,district_id',
+                    'ndps_court_id' => 'required|integer|max:200|exists:ndps_court_details,ndps_court_id',
+                    'ndps_court_name' => 'required|alpha_dash|max:255',      
+                    'district_name' => 'required|integer|max:200|exists:districts,district_id',
                 ] ); 
 
                     
@@ -1013,6 +1020,10 @@ class MasterMaintenanceController extends Controller
 
             //Delete NDPS Court
             public function destroy_ndps_court(Request $request){
+                $this->validate ( $request, [ 
+                    'id' => 'required|integer|max:200|exists:ndps_court_details,ndps_court_id',                    
+                ] ); 
+
                 $id = $request->input('id');
                 NdpsCourtDetail::where('ndps_court_id',$id)->delete();
 
@@ -1115,10 +1126,9 @@ class MasterMaintenanceController extends Controller
              public function store_storage(Request $request){
 
                 $this->validate ( $request, [                     
-                    'malkhana_name' => 'required|max:255|unique:storage_details,storage_name',
-                    'district_name' => 'required|exists:districts,district_id'                          
-
-                ] );
+                    'malkhana_name' => 'required|alpha_dash|max:255|unique:storage_details,storage_name',
+                    'district_name' => 'required|integer|max:200|exists:districts,district_id'
+                ]);
 
                 $storage_name = trim(strtoupper($request->input('malkhana_name')));
                 $district_id = $request->input('district_name');
@@ -1136,9 +1146,9 @@ class MasterMaintenanceController extends Controller
              //Update STORAGE
              public function update_storage(Request $request){
                 $this->validate ( $request, [ 
-                    'malkhana_id' => 'required|exists:storage_details,storage_id',
-                    'malkhana_name' => 'required|max:255',
-                    'district_name' => 'required|exists:districts,district_id',        
+                    'malkhana_id' => 'required|integer|max:200|exists:storage_details,storage_id',
+                    'malkhana_name' => 'required|alpha_dash|max:255',
+                    'district_name' => 'required|integer|max:200|exists:districts,district_id',        
                 ]); 
 
                     
@@ -1161,7 +1171,7 @@ class MasterMaintenanceController extends Controller
               //Delete storage
              public function destroy_storage(Request $request){
                 $this->validate ( $request, [ 
-                    'storage_id' => 'required|exists:storage_details,storage_id'
+                    'storage_id' => 'required|integer|max:200|exists:storage_details,storage_id'
                 ]); 
 
                 $storage_id = $request->input('storage_id');
@@ -1202,16 +1212,16 @@ class MasterMaintenanceController extends Controller
         public function create_new_user(Request $request){
 
             $this->validate ( $request, [ 
-                'user_id' => 'required|unique:users,user_id|max:30',
-                'user_name' => 'required|max:100|unique:users,user_name',
+                'user_id' => 'required|alpha_dash|max:30|unique:users,user_id',
+                'user_name' => 'required|alpha_dash|max:100|unique:users,user_name',
                 'password' => 'required|confirmed|max:20|min:6|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/',
-                'user_type' => 'required|max:30',
-                'agency_name' => 'nullable|exists:agency_details,agency_id',
-                'certifying_court_name' => 'nullable|integer|unique:users,certifying_court_id|exists:certifying_court_details,court_id',
-                'ndps_court_name' => 'nullable|integer|unique:users,ndps_court_id|exists:ndps_court_details,ndps_court_id',
-                'ps_name' => 'nullable|unique:users,ps_id|exists:ps_details,ps_id',
+                'user_type' => 'required|alpha_dash|max:30|in:ps,agency,special_court,magistrate,high_court,admin',
+                'agency_name' => 'nullable|integer|max:200|exists:agency_details,agency_id',
+                'certifying_court_name' => 'nullable|integer|max:500|unique:users,certifying_court_id|exists:certifying_court_details,court_id',
+                'ndps_court_name' => 'nullable|integer|max:200|unique:users,ndps_court_id|exists:ndps_court_details,ndps_court_id',
+                'ps_name' => 'nullable|integer|max:1200|unique:users,ps_id|exists:ps_details,ps_id',
                 'email_id' => 'nullable|email|max:100|unique:users,email',
-                'contact_no' => 'nullable|integer|unique:users,contact_no'         
+                'contact_no' => 'nullable|integer|max:12|unique:users,contact_no'         
             ] ); 
 
 
@@ -1269,7 +1279,7 @@ class MasterMaintenanceController extends Controller
             $this->validate($request,[
                 'new_password' => 'required|confirmed|min:6|max:15|different:current_password|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/',
                 'current_password' =>'required',
-                'uid' => 'required|exists:users,user_id'
+                'uid' => 'required|alpha_dash|max:200|exists:users,user_id'
             ]);
             
             $uid=$request->input('uid');  

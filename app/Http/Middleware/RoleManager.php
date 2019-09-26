@@ -33,9 +33,15 @@ class RoleManager
         
         foreach($roles as $role){
             if($role == $user_role)
-                return $next($request)->header('Cache-Control','no-cache, no-store, max-age=0, must-revalidate')
+                return $next($request)
+                ->header('Cache-Control','no-cache, no-store, max-age=0, must-revalidate')
                 ->header('Pragma','no-cache')
-                ->header('Expires','Sun, 02 Jan 1990 00:00:00 GMT');
+                ->header('Expires','-1')
+                ->header('Strict-Transport-Security','max-age=31536000; includeSubDomains; preload')
+                ->header('X-XSS-Protection','1;mode=block')
+                ->header('X-Frame-Options','SAMEORIGIN')
+                ->header('Content-Security-Policy',"script-src 'self' 'unsafe-inline' 'unsafe-eval'")
+                ->header('X-Content-Type-Options','nosniff');               
         }        
         
         abort(403,"It seems you do not possess permission to access this page");   
