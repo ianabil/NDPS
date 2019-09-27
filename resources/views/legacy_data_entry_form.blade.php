@@ -304,7 +304,19 @@
 						$.each(obj,function(key,value){
 							str_narcotic_list=str_narcotic_list+'<option value="'+value.drug_id+'">'+value.drug_name+'</option>';
 						})							
-					}
+					},
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        if(jqXHR.status!=422 && jqXHR.status!=400){
+                            swal("Server Error",errorThrown,"error");
+                        }
+                        else{
+                            msg = "";
+                            $.each(jqXHR.responseJSON.errors, function(key,value) {
+                                msg+=value+"\n";						
+                            });
+                            swal("Invalid Input",msg,"error");
+                        }
+                    }		
 				})
 				
 			
@@ -480,9 +492,18 @@
 										$("#cancel").hide();
 										$("#case_year").trigger("change");
 									},
-									error:function(response){
-										console.log(response);
-									}
+									error: function (jqXHR, textStatus, errorThrown) {
+										if(jqXHR.status!=422 && jqXHR.status!=400){
+											swal("Server Error",errorThrown,"error");
+										}
+										else{
+											msg = "";
+											$.each(jqXHR.responseJSON.errors, function(key,value) {
+												msg+=value+"\n";						
+											});
+											swal("Invalid Input",msg,"error");
+										}
+									}		
 								})
 							}
 						});
@@ -622,9 +643,18 @@
 										$("#case_year").trigger("change");
 										$(".apply").hide();									
 									},
-									error:function(response){
-										swal("Invalid Input","","error");														
-									}
+									error: function (jqXHR, textStatus, errorThrown) {
+										if(jqXHR.status!=422 && jqXHR.status!=400){
+											swal("Server Error",errorThrown,"error");
+										}
+										else{
+											msg = "";
+											$.each(jqXHR.responseJSON.errors, function(key,value) {
+												msg+=value+"\n";						
+											});
+											swal("Invalid Input",msg,"error");
+										}
+									}		
 								})
 							}
 					});
@@ -668,7 +698,19 @@
 							$.each(obj['units'],function(index,value){							
 								element.append('<option value="'+value.unit_id+'">'+value.unit_name+'</option>');											
 							})
-						}
+						},
+						error: function (jqXHR, textStatus, errorThrown) {
+							if(jqXHR.status!=422 && jqXHR.status!=400){
+								swal("Server Error",errorThrown,"error");
+							}
+							else{
+								msg = "";
+								$.each(jqXHR.responseJSON.errors, function(key,value) {
+									msg+=value+"\n";						
+								});
+								swal("Invalid Input",msg,"error");
+							}
+						}		
 					});
 
 			});
@@ -718,7 +760,19 @@
 								$.each(obj['units'],function(index,value){							
 									element.append('<option value="'+value.unit_id+'" data-unit_degree="'+value.unit_degree+'">'+value.unit_name+'</option>');
 								})
-							}
+							},
+							error: function (jqXHR, textStatus, errorThrown) {
+								if(jqXHR.status!=422 && jqXHR.status!=400){
+									swal("Server Error",errorThrown,"error");
+								}
+								else{
+									msg = "";
+									$.each(jqXHR.responseJSON.errors, function(key,value) {
+										msg+=value+"\n";						
+									});
+									swal("Invalid Input",msg,"error");
+								}
+							}		
 						});
 
 		});
@@ -1022,7 +1076,19 @@
 										}
 									
 								}
-							}
+							},
+							error: function (jqXHR, textStatus, errorThrown) {
+								if(jqXHR.status!=422 && jqXHR.status!=400){
+									swal("Server Error",errorThrown,"error");
+								}
+								else{
+									msg = "";
+									$.each(jqXHR.responseJSON.errors, function(key,value) {
+										msg+=value+"\n";						
+									});
+									swal("Invalid Input",msg,"error");
+								}
+							}		
 						})
 					}
 
@@ -1122,9 +1188,18 @@
 													element.hide();
 													$("#case_year").trigger("change");													
 												},
-												error:function(response){
-													console.log(response);
-												}
+												error: function (jqXHR, textStatus, errorThrown) {
+													if(jqXHR.status!=422 && jqXHR.status!=400){
+														swal("Server Error",errorThrown,"error");
+													}
+													else{
+														msg = "";
+														$.each(jqXHR.responseJSON.errors, function(key,value) {
+															msg+=value+"\n";						
+														});
+														swal("Invalid Input",msg,"error");
+													}
+												}		
 										})
 									}
 							});
@@ -1209,9 +1284,18 @@
 											element.hide();
 											$("#case_year").trigger("change");
 										},
-										error:function(response){
-											console.log(response);
-										}
+										error: function (jqXHR, textStatus, errorThrown) {
+											if(jqXHR.status!=422 && jqXHR.status!=400){
+												swal("Server Error",errorThrown,"error");
+											}
+											else{
+												msg = "";
+												$.each(jqXHR.responseJSON.errors, function(key,value) {
+													msg+=value+"\n";						
+												});
+												swal("Invalid Input",msg,"error");
+											}
+										}		
 									})
 								}
 						});

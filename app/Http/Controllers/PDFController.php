@@ -27,7 +27,12 @@ class PDFController extends Controller
 {
     // Display the PDF For Monthly Report
     public function generate_monthly_report(Request $request){
-        
+        $this->validate ($request, [ 
+            'month' => 'sometimes|required|date_format:F-Y', 
+            'case_no_string' => 'required|array',
+            'case_no_string.*' => 'required|string|max:255|exists:seizures,case_no_string',           
+        ]);
+
         $user_type = Auth::user()->user_type;
         $case_no_string = $request->input('case_no_string');
         $month = $request->input('month');

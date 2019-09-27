@@ -41,6 +41,10 @@ class SpecialCourtController extends Controller
 
 
     public function monthly_report_status(Request $request){
+        $this->validate ($request, [ 
+            'month' => 'required|date_format:F-Y',            
+        ]);
+
         $ndps_court_id = Auth::user()->ndps_court_id;   
         $start_date = date('Y-m-d', strtotime('01-'.$request->input('month')));
         $end_date = date('Y-m-d', strtotime($start_date. ' +30 days'));
@@ -211,6 +215,10 @@ class SpecialCourtController extends Controller
     }
 
     public function fetch_case_details(Request $request){
+        $this->validate( $request, [           
+            'case_no_string' => 'required|string|max:255',
+        ]);
+        
         $case_no_string = $request->input('case_no_string');
         
         $case_details = Seizure::leftjoin('ps_details','seizures.ps_id','=','ps_details.ps_id')

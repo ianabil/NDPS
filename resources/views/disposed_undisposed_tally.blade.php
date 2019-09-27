@@ -410,12 +410,12 @@
                         success:function(response){
                             var tbody = "";
                             var i;
-                            for(i=0;i<response[0].data.length;i++){                                
+                            for(i=0;i<response[0].data.length -2;i++){                                
                                 var j;
                                 tbody+="<tr><td>"+response[0].data[i].district_name+"</td>";
                                 for(j=0;j<response.length;j++){
                                     tbody+="<td>";
-
+                                        console.log("j:"+j+" - i:"+i);
                                     if(response[j].data[i].disposal_quantity!=0)
                                         tbody+= response[j].data[i].disposal_quantity+" "+response[j].data[i].unit_name;
                                     else
@@ -494,7 +494,7 @@
                         success:function(response){                            
                             var tbody = "";
                             var i;
-                            for(i=0;i<response[0].data.length;i++){                                
+                            for(i=0;i<response[0].data.length -1;i++){                                
                                 var j;
                                 tbody+="<tr><td>"+response[0].data[i].storage_name+"</td>";
                                 for(j=0;j<response.length;j++){

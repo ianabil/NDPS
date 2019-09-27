@@ -58,7 +58,26 @@ class SearchController extends Controller
 
     public function show_highcourt_search_result(Request $request){
 
-        
+        $this->validate( $request, [ 
+            'ps' => 'nullable|integer|max:2000|exists:ps_details,ps_id',
+            'case_no' => 'nullable|integer|max:2000',
+            'case_year' => 'nullable|integer|min:1970|max:'.date('Y'),
+            'case_no_initial' => 'nullable|string|max:255',
+            'stakeholder' => 'nullable|integer|max:2000|exists:agency_details,agency_id',
+            'certifying_court' => 'nullable|integer|max:2000|exists:certifying_court_details,court_id',
+            'ndps_court' => 'nullable|integer|max:2000|exists:ndps_court_details,ndps_court_id',
+            'narcotic_type' => 'nullable|integer|min:1|max:999',
+            'storage' => 'nullable|integer|max:999',
+            'certified_cases' => 'nullable|alpha|max:255|in:true,false',
+            'disposed_cases' => 'nullable|alpha|max:255|in:true,false',
+            'seizure_from_date' => 'nullable|date_format:Y-m-d',
+            'seizure_to_date' => 'nullable|date_format:Y-m-d',
+            'certification_from_date' => 'nullable|date_format:Y-m-d',
+            'certification_to_date' => 'nullable|date_format:Y-m-d',
+            'disposal_from_date' => 'nullable|date_format:Y-m-d',
+            'disposal_to_date' => 'nullable|date_format:Y-m-d',
+        ]);
+
         /* Fetching values from view :: STARTS */
         $ps = $request->input('ps');
         $case_no = trim($request->input('case_no'));
@@ -310,6 +329,10 @@ class SearchController extends Controller
 
 
     public function fetch_case_details(Request $request){
+        $this->validate ($request, [ 
+            'case_no_string' => 'required|string|max:255|exists:seizures,case_no_string',
+        ]); 
+
         $case_no_string = $request->input('case_no_string');
         
         $case_details = Seizure::leftjoin('ps_details','seizures.ps_id','=','ps_details.ps_id')
@@ -443,6 +466,26 @@ class SearchController extends Controller
 
 
     public function show_stakeholder_search_result(Request $request){
+
+        $this->validate( $request, [ 
+            'ps' => 'nullable|integer|max:2000|exists:ps_details,ps_id',
+            'case_no' => 'nullable|integer|max:2000',
+            'case_year' => 'nullable|integer|min:1970|max:'.date('Y'),
+            'case_no_initial' => 'nullable|string|max:255',
+            'agency' => 'nullable|integer|max:2000|exists:agency_details,agency_id',
+            'certifying_court' => 'nullable|integer|max:2000|exists:certifying_court_details,court_id',
+            'ndps_court' => 'nullable|integer|max:2000|exists:ndps_court_details,ndps_court_id',
+            'narcotic_type' => 'nullable|integer|min:1|max:999',
+            'storage' => 'nullable|integer|max:999',
+            'certified_cases' => 'nullable|alpha|max:255|in:true,false',
+            'disposed_cases' => 'nullable|alpha|max:255|in:true,false',
+            'seizure_from_date' => 'nullable|date_format:Y-m-d',
+            'seizure_to_date' => 'nullable|date_format:Y-m-d',
+            'certification_from_date' => 'nullable|date_format:Y-m-d',
+            'certification_to_date' => 'nullable|date_format:Y-m-d',
+            'disposal_from_date' => 'nullable|date_format:Y-m-d',
+            'disposal_to_date' => 'nullable|date_format:Y-m-d',
+        ]);
         
         /* Fetching values from view :: STARTS */
         $ps = $request->input('ps');
@@ -695,6 +738,10 @@ class SearchController extends Controller
 
 
     public function fetch_case_details_stakeholder(Request $request){
+        $this->validate ($request, [ 
+            'case_no_string' => 'required|string|max:255|exists:seizures,case_no_string',
+        ]);
+
         $case_no_string = $request->input('case_no_string');
         
         $case_details = Seizure::leftjoin('ps_details','seizures.ps_id','=','ps_details.ps_id')
@@ -793,7 +840,25 @@ class SearchController extends Controller
     }
 
     public function show_special_court_search_result(Request $request){
-
+        
+        $this->validate( $request, [ 
+            'ps' => 'nullable|integer|max:2000|exists:ps_details,ps_id',
+            'case_no' => 'nullable|integer|max:2000',
+            'case_year' => 'nullable|integer|min:1970|max:'.date('Y'),
+            'case_no_initial' => 'nullable|string|max:255',
+            'stakeholder' => 'nullable|integer|max:2000|exists:agency_details,agency_id',
+            'certifying_court' => 'nullable|integer|max:2000|exists:certifying_court_details,court_id',            
+            'narcotic_type' => 'nullable|integer|min:1|max:999',
+            'storage' => 'nullable|integer|max:999',
+            'certified_cases' => 'nullable|alpha|max:255|in:true,false',
+            'disposed_cases' => 'nullable|alpha|max:255|in:true,false',
+            'seizure_from_date' => 'nullable|date_format:Y-m-d',
+            'seizure_to_date' => 'nullable|date_format:Y-m-d',
+            'certification_from_date' => 'nullable|date_format:Y-m-d',
+            'certification_to_date' => 'nullable|date_format:Y-m-d',
+            'disposal_from_date' => 'nullable|date_format:Y-m-d',
+            'disposal_to_date' => 'nullable|date_format:Y-m-d',
+        ]);
         
         /* Fetching values from view :: STARTS */
         $ps = $request->input('ps');
@@ -1042,6 +1107,10 @@ class SearchController extends Controller
 
 
     public function fetch_case_details_special_court(Request $request){
+        $this->validate ($request, [ 
+            'case_no_string' => 'required|string|max:255|exists:seizures,case_no_string',
+        ]); 
+
         $case_no_string = $request->input('case_no_string');
         
         $case_details = Seizure::leftjoin('ps_details','seizures.ps_id','=','ps_details.ps_id')
@@ -1106,8 +1175,8 @@ class SearchController extends Controller
 
     public function calhc_ndps_court_report(Request $request){
         $this->validate( $request, [ 
-            'from_date' => 'required|date',
-            'to_date' => 'required|date',
+            'from_date' => 'required|date_format:Y-m-d',
+            'to_date' => 'required|date_format:Y-m-d',
         ]); 
 
         $from_date = $request->input('from_date');
@@ -1262,8 +1331,8 @@ class SearchController extends Controller
 
     public function calhc_ps_report(Request $request){
         $this->validate( $request, [ 
-            'from_date' => 'required|date',
-            'to_date' => 'required|date',
+            'from_date' => 'required|date_format:Y-m-d',
+            'to_date' => 'required|date_format:Y-m-d',
         ]); 
 
         $from_date = $request->input('from_date');
@@ -1416,8 +1485,8 @@ class SearchController extends Controller
 
     public function calhc_agency_report(Request $request){
         $this->validate( $request, [ 
-            'from_date' => 'required|date',
-            'to_date' => 'required|date',
+            'from_date' => 'required|date_format:Y-m-d',
+            'to_date' => 'required|date_format:Y-m-d',
         ]); 
 
         $from_date = $request->input('from_date');
@@ -1569,12 +1638,12 @@ class SearchController extends Controller
     
     public function calhc_narcotic_district_report(Request $request){
         $this->validate( $request, [ 
-            'from_date' => 'required|date',
-            'to_date' => 'required|date',
+            'from_date' => 'required|date_format:Y-m-d',
+            'to_date' => 'required|date_format:Y-m-d',
         ]); 
 
-        $from_date = Carbon::parse($request->input('from_date'))->format('Y-m-d');
-        $to_date = Carbon::parse($request->input('to_date'))->format('Y-m-d');
+        $from_date = $request->input('from_date');
+        $to_date = $request->input('to_date');
 
         // fetching all the narcotics
         $narcotics = Narcotic::orderBy('drug_name')->where('display','Y')->get(); 
@@ -1696,12 +1765,12 @@ class SearchController extends Controller
     
     public function calhc_narcotic_malkhana_report(Request $request){
         $this->validate( $request, [ 
-            'from_date' => 'required|date',
-            'to_date' => 'required|date',
+            'from_date' => 'required|date_format:Y-m-d',
+            'to_date' => 'required|date_format:Y-m-d',
         ]); 
 
-        $from_date = Carbon::parse($request->input('from_date'))->format('Y-m-d');
-        $to_date = Carbon::parse($request->input('to_date'))->format('Y-m-d');
+        $from_date = $request->input('from_date');
+        $to_date = $request->input('to_date');
 
         // fetching all the narcotics
         $narcotics = Narcotic::orderBy('drug_name')->where('display','Y')->get(); 

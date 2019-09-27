@@ -43,7 +43,7 @@ class MagistrateController extends Controller
     //Fetch case details of a specific case no.
     public function fetch_case_details(Request $request){
         $this->validate( $request, [           
-            'case_no_string' => 'required|string|max:100',
+            'case_no_string' => 'required|string|max:255',
         ]);
 
         $court_id =Auth::user()->certifying_court_id;
@@ -110,7 +110,7 @@ class MagistrateController extends Controller
         $request['case_no_string'] = trim(strtoupper($request['case_no_string']));
 
         $this->validate ($request, [ 
-            'case_no_string' => 'required|string|max:100|exists:seizures,case_no_string',
+            'case_no_string' => 'required|string|max:255|exists:seizures,case_no_string',
             'narcotic_type' => 'required|integer|min:1|max:999|exists:narcotics,drug_id',
             'sample_quantity' => 'required|numeric|max:2000',
             'sample_weighing_unit' => 'required|integer|max:500|exists:units,unit_id',
@@ -312,8 +312,9 @@ class MagistrateController extends Controller
 
     public function fetch_case_details_for_report(Request $request){
         $request['case_no_string'] = trim(strtoupper($request['case_no_string']));
+        
         $this->validate ($request, [ 
-            'case_no_string' => 'required|string|max:100|exists:seizures,case_no_string',
+            'case_no_string' => 'required|string|max:255|exists:seizures,case_no_string',
         ]); 
         
         $case_no_string = trim(strtoupper($request->input('case_no_string')));

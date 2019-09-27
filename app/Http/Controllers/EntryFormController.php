@@ -109,7 +109,7 @@ class EntryFormController extends Controller
             'agency_name' => 'nullable|integer|max:2000|exists:agency_details,agency_id',
             'case_no' => 'required|integer|max:2000',
             'case_year' => 'required|integer|min:1970|max:'.date('Y'),
-            'case_no_string' => 'required|string|max:100|unique:seizures,case_no_string',
+            'case_no_string' => 'required|string|max:255|unique:seizures,case_no_string',
             'case_initiated_by' => 'required|alpha|max:10|in:self,agency',
             'narcotic_type' => 'array',
             'narcotic_type.*' => 'required|integer|min:1|max:999',
@@ -388,6 +388,7 @@ class EntryFormController extends Controller
     // Do Dispose
     public function dispose(Request $request){
         $request['case_no_string'] = trim(strtoupper($request['case_no_string']));
+
         $this->validate ($request, [ 
             'case_no_string' => 'required|string|max:100|exists:seizures,case_no_string',
             'narcotic_type' => 'required|integer|min:1|max:999',
@@ -452,6 +453,7 @@ class EntryFormController extends Controller
     // Save New Seizure Details 
     public function add_new_seizure_details(Request $request){
         $request['case_no_string'] = trim(strtoupper($request['case_no_string']));
+        
         $this->validate( $request, [ 
             'case_no_string' => 'required|string|max:100|exists:seizures,case_no_string',
             'narcotic_type' => 'required|integer|min:1|max:999',

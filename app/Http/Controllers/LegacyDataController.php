@@ -66,24 +66,24 @@ class LegacyDataController extends Controller
     public function store(Request $request)
     {
         $this->validate( $request, [ 
-            'stakeholder' => 'required|integer',
-            'stakeholder_type' => 'required',
-            'case_no' => 'required|integer',
-            'case_year' => 'required|integer',
-            'case_no_string' => 'required',
-            'narcotic_type' => 'required|array',
-            'narcotic_type.*' => 'required',
-            'seizure_date' => 'required|array',
-            'seizure_date.*' => 'required|date',
-            'seizure_quantity' => 'required|array',
-            'seizure_quantity.*' => 'required',
-            'seizure_weighing_unit' => 'required|array',
-            'seizure_weighing_unit.*' => 'required|exists:units,unit_id',
-            'storage' => 'nullable|integer',
-            'remark' => 'nullable|max:255',
-            'district' => 'required|exists:districts,district_id',         
-            'ndps_court' => 'required|exists:ndps_court_details,ndps_court_id',
-            'certifying_court' => 'required|exists:certifying_court_details,court_id'
+            'stakeholder' => 'required|integer|max:2000',
+            'stakeholder_type' => 'required|alpha|in:ps,agency',
+            'case_no' => 'required|integer|max:2000',
+            'case_year' => 'required|integer|min:1970|max:'.date('Y'),
+            'case_no_string' => 'required|string|max:255|unique:seizures,case_no_string',
+            'narcotic_type' => 'array',
+            'narcotic_type.*' => 'required|integer|min:1|max:999',
+            'seizure_date' => 'array',
+            'seizure_date.*' => 'required|date_format:d-m-Y',
+            'seizure_quantity' => 'array',
+            'seizure_quantity.*' => 'required|numeric|max:2000',
+            'seizure_weighing_unit' => 'array',
+            'seizure_weighing_unit.*' => 'required|integer|max:500|exists:units,unit_id',
+            'storage' => 'nullable|integer|max:999',
+            'remark' => 'nullable|string|max:255',
+            'district' => 'required|integer|max:2000|exists:districts,district_id',         
+            'ndps_court' => 'required|integer|max:2000|exists:ndps_court_details,ndps_court_id',
+            'certifying_court' => 'required|integer|max:2000|exists:certifying_court_details,court_id'
         ] ); 
     
         $stakeholder = $request->input('stakeholder');
@@ -212,6 +212,11 @@ class LegacyDataController extends Controller
 
     // Narcotic wise unit fetching
     public function narcotic_units(Request $request){
+        $this->validate($request, [ 
+            'narcotic' => 'required|integer|min:1|max:999',
+            'flag_other_narcotic' => 'sometimes|required|in:0,1',
+            'display' => 'sometimes|in:Y,N',
+        ]);
 
         $narcotic = $request->input('narcotic'); 
         $flag_other_narcotic = $request->input('flag_other_narcotic'); 
@@ -261,12 +266,14 @@ class LegacyDataController extends Controller
     public function add_new_seizure_details(Request $request){
 
         $this->validate( $request, [ 
-            'case_no_string' => 'required|exists:seizures,case_no_string',
-            'narcotic_type' => 'required|integer',
-            'seizure_date' => 'required|date',
-            'seizure_quantity' => 'required|numeric',
-            'seizure_weighing_unit' => 'required|integer',
-        ] ); 
+            'case_no_string' => 'required|string|max:100|exists:seizures,case_no_string',
+            'narcotic_type' => 'required|integer|min:1|max:999',
+            'seizure_date' => 'required|date_format:d-m-Y',
+            'seizure_quantity' => 'required|numeric|max:2000',
+            'seizure_weighing_unit' => 'required|integer|max:500|exists:units,unit_id',
+            'flag_other_narcotic' => 'required|in:0,1',
+            'other_narcotic_name' => 'required_if:flag_other_narcotic.*,1|max:50',
+        ]); 
 
         $case_no_string = $request->input('case_no_string');
         $narcotic_type = $request->input('narcotic_type');
@@ -340,13 +347,13 @@ class LegacyDataController extends Controller
     // Do Dispose
     public function dispose(Request $request){
         
-        $this->validate ( $request, [ 
-            'case_no_string' => 'required',
-            'narcotic_type' => 'required|integer',
-            'disposal_date' => 'required|date',
-            'disposal_quantity' => 'required|numeric',
-            'disposal_weighing_unit' => 'required|integer'
-        ] ); 
+        $this->validate ($request, [ 
+            'case_no_string' => 'required|string|max:100|exists:seizures,case_no_string',
+            'narcotic_type' => 'required|integer|min:1|max:999',
+            'disposal_date' => 'required|date_format:d-m-Y',
+            'disposal_quantity' => 'required|numeric|max:2000',
+            'disposal_weighing_unit' => 'required|integer|max:500|exists:units,unit_id',
+        ]); 
 
         
         $case_no_string = strtoupper(trim($request->input('case_no_string')));
@@ -376,6 +383,13 @@ class LegacyDataController extends Controller
 
     //Fetch case details of a specific case no.
     public function fetch_case_details(Request $request){
+        $request['case_no_string'] = trim(strtoupper($request['case_no_string']));
+        
+        $this->validate ($request, [ 
+            'case_no_string' => 'required|string|max:255',
+            'stakeholder_type' => 'required|alpha|max:20|in:ps,agency',
+        ]); 
+
         $case_no_string = strtoupper(trim($request->input('case_no_string')));
         $user_type = $request->input('stakeholder_type');
         
@@ -442,14 +456,14 @@ class LegacyDataController extends Controller
 
     // Do certification
     public function certify(Request $request){
-        $this->validate ( $request, [ 
-            'case_no_string' => 'required',
-            'narcotic_type' => 'required|integer',
-            'sample_quantity' => 'required|numeric',
-            'sample_weighing_unit' => 'required|integer',
-            'certification_date' => 'required|date',
-            'magistrate_remarks' => 'nullable|max:255'
-        ] ); 
+        $this->validate ($request, [ 
+            'case_no_string' => 'required|string|max:255|exists:seizures,case_no_string',
+            'narcotic_type' => 'required|integer|min:1|max:999|exists:narcotics,drug_id',
+            'sample_quantity' => 'required|numeric|max:2000',
+            'sample_weighing_unit' => 'required|integer|max:500|exists:units,unit_id',
+            'certification_date' => 'required|date_format:d-m-Y',
+            'magistrate_remarks' => 'nullable|string|max:255'
+        ]); 
 
         $case_no_string = $request->input('case_no_string');
         $narcotic_type = $request->input('narcotic_type');

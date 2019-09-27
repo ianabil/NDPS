@@ -871,7 +871,19 @@
 								$.each(obj['units'],function(index,value){							
 									element.append('<option value="'+value.unit_id+'" data-unit_degree="'+value.unit_degree+'">'+value.unit_name+'</option>');
 								})
-							}
+							},
+							error: function (jqXHR, textStatus, errorThrown) {
+								if(jqXHR.status!=422 && jqXHR.status!=400){
+									swal("Server Error",errorThrown,"error");
+								}
+								else{
+									msg = "";
+									$.each(jqXHR.responseJSON.errors, function(key,value) {
+										msg+=value+"\n";						
+									});
+									swal("Invalid Input",msg,"error");
+								}
+							}		
 						});
 
 		});
@@ -1218,9 +1230,18 @@
 											element_disposal_date.attr('readonly',true);
 											element.hide();
 										},
-										error:function(response){
-											console.log(response);
-										}
+										error: function (jqXHR, textStatus, errorThrown) {
+											if(jqXHR.status!=422 && jqXHR.status!=400){
+												swal("Server Error",errorThrown,"error");
+											}
+											else{
+												msg = "";
+												$.each(jqXHR.responseJSON.errors, function(key,value) {
+													msg+=value+"\n";						
+												});
+												swal("Invalid Input",msg,"error");
+											}
+										}		
 									})
 								}
 						});
@@ -1313,9 +1334,18 @@
 						success:function(response){
 							obj = $.parseJSON(response);              
 						},
-						error:function(response){
-							console.log(response);
-						},
+						error: function (jqXHR, textStatus, errorThrown) {
+							if(jqXHR.status!=422 && jqXHR.status!=400){
+								swal("Server Error",errorThrown,"error");
+							}
+							else{
+								msg = "";
+								$.each(jqXHR.responseJSON.errors, function(key,value) {
+									msg+=value+"\n";						
+								});
+								swal("Invalid Input",msg,"error");
+							}
+						},		
 						async: false
 					}) 
 			}
@@ -1421,7 +1451,19 @@
 					$('html, body').animate({
 						scrollTop: $("#show_report_pdf").offset().top
 					}, 1000)
-				}				
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					if(jqXHR.status!=422 && jqXHR.status!=400){
+						swal("Server Error",errorThrown,"error");
+					}
+					else{
+						msg = "";
+						$.each(jqXHR.responseJSON.errors, function(key,value) {
+							msg+=value+"\n";						
+						});
+						swal("Invalid Input",msg,"error");
+					}
+				}						
 			})
 		})
 
